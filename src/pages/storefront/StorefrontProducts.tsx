@@ -9,7 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Search, GitCompareArrows } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { useCompare } from "@/contexts/CompareContext";
-import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
