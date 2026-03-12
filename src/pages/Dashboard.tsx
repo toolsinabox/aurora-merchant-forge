@@ -343,7 +343,10 @@ export default function Dashboard() {
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium truncate">{p.title}</p>
                           </div>
-                          <span className="text-xs font-semibold">${Number(p.price).toFixed(2)}</span>
+                          <div className="text-right">
+                            <span className="text-xs font-semibold">{p.sold} sold</span>
+                            <p className="text-2xs text-muted-foreground">${Number(p.price).toFixed(2)}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
