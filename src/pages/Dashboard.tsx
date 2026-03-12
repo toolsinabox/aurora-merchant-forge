@@ -146,8 +146,8 @@ export default function Dashboard() {
             <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate("/orders")}>
               <ShoppingCart className="h-3.5 w-3.5" /> Orders
             </Button>
-            {currentStore?.slug && (
-              <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => window.open(`/store/${currentStore.slug}`, '_blank')}>
+            {(currentStore as any)?.slug && (
+              <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => window.open(`/store/${(currentStore as any).slug}`, '_blank')}>
                 <ExternalLink className="h-3.5 w-3.5" /> View Store
               </Button>
             )}
