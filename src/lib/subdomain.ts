@@ -8,6 +8,7 @@ const PLATFORM_DOMAINS = [
   "localhost",
   "lovable.app",
   "lovable.dev",
+  "lovableproject.com",
   "127.0.0.1",
 ];
 
