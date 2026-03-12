@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
-import { ShoppingBag, Minus, Plus, Check } from "lucide-react";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { ShoppingBag, Minus, Plus, Check, Heart } from "lucide-react";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
@@ -19,6 +20,7 @@ export default function StorefrontProductDetail() {
   const { storeSlug: paramSlug, productId } = useParams();
   const { storeSlug } = useStoreSlug(paramSlug);
   const { addItem } = useCart();
+  const { toggleItem, isWishlisted } = useWishlist();
   const [store, setStore] = useState<any>(null);
   const [product, setProduct] = useState<any>(null);
   const [variants, setVariants] = useState<any[]>([]);
@@ -49,6 +51,7 @@ export default function StorefrontProductDetail() {
   const currentVariant = variants.find((v) => v.id === selectedVariant);
   const price = currentVariant ? currentVariant.price : product?.price || 0;
   const images = product?.images || [];
+  const wishlisted = product ? isWishlisted(product.id) : false;
 
   const handleAddToCart = () => {
     if (!product) return;
@@ -168,14 +171,26 @@ export default function StorefrontProductDetail() {
               </div>
             </div>
 
-            {/* Add to cart */}
-            <Button
-              className="w-full h-12 text-base font-medium gap-2"
-              onClick={handleAddToCart}
-              disabled={currentVariant && currentVariant.stock <= 0}
-            >
-              {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(price) * quantity).toFixed(2)}</>}
-            </Button>
+            {/* Actions */}
+            <div className="flex gap-3">
+              <Button
+                className="flex-1 h-12 text-base font-medium gap-2"
+                onClick={handleAddToCart}
+                disabled={currentVariant && currentVariant.stock <= 0}
+              >
+                {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(price) * quantity).toFixed(2)}</>}
+              </Button>
+              {store && (
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
+                  onClick={() => toggleItem(product.id, store.id)}
+                >
+                  <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                </Button>
+              )}
+            </div>
 
             {/* SKU */}
             {(product.sku || currentVariant?.sku) && (
