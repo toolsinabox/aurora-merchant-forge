@@ -147,6 +147,7 @@ export default function StorefrontProductDetail() {
               onMouseEnter={() => setZooming(true)}
               onMouseLeave={() => setZooming(false)}
               onMouseMove={handleImageMouseMove}
+              onClick={() => images.length > 0 && setLightboxOpen(true)}
             >
               {images[selectedImage] ? (
                 <img
