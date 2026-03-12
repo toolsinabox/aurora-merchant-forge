@@ -179,10 +179,10 @@ export default function StorefrontCheckout() {
 
       // Increment coupon used_count
       if (appliedCoupon) {
-        await supabase.rpc("increment_coupon_usage" as any, { coupon_id: appliedCoupon.id }).catch(() => {
-          // fallback: direct update
-          supabase.from("coupons").update({ used_count: (appliedCoupon as any).used_count + 1 } as any).eq("id", appliedCoupon.id);
-        });
+        const { data: couponData } = await supabase.from("coupons").select("used_count").eq("id", appliedCoupon.id).single();
+        if (couponData) {
+          await supabase.from("coupons").update({ used_count: (couponData as any).used_count + 1 } as any).eq("id", appliedCoupon.id);
+        }
       }
 
       setOrderNumber(orderNum);

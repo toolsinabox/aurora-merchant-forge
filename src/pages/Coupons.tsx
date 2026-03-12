@@ -218,7 +218,7 @@ export default function Coupons() {
                         <TableCell>
                           {expired ? <Badge variant="secondary">Expired</Badge>
                             : maxed ? <Badge variant="secondary">Maxed</Badge>
-                            : c.is_active ? <Badge className="bg-emerald-500/15 text-emerald-600 border-0">Active</Badge>
+                            : c.is_active ? <Badge className="bg-primary/15 text-primary border-0">Active</Badge>
                             : <Badge variant="outline">Inactive</Badge>}
                         </TableCell>
                         <TableCell>
