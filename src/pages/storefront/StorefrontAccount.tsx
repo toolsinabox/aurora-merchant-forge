@@ -82,7 +82,7 @@ export default function StorefrontAccount() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast.success("Signed out");
-    navigate(base);
+    navigate(basePath || "/");
   };
 
   const handleReturnRequest = async () => {
