@@ -1,11 +1,14 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ShoppingBag, Menu, User, Store } from "lucide-react";
+import { ShoppingBag, Menu, User, Store, Search, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { StorefrontSearch } from "./StorefrontSearch";
+import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
   children: ReactNode;
@@ -15,8 +18,18 @@ interface StorefrontLayoutProps {
 export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps) {
   const { storeSlug: paramSlug } = useParams();
   const { totalItems } = useCart();
+  const { items: wishlistItems } = useWishlist();
   const { user } = useAuth();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { storeSlug, basePath } = useStoreSlug(paramSlug);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [storeId, setStoreId] = useState<string>("");
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => {
+      if (s) setStoreId(s.id);
+    });
+  }, [storeSlug]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
@@ -61,7 +74,28 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 </Link>
               </nav>
             </div>
+
+            {/* Search + icons */}
             <div className="flex items-center gap-1">
+              {/* Desktop search */}
+              {storeId && !searchOpen && (
+                <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setSearchOpen(true)}>
+                  <Search className="h-5 w-5" />
+                </Button>
+              )}
+
+              {/* Wishlist */}
+              <Link to={user ? `${basePath}/account` : `${basePath}/login`}>
+                <Button variant="ghost" size="icon" className="relative h-9 w-9">
+                  <Heart className="h-5 w-5" />
+                  {wishlistItems.length > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center font-bold">
+                      {wishlistItems.length}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+
               <Link to={user ? `${basePath}/account` : `${basePath}/login`}>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <User className="h-5 w-5" />
@@ -79,6 +113,13 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
               </Link>
             </div>
           </div>
+
+          {/* Search bar (expandable) */}
+          {searchOpen && storeId && (
+            <div className="relative pb-3">
+              <StorefrontSearch storeId={storeId} basePath={basePath} onClose={() => setSearchOpen(false)} />
+            </div>
+          )}
         </div>
       </header>
 

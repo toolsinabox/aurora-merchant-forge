@@ -13,7 +13,9 @@ import {
   useUpdateStore, useTaxRates, useCreateTaxRate, useDeleteTaxRate,
   useShippingZones, useCreateShippingZone, useDeleteShippingZone, useTeamMembers,
 } from "@/hooks/use-data";
-import { Save, Plus, Trash2, Mail } from "lucide-react";
+import { Save, Plus, Trash2, Mail, Palette } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -35,6 +37,53 @@ export default function SettingsPage() {
     timezone: currentStore?.timezone || "America/New_York",
   });
 
+  // Branding state
+  const [brandForm, setBrandForm] = useState({
+    primary_color: "#2563eb",
+    banner_text: "",
+    description: "",
+    logo_url: "",
+  });
+  const [brandLoading, setBrandLoading] = useState(false);
+  const [brandSaving, setBrandSaving] = useState(false);
+
+  // Load branding data
+  useState(() => {
+    if (!currentStore) return;
+    supabase
+      .from("stores")
+      .select("primary_color, banner_text, description, logo_url")
+      .eq("id", currentStore.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setBrandForm({
+            primary_color: (data as any).primary_color || "#2563eb",
+            banner_text: (data as any).banner_text || "",
+            description: (data as any).description || "",
+            logo_url: (data as any).logo_url || "",
+          });
+        }
+      });
+  });
+
+  const handleSaveBranding = async () => {
+    if (!currentStore) return;
+    setBrandSaving(true);
+    const { error } = await supabase
+      .from("stores")
+      .update({
+        primary_color: brandForm.primary_color,
+        banner_text: brandForm.banner_text || null,
+        description: brandForm.description || null,
+        logo_url: brandForm.logo_url || null,
+      } as any)
+      .eq("id", currentStore.id);
+    setBrandSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Branding saved");
+  };
+
   const [taxOpen, setTaxOpen] = useState(false);
   const [newTax, setNewTax] = useState({ name: "", region: "", rate: "" });
   const [shipOpen, setShipOpen] = useState(false);
@@ -55,6 +104,7 @@ export default function SettingsPage() {
         <Tabs defaultValue="store">
           <TabsList className="h-8">
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
+            <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
             <TabsTrigger value="team" className="text-xs h-7">Team</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
             <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
@@ -102,6 +152,50 @@ export default function SettingsPage() {
                 </div>
                 <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSaveStore} disabled={updateStore.isPending}>
                   <Save className="h-3.5 w-3.5" /> {updateStore.isPending ? "Saving..." : "Save Changes"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="branding" className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Store Branding</CardTitle></CardHeader>
+              <CardContent className="p-4 pt-2 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Primary Color</Label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={brandForm.primary_color}
+                        onChange={(e) => setBrandForm({ ...brandForm, primary_color: e.target.value })}
+                        className="h-8 w-12 rounded border cursor-pointer"
+                      />
+                      <Input className="h-8 text-xs flex-1" value={brandForm.primary_color} onChange={(e) => setBrandForm({ ...brandForm, primary_color: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Logo URL</Label>
+                    <Input className="h-8 text-xs" value={brandForm.logo_url} onChange={(e) => setBrandForm({ ...brandForm, logo_url: e.target.value })} placeholder="https://..." />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Banner Text</Label>
+                  <Input className="h-8 text-xs" value={brandForm.banner_text} onChange={(e) => setBrandForm({ ...brandForm, banner_text: e.target.value })} placeholder="Free shipping on orders over $50!" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Store Description</Label>
+                  <Input className="h-8 text-xs" value={brandForm.description} onChange={(e) => setBrandForm({ ...brandForm, description: e.target.value })} placeholder="A short description of your store..." />
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
+                  <div className="h-10 w-10 rounded-lg" style={{ backgroundColor: brandForm.primary_color }} />
+                  <div>
+                    <p className="text-xs font-medium">Preview</p>
+                    <p className="text-2xs text-muted-foreground">This color will be used as your store's accent color</p>
+                  </div>
+                </div>
+                <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSaveBranding} disabled={brandSaving}>
+                  <Palette className="h-3.5 w-3.5" /> {brandSaving ? "Saving..." : "Save Branding"}
                 </Button>
               </CardContent>
             </Card>
