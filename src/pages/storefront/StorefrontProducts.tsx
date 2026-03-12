@@ -17,6 +17,7 @@ const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPAB
 export default function StorefrontProducts() {
   const { storeSlug: paramSlug } = useParams();
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
+  const { items: compareItems, addItem: addCompare, removeItem: removeCompare, isComparing } = useCompare();
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
