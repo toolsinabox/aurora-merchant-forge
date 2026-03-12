@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ShoppingBag, Search, Menu } from "lucide-react";
+import { ShoppingBag, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface StorefrontLayoutProps {
@@ -13,6 +14,7 @@ interface StorefrontLayoutProps {
 export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps) {
   const { storeSlug } = useParams();
   const { totalItems } = useCart();
+  const { user } = useAuth();
   const base = `/store/${storeSlug}`;
 
   return (
@@ -32,6 +34,11 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                   <nav className="flex flex-col gap-4 mt-8">
                     <Link to={base} className="text-sm font-medium hover:text-primary">Home</Link>
                     <Link to={`${base}/products`} className="text-sm font-medium hover:text-primary">All Products</Link>
+                    {user ? (
+                      <Link to={`${base}/account`} className="text-sm font-medium hover:text-primary">My Account</Link>
+                    ) : (
+                      <Link to={`${base}/login`} className="text-sm font-medium hover:text-primary">Sign In</Link>
+                    )}
                   </nav>
                 </SheetContent>
               </Sheet>
@@ -44,7 +51,12 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 </Link>
               </nav>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <Link to={user ? `${base}/account` : `${base}/login`}>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
               <Link to={`${base}/cart`}>
                 <Button variant="ghost" size="icon" className="relative h-9 w-9">
                   <ShoppingBag className="h-5 w-5" />
@@ -60,12 +72,8 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
         </div>
       </header>
 
-      {/* Main */}
-      <main className="flex-1">
-        {children}
-      </main>
+      <main className="flex-1">{children}</main>
 
-      {/* Footer */}
       <footer className="border-t bg-muted/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-sm text-muted-foreground">
