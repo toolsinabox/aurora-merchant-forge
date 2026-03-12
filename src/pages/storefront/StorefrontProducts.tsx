@@ -6,12 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
 export default function StorefrontProducts() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { storeSlug, basePath } = useStoreSlug(paramSlug);
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -22,8 +24,8 @@ export default function StorefrontProducts() {
 
   useEffect(() => {
     async function load() {
-      const { data: stores } = await supabase.from("stores").select("*").limit(100);
-      const found = stores?.find((s: any) => s.name.toLowerCase().replace(/\s+/g, "-") === storeSlug) || stores?.[0];
+      if (!storeSlug) { setLoading(false); return; }
+      const found = await resolveStoreBySlug(storeSlug, supabase);
       if (!found) { setLoading(false); return; }
       setStore(found);
 
@@ -98,7 +100,7 @@ export default function StorefrontProducts() {
         {filtered.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map((p) => (
-              <Link key={p.id} to={`/store/${storeSlug}/product/${p.id}`} className="group">
+              <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
                 <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5">
                   {p.images?.[0] ? (
                     <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

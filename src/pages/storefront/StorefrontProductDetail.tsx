@@ -10,12 +10,14 @@ import { useCart } from "@/contexts/CartContext";
 import { ShoppingBag, Minus, Plus, Check } from "lucide-react";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { toast } from "sonner";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
 export default function StorefrontProductDetail() {
-  const { storeSlug, productId } = useParams();
+  const { storeSlug: paramSlug, productId } = useParams();
+  const { storeSlug } = useStoreSlug(paramSlug);
   const { addItem } = useCart();
   const [store, setStore] = useState<any>(null);
   const [product, setProduct] = useState<any>(null);
@@ -28,8 +30,8 @@ export default function StorefrontProductDetail() {
 
   useEffect(() => {
     async function load() {
-      const { data: stores } = await supabase.from("stores").select("*").limit(100);
-      const found = stores?.find((s: any) => s.name.toLowerCase().replace(/\s+/g, "-") === storeSlug) || stores?.[0];
+      if (!storeSlug) { setLoading(false); return; }
+      const found = await resolveStoreBySlug(storeSlug, supabase);
       if (found) setStore(found);
 
       if (productId) {

@@ -8,11 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 export default function StorefrontSignup() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { storeSlug, basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
-  const base = `/store/${storeSlug}`;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,10 +33,8 @@ export default function StorefrontSignup() {
     if (error) { toast.error(error.message); setLoading(false); return; }
 
     // Create a customer record linked to this user for the store
-    if (data.user) {
-      // Find the store
-      const { data: stores } = await supabase.from("stores").select("id").limit(100);
-      const store = stores?.find((s: any) => s.name?.toLowerCase().replace(/\s+/g, "-") === storeSlug) || stores?.[0];
+    if (data.user && storeSlug) {
+      const store = await resolveStoreBySlug(storeSlug, supabase);
       if (store) {
         await supabase.from("customers").insert({
           store_id: store.id,
@@ -47,7 +46,7 @@ export default function StorefrontSignup() {
     }
 
     toast.success("Account created! You're signed in.");
-    navigate(`${base}/account`);
+    navigate(`${basePath}/account`);
   };
 
   return (
@@ -78,7 +77,7 @@ export default function StorefrontSignup() {
             </form>
             <p className="text-center text-sm text-muted-foreground mt-4">
               Already have an account?{" "}
-              <Link to={`${base}/login`} className="text-primary hover:underline">Sign in</Link>
+              <Link to={`${basePath}/login`} className="text-primary hover:underline">Sign in</Link>
             </p>
           </CardContent>
         </Card>
