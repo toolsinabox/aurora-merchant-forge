@@ -29,6 +29,9 @@ import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
 import StorefrontCart from "./pages/storefront/StorefrontCart.tsx";
 import StorefrontCheckout from "./pages/storefront/StorefrontCheckout.tsx";
+import StorefrontLogin from "./pages/storefront/StorefrontLogin.tsx";
+import StorefrontSignup from "./pages/storefront/StorefrontSignup.tsx";
+import StorefrontAccount from "./pages/storefront/StorefrontAccount.tsx";
 
 const queryClient = new QueryClient();
 
