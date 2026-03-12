@@ -4,12 +4,34 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { Button } from "@/components/ui/button";
 import { useOrders } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, Download } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreateOrderDialog } from "@/components/orders/CreateOrderDialog";
+import { toast } from "sonner";
+
+function downloadCSV(data: any[], filename: string) {
+  if (data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  const csv = [
+    headers.join(","),
+    ...data.map((row) =>
+      headers.map((h) => {
+        const val = row[h];
+        const str = val === null || val === undefined ? "" : String(val);
+        return str.includes(",") || str.includes('"') || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
+      }).join(",")
+    ),
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function Orders() {
   const { data: orders = [], isLoading } = useOrders();
@@ -23,6 +45,26 @@ export default function Orders() {
     return matchSearch && matchStatus;
   });
 
+  const handleExport = () => {
+    const data = filtered.map((o: any) => ({
+      order_number: o.order_number,
+      customer: o.customers?.name || "",
+      email: o.customers?.email || "",
+      status: o.status,
+      payment_status: o.payment_status,
+      fulfillment_status: o.fulfillment_status,
+      items_count: o.items_count,
+      subtotal: o.subtotal,
+      discount: o.discount,
+      shipping: o.shipping,
+      tax: o.tax,
+      total: o.total,
+      date: o.created_at,
+    }));
+    downloadCSV(data, `orders-${new Date().toISOString().split("T")[0]}.csv`);
+    toast.success(`Exported ${data.length} orders`);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -31,7 +73,12 @@ export default function Orders() {
             <h1 className="text-lg font-semibold">Orders</h1>
             <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
           </div>
-          <CreateOrderDialog />
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
+              <Download className="h-3.5 w-3.5" /> Export
+            </Button>
+            <CreateOrderDialog />
+          </div>
         </div>
 
         <Card>

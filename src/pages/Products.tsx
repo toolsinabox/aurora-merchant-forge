@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,21 +7,69 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useProducts, useDeleteProducts } from "@/hooks/use-data";
-import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Archive, Eye } from "lucide-react";
+import { useProducts, useDeleteProducts, useUpdateProduct, useCategories } from "@/hooks/use-data";
+import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+function downloadCSV(data: any[], filename: string) {
+  if (data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  const csv = [
+    headers.join(","),
+    ...data.map((row) =>
+      headers.map((h) => {
+        const val = row[h];
+        const str = val === null || val === undefined ? "" : String(val);
+        return str.includes(",") || str.includes('"') || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
+      }).join(",")
+    ),
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseCSV(text: string): Record<string, string>[] {
+  const lines = text.split("\n").filter((l) => l.trim());
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
+  return lines.slice(1).map((line) => {
+    const values: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (const char of line) {
+      if (char === '"') { inQuotes = !inQuotes; }
+      else if (char === "," && !inQuotes) { values.push(current.trim()); current = ""; }
+      else { current += char; }
+    }
+    values.push(current.trim());
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => { obj[h] = values[i] || ""; });
+    return obj;
+  });
+}
 
 export default function Products() {
   const navigate = useNavigate();
   const { data: products = [], isLoading } = useProducts();
+  const { data: categories = [] } = useCategories();
   const deleteProducts = useDeleteProducts();
+  const updateProduct = useUpdateProduct();
+  const { currentStore } = useAuth();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selected, setSelected] = useState<string[]>([]);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = products.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || (p.sku || "").toLowerCase().includes(search.toLowerCase());
@@ -52,6 +100,63 @@ export default function Products() {
     }
   };
 
+  const handleBulkStatusChange = (status: string) => {
+    Promise.all(selected.map((id) => updateProduct.mutateAsync({ id, status }))).then(() => {
+      setSelected([]);
+      toast.success(`${selected.length} products updated to ${status}`);
+    });
+  };
+
+  const handleExport = () => {
+    const data = (selected.length > 0 ? products.filter((p) => selected.includes(p.id)) : products).map((p) => ({
+      title: p.title,
+      description: p.description || "",
+      sku: p.sku || "",
+      price: p.price,
+      compare_at_price: p.compare_at_price || "",
+      cost_price: p.cost_price || "",
+      status: p.status,
+      tags: (p.tags || []).join("; "),
+      barcode: p.barcode || "",
+    }));
+    downloadCSV(data, `products-${new Date().toISOString().split("T")[0]}.csv`);
+    toast.success(`Exported ${data.length} products`);
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentStore) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const rows = parseCSV(text);
+      if (rows.length === 0) { toast.error("No data found in CSV"); return; }
+
+      const products = rows.map((r) => ({
+        title: r.title || "Untitled",
+        description: r.description || null,
+        sku: r.sku || null,
+        price: parseFloat(r.price) || 0,
+        compare_at_price: r.compare_at_price ? parseFloat(r.compare_at_price) : null,
+        cost_price: r.cost_price ? parseFloat(r.cost_price) : null,
+        status: r.status || "draft",
+        tags: r.tags ? r.tags.split(";").map((t: string) => t.trim()) : [],
+        barcode: r.barcode || null,
+        store_id: currentStore.id,
+      }));
+
+      const { error } = await supabase.from("products").insert(products as any);
+      if (error) throw error;
+      toast.success(`Imported ${products.length} products`);
+      window.location.reload();
+    } catch (err: any) {
+      toast.error(err.message || "Import failed");
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -61,10 +166,11 @@ export default function Products() {
             <p className="text-xs text-muted-foreground">{products.length} products in catalog</p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
-              <Upload className="h-3.5 w-3.5" /> Import
+            <input type="file" ref={fileInputRef} accept=".csv" onChange={handleImport} className="hidden" />
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => fileInputRef.current?.click()} disabled={importing}>
+              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} Import
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1">
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/new")}>
@@ -92,9 +198,25 @@ export default function Products() {
               {selected.length > 0 && (
                 <div className="flex items-center gap-2 ml-2">
                   <span className="text-xs text-muted-foreground">{selected.length} selected</span>
-                  <Button variant="outline" size="sm" className="h-7 text-xs gap-1 text-destructive" onClick={handleBulkDelete}>
-                    <Trash2 className="h-3 w-3" /> Delete
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-7 text-xs">Bulk Actions</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="text-xs">Set Status</DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuItem className="text-xs" onClick={() => handleBulkStatusChange("active")}>Active</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs" onClick={() => handleBulkStatusChange("draft")}>Draft</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs" onClick={() => handleBulkStatusChange("archived")}>Archived</DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                      <DropdownMenuItem className="text-xs" onClick={handleExport}>Export Selected</DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs text-destructive" onClick={handleBulkDelete}>
+                        <Trash2 className="h-3 w-3 mr-1" /> Delete Selected
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               )}
             </div>
