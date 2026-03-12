@@ -24,6 +24,7 @@ import CustomerDetail from "./pages/CustomerDetail.tsx";
 import Marketing from "./pages/Marketing.tsx";
 import Analytics from "./pages/Analytics.tsx";
 import SettingsPage from "./pages/Settings.tsx";
+import Coupons from "./pages/Coupons.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
               <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
               <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
+              <Route path="/coupons" element={<RequireAuth><Coupons /></RequireAuth>} />
               <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
               <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
               {/* Public Storefront */}

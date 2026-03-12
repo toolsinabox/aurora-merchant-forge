@@ -10,7 +10,15 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Tag, X } from "lucide-react";
+
+interface AppliedCoupon {
+  id: string;
+  code: string;
+  discount_type: string;
+  discount_value: number;
+  discountAmount: number;
+}
 
 export default function StorefrontCheckout() {
   const { storeSlug } = useParams();
@@ -21,13 +29,17 @@ export default function StorefrontCheckout() {
   const [completed, setCompleted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
     address: "", city: "", zip: "", country: "",
     notes: "",
   });
 
-  // Pre-fill from logged-in customer
   useEffect(() => {
     if (!user) return;
     async function prefill() {
@@ -49,6 +61,59 @@ export default function StorefrontCheckout() {
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
+  const discountAmount = appliedCoupon?.discountAmount ?? 0;
+  const finalTotal = Math.max(0, totalPrice - discountAmount);
+
+  const applyCoupon = async () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    setCouponLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("code", code)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) { toast.error("Invalid coupon code"); return; }
+
+      const coupon = data as any;
+      if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+        toast.error("This coupon has expired"); return;
+      }
+      if (coupon.max_uses && coupon.used_count >= coupon.max_uses) {
+        toast.error("This coupon has reached its usage limit"); return;
+      }
+      if (coupon.min_order_amount && totalPrice < Number(coupon.min_order_amount)) {
+        toast.error(`Minimum order amount is $${Number(coupon.min_order_amount).toFixed(2)}`); return;
+      }
+
+      const amt = coupon.discount_type === "percentage"
+        ? totalPrice * (Number(coupon.discount_value) / 100)
+        : Math.min(Number(coupon.discount_value), totalPrice);
+
+      setAppliedCoupon({
+        id: coupon.id,
+        code: coupon.code,
+        discount_type: coupon.discount_type,
+        discount_value: Number(coupon.discount_value),
+        discountAmount: Math.round(amt * 100) / 100,
+      });
+      toast.success("Coupon applied!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to apply coupon");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
@@ -56,38 +121,26 @@ export default function StorefrontCheckout() {
 
     setSubmitting(true);
     try {
-      // Find store
       const { data: stores } = await supabase.from("stores").select("id").limit(100);
-      const found = stores?.find((s: any) => true); // simplified - gets first store
+      const found = stores?.find((s: any) => true);
       if (!found) throw new Error("Store not found");
 
       const storeId = found.id;
       const orderNum = `ORD-${Date.now().toString(36).toUpperCase()}`;
       const shippingAddr = `${form.address}, ${form.city} ${form.zip}, ${form.country}`;
-      const subtotal = totalPrice;
 
-      // Find customer by user_id (if logged in) or email
       let customerId: string | null = null;
       if (user) {
         const { data: userCust } = await supabase
-          .from("customers")
-          .select("id")
-          .eq("user_id", user.id)
-          .eq("store_id", storeId)
-          .maybeSingle();
+          .from("customers").select("id").eq("user_id", user.id).eq("store_id", storeId).maybeSingle();
         if (userCust) customerId = userCust.id;
       }
       if (!customerId) {
         const { data: emailCust } = await supabase
-          .from("customers")
-          .select("id")
-          .eq("store_id", storeId)
-          .eq("email", form.email)
-          .maybeSingle();
+          .from("customers").select("id").eq("store_id", storeId).eq("email", form.email).maybeSingle();
         if (emailCust) customerId = emailCust.id;
       }
 
-      // Create order
       const { data: order, error: orderErr } = await supabase
         .from("orders")
         .insert({
@@ -95,19 +148,20 @@ export default function StorefrontCheckout() {
           order_number: orderNum,
           customer_id: customerId,
           items_count: items.reduce((s, i) => s + i.quantity, 0),
-          subtotal,
-          total: subtotal,
+          subtotal: totalPrice,
+          discount: discountAmount,
+          total: finalTotal,
           status: "pending",
           payment_status: "pending",
           notes: form.notes || null,
           shipping_address: shippingAddr,
+          coupon_id: appliedCoupon?.id || null,
         } as any)
         .select()
         .single();
 
       if (orderErr) throw orderErr;
 
-      // Create order items
       const orderItems = items.map((item) => ({
         order_id: order.id,
         store_id: storeId,
@@ -122,6 +176,14 @@ export default function StorefrontCheckout() {
 
       const { error: itemsErr } = await supabase.from("order_items").insert(orderItems);
       if (itemsErr) throw itemsErr;
+
+      // Increment coupon used_count
+      if (appliedCoupon) {
+        const { data: couponData } = await supabase.from("coupons").select("used_count").eq("id", appliedCoupon.id).single();
+        if (couponData) {
+          await supabase.from("coupons").update({ used_count: (couponData as any).used_count + 1 } as any).eq("id", appliedCoupon.id);
+        }
+      }
 
       setOrderNumber(orderNum);
       setCompleted(true);
@@ -227,10 +289,55 @@ export default function StorefrontCheckout() {
                     </div>
                   ))}
                 </div>
+
                 <Separator />
+
+                {/* Coupon */}
+                {appliedCoupon ? (
+                  <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Tag className="h-3.5 w-3.5 text-primary" />
+                      <span className="font-mono font-medium text-xs">{appliedCoupon.code}</span>
+                      <span className="text-muted-foreground">
+                        (-{appliedCoupon.discount_type === "percentage" ? `${appliedCoupon.discount_value}%` : `$${appliedCoupon.discount_value.toFixed(2)}`})
+                      </span>
+                    </div>
+                    <button type="button" onClick={removeCoupon} className="text-muted-foreground hover:text-destructive">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="h-9 uppercase text-xs font-mono"
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyCoupon())}
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={applyCoupon} disabled={couponLoading} className="h-9 px-3 shrink-0">
+                      {couponLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Apply"}
+                    </Button>
+                  </div>
+                )}
+
+                <Separator />
+
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span>${totalPrice.toFixed(2)}</span>
+                  </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span>Discount</span>
+                      <span>-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
-                  <span>${totalPrice.toFixed(2)}</span>
+                  <span>${finalTotal.toFixed(2)}</span>
                 </div>
                 <Button type="submit" className="w-full h-11" disabled={submitting}>
                   {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Placing Order...</> : "Place Order"}
