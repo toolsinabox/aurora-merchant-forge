@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          store_id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          store_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          store_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -831,6 +872,74 @@ export type Database = {
             foreignKeyName: "stock_adjustments_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_themes: {
+        Row: {
+          accent_color: string | null
+          background_color: string | null
+          body_font: string | null
+          button_radius: string | null
+          created_at: string
+          custom_css: string | null
+          footer_style: string | null
+          heading_font: string | null
+          hero_style: string | null
+          id: string
+          layout_style: string | null
+          primary_color: string | null
+          product_card_style: string | null
+          secondary_color: string | null
+          store_id: string
+          text_color: string | null
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string | null
+          background_color?: string | null
+          body_font?: string | null
+          button_radius?: string | null
+          created_at?: string
+          custom_css?: string | null
+          footer_style?: string | null
+          heading_font?: string | null
+          hero_style?: string | null
+          id?: string
+          layout_style?: string | null
+          primary_color?: string | null
+          product_card_style?: string | null
+          secondary_color?: string | null
+          store_id: string
+          text_color?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string | null
+          background_color?: string | null
+          body_font?: string | null
+          button_radius?: string | null
+          created_at?: string
+          custom_css?: string | null
+          footer_style?: string | null
+          heading_font?: string | null
+          hero_style?: string | null
+          id?: string
+          layout_style?: string | null
+          primary_color?: string | null
+          product_card_style?: string | null
+          secondary_color?: string | null
+          store_id?: string
+          text_color?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_themes_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: true
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },

@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
+import { CompareProvider } from "@/contexts/CompareContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { getSubdomainSlug } from "@/lib/subdomain";
 import NotFound from "./pages/NotFound.tsx";
@@ -31,6 +32,7 @@ import Returns from "./pages/Returns.tsx";
 import Reviews from "./pages/Reviews.tsx";
 import Merchants from "./pages/Merchants.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
+import ActivityLog from "./pages/ActivityLog.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
@@ -39,7 +41,7 @@ import StorefrontCheckout from "./pages/storefront/StorefrontCheckout.tsx";
 import StorefrontLogin from "./pages/storefront/StorefrontLogin.tsx";
 import StorefrontSignup from "./pages/storefront/StorefrontSignup.tsx";
 import StorefrontAccount from "./pages/storefront/StorefrontAccount.tsx";
-
+import StorefrontCompare from "./pages/storefront/StorefrontCompare.tsx";
 const queryClient = new QueryClient();
 
 // Check if we're on a store subdomain
@@ -54,6 +56,7 @@ const App = () => (
         <AuthProvider>
           <CartProvider>
           <WishlistProvider>
+          <CompareProvider>
             <Routes>
               {isSubdomainMode ? (
                 <>
@@ -61,9 +64,10 @@ const App = () => (
                   <Route path="/" element={<StorefrontHome />} />
                   <Route path="/products" element={<StorefrontProducts />} />
                   <Route path="/product/:productId" element={<StorefrontProductDetail />} />
-                  <Route path="/cart" element={<StorefrontCart />} />
-                  <Route path="/checkout" element={<StorefrontCheckout />} />
-                  <Route path="/login" element={<StorefrontLogin />} />
+                   <Route path="/cart" element={<StorefrontCart />} />
+                   <Route path="/compare" element={<StorefrontCompare />} />
+                   <Route path="/checkout" element={<StorefrontCheckout />} />
+                   <Route path="/login" element={<StorefrontLogin />} />
                   <Route path="/signup" element={<StorefrontSignup />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="*" element={<NotFound />} />
@@ -93,12 +97,14 @@ const App = () => (
                   <Route path="/reviews" element={<RequireAuth><Reviews /></RequireAuth>} />
                   <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
                   <Route path="/merchants" element={<RequireAuth><Merchants /></RequireAuth>} />
+                  <Route path="/activity-log" element={<RequireAuth><ActivityLog /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
                   <Route path="/store/:storeSlug/products" element={<StorefrontProducts />} />
                   <Route path="/store/:storeSlug/product/:productId" element={<StorefrontProductDetail />} />
                   <Route path="/store/:storeSlug/cart" element={<StorefrontCart />} />
+                  <Route path="/store/:storeSlug/compare" element={<StorefrontCompare />} />
                   <Route path="/store/:storeSlug/checkout" element={<StorefrontCheckout />} />
                   <Route path="/store/:storeSlug/login" element={<StorefrontLogin />} />
                   <Route path="/store/:storeSlug/signup" element={<StorefrontSignup />} />
@@ -107,6 +113,7 @@ const App = () => (
                 </>
               )}
             </Routes>
+          </CompareProvider>
           </WishlistProvider>
           </CartProvider>
         </AuthProvider>

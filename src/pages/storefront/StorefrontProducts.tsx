@@ -3,10 +3,12 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search } from "lucide-react";
+import { Search, GitCompareArrows } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useCompare } from "@/contexts/CompareContext";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -14,6 +16,7 @@ const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPAB
 export default function StorefrontProducts() {
   const { storeSlug: paramSlug } = useParams();
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
+  const { items: compareItems, addItem: addCompare, removeItem: removeCompare, isComparing } = useCompare();
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -96,25 +99,57 @@ export default function StorefrontProducts() {
           </Select>
         </div>
 
+        {/* Compare bar */}
+        {compareItems.length > 0 && (
+          <div className="mb-6 p-3 rounded-lg border bg-card flex items-center justify-between">
+            <p className="text-sm font-medium">{compareItems.length} product{compareItems.length > 1 ? "s" : ""} selected for comparison</p>
+            <Link to={`${basePath}/compare`}>
+              <Button size="sm" className="gap-1.5"><GitCompareArrows className="h-4 w-4" /> Compare Now</Button>
+            </Link>
+          </div>
+        )}
+
         {/* Grid */}
         {filtered.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filtered.map((p) => (
-              <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
-                <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5">
-                  {p.images?.[0] ? (
-                    <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
-                  )}
+            {filtered.map((p) => {
+              const comparing = isComparing(p.id);
+              return (
+                <div key={p.id} className="group relative">
+                  <Link to={`${basePath}/product/${p.id}`}>
+                    <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5">
+                      {p.images?.[0] ? (
+                        <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
+                    <p className="text-sm font-semibold mt-0.5">${Number(p.price).toFixed(2)}</p>
+                    {p.compare_at_price && p.compare_at_price > p.price && (
+                      <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
+                    )}
+                  </Link>
+                  <Button
+                    variant={comparing ? "default" : "outline"}
+                    size="sm"
+                    className="absolute top-2 right-2 h-7 text-2xs gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => comparing ? removeCompare(p.id) : addCompare({
+                      id: p.id,
+                      title: p.title,
+                      price: p.price,
+                      compare_at_price: p.compare_at_price,
+                      images: p.images,
+                      description: p.description,
+                      sku: p.sku,
+                    })}
+                  >
+                    <GitCompareArrows className="h-3 w-3" />
+                    {comparing ? "Remove" : "Compare"}
+                  </Button>
                 </div>
-                <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
-                <p className="text-sm font-semibold mt-0.5">${Number(p.price).toFixed(2)}</p>
-                {p.compare_at_price && p.compare_at_price > p.price && (
-                  <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
-                )}
-              </Link>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-16 text-muted-foreground">
