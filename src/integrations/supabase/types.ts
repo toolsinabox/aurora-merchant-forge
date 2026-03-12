@@ -290,11 +290,14 @@ export type Database = {
         Row: {
           created_at: string
           customer_id: string | null
+          fulfillment_status: string
           id: string
           items_count: number
+          notes: string | null
           order_number: string
           payment_status: string
           shipping: number
+          shipping_address: string | null
           status: string
           store_id: string
           subtotal: number
@@ -305,11 +308,14 @@ export type Database = {
         Insert: {
           created_at?: string
           customer_id?: string | null
+          fulfillment_status?: string
           id?: string
           items_count?: number
+          notes?: string | null
           order_number: string
           payment_status?: string
           shipping?: number
+          shipping_address?: string | null
           status?: string
           store_id: string
           subtotal?: number
@@ -320,11 +326,14 @@ export type Database = {
         Update: {
           created_at?: string
           customer_id?: string | null
+          fulfillment_status?: string
           id?: string
           items_count?: number
+          notes?: string | null
           order_number?: string
           payment_status?: string
           shipping?: number
+          shipping_address?: string | null
           status?: string
           store_id?: string
           subtotal?: number
