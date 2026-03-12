@@ -7,20 +7,40 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Store, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { user, setCurrentStore } = useAuth();
   const [form, setForm] = useState({ storeName: "", currency: "USD", timezone: "America/New_York" });
   const [loading, setLoading] = useState(false);
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+
+    const { data, error } = await supabase
+      .from("stores")
+      .insert({
+        owner_id: user.id,
+        name: form.storeName,
+        currency: form.currency,
+        timezone: form.timezone,
+        contact_email: user.email,
+      })
+      .select()
+      .single();
+
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setCurrentStore({ id: data.id, name: data.name, currency: data.currency, timezone: data.timezone });
       toast.success("Store created! Welcome to Commerce Cloud.");
       navigate("/dashboard");
-    }, 1000);
+    }
   };
 
   return (

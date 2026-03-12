@@ -6,15 +6,26 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Store, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
-    toast.success("Reset link sent to your email");
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setSent(true);
+      toast.success("Reset link sent to your email");
+    }
   };
 
   return (
@@ -36,7 +47,9 @@ export default function ForgotPassword() {
                 <Label className="text-xs">Email</Label>
                 <Input className="h-9 text-xs" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="admin@store.com" required />
               </div>
-              <Button className="w-full h-9 text-xs" type="submit">Send Reset Link</Button>
+              <Button className="w-full h-9 text-xs" type="submit" disabled={loading}>
+                {loading ? "Sending..." : "Send Reset Link"}
+              </Button>
             </form>
           ) : (
             <div className="text-center space-y-3">

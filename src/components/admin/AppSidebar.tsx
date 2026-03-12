@@ -12,7 +12,7 @@ import {
 import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { mockStore } from "@/lib/mock-data";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mainNav = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -88,6 +88,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const currentPath = location.pathname;
+  const { currentStore } = useAuth();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -99,7 +100,7 @@ export function AppSidebar() {
           {!collapsed && (
             <div className="flex flex-col min-w-0">
               <span className="text-sm font-semibold text-sidebar-foreground truncate">
-                {mockStore.name}
+                {currentStore?.name || "Commerce Cloud"}
               </span>
               <span className="text-2xs text-sidebar-foreground/50">Commerce Cloud</span>
             </div>

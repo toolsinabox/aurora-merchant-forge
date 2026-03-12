@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Store } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -13,14 +14,22 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success("Logged in successfully");
-      navigate("/dashboard");
-    }, 800);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      // Check if user has a store
+      const { data: stores } = await supabase.from("stores").select("id").limit(1);
+      if (stores && stores.length > 0) {
+        navigate("/dashboard");
+      } else {
+        navigate("/onboarding");
+      }
+    }
   };
 
   return (
