@@ -157,7 +157,50 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="team" className="space-y-3">
+          <TabsContent value="branding" className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Store Branding</CardTitle></CardHeader>
+              <CardContent className="p-4 pt-2 space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Primary Color</Label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={brandForm.primary_color}
+                        onChange={(e) => setBrandForm({ ...brandForm, primary_color: e.target.value })}
+                        className="h-8 w-12 rounded border cursor-pointer"
+                      />
+                      <Input className="h-8 text-xs flex-1" value={brandForm.primary_color} onChange={(e) => setBrandForm({ ...brandForm, primary_color: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Logo URL</Label>
+                    <Input className="h-8 text-xs" value={brandForm.logo_url} onChange={(e) => setBrandForm({ ...brandForm, logo_url: e.target.value })} placeholder="https://..." />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Banner Text</Label>
+                  <Input className="h-8 text-xs" value={brandForm.banner_text} onChange={(e) => setBrandForm({ ...brandForm, banner_text: e.target.value })} placeholder="Free shipping on orders over $50!" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Store Description</Label>
+                  <Input className="h-8 text-xs" value={brandForm.description} onChange={(e) => setBrandForm({ ...brandForm, description: e.target.value })} placeholder="A short description of your store..." />
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
+                  <div className="h-10 w-10 rounded-lg" style={{ backgroundColor: brandForm.primary_color }} />
+                  <div>
+                    <p className="text-xs font-medium">Preview</p>
+                    <p className="text-2xs text-muted-foreground">This color will be used as your store's accent color</p>
+                  </div>
+                </div>
+                <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSaveBranding} disabled={brandSaving}>
+                  <Palette className="h-3.5 w-3.5" /> {brandSaving ? "Saving..." : "Save Branding"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
             <Card>
               <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                 <CardTitle className="text-sm">Team Members</CardTitle>
