@@ -76,6 +76,7 @@ export type Database = {
           total_orders: number
           total_spent: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -90,6 +91,7 @@ export type Database = {
           total_orders?: number
           total_spent?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -104,6 +106,7 @@ export type Database = {
           total_orders?: number
           total_spent?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -724,6 +727,10 @@ export type Database = {
           _store_id: string
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_customer_owner: {
+        Args: { _customer_id: string; _user_id: string }
         Returns: boolean
       }
     }

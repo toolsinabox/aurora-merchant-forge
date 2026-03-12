@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Check, Loader2 } from "lucide-react";
@@ -15,6 +16,7 @@ export default function StorefrontCheckout() {
   const { storeSlug } = useParams();
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
+  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
@@ -24,6 +26,26 @@ export default function StorefrontCheckout() {
     address: "", city: "", zip: "", country: "",
     notes: "",
   });
+
+  // Pre-fill from logged-in customer
+  useEffect(() => {
+    if (!user) return;
+    async function prefill() {
+      const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
+      const c = custs?.[0];
+      if (c) {
+        setForm((prev) => ({
+          ...prev,
+          name: c.name || prev.name,
+          email: c.email || user!.email || prev.email,
+          phone: c.phone || prev.phone,
+        }));
+      } else {
+        setForm((prev) => ({ ...prev, email: user!.email || prev.email }));
+      }
+    }
+    prefill();
+  }, [user]);
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -44,19 +66,26 @@ export default function StorefrontCheckout() {
       const shippingAddr = `${form.address}, ${form.city} ${form.zip}, ${form.country}`;
       const subtotal = totalPrice;
 
-      // Check if customer exists or create
+      // Find customer by user_id (if logged in) or email
       let customerId: string | null = null;
-      const { data: existingCustomer } = await supabase
-        .from("customers")
-        .select("id")
-        .eq("store_id", storeId)
-        .eq("email", form.email)
-        .maybeSingle();
-
-      if (existingCustomer) {
-        customerId = existingCustomer.id;
+      if (user) {
+        const { data: userCust } = await supabase
+          .from("customers")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("store_id", storeId)
+          .maybeSingle();
+        if (userCust) customerId = userCust.id;
       }
-      // Note: Can't create customer without store role, that's OK - order can be without customer
+      if (!customerId) {
+        const { data: emailCust } = await supabase
+          .from("customers")
+          .select("id")
+          .eq("store_id", storeId)
+          .eq("email", form.email)
+          .maybeSingle();
+        if (emailCust) customerId = emailCust.id;
+      }
 
       // Create order
       const { data: order, error: orderErr } = await supabase
