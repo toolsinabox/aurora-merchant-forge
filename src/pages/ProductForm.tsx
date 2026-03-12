@@ -22,9 +22,11 @@ export default function ProductForm() {
   const isEdit = !!id && id !== "new";
   const { data: existing, isLoading } = useProduct(isEdit ? id : undefined);
   const { data: categories = [] } = useCategories();
+  const { currentStore } = useAuth();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteVariant = useDeleteVariant();
+  const [productImages, setProductImages] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     title: "", description: "", sku: "", barcode: "",
