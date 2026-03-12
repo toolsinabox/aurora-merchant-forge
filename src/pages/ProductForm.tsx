@@ -82,6 +82,7 @@ export default function ProductForm() {
       seo_description: form.seo_description || undefined,
       slug: form.slug || undefined,
       track_inventory: form.track_inventory,
+      images: productImages,
     };
 
     if (isEdit) {
