@@ -69,7 +69,7 @@ const App = () => (
               ) : (
                 <>
                   {/* Platform mode: admin + path-based storefronts */}
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/" element={<LandingPage />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
