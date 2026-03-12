@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
@@ -23,6 +24,11 @@ import CustomerDetail from "./pages/CustomerDetail.tsx";
 import Marketing from "./pages/Marketing.tsx";
 import Analytics from "./pages/Analytics.tsx";
 import SettingsPage from "./pages/Settings.tsx";
+import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
+import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
+import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
+import StorefrontCart from "./pages/storefront/StorefrontCart.tsx";
+import StorefrontCheckout from "./pages/storefront/StorefrontCheckout.tsx";
 
 const queryClient = new QueryClient();
 
@@ -33,28 +39,36 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
-            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-            <Route path="/products" element={<RequireAuth><Products /></RequireAuth>} />
-            <Route path="/products/new" element={<RequireAuth><ProductForm /></RequireAuth>} />
-            <Route path="/products/:id" element={<RequireAuth><ProductForm /></RequireAuth>} />
-            <Route path="/categories" element={<RequireAuth><Categories /></RequireAuth>} />
-            <Route path="/inventory" element={<RequireAuth><Inventory /></RequireAuth>} />
-            <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
-            <Route path="/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
-            <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
-            <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
-            <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
-            <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
-            <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <CartProvider>
+            <Routes>
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
+              <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+              <Route path="/products" element={<RequireAuth><Products /></RequireAuth>} />
+              <Route path="/products/new" element={<RequireAuth><ProductForm /></RequireAuth>} />
+              <Route path="/products/:id" element={<RequireAuth><ProductForm /></RequireAuth>} />
+              <Route path="/categories" element={<RequireAuth><Categories /></RequireAuth>} />
+              <Route path="/inventory" element={<RequireAuth><Inventory /></RequireAuth>} />
+              <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
+              <Route path="/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
+              <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
+              <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
+              <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
+              <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
+              <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+              {/* Public Storefront */}
+              <Route path="/store/:storeSlug" element={<StorefrontHome />} />
+              <Route path="/store/:storeSlug/products" element={<StorefrontProducts />} />
+              <Route path="/store/:storeSlug/product/:productId" element={<StorefrontProductDetail />} />
+              <Route path="/store/:storeSlug/cart" element={<StorefrontCart />} />
+              <Route path="/store/:storeSlug/checkout" element={<StorefrontCheckout />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
