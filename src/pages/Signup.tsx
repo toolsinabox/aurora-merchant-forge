@@ -16,7 +16,7 @@ export default function Signup() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
       options: {
@@ -27,9 +27,11 @@ export default function Signup() {
     setLoading(false);
     if (error) {
       toast.error(error.message);
-    } else {
+    } else if (data.session) {
       toast.success("Account created! Set up your store.");
       navigate("/onboarding");
+    } else {
+      toast.info("Check your email to confirm your account before signing in.");
     }
   };
 

@@ -78,15 +78,23 @@ export default function Onboarding() {
 
     setLoading(true);
 
+    // Ensure we have a fresh session token
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast.error("Session expired. Please log in again.");
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await supabase
       .from("stores")
       .insert({
-        owner_id: user.id,
+        owner_id: session.user.id,
         name: form.storeName,
         slug: form.slug,
         currency: form.currency,
         timezone: form.timezone,
-        contact_email: user.email,
+        contact_email: session.user.email,
       })
       .select()
       .single();
