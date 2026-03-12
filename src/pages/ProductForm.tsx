@@ -55,7 +55,7 @@ export default function ProductForm() {
         slug: existing.slug || "",
         track_inventory: existing.track_inventory ?? true,
       });
-    }
+      setProductImages(existing.images || []);
   }, [existing]);
 
   const update = (field: string, value: string) => {
