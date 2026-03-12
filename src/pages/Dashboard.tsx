@@ -355,21 +355,78 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Customer + Low Stock summary row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Card>
+            {/* Customer Growth + Order Status */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Customers</CardTitle>
+                  <CardTitle className="text-sm font-medium">Customer Growth (30 Days)</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/customers")}>
                     View all <ArrowRight className="h-3 w-3" />
                   </Button>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  {loadingCustomers ? <Skeleton className="h-[200px] w-full" /> : (
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={customerGrowthData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+                        <XAxis dataKey="date" tick={{ fontSize: 9 }} stroke="hsl(var(--muted-foreground))" interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+                        <Line type="monotone" dataKey="customers" stroke="hsl(var(--success))" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-sm font-medium">Order Status</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 flex items-center justify-center">
+                  {loadingOrders ? <Skeleton className="h-[200px] w-full" /> : statusBreakdown.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-6">No orders yet</p>
+                  ) : (
+                    <div className="w-full">
+                      <ResponsiveContainer width="100%" height={160}>
+                        <PieChart>
+                          <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={2} dataKey="value">
+                            {statusBreakdown.map((_, idx) => (
+                              <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center mt-2">
+                        {statusBreakdown.map((s, idx) => (
+                          <div key={s.name} className="flex items-center gap-1.5 text-xs">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                            <span className="capitalize text-muted-foreground">{s.name}</span>
+                            <span className="font-medium">{s.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Inventory Alerts */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Users className="h-4 w-4" /> Customers
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-2">
                   {loadingCustomers ? <Skeleton className="h-16 w-full" /> : (
                     <div className="flex items-center gap-6">
                       <div>
                         <p className="text-2xl font-bold">{customers.length}</p>
-                        <p className="text-xs text-muted-foreground">Total customers</p>
+                        <p className="text-xs text-muted-foreground">Total</p>
                       </div>
                       <div>
                         <p className="text-2xl font-bold">{customers.filter((c: any) => c.segment === "new").length}</p>
