@@ -62,6 +62,7 @@ const App = () => (
               <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
               <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
               <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
+              <Route path="/coupons" element={<RequireAuth><Coupons /></RequireAuth>} />
               <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
               <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
               {/* Public Storefront */}

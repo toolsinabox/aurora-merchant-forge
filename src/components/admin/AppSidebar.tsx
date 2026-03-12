@@ -31,6 +31,7 @@ const salesNav = [
 
 const marketingNav = [
   { title: "Campaigns", url: "/marketing", icon: Megaphone },
+  { title: "Discounts", url: "/coupons", icon: Ticket },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
