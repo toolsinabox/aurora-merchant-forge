@@ -433,6 +433,73 @@ export type Database = {
           },
         ]
       }
+      product_reviews: {
+        Row: {
+          author_name: string
+          body: string | null
+          created_at: string
+          customer_id: string | null
+          id: string
+          is_approved: boolean
+          product_id: string
+          rating: number
+          store_id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author_name?: string
+          body?: string | null
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          is_approved?: boolean
+          product_id: string
+          rating: number
+          store_id: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          body?: string | null
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          is_approved?: boolean
+          product_id?: string
+          rating?: number
+          store_id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_reviews_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_reviews_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_variants: {
         Row: {
           created_at: string
