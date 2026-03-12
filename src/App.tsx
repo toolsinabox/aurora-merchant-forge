@@ -107,6 +107,7 @@ const App = () => (
                 </>
               )}
             </Routes>
+          </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </BrowserRouter>
