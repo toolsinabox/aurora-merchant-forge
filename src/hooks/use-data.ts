@@ -46,17 +46,11 @@ export function useCreateProduct() {
   const qc = useQueryClient();
   const { currentStore } = useAuth();
   return useMutation({
-    mutationFn: async (product: {
-      title: string; description?: string; sku?: string; barcode?: string;
-      price: number; compare_at_price?: number | null; cost_price?: number | null;
-      status: string; category_id?: string | null; tags?: string[];
-      seo_title?: string; seo_description?: string; slug?: string;
-      track_inventory?: boolean;
-    }) => {
+    mutationFn: async (product: any) => {
       if (!currentStore) throw new Error("No store selected");
       const { data, error } = await supabase
         .from("products")
-        .insert({ ...product, store_id: currentStore.id })
+        .insert({ ...product, store_id: currentStore.id } as any)
         .select()
         .single();
       if (error) throw error;
@@ -76,7 +70,7 @@ export function useUpdateProduct() {
     mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
       const { data, error } = await supabase
         .from("products")
-        .update(updates)
+        .update(updates as any)
         .eq("id", id)
         .select()
         .single();
@@ -102,6 +96,269 @@ export function useDeleteProducts() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["products"] });
       toast.success("Products deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== PRODUCT SHIPPING =====================
+
+export function useProductShipping(productId: string | undefined) {
+  return useQuery({
+    queryKey: ["product_shipping", productId],
+    queryFn: async () => {
+      if (!productId) return null;
+      const { data, error } = await supabase
+        .from("product_shipping" as any)
+        .select("*")
+        .eq("product_id", productId)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!productId,
+  });
+}
+
+export function useUpsertProductShipping() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (shipping: any) => {
+      const { data, error } = await supabase
+        .from("product_shipping" as any)
+        .upsert(shipping, { onConflict: "product_id" })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["product_shipping", vars.product_id] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== PRODUCT SPECIFICS =====================
+
+export function useProductSpecifics(productId: string | undefined) {
+  return useQuery({
+    queryKey: ["product_specifics", productId],
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_specifics" as any)
+        .select("*")
+        .eq("product_id", productId)
+        .order("sort_order");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!productId,
+  });
+}
+
+export function useCreateProductSpecific() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (spec: { product_id: string; name: string; value: string; sort_order?: number }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("product_specifics" as any)
+        .insert({ ...spec, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["product_specifics", vars.product_id] });
+      toast.success("Specific added");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteProductSpecific() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, productId }: { id: string; productId: string }) => {
+      const { error } = await supabase.from("product_specifics" as any).delete().eq("id", id);
+      if (error) throw error;
+      return productId;
+    },
+    onSuccess: (productId) => {
+      qc.invalidateQueries({ queryKey: ["product_specifics", productId] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== PRODUCT PRICING TIERS =====================
+
+export function useProductPricingTiers(productId: string | undefined) {
+  return useQuery({
+    queryKey: ["product_pricing_tiers", productId],
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_pricing_tiers" as any)
+        .select("*")
+        .eq("product_id", productId)
+        .order("min_quantity");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!productId,
+  });
+}
+
+export function useCreatePricingTier() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (tier: { product_id: string; tier_name: string; min_quantity: number; price: number; user_group?: string | null }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("product_pricing_tiers" as any)
+        .insert({ ...tier, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["product_pricing_tiers", vars.product_id] });
+      toast.success("Pricing tier added");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeletePricingTier() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, productId }: { id: string; productId: string }) => {
+      const { error } = await supabase.from("product_pricing_tiers" as any).delete().eq("id", id);
+      if (error) throw error;
+      return productId;
+    },
+    onSuccess: (productId) => {
+      qc.invalidateQueries({ queryKey: ["product_pricing_tiers", productId] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== PRODUCT RELATIONS =====================
+
+export function useProductRelations(productId: string | undefined) {
+  return useQuery({
+    queryKey: ["product_relations", productId],
+    queryFn: async () => {
+      if (!productId) return [];
+      const { data, error } = await supabase
+        .from("product_relations" as any)
+        .select("*, related_product:related_product_id(title)")
+        .eq("product_id", productId)
+        .order("sort_order");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!productId,
+  });
+}
+
+export function useCreateProductRelation() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (rel: { product_id: string; related_product_id: string; relation_type: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("product_relations" as any)
+        .insert({ ...rel, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["product_relations", vars.product_id] });
+      toast.success("Relation added");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteProductRelation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, productId }: { id: string; productId: string }) => {
+      const { error } = await supabase.from("product_relations" as any).delete().eq("id", id);
+      if (error) throw error;
+      return productId;
+    },
+    onSuccess: (productId) => {
+      qc.invalidateQueries({ queryKey: ["product_relations", productId] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== IMPORT TEMPLATES =====================
+
+export function useImportTemplates() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["import_templates", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("import_templates" as any)
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateImportTemplate() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (tmpl: { name: string; entity_type: string; field_mappings: any; static_values?: any }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("import_templates" as any)
+        .insert({ ...tmpl, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["import_templates"] });
+      toast.success("Template saved");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteImportTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("import_templates" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["import_templates"] });
+      toast.success("Template deleted");
     },
     onError: (e) => toast.error(e.message),
   });
@@ -344,7 +601,6 @@ export function useDeleteOrder() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      // Delete items first, then order
       await supabase.from("order_items").delete().eq("order_id", id);
       const { error } = await supabase.from("orders").delete().eq("id", id);
       if (error) throw error;
@@ -650,7 +906,6 @@ export function useCreateStockAdjustment() {
         .select()
         .single();
       if (error) throw error;
-      // Update the inventory_stock quantity
       const { data: stock } = await supabase
         .from("inventory_stock")
         .select("quantity")
