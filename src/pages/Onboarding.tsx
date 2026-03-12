@@ -86,7 +86,9 @@ export default function Onboarding() {
       return;
     }
 
-    const { data, error } = await supabase
+    // Insert without .select() to avoid SELECT RLS conflict
+    // (the handle_new_store trigger hasn't added user_roles yet when RETURNING runs)
+    const { error } = await supabase
       .from("stores")
       .insert({
         owner_id: session.user.id,
@@ -95,22 +97,36 @@ export default function Onboarding() {
         currency: form.currency,
         timezone: form.timezone,
         contact_email: session.user.email,
-      })
-      .select()
-      .single();
+      });
 
-    setLoading(false);
     if (error) {
+      setLoading(false);
       if (error.message.includes("duplicate") || error.message.includes("unique")) {
         toast.error("That subdomain is already taken. Please choose another.");
         setSlugStatus("taken");
       } else {
         toast.error(error.message);
       }
-    } else {
-      setCurrentStore({ id: data.id, name: data.name, currency: data.currency, timezone: data.timezone });
+      return;
+    }
+
+    // Small delay to let the trigger create user_roles, then fetch the store
+    await new Promise((r) => setTimeout(r, 500));
+
+    const { data: store } = await supabase
+      .from("stores")
+      .select("id, name, currency, timezone")
+      .eq("slug", form.slug)
+      .single();
+
+    setLoading(false);
+    if (store) {
+      setCurrentStore({ id: store.id, name: store.name, currency: store.currency, timezone: store.timezone });
       toast.success("Store created! Welcome to Commerce Cloud.");
       navigate("/dashboard");
+    } else {
+      toast.error("Store created but couldn't load it. Please log in again.");
+      navigate("/login");
     }
   };
 
