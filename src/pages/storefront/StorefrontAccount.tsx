@@ -183,7 +183,7 @@ export default function StorefrontAccount() {
                 ) : orders.length === 0 ? (
                   <div className="p-6 text-center">
                     <p className="text-muted-foreground text-sm mb-3">No orders yet.</p>
-                    <Link to={`${base}/products`}>
+                    <Link to={`${basePath}/products`}>
                       <Button size="sm">Start Shopping</Button>
                     </Link>
                   </div>
