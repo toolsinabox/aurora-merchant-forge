@@ -56,6 +56,7 @@ const App = () => (
         <AuthProvider>
           <CartProvider>
           <WishlistProvider>
+          <CompareProvider>
             <Routes>
               {isSubdomainMode ? (
                 <>
