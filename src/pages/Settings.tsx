@@ -13,7 +13,9 @@ import {
   useUpdateStore, useTaxRates, useCreateTaxRate, useDeleteTaxRate,
   useShippingZones, useCreateShippingZone, useDeleteShippingZone, useTeamMembers,
 } from "@/hooks/use-data";
-import { Save, Plus, Trash2, Mail } from "lucide-react";
+import { Save, Plus, Trash2, Mail, Palette } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
