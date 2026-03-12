@@ -1,0 +1,482 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+
+// ===================== PRODUCTS =====================
+
+export function useProducts() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["products", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("products")
+        .select("*, product_variants(*)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useProduct(id: string | undefined) {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["product", id],
+    queryFn: async () => {
+      if (!id || !currentStore) return null;
+      const { data, error } = await supabase
+        .from("products")
+        .select("*, product_variants(*)")
+        .eq("id", id)
+        .eq("store_id", currentStore.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && id !== "new" && !!currentStore,
+  });
+}
+
+export function useCreateProduct() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (product: {
+      title: string; description?: string; sku?: string; barcode?: string;
+      price: number; compare_at_price?: number | null; cost_price?: number | null;
+      status: string; category_id?: string | null; tags?: string[];
+      seo_title?: string; seo_description?: string; slug?: string;
+      track_inventory?: boolean;
+    }) => {
+      if (!currentStore) throw new Error("No store selected");
+      const { data, error } = await supabase
+        .from("products")
+        .insert({ ...product, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useUpdateProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
+      const { data, error } = await supabase
+        .from("products")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["products"] });
+      qc.invalidateQueries({ queryKey: ["product", vars.id] });
+      toast.success("Product updated");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteProducts() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from("products").delete().in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Products deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== CATEGORIES =====================
+
+export function useCategories() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["categories", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("sort_order");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateCategory() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (cat: { name: string; slug: string; parent_id?: string | null; sort_order?: number }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("categories")
+        .insert({ ...cat, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Category created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("categories").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Category deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== CUSTOMERS =====================
+
+export function useCustomers() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["customers", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCustomer(id: string | undefined) {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["customer", id],
+    queryFn: async () => {
+      if (!id || !currentStore) return null;
+      const { data, error } = await supabase
+        .from("customers")
+        .select("*")
+        .eq("id", id)
+        .eq("store_id", currentStore.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!currentStore,
+  });
+}
+
+export function useCreateCustomer() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (cust: { name: string; email?: string; phone?: string; segment?: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("customers")
+        .insert({ ...cust, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["customers"] });
+      toast.success("Customer created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== ORDERS =====================
+
+export function useOrders() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["orders", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*, customers(name, email)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+// ===================== INVENTORY =====================
+
+export function useInventoryLocations() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["inventory_locations", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("inventory_locations")
+        .select("*")
+        .eq("store_id", currentStore.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateLocation() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (loc: { name: string; type?: string; address?: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("inventory_locations")
+        .insert({ ...loc, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["inventory_locations"] });
+      toast.success("Location created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== SETTINGS (Tax, Shipping, Team) =====================
+
+export function useTaxRates() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["tax_rates", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("tax_rates")
+        .select("*")
+        .eq("store_id", currentStore.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateTaxRate() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (rate: { name: string; region: string; rate: number }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("tax_rates")
+        .insert({ ...rate, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["tax_rates"] });
+      toast.success("Tax rate created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteTaxRate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("tax_rates").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["tax_rates"] });
+      toast.success("Tax rate deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useShippingZones() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["shipping_zones", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("shipping_zones")
+        .select("*")
+        .eq("store_id", currentStore.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateShippingZone() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (zone: { name: string; regions: string; flat_rate: number; free_above?: number | null }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("shipping_zones")
+        .insert({ ...zone, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["shipping_zones"] });
+      toast.success("Shipping zone created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteShippingZone() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("shipping_zones").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["shipping_zones"] });
+      toast.success("Shipping zone deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useTeamMembers() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["team", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("*, profiles(display_name, avatar_url)")
+        .eq("store_id", currentStore.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+// ===================== PRODUCT VARIANTS =====================
+
+export function useCreateVariant() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (variant: {
+      product_id: string; name: string; sku?: string; price: number;
+      stock?: number; option1?: string; option2?: string;
+    }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("product_variants")
+        .insert({ ...variant, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["product", vars.product_id] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteVariant() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, productId }: { id: string; productId: string }) => {
+      const { error } = await supabase.from("product_variants").delete().eq("id", id);
+      if (error) throw error;
+      return productId;
+    },
+    onSuccess: (productId) => {
+      qc.invalidateQueries({ queryKey: ["product", productId] });
+      qc.invalidateQueries({ queryKey: ["products"] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== STORE =====================
+
+export function useUpdateStore() {
+  const qc = useQueryClient();
+  const { currentStore, setCurrentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (updates: { name?: string; currency?: string; timezone?: string; contact_email?: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("stores")
+        .update(updates)
+        .eq("id", currentStore.id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      setCurrentStore({ id: data.id, name: data.name, currency: data.currency, timezone: data.timezone });
+      toast.success("Store settings saved");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
