@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
-  BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw,
+  BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -33,6 +33,7 @@ const salesNav = [
 const marketingNav = [
   { title: "Campaigns", url: "/marketing", icon: Megaphone },
   { title: "Discounts", url: "/coupons", icon: Ticket },
+  { title: "Reviews", url: "/reviews", icon: Star },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 

@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingBag, Minus, Plus, Check } from "lucide-react";
+import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { toast } from "sonner";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -180,6 +181,14 @@ export default function StorefrontProductDetail() {
             )}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        {store && (
+          <div className="mt-12">
+            <Separator className="mb-8" />
+            <ProductReviews productId={product.id} storeId={store.id} />
+          </div>
+        )}
       </div>
     </StorefrontLayout>
   );
