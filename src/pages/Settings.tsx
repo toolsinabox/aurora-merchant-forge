@@ -138,6 +138,28 @@ export default function SettingsPage() {
     updateStore.mutate(storeForm);
   };
 
+          const handleSaveTheme = async () => {
+    if (!currentStore) return;
+    setThemeSaving(true);
+    const { data: existing } = await supabase
+      .from("store_themes")
+      .select("id")
+      .eq("store_id", currentStore.id)
+      .single();
+    if (existing) {
+      await supabase.from("store_themes").update(themeForm as any).eq("store_id", currentStore.id);
+    } else {
+      await supabase.from("store_themes").insert({ ...themeForm, store_id: currentStore.id } as any);
+    }
+    setThemeSaving(false);
+    toast.success("Theme saved");
+  };
+
+  const FONT_OPTIONS = [
+    "Inter", "System UI", "Georgia", "Merriweather", "Playfair Display",
+    "Roboto", "Open Sans", "Lato", "Montserrat", "Poppins", "Raleway",
+  ];
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -150,6 +172,7 @@ export default function SettingsPage() {
           <TabsList className="h-8">
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
+            <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
             <TabsTrigger value="team" className="text-xs h-7">Team</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
             <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
