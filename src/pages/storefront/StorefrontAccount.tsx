@@ -27,10 +27,10 @@ const RETURN_REASONS = [
 ];
 
 export default function StorefrontAccount() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const base = `/store/${storeSlug}`;
   const [customer, setCustomer] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [returns, setReturns] = useState<any[]>([]);
