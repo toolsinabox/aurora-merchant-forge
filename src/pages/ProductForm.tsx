@@ -246,7 +246,7 @@ export default function ProductForm() {
               <Card>
                 <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Status</CardTitle></CardHeader>
                 <CardContent className="p-4 pt-2">
-                  <Select value={form.status} onValueChange={(v) => setForm((prev) => ({ ...prev, status: v }))}>
+                  <Select value={form.status} onValueChange={(v: string) => setForm((prev) => ({ ...prev, status: v as "draft" | "active" | "archived" }))}>
                     <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="draft" className="text-xs">Draft</SelectItem>
