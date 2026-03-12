@@ -37,6 +37,53 @@ export default function SettingsPage() {
     timezone: currentStore?.timezone || "America/New_York",
   });
 
+  // Branding state
+  const [brandForm, setBrandForm] = useState({
+    primary_color: "#2563eb",
+    banner_text: "",
+    description: "",
+    logo_url: "",
+  });
+  const [brandLoading, setBrandLoading] = useState(false);
+  const [brandSaving, setBrandSaving] = useState(false);
+
+  // Load branding data
+  useState(() => {
+    if (!currentStore) return;
+    supabase
+      .from("stores")
+      .select("primary_color, banner_text, description, logo_url")
+      .eq("id", currentStore.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setBrandForm({
+            primary_color: (data as any).primary_color || "#2563eb",
+            banner_text: (data as any).banner_text || "",
+            description: (data as any).description || "",
+            logo_url: (data as any).logo_url || "",
+          });
+        }
+      });
+  });
+
+  const handleSaveBranding = async () => {
+    if (!currentStore) return;
+    setBrandSaving(true);
+    const { error } = await supabase
+      .from("stores")
+      .update({
+        primary_color: brandForm.primary_color,
+        banner_text: brandForm.banner_text || null,
+        description: brandForm.description || null,
+        logo_url: brandForm.logo_url || null,
+      } as any)
+      .eq("id", currentStore.id);
+    setBrandSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Branding saved");
+  };
+
   const [taxOpen, setTaxOpen] = useState(false);
   const [newTax, setNewTax] = useState({ name: "", region: "", rate: "" });
   const [shipOpen, setShipOpen] = useState(false);
