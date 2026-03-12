@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
-  BarChart3, Settings, ChevronDown, Store, Ticket,
+  BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -26,6 +26,7 @@ const catalogNav = [
 
 const salesNav = [
   { title: "Orders", url: "/orders", icon: Package },
+  { title: "Returns", url: "/returns", icon: RotateCcw },
   { title: "Customers", url: "/customers", icon: Users },
 ];
 
