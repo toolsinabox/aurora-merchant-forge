@@ -10,7 +10,7 @@ import {
   DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
   Users, Plus, ExternalLink, ArrowRight,
 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
