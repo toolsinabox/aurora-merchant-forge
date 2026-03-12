@@ -130,22 +130,23 @@ export default function ProductForm() {
 
   useEffect(() => {
     if (shippingData) {
+      const sd = shippingData as any;
       setShipping({
-        shipping_weight: shippingData.shipping_weight?.toString() || "0",
-        shipping_cubic: shippingData.shipping_cubic?.toString() || "0",
-        shipping_length: shippingData.shipping_length?.toString() || "0",
-        shipping_width: shippingData.shipping_width?.toString() || "0",
-        shipping_height: shippingData.shipping_height?.toString() || "0",
-        actual_length: shippingData.actual_length?.toString() || "0",
-        actual_width: shippingData.actual_width?.toString() || "0",
-        actual_height: shippingData.actual_height?.toString() || "0",
-        requires_packaging: shippingData.requires_packaging ?? false,
-        shipping_category: shippingData.shipping_category || "",
-        flat_rate_charge: shippingData.flat_rate_charge?.toString() || "",
-        selling_unit: shippingData.selling_unit || "",
-        base_unit: shippingData.base_unit || "",
-        base_unit_qty: shippingData.base_unit_qty?.toString() || "1",
-        cartons: shippingData.cartons?.toString() || "0",
+        shipping_weight: sd.shipping_weight?.toString() || "0",
+        shipping_cubic: sd.shipping_cubic?.toString() || "0",
+        shipping_length: sd.shipping_length?.toString() || "0",
+        shipping_width: sd.shipping_width?.toString() || "0",
+        shipping_height: sd.shipping_height?.toString() || "0",
+        actual_length: sd.actual_length?.toString() || "0",
+        actual_width: sd.actual_width?.toString() || "0",
+        actual_height: sd.actual_height?.toString() || "0",
+        requires_packaging: sd.requires_packaging ?? false,
+        shipping_category: sd.shipping_category || "",
+        flat_rate_charge: sd.flat_rate_charge?.toString() || "",
+        selling_unit: sd.selling_unit || "",
+        base_unit: sd.base_unit || "",
+        base_unit_qty: sd.base_unit_qty?.toString() || "1",
+        cartons: sd.cartons?.toString() || "0",
       });
     }
   }, [shippingData]);
