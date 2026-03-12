@@ -28,6 +28,7 @@ import SettingsPage from "./pages/Settings.tsx";
 import Coupons from "./pages/Coupons.tsx";
 import Returns from "./pages/Returns.tsx";
 import Reviews from "./pages/Reviews.tsx";
+import Merchants from "./pages/Merchants.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
@@ -88,6 +89,7 @@ const App = () => (
                   <Route path="/returns" element={<RequireAuth><Returns /></RequireAuth>} />
                   <Route path="/reviews" element={<RequireAuth><Reviews /></RequireAuth>} />
                   <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
+                  <Route path="/merchants" element={<RequireAuth><Merchants /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
