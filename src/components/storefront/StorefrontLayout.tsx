@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useStoreSlug } from "@/lib/subdomain";
 
 interface StorefrontLayoutProps {
   children: ReactNode;
@@ -12,10 +13,10 @@ interface StorefrontLayoutProps {
 }
 
 export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps) {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
   const { totalItems } = useCart();
   const { user } = useAuth();
-  const base = `/store/${storeSlug}`;
+  const { basePath } = useStoreSlug(paramSlug);
 
   return (
     <div className="min-h-screen flex flex-col" style={{ fontSize: "16px" }}>
@@ -32,32 +33,32 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72">
                   <nav className="flex flex-col gap-4 mt-8">
-                    <Link to={base} className="text-sm font-medium hover:text-primary">Home</Link>
-                    <Link to={`${base}/products`} className="text-sm font-medium hover:text-primary">All Products</Link>
+                    <Link to={basePath || "/"} className="text-sm font-medium hover:text-primary">Home</Link>
+                    <Link to={`${basePath}/products`} className="text-sm font-medium hover:text-primary">All Products</Link>
                     {user ? (
-                      <Link to={`${base}/account`} className="text-sm font-medium hover:text-primary">My Account</Link>
+                      <Link to={`${basePath}/account`} className="text-sm font-medium hover:text-primary">My Account</Link>
                     ) : (
-                      <Link to={`${base}/login`} className="text-sm font-medium hover:text-primary">Sign In</Link>
+                      <Link to={`${basePath}/login`} className="text-sm font-medium hover:text-primary">Sign In</Link>
                     )}
                   </nav>
                 </SheetContent>
               </Sheet>
-              <Link to={base} className="text-xl font-bold tracking-tight">
+              <Link to={basePath || "/"} className="text-xl font-bold tracking-tight">
                 {storeName || "Store"}
               </Link>
               <nav className="hidden sm:flex items-center gap-6">
-                <Link to={`${base}/products`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                <Link to={`${basePath}/products`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   All Products
                 </Link>
               </nav>
             </div>
             <div className="flex items-center gap-1">
-              <Link to={user ? `${base}/account` : `${base}/login`}>
+              <Link to={user ? `${basePath}/account` : `${basePath}/login`}>
                 <Button variant="ghost" size="icon" className="h-9 w-9">
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
-              <Link to={`${base}/cart`}>
+              <Link to={`${basePath}/cart`}>
                 <Button variant="ghost" size="icon" className="relative h-9 w-9">
                   <ShoppingBag className="h-5 w-5" />
                   {totalItems > 0 && (
