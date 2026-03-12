@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
-  BarChart3, Settings, ChevronDown, Store,
+  BarChart3, Settings, ChevronDown, Store, Ticket,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
