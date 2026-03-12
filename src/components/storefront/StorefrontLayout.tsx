@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ShoppingBag, Menu, User } from "lucide-react";
+import { ShoppingBag, Menu, User, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,9 +19,9 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const { basePath } = useStoreSlug(paramSlug);
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ fontSize: "16px" }}>
+    <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-6">
@@ -32,21 +32,30 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72">
-                  <nav className="flex flex-col gap-4 mt-8">
-                    <Link to={basePath || "/"} className="text-sm font-medium hover:text-primary">Home</Link>
-                    <Link to={`${basePath}/products`} className="text-sm font-medium hover:text-primary">All Products</Link>
+                  <div className="flex items-center gap-2 mb-8 mt-2">
+                    <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+                      <Store className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                    <span className="font-bold">{storeName || "Store"}</span>
+                  </div>
+                  <nav className="flex flex-col gap-4">
+                    <Link to={basePath || "/"} className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
+                    <Link to={`${basePath}/products`} className="text-sm font-medium hover:text-primary transition-colors">All Products</Link>
                     {user ? (
-                      <Link to={`${basePath}/account`} className="text-sm font-medium hover:text-primary">My Account</Link>
+                      <Link to={`${basePath}/account`} className="text-sm font-medium hover:text-primary transition-colors">My Account</Link>
                     ) : (
-                      <Link to={`${basePath}/login`} className="text-sm font-medium hover:text-primary">Sign In</Link>
+                      <Link to={`${basePath}/login`} className="text-sm font-medium hover:text-primary transition-colors">Sign In</Link>
                     )}
                   </nav>
                 </SheetContent>
               </Sheet>
-              <Link to={basePath || "/"} className="text-xl font-bold tracking-tight">
+              <Link to={basePath || "/"} className="text-xl font-bold tracking-tight hover:opacity-80 transition-opacity">
                 {storeName || "Store"}
               </Link>
               <nav className="hidden sm:flex items-center gap-6">
+                <Link to={basePath || "/"} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  Home
+                </Link>
                 <Link to={`${basePath}/products`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   All Products
                 </Link>
@@ -62,7 +71,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 <Button variant="ghost" size="icon" className="relative h-9 w-9">
                   <ShoppingBag className="h-5 w-5" />
                   {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
+                    <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-bold">
                       {totalItems}
                     </span>
                   )}
@@ -75,9 +84,39 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t bg-muted/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-sm text-muted-foreground">
+      {/* Footer */}
+      <footer className="border-t bg-card">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="font-bold text-sm mb-3">{storeName || "Store"}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Quality products, great prices, delivered with care.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm mb-3">Quick Links</h3>
+              <nav className="flex flex-col gap-2">
+                <Link to={basePath || "/"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
+                <Link to={`${basePath}/products`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">All Products</Link>
+                <Link to={`${basePath}/cart`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cart</Link>
+              </nav>
+            </div>
+            <div>
+              <h3 className="font-bold text-sm mb-3">Account</h3>
+              <nav className="flex flex-col gap-2">
+                {user ? (
+                  <Link to={`${basePath}/account`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">My Account</Link>
+                ) : (
+                  <>
+                    <Link to={`${basePath}/login`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Sign In</Link>
+                    <Link to={`${basePath}/signup`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Create Account</Link>
+                  </>
+                )}
+              </nav>
+            </div>
+          </div>
+          <div className="border-t pt-6 text-center text-xs text-muted-foreground">
             © {new Date().getFullYear()} {storeName || "Store"}. All rights reserved.
           </div>
         </div>
