@@ -77,7 +77,7 @@ export default function StorefrontAccount() {
       setLoading(false);
     }
     load();
-  }, [user, base, navigate]);
+  }, [user, basePath, navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
