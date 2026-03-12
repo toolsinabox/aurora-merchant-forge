@@ -201,6 +201,7 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="team" className="space-y-3">
             <Card>
               <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                 <CardTitle className="text-sm">Team Members</CardTitle>
