@@ -66,19 +66,26 @@ export default function StorefrontCheckout() {
       const shippingAddr = `${form.address}, ${form.city} ${form.zip}, ${form.country}`;
       const subtotal = totalPrice;
 
-      // Check if customer exists or create
+      // Find customer by user_id (if logged in) or email
       let customerId: string | null = null;
-      const { data: existingCustomer } = await supabase
-        .from("customers")
-        .select("id")
-        .eq("store_id", storeId)
-        .eq("email", form.email)
-        .maybeSingle();
-
-      if (existingCustomer) {
-        customerId = existingCustomer.id;
+      if (user) {
+        const { data: userCust } = await supabase
+          .from("customers")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("store_id", storeId)
+          .maybeSingle();
+        if (userCust) customerId = userCust.id;
       }
-      // Note: Can't create customer without store role, that's OK - order can be without customer
+      if (!customerId) {
+        const { data: emailCust } = await supabase
+          .from("customers")
+          .select("id")
+          .eq("store_id", storeId)
+          .eq("email", form.email)
+          .maybeSingle();
+        if (emailCust) customerId = emailCust.id;
+      }
 
       // Create order
       const { data: order, error: orderErr } = await supabase
