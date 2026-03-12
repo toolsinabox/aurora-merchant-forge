@@ -104,6 +104,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/products" element={<StorefrontProducts />} />
                   <Route path="/store/:storeSlug/product/:productId" element={<StorefrontProductDetail />} />
                   <Route path="/store/:storeSlug/cart" element={<StorefrontCart />} />
+                  <Route path="/store/:storeSlug/compare" element={<StorefrontCompare />} />
                   <Route path="/store/:storeSlug/checkout" element={<StorefrontCheckout />} />
                   <Route path="/store/:storeSlug/login" element={<StorefrontLogin />} />
                   <Route path="/store/:storeSlug/signup" element={<StorefrontSignup />} />
