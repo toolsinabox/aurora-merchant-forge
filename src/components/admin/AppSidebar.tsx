@@ -26,6 +26,7 @@ const catalogNav = [
 
 const salesNav = [
   { title: "Orders", url: "/orders", icon: Package },
+  { title: "Returns", url: "/returns", icon: RotateCcw },
   { title: "Customers", url: "/customers", icon: Users },
 ];
 
