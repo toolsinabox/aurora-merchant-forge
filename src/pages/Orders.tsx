@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,11 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CreateOrderDialog } from "@/components/orders/CreateOrderDialog";
 
 export default function Orders() {
   const { data: orders = [], isLoading } = useOrders();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const navigate = useNavigate();
 
   const filtered = orders.filter((o: any) => {
     const matchSearch = o.order_number.includes(search) || (o.customers?.name || "").toLowerCase().includes(search.toLowerCase());
@@ -23,9 +26,12 @@ export default function Orders() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <div>
-          <h1 className="text-lg font-semibold">Orders</h1>
-          <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-semibold">Orders</h1>
+            <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
+          </div>
+          <CreateOrderDialog />
         </div>
 
         <Card>
@@ -66,7 +72,7 @@ export default function Orders() {
                   <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
                 ) : (
                   filtered.map((o: any) => (
-                    <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50">
+                    <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${o.id}`)}>
                       <TableCell className="py-2 font-medium">{o.order_number}</TableCell>
                       <TableCell className="py-2">{o.customers?.name || "—"}</TableCell>
                       <TableCell className="py-2">{o.items_count}</TableCell>

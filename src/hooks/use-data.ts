@@ -245,6 +245,118 @@ export function useOrders() {
   });
 }
 
+export function useOrder(id: string | undefined) {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["order", id],
+    queryFn: async () => {
+      if (!id || !currentStore) return null;
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*, customers(name, email, phone), order_items(*, products(title, images))")
+        .eq("id", id)
+        .eq("store_id", currentStore.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id && !!currentStore,
+  });
+}
+
+export function useCreateOrder() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (order: {
+      customer_id?: string | null;
+      items: { product_id: string; variant_id?: string | null; title: string; sku?: string; quantity: number; unit_price: number }[];
+      notes?: string;
+      shipping_address?: string;
+    }) => {
+      if (!currentStore) throw new Error("No store");
+      const subtotal = order.items.reduce((s, i) => s + i.quantity * i.unit_price, 0);
+      const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}`;
+      const { data: newOrder, error: orderErr } = await supabase
+        .from("orders")
+        .insert({
+          store_id: currentStore.id,
+          order_number: orderNumber,
+          customer_id: order.customer_id || null,
+          items_count: order.items.reduce((s, i) => s + i.quantity, 0),
+          subtotal,
+          total: subtotal,
+          status: "pending",
+          payment_status: "pending",
+          fulfillment_status: "unfulfilled" as any,
+          notes: order.notes as any,
+          shipping_address: order.shipping_address as any,
+        })
+        .select()
+        .single();
+      if (orderErr) throw orderErr;
+      const itemRows = order.items.map((i) => ({
+        order_id: newOrder.id,
+        store_id: currentStore.id,
+        product_id: i.product_id,
+        variant_id: i.variant_id || null,
+        title: i.title,
+        sku: i.sku || null,
+        quantity: i.quantity,
+        unit_price: i.unit_price,
+        total: i.quantity * i.unit_price,
+      }));
+      const { error: itemsErr } = await supabase.from("order_items").insert(itemRows);
+      if (itemsErr) throw itemsErr;
+      return newOrder;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      toast.success("Order created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useUpdateOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; status?: string; payment_status?: string; fulfillment_status?: string; notes?: string; shipping_address?: string }) => {
+      const { data, error } = await supabase
+        .from("orders")
+        .update(updates as any)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      qc.invalidateQueries({ queryKey: ["order", vars.id] });
+      toast.success("Order updated");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // Delete items first, then order
+      await supabase.from("order_items").delete().eq("order_id", id);
+      const { error } = await supabase.from("orders").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      toast.success("Order deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
 // ===================== INVENTORY =====================
 
 export function useInventoryLocations() {

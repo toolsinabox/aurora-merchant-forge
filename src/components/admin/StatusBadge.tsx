@@ -23,6 +23,9 @@ const statusStyles: Record<string, string> = {
   "in-stock": "bg-success/15 text-success border-success/30",
   "low-stock": "bg-warning/15 text-warning border-warning/30",
   "out-of-stock": "bg-destructive/15 text-destructive border-destructive/30",
+  unfulfilled: "bg-warning/15 text-warning border-warning/30",
+  partial: "bg-info/15 text-info border-info/30",
+  fulfilled: "bg-success/15 text-success border-success/30",
 };
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
