@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { WishlistProvider } from "@/contexts/WishlistContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { getSubdomainSlug } from "@/lib/subdomain";
 import NotFound from "./pages/NotFound.tsx";
