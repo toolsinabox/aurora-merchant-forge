@@ -173,6 +173,9 @@ export default function Products() {
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => navigate("/products/import")}>
+              <Upload className="h-3.5 w-3.5" /> Import
+            </Button>
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/new")}>
               <Plus className="h-3.5 w-3.5" /> Add Product
             </Button>
