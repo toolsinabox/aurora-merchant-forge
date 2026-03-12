@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home } from "lucide-react";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
+import { ImageLightbox } from "@/components/storefront/ImageLightbox";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
