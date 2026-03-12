@@ -269,6 +269,165 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="theme" className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><Paintbrush className="h-4 w-4" /> Theme Builder</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-2 space-y-4">
+                {/* Colors */}
+                <div>
+                  <p className="text-xs font-semibold mb-2 flex items-center gap-1.5"><Palette className="h-3.5 w-3.5" /> Colors</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {[
+                      { key: "primary_color", label: "Primary" },
+                      { key: "secondary_color", label: "Secondary" },
+                      { key: "accent_color", label: "Accent" },
+                      { key: "background_color", label: "Background" },
+                      { key: "text_color", label: "Text" },
+                    ].map(({ key, label }) => (
+                      <div key={key} className="space-y-1">
+                        <Label className="text-2xs">{label}</Label>
+                        <div className="flex gap-1.5 items-center">
+                          <input
+                            type="color"
+                            value={(themeForm as any)[key]}
+                            onChange={(e) => setThemeForm({ ...themeForm, [key]: e.target.value })}
+                            className="h-8 w-10 rounded border cursor-pointer"
+                          />
+                          <Input className="h-8 text-2xs flex-1" value={(themeForm as any)[key]} onChange={(e) => setThemeForm({ ...themeForm, [key]: e.target.value })} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Typography */}
+                <div>
+                  <p className="text-xs font-semibold mb-2 flex items-center gap-1.5"><Type className="h-3.5 w-3.5" /> Typography</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Heading Font</Label>
+                      <Select value={themeForm.heading_font} onValueChange={(v) => setThemeForm({ ...themeForm, heading_font: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {FONT_OPTIONS.map((f) => <SelectItem key={f} value={f} className="text-xs">{f}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Body Font</Label>
+                      <Select value={themeForm.body_font} onValueChange={(v) => setThemeForm({ ...themeForm, body_font: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {FONT_OPTIONS.map((f) => <SelectItem key={f} value={f} className="text-xs">{f}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Layout */}
+                <div>
+                  <p className="text-xs font-semibold mb-2 flex items-center gap-1.5"><Layout className="h-3.5 w-3.5" /> Layout & Style</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Button Radius</Label>
+                      <Select value={themeForm.button_radius} onValueChange={(v) => setThemeForm({ ...themeForm, button_radius: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none" className="text-xs">Square</SelectItem>
+                          <SelectItem value="sm" className="text-xs">Small</SelectItem>
+                          <SelectItem value="md" className="text-xs">Medium</SelectItem>
+                          <SelectItem value="lg" className="text-xs">Large</SelectItem>
+                          <SelectItem value="full" className="text-xs">Pill</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Layout Style</Label>
+                      <Select value={themeForm.layout_style} onValueChange={(v) => setThemeForm({ ...themeForm, layout_style: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="standard" className="text-xs">Standard</SelectItem>
+                          <SelectItem value="wide" className="text-xs">Wide</SelectItem>
+                          <SelectItem value="compact" className="text-xs">Compact</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Hero Style</Label>
+                      <Select value={themeForm.hero_style} onValueChange={(v) => setThemeForm({ ...themeForm, hero_style: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="banner" className="text-xs">Banner</SelectItem>
+                          <SelectItem value="slider" className="text-xs">Slider</SelectItem>
+                          <SelectItem value="minimal" className="text-xs">Minimal</SelectItem>
+                          <SelectItem value="split" className="text-xs">Split</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Product Cards</Label>
+                      <Select value={themeForm.product_card_style} onValueChange={(v) => setThemeForm({ ...themeForm, product_card_style: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="minimal" className="text-xs">Minimal</SelectItem>
+                          <SelectItem value="card" className="text-xs">Card</SelectItem>
+                          <SelectItem value="overlay" className="text-xs">Overlay</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Custom CSS */}
+                <div className="space-y-1">
+                  <Label className="text-xs">Custom CSS (advanced)</Label>
+                  <Textarea
+                    className="text-xs font-mono h-24"
+                    value={themeForm.custom_css}
+                    onChange={(e) => setThemeForm({ ...themeForm, custom_css: e.target.value })}
+                    placeholder=".storefront-header { ... }"
+                  />
+                </div>
+
+                {/* Preview */}
+                <div className="p-4 rounded-lg border space-y-3">
+                  <p className="text-xs font-medium">Live Preview</p>
+                  <div className="flex items-center gap-3">
+                    {[themeForm.primary_color, themeForm.secondary_color, themeForm.accent_color].map((c, i) => (
+                      <div key={i} className="h-10 w-10 rounded-lg border" style={{ backgroundColor: c }} />
+                    ))}
+                    <div className="flex-1 p-2 rounded-lg" style={{ backgroundColor: themeForm.background_color, color: themeForm.text_color }}>
+                      <p className="text-xs" style={{ fontFamily: themeForm.heading_font }}>Heading Preview</p>
+                      <p className="text-2xs" style={{ fontFamily: themeForm.body_font }}>Body text preview</p>
+                    </div>
+                    <button
+                      className="px-3 py-1.5 text-xs text-white"
+                      style={{
+                        backgroundColor: themeForm.primary_color,
+                        borderRadius: themeForm.button_radius === "none" ? 0 : themeForm.button_radius === "full" ? 9999 : themeForm.button_radius === "sm" ? 4 : themeForm.button_radius === "lg" ? 12 : 6,
+                      }}
+                    >
+                      Button Preview
+                    </button>
+                  </div>
+                </div>
+
+                <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSaveTheme} disabled={themeSaving}>
+                  <Paintbrush className="h-3.5 w-3.5" /> {themeSaving ? "Saving..." : "Save Theme"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="team" className="space-y-3">
             <Card>
               <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
