@@ -8,11 +8,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useStoreSlug } from "@/lib/subdomain";
 
 export default function StorefrontLogin() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
-  const base = `/store/${storeSlug}`;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ export default function StorefrontLogin() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) { toast.error(error.message); setLoading(false); return; }
     toast.success("Signed in!");
-    navigate(`${base}/account`);
+    navigate(`${basePath}/account`);
   };
 
   return (
@@ -50,7 +51,7 @@ export default function StorefrontLogin() {
             </form>
             <p className="text-center text-sm text-muted-foreground mt-4">
               Don't have an account?{" "}
-              <Link to={`${base}/signup`} className="text-primary hover:underline">Create one</Link>
+              <Link to={`${basePath}/signup`} className="text-primary hover:underline">Create one</Link>
             </p>
           </CardContent>
         </Card>

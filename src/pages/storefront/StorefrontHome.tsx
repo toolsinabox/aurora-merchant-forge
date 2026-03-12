@@ -3,24 +3,22 @@ import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
 export default function StorefrontHome() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { storeSlug, basePath } = useStoreSlug(paramSlug);
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
-      // Find store by name slug (using name for now)
-      const { data: stores } = await supabase.from("stores").select("*").limit(100);
-      const found = stores?.find((s: any) =>
-        s.name.toLowerCase().replace(/\s+/g, "-") === storeSlug
-      ) || stores?.[0];
-
+      if (!storeSlug) { setLoading(false); return; }
+      const found = await resolveStoreBySlug(storeSlug, supabase);
       if (!found) { setLoading(false); return; }
       setStore(found);
 
@@ -68,7 +66,7 @@ export default function StorefrontHome() {
         <div className="rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border p-8 sm:p-12 mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3">Welcome to {store.name}</h1>
           <p className="text-muted-foreground text-lg max-w-lg mb-6">Discover our curated collection of products.</p>
-          <Link to={`/store/${storeSlug}/products`}>
+          <Link to={`${basePath}/products`}>
             <button className="bg-primary text-primary-foreground px-6 py-2.5 rounded-lg font-medium text-sm hover:opacity-90 transition">
               Shop All Products
             </button>
@@ -81,7 +79,7 @@ export default function StorefrontHome() {
             <h2 className="text-xl font-semibold mb-5">Featured Products</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {products.map((p) => (
-                <Link key={p.id} to={`/store/${storeSlug}/product/${p.id}`} className="group">
+                <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
                   <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5">
                     {p.images?.[0] ? (
                       <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

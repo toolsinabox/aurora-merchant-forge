@@ -4,15 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight } from "lucide-react";
+import { useStoreSlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
 export default function StorefrontCart() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
-  const base = `/store/${storeSlug}`;
 
   if (items.length === 0) {
     return (
@@ -21,7 +22,7 @@ export default function StorefrontCart() {
           <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
           <p className="text-muted-foreground mb-6">Add some products to get started.</p>
-          <Link to={`${base}/products`}>
+          <Link to={`${basePath}/products`}>
             <Button>Continue Shopping</Button>
           </Link>
         </div>
@@ -47,7 +48,7 @@ export default function StorefrontCart() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <Link to={`${base}/product/${item.product_id}`} className="font-medium text-sm hover:text-primary line-clamp-1">
+                  <Link to={`${basePath}/product/${item.product_id}`} className="font-medium text-sm hover:text-primary line-clamp-1">
                     {item.title}
                   </Link>
                   {item.variant_name && <p className="text-xs text-muted-foreground mt-0.5">{item.variant_name}</p>}
@@ -85,10 +86,10 @@ export default function StorefrontCart() {
                 <span>Total</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
-              <Button className="w-full h-11 gap-2" onClick={() => navigate(`${base}/checkout`)}>
+              <Button className="w-full h-11 gap-2" onClick={() => navigate(`${basePath}/checkout`)}>
                 Checkout <ArrowRight className="h-4 w-4" />
               </Button>
-              <Link to={`${base}/products`} className="block text-center text-sm text-muted-foreground hover:text-foreground">
+              <Link to={`${basePath}/products`} className="block text-center text-sm text-muted-foreground hover:text-foreground">
                 Continue Shopping
               </Link>
             </div>

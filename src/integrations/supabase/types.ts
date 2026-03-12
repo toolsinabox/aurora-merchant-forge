@@ -824,6 +824,7 @@ export type Database = {
           logo_url: string | null
           name: string
           owner_id: string
+          slug: string | null
           timezone: string
           updated_at: string
         }
@@ -835,6 +836,7 @@ export type Database = {
           logo_url?: string | null
           name: string
           owner_id: string
+          slug?: string | null
           timezone?: string
           updated_at?: string
         }
@@ -846,6 +848,7 @@ export type Database = {
           logo_url?: string | null
           name?: string
           owner_id?: string
+          slug?: string | null
           timezone?: string
           updated_at?: string
         }

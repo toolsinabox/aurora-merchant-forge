@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useStoreSlug } from "@/lib/subdomain";
 
 const RETURN_REASONS = [
   "Defective / damaged item",
@@ -26,10 +27,10 @@ const RETURN_REASONS = [
 ];
 
 export default function StorefrontAccount() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { user } = useAuth();
-  const base = `/store/${storeSlug}`;
   const [customer, setCustomer] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [returns, setReturns] = useState<any[]>([]);
@@ -44,7 +45,7 @@ export default function StorefrontAccount() {
 
   useEffect(() => {
     if (!user) {
-      navigate(`${base}/login`);
+      navigate(`${basePath}/login`);
       return;
     }
 
@@ -76,12 +77,12 @@ export default function StorefrontAccount() {
       setLoading(false);
     }
     load();
-  }, [user, base, navigate]);
+  }, [user, basePath, navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast.success("Signed out");
-    navigate(base);
+    navigate(basePath || "/");
   };
 
   const handleReturnRequest = async () => {
@@ -182,7 +183,7 @@ export default function StorefrontAccount() {
                 ) : orders.length === 0 ? (
                   <div className="p-6 text-center">
                     <p className="text-muted-foreground text-sm mb-3">No orders yet.</p>
-                    <Link to={`${base}/products`}>
+                    <Link to={`${basePath}/products`}>
                       <Button size="sm">Start Shopping</Button>
                     </Link>
                   </div>

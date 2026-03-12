@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Check, Loader2, Tag, X } from "lucide-react";
+import { useStoreSlug } from "@/lib/subdomain";
 
 interface AppliedCoupon {
   id: string;
@@ -21,7 +22,8 @@ interface AppliedCoupon {
 }
 
 export default function StorefrontCheckout() {
-  const { storeSlug } = useParams();
+  const { storeSlug: paramSlug } = useParams();
+  const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
@@ -205,14 +207,14 @@ export default function StorefrontCheckout() {
           <h1 className="text-2xl font-bold mb-2">Order Placed!</h1>
           <p className="text-muted-foreground mb-1">Thank you for your order.</p>
           <p className="text-sm font-medium mb-6">Order number: <span className="font-mono">{orderNumber}</span></p>
-          <Button onClick={() => navigate(`/store/${storeSlug}`)}>Continue Shopping</Button>
+          <Button onClick={() => navigate(basePath || "/")}>Continue Shopping</Button>
         </div>
       </StorefrontLayout>
     );
   }
 
   if (items.length === 0) {
-    navigate(`/store/${storeSlug}/cart`);
+    navigate(`${basePath}/cart`);
     return null;
   }
 
