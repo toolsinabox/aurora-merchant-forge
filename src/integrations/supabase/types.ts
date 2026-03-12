@@ -218,6 +218,116 @@ export type Database = {
           },
         ]
       }
+      import_logs: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          entity_type: string
+          error_count: number | null
+          errors: Json | null
+          file_name: string | null
+          id: string
+          status: string
+          store_id: string
+          success_count: number | null
+          template_id: string | null
+          total_rows: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          entity_type?: string
+          error_count?: number | null
+          errors?: Json | null
+          file_name?: string | null
+          id?: string
+          status?: string
+          store_id: string
+          success_count?: number | null
+          template_id?: string | null
+          total_rows?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          entity_type?: string
+          error_count?: number | null
+          errors?: Json | null
+          file_name?: string | null
+          id?: string
+          status?: string
+          store_id?: string
+          success_count?: number | null
+          template_id?: string | null
+          total_rows?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_logs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "import_logs_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "import_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      import_templates: {
+        Row: {
+          created_at: string
+          delimiter: string | null
+          entity_type: string
+          field_mappings: Json
+          id: string
+          name: string
+          static_values: Json | null
+          store_id: string
+          transformations: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delimiter?: string | null
+          entity_type?: string
+          field_mappings?: Json
+          id?: string
+          name: string
+          static_values?: Json | null
+          store_id: string
+          transformations?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delimiter?: string | null
+          entity_type?: string
+          field_mappings?: Json
+          id?: string
+          name?: string
+          static_values?: Json | null
+          store_id?: string
+          transformations?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_templates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       inventory_locations: {
         Row: {
           address: string | null
@@ -495,6 +605,109 @@ export type Database = {
         }
         Relationships: []
       }
+      product_pricing_tiers: {
+        Row: {
+          created_at: string
+          id: string
+          min_quantity: number
+          price: number
+          product_id: string
+          store_id: string
+          tier_name: string
+          updated_at: string
+          user_group: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          min_quantity?: number
+          price?: number
+          product_id: string
+          store_id: string
+          tier_name?: string
+          updated_at?: string
+          user_group?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          min_quantity?: number
+          price?: number
+          product_id?: string
+          store_id?: string
+          tier_name?: string
+          updated_at?: string
+          user_group?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_pricing_tiers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_pricing_tiers_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_relations: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          related_product_id: string
+          relation_type: string
+          sort_order: number | null
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          related_product_id: string
+          relation_type?: string
+          sort_order?: number | null
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          related_product_id?: string
+          relation_type?: string
+          sort_order?: number | null
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_relations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_relations_related_product_id_fkey"
+            columns: ["related_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_relations_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_reviews: {
         Row: {
           author_name: string
@@ -555,6 +768,135 @@ export type Database = {
           },
           {
             foreignKeyName: "product_reviews_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_shipping: {
+        Row: {
+          actual_height: number | null
+          actual_length: number | null
+          actual_width: number | null
+          base_unit: string | null
+          base_unit_qty: number | null
+          cartons: number | null
+          created_at: string
+          flat_rate_charge: number | null
+          id: string
+          product_id: string
+          requires_packaging: boolean | null
+          selling_unit: string | null
+          shipping_category: string | null
+          shipping_cubic: number | null
+          shipping_height: number | null
+          shipping_length: number | null
+          shipping_weight: number | null
+          shipping_width: number | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          actual_height?: number | null
+          actual_length?: number | null
+          actual_width?: number | null
+          base_unit?: string | null
+          base_unit_qty?: number | null
+          cartons?: number | null
+          created_at?: string
+          flat_rate_charge?: number | null
+          id?: string
+          product_id: string
+          requires_packaging?: boolean | null
+          selling_unit?: string | null
+          shipping_category?: string | null
+          shipping_cubic?: number | null
+          shipping_height?: number | null
+          shipping_length?: number | null
+          shipping_weight?: number | null
+          shipping_width?: number | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          actual_height?: number | null
+          actual_length?: number | null
+          actual_width?: number | null
+          base_unit?: string | null
+          base_unit_qty?: number | null
+          cartons?: number | null
+          created_at?: string
+          flat_rate_charge?: number | null
+          id?: string
+          product_id?: string
+          requires_packaging?: boolean | null
+          selling_unit?: string | null
+          shipping_category?: string | null
+          shipping_cubic?: number | null
+          shipping_height?: number | null
+          shipping_length?: number | null
+          shipping_weight?: number | null
+          shipping_width?: number | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_shipping_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_shipping_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_specifics: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          product_id: string
+          sort_order: number | null
+          store_id: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          product_id: string
+          sort_order?: number | null
+          store_id: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          product_id?: string
+          sort_order?: number | null
+          store_id?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_specifics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_specifics_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -624,67 +966,184 @@ export type Database = {
       }
       products: {
         Row: {
+          auto_url_update: boolean | null
+          availability_description: string | null
           barcode: string | null
+          brand: string | null
           category_id: string | null
           compare_at_price: number | null
           cost_price: number | null
           created_at: string
+          custom_label: string | null
           description: string | null
+          editable_bundle: boolean | null
+          features: string | null
           id: string
           images: string[] | null
+          internal_notes: string | null
+          is_active: boolean | null
+          is_approved: boolean | null
+          is_bought: boolean | null
+          is_inventoried: boolean | null
+          is_kit: boolean | null
+          is_sold: boolean | null
+          misc1: string | null
+          misc2: string | null
+          misc3: string | null
+          misc4: string | null
+          misc5: string | null
+          model_number: string | null
+          preorder_quantity: number | null
           price: number
+          product_subtype: string | null
+          product_type: string | null
+          promo_end: string | null
+          promo_price: number | null
+          promo_start: string | null
+          promo_tag: string | null
+          reorder_quantity: number | null
+          restock_quantity: number | null
+          search_keywords: string | null
           seo_description: string | null
+          seo_keywords: string | null
           seo_title: string | null
+          short_description: string | null
           sku: string | null
           slug: string | null
+          specifications: string | null
           status: string
           store_id: string
+          subtitle: string | null
+          supplier_item_code: string | null
           tags: string[] | null
+          tax_free: boolean | null
+          tax_inclusive: boolean | null
+          terms_conditions: string | null
           title: string
           track_inventory: boolean
           updated_at: string
+          virtual_product: boolean | null
+          warranty: string | null
         }
         Insert: {
+          auto_url_update?: boolean | null
+          availability_description?: string | null
           barcode?: string | null
+          brand?: string | null
           category_id?: string | null
           compare_at_price?: number | null
           cost_price?: number | null
           created_at?: string
+          custom_label?: string | null
           description?: string | null
+          editable_bundle?: boolean | null
+          features?: string | null
           id?: string
           images?: string[] | null
+          internal_notes?: string | null
+          is_active?: boolean | null
+          is_approved?: boolean | null
+          is_bought?: boolean | null
+          is_inventoried?: boolean | null
+          is_kit?: boolean | null
+          is_sold?: boolean | null
+          misc1?: string | null
+          misc2?: string | null
+          misc3?: string | null
+          misc4?: string | null
+          misc5?: string | null
+          model_number?: string | null
+          preorder_quantity?: number | null
           price?: number
+          product_subtype?: string | null
+          product_type?: string | null
+          promo_end?: string | null
+          promo_price?: number | null
+          promo_start?: string | null
+          promo_tag?: string | null
+          reorder_quantity?: number | null
+          restock_quantity?: number | null
+          search_keywords?: string | null
           seo_description?: string | null
+          seo_keywords?: string | null
           seo_title?: string | null
+          short_description?: string | null
           sku?: string | null
           slug?: string | null
+          specifications?: string | null
           status?: string
           store_id: string
+          subtitle?: string | null
+          supplier_item_code?: string | null
           tags?: string[] | null
+          tax_free?: boolean | null
+          tax_inclusive?: boolean | null
+          terms_conditions?: string | null
           title: string
           track_inventory?: boolean
           updated_at?: string
+          virtual_product?: boolean | null
+          warranty?: string | null
         }
         Update: {
+          auto_url_update?: boolean | null
+          availability_description?: string | null
           barcode?: string | null
+          brand?: string | null
           category_id?: string | null
           compare_at_price?: number | null
           cost_price?: number | null
           created_at?: string
+          custom_label?: string | null
           description?: string | null
+          editable_bundle?: boolean | null
+          features?: string | null
           id?: string
           images?: string[] | null
+          internal_notes?: string | null
+          is_active?: boolean | null
+          is_approved?: boolean | null
+          is_bought?: boolean | null
+          is_inventoried?: boolean | null
+          is_kit?: boolean | null
+          is_sold?: boolean | null
+          misc1?: string | null
+          misc2?: string | null
+          misc3?: string | null
+          misc4?: string | null
+          misc5?: string | null
+          model_number?: string | null
+          preorder_quantity?: number | null
           price?: number
+          product_subtype?: string | null
+          product_type?: string | null
+          promo_end?: string | null
+          promo_price?: number | null
+          promo_start?: string | null
+          promo_tag?: string | null
+          reorder_quantity?: number | null
+          restock_quantity?: number | null
+          search_keywords?: string | null
           seo_description?: string | null
+          seo_keywords?: string | null
           seo_title?: string | null
+          short_description?: string | null
           sku?: string | null
           slug?: string | null
+          specifications?: string | null
           status?: string
           store_id?: string
+          subtitle?: string | null
+          supplier_item_code?: string | null
           tags?: string[] | null
+          tax_free?: boolean | null
+          tax_inclusive?: boolean | null
+          terms_conditions?: string | null
           title?: string
           track_inventory?: boolean
           updated_at?: string
+          virtual_product?: boolean | null
+          warranty?: string | null
         }
         Relationships: [
           {
