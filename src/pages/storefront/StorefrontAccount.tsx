@@ -45,7 +45,7 @@ export default function StorefrontAccount() {
 
   useEffect(() => {
     if (!user) {
-      navigate(`${base}/login`);
+      navigate(`${basePath}/login`);
       return;
     }
 
