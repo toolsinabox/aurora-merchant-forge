@@ -64,9 +64,10 @@ const App = () => (
                   <Route path="/" element={<StorefrontHome />} />
                   <Route path="/products" element={<StorefrontProducts />} />
                   <Route path="/product/:productId" element={<StorefrontProductDetail />} />
-                  <Route path="/cart" element={<StorefrontCart />} />
-                  <Route path="/checkout" element={<StorefrontCheckout />} />
-                  <Route path="/login" element={<StorefrontLogin />} />
+                   <Route path="/cart" element={<StorefrontCart />} />
+                   <Route path="/compare" element={<StorefrontCompare />} />
+                   <Route path="/checkout" element={<StorefrontCheckout />} />
+                   <Route path="/login" element={<StorefrontLogin />} />
                   <Route path="/signup" element={<StorefrontSignup />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="*" element={<NotFound />} />
