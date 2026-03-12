@@ -29,6 +29,7 @@ import Coupons from "./pages/Coupons.tsx";
 import Returns from "./pages/Returns.tsx";
 import Reviews from "./pages/Reviews.tsx";
 import Merchants from "./pages/Merchants.tsx";
+import LandingPage from "./pages/LandingPage.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
