@@ -160,7 +160,7 @@ export default function Onboarding() {
                       </span>
                     )}
                     {slugStatus === "available" && slugValid && (
-                      <span className="flex items-center gap-1 text-2xs text-green-600">
+                      <span className="flex items-center gap-1 text-2xs text-success">
                         <CheckCircle2 className="h-3 w-3" /> Available!
                       </span>
                     )}
