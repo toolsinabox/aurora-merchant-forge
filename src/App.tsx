@@ -113,6 +113,7 @@ const App = () => (
                 </>
               )}
             </Routes>
+          </CompareProvider>
           </WishlistProvider>
           </CartProvider>
         </AuthProvider>
