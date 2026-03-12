@@ -17,6 +17,7 @@ import ProductForm from "./pages/ProductForm.tsx";
 import Categories from "./pages/Categories.tsx";
 import Inventory from "./pages/Inventory.tsx";
 import Orders from "./pages/Orders.tsx";
+import OrderDetail from "./pages/OrderDetail.tsx";
 import Customers from "./pages/Customers.tsx";
 import CustomerDetail from "./pages/CustomerDetail.tsx";
 import Marketing from "./pages/Marketing.tsx";
