@@ -122,13 +122,64 @@ export default function Dashboard() {
 
   const isEmptyStore = !loadingProducts && !loadingOrders && products.length === 0 && orders.length === 0;
 
-  // Top selling products (by price as proxy — ideally by order count)
+  // Top selling products by order item count
+  const [orderItems, setOrderItems] = useState<any[]>([]);
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase
+      .from("order_items")
+      .select("product_id, quantity, products(title, price, images)")
+      .eq("store_id", currentStore.id)
+      .then(({ data }) => { if (data) setOrderItems(data); });
+  }, [currentStore]);
+
   const topProducts = useMemo(() => {
-    return products
-      .filter((p) => p.status === "active")
-      .sort((a, b) => b.price - a.price)
-      .slice(0, 5);
-  }, [products]);
+    const map = new Map<string, { title: string; price: number; images: string[]; sold: number }>();
+    orderItems.forEach((item: any) => {
+      if (!item.product_id || !item.products) return;
+      const existing = map.get(item.product_id);
+      if (existing) {
+        existing.sold += item.quantity;
+      } else {
+        map.set(item.product_id, {
+          title: item.products.title,
+          price: item.products.price,
+          images: item.products.images || [],
+          sold: item.quantity,
+        });
+      }
+    });
+    return Array.from(map.entries())
+      .sort((a, b) => b[1].sold - a[1].sold)
+      .slice(0, 5)
+      .map(([id, data]) => ({ id, ...data }));
+  }, [orderItems]);
+
+  // Customer growth data
+  const customerGrowthData = useMemo(() => {
+    const now = new Date();
+    const result: { date: string; customers: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0];
+      const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const count = customers.filter((c: any) => c.created_at?.startsWith(dateStr)).length;
+      result.push({ date: label, customers: count });
+    }
+    return result;
+  }, [customers]);
+
+  // Order status breakdown for pie chart
+  const statusBreakdown = useMemo(() => {
+    const map: Record<string, number> = {};
+    orders.forEach((o: any) => {
+      map[o.status] = (map[o.status] || 0) + 1;
+    });
+    return Object.entries(map).map(([name, value]) => ({ name, value }));
+  }, [orders]);
+
+  const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 
   return (
     <AdminLayout>

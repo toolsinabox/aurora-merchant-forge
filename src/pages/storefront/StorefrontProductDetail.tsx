@@ -293,6 +293,15 @@ export default function StorefrontProductDetail() {
           </div>
         )}
       </div>
+      {lightboxOpen && images.length > 0 && (
+        <ImageLightbox
+          images={images}
+          currentIndex={selectedImage}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setSelectedImage}
+          getImageUrl={getImageUrl}
+        />
+      )}
     </StorefrontLayout>
   );
 }
