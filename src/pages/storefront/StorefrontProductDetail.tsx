@@ -181,6 +181,14 @@ export default function StorefrontProductDetail() {
             )}
           </div>
         </div>
+
+        {/* Reviews Section */}
+        {store && (
+          <div className="mt-12">
+            <Separator className="mb-8" />
+            <ProductReviews productId={product.id} storeId={store.id} />
+          </div>
+        )}
       </div>
     </StorefrontLayout>
   );

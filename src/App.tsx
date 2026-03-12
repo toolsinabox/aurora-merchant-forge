@@ -26,6 +26,7 @@ import Analytics from "./pages/Analytics.tsx";
 import SettingsPage from "./pages/Settings.tsx";
 import Coupons from "./pages/Coupons.tsx";
 import Returns from "./pages/Returns.tsx";
+import Reviews from "./pages/Reviews.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
