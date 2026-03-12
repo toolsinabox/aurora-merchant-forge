@@ -56,6 +56,7 @@ export default function ProductForm() {
         track_inventory: existing.track_inventory ?? true,
       });
       setProductImages(existing.images || []);
+    }
   }, [existing]);
 
   const update = (field: string, value: string) => {
