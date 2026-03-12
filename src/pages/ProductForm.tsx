@@ -869,7 +869,7 @@ export default function ProductForm() {
                     </div>
                     <div className="rounded-md bg-muted p-3 space-y-0.5">
                       <p className="text-xs text-primary">{form.seo_title || form.title || "Page Title"}</p>
-                      <p className="text-2xs text-green-600">store.com/products/{form.slug || "product-slug"}</p>
+                      <p className="text-2xs text-accent-foreground">store.com/products/{form.slug || "product-slug"}</p>
                       <p className="text-2xs text-muted-foreground">{form.seo_description || "Meta description preview..."}</p>
                     </div>
                   </CardContent>

@@ -243,7 +243,7 @@ export default function ImportWizard() {
           {["Upload", "Map Fields", "Review", "Results"].map((s, i) => (
             <div key={s} className="flex items-center gap-1">
               <div className={`h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                i < step ? "bg-primary text-primary-foreground" : i === step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                i <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
               }`}>
                 {i < step ? <Check className="h-3 w-3" /> : i + 1}
               </div>
