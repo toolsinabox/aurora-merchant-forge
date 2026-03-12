@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useProducts, useOrders, useCustomers } from "@/hooks/use-data";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
   Users, Plus, ExternalLink, ArrowRight,
