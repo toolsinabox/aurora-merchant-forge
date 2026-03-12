@@ -1,19 +1,21 @@
+import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { mockOrders } from "@/lib/mock-data";
+import { useOrders } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Orders() {
+  const { data: orders = [], isLoading } = useOrders();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const filtered = mockOrders.filter((o) => {
-    const matchSearch = o.orderNumber.includes(search) || o.customer.toLowerCase().includes(search.toLowerCase());
+  const filtered = orders.filter((o: any) => {
+    const matchSearch = o.order_number.includes(search) || (o.customers?.name || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || o.status === statusFilter;
     return matchSearch && matchStatus;
   });
@@ -23,7 +25,7 @@ export default function Orders() {
       <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Orders</h1>
-          <p className="text-xs text-muted-foreground">{mockOrders.length} total orders</p>
+          <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
         </div>
 
         <Card>
@@ -58,17 +60,23 @@ export default function Orders() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((o) => (
-                  <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50">
-                    <TableCell className="py-2 font-medium">{o.orderNumber}</TableCell>
-                    <TableCell className="py-2">{o.customer}</TableCell>
-                    <TableCell className="py-2">{o.items}</TableCell>
-                    <TableCell className="py-2"><StatusBadge status={o.status} /></TableCell>
-                    <TableCell className="py-2"><StatusBadge status={o.paymentStatus} /></TableCell>
-                    <TableCell className="py-2 text-right font-medium">${o.total.toFixed(2)}</TableCell>
-                    <TableCell className="py-2 text-muted-foreground">{o.date}</TableCell>
-                  </TableRow>
-                ))}
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                ) : filtered.length === 0 ? (
+                  <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
+                ) : (
+                  filtered.map((o: any) => (
+                    <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50">
+                      <TableCell className="py-2 font-medium">{o.order_number}</TableCell>
+                      <TableCell className="py-2">{o.customers?.name || "—"}</TableCell>
+                      <TableCell className="py-2">{o.items_count}</TableCell>
+                      <TableCell className="py-2"><StatusBadge status={o.status} /></TableCell>
+                      <TableCell className="py-2"><StatusBadge status={o.payment_status} /></TableCell>
+                      <TableCell className="py-2 text-right font-medium">${Number(o.total).toFixed(2)}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>
