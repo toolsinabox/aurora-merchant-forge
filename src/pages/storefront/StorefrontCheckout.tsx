@@ -207,7 +207,7 @@ export default function StorefrontCheckout() {
           <h1 className="text-2xl font-bold mb-2">Order Placed!</h1>
           <p className="text-muted-foreground mb-1">Thank you for your order.</p>
           <p className="text-sm font-medium mb-6">Order number: <span className="font-mono">{orderNumber}</span></p>
-          <Button onClick={() => navigate(`/store/${storeSlug}`)}>Continue Shopping</Button>
+          <Button onClick={() => navigate(basePath || "/")}>Continue Shopping</Button>
         </div>
       </StorefrontLayout>
     );
