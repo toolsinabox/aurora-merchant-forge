@@ -4,14 +4,29 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mockProducts, mockLocations } from "@/lib/mock-data";
+import { useProducts, useInventoryLocations, useCreateLocation } from "@/hooks/use-data";
 import { Search, Plus, AlertTriangle, Package, Warehouse } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Inventory() {
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
+  const { data: locations = [], isLoading: loadingLocations } = useInventoryLocations();
+  const createLocation = useCreateLocation();
   const [search, setSearch] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
+  const [locOpen, setLocOpen] = useState(false);
+  const [newLoc, setNewLoc] = useState({ name: "", type: "warehouse", address: "" });
+
+  const getVariantStock = (p: any) => {
+    if (p.product_variants && p.product_variants.length > 0) {
+      return p.product_variants.reduce((sum: number, v: any) => sum + (v.stock || 0), 0);
+    }
+    return 0;
+  };
 
   const getStockStatus = (stock: number) => {
     if (stock === 0) return "out-of-stock";
@@ -19,16 +34,24 @@ export default function Inventory() {
     return "in-stock";
   };
 
-  const inventoryItems = mockProducts.filter((p) => {
+  const inventoryItems = products.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase());
-    const status = getStockStatus(p.stock);
+    const stock = getVariantStock(p);
+    const status = getStockStatus(stock);
     const matchFilter = stockFilter === "all" || status === stockFilter;
     return matchSearch && matchFilter;
   });
 
-  const totalStock = mockProducts.reduce((sum, p) => sum + p.stock, 0);
-  const lowStock = mockProducts.filter((p) => p.stock > 0 && p.stock <= 10).length;
-  const outOfStock = mockProducts.filter((p) => p.stock === 0).length;
+  const totalStock = products.reduce((sum, p) => sum + getVariantStock(p), 0);
+  const lowStock = products.filter((p) => { const s = getVariantStock(p); return s > 0 && s <= 10; }).length;
+  const outOfStock = products.filter((p) => getVariantStock(p) === 0).length;
+
+  const handleCreateLocation = () => {
+    createLocation.mutate(
+      { name: newLoc.name, type: newLoc.type, address: newLoc.address || undefined },
+      { onSuccess: () => { setLocOpen(false); setNewLoc({ name: "", type: "warehouse", address: "" }); } }
+    );
+  };
 
   return (
     <AdminLayout>
@@ -38,10 +61,40 @@ export default function Inventory() {
             <h1 className="text-lg font-semibold">Inventory</h1>
             <p className="text-xs text-muted-foreground">Track stock across all locations</p>
           </div>
-          <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Location</Button>
+          <Dialog open={locOpen} onOpenChange={setLocOpen}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Location</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle className="text-sm">New Location</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Name</Label>
+                  <Input className="h-8 text-xs" value={newLoc.name} onChange={(e) => setNewLoc({ ...newLoc, name: e.target.value })} placeholder="Main Warehouse" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Type</Label>
+                  <Select value={newLoc.type} onValueChange={(v) => setNewLoc({ ...newLoc, type: v })}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="warehouse" className="text-xs">Warehouse</SelectItem>
+                      <SelectItem value="store" className="text-xs">Store</SelectItem>
+                      <SelectItem value="dropship" className="text-xs">Dropship</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Address</Label>
+                  <Input className="h-8 text-xs" value={newLoc.address} onChange={(e) => setNewLoc({ ...newLoc, address: e.target.value })} placeholder="123 Main St" />
+                </div>
+                <Button size="sm" className="h-8 text-xs w-full" onClick={handleCreateLocation} disabled={createLocation.isPending}>
+                  {createLocation.isPending ? "Creating..." : "Create Location"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
           <Card><CardContent className="p-4 flex items-center gap-3">
             <Package className="h-8 w-8 text-primary" />
@@ -49,7 +102,7 @@ export default function Inventory() {
           </CardContent></Card>
           <Card><CardContent className="p-4 flex items-center gap-3">
             <Warehouse className="h-8 w-8 text-info" />
-            <div><p className="text-2xs text-muted-foreground">Locations</p><p className="text-lg font-bold">{mockLocations.length}</p></div>
+            <div><p className="text-2xs text-muted-foreground">Locations</p><p className="text-lg font-bold">{locations.length}</p></div>
           </CardContent></Card>
           <Card><CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-8 w-8 text-warning" />
@@ -61,32 +114,32 @@ export default function Inventory() {
           </CardContent></Card>
         </div>
 
-        {/* Locations */}
-        <Card>
-          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Warehouse Locations</CardTitle></CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs h-8">Location</TableHead>
-                  <TableHead className="text-xs h-8">Type</TableHead>
-                  <TableHead className="text-xs h-8">Address</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockLocations.map((loc) => (
-                  <TableRow key={loc.id} className="text-xs">
-                    <TableCell className="py-2 font-medium">{loc.name}</TableCell>
-                    <TableCell className="py-2 capitalize">{loc.type}</TableCell>
-                    <TableCell className="py-2 text-muted-foreground">{loc.address}</TableCell>
+        {locations.length > 0 && (
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Warehouse Locations</CardTitle></CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Location</TableHead>
+                    <TableHead className="text-xs h-8">Type</TableHead>
+                    <TableHead className="text-xs h-8">Address</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+                <TableBody>
+                  {locations.map((loc) => (
+                    <TableRow key={loc.id} className="text-xs">
+                      <TableCell className="py-2 font-medium">{loc.name}</TableCell>
+                      <TableCell className="py-2 capitalize">{loc.type}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground">{loc.address || "—"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Stock Table */}
         <Card>
           <CardContent className="p-0">
             <div className="flex items-center gap-2 p-3 border-b">
@@ -114,14 +167,23 @@ export default function Inventory() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {inventoryItems.map((p) => (
-                  <TableRow key={p.id} className="text-xs">
-                    <TableCell className="py-2 font-medium">{p.title}</TableCell>
-                    <TableCell className="py-2 font-mono text-muted-foreground">{p.sku}</TableCell>
-                    <TableCell className="py-2 text-right">{p.stock}</TableCell>
-                    <TableCell className="py-2"><StatusBadge status={getStockStatus(p.stock)} /></TableCell>
-                  </TableRow>
-                ))}
+                {loadingProducts ? (
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={4}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                ) : inventoryItems.length === 0 ? (
+                  <TableRow><TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
+                ) : (
+                  inventoryItems.map((p) => {
+                    const stock = getVariantStock(p);
+                    return (
+                      <TableRow key={p.id} className="text-xs">
+                        <TableCell className="py-2 font-medium">{p.title}</TableCell>
+                        <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
+                        <TableCell className="py-2 text-right">{stock}</TableCell>
+                        <TableCell className="py-2"><StatusBadge status={getStockStatus(stock)} /></TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
               </TableBody>
             </Table>
           </CardContent>
