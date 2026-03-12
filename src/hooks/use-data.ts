@@ -568,6 +568,47 @@ export function useDeleteVariant() {
   });
 }
 
+// ===================== RETURNS =====================
+
+export function useReturns() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["returns", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("returns" as any)
+        .select("*, orders(order_number, total), customers(name, email)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useUpdateReturn() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; status?: string; admin_notes?: string; refund_amount?: number }) => {
+      const { data, error } = await supabase
+        .from("returns" as any)
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["returns"] });
+      toast.success("Return updated");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
 // ===================== STORE =====================
 
 export function useUpdateStore() {
