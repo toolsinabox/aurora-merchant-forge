@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const mainNav = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Merchants", url: "/merchants", icon: Store },
 ];
 
 const catalogNav = [
