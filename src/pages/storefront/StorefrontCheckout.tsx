@@ -214,7 +214,7 @@ export default function StorefrontCheckout() {
   }
 
   if (items.length === 0) {
-    navigate(`/store/${storeSlug}/cart`);
+    navigate(`${basePath}/cart`);
     return null;
   }
 
