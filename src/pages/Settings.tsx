@@ -49,8 +49,26 @@ export default function SettingsPage() {
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
 
-  // Load branding data
-  useState(() => {
+  // Theme builder state
+  const [themeForm, setThemeForm] = useState({
+    primary_color: "#2563eb",
+    secondary_color: "#64748b",
+    accent_color: "#f59e0b",
+    background_color: "#ffffff",
+    text_color: "#0f172a",
+    heading_font: "Inter",
+    body_font: "Inter",
+    button_radius: "md",
+    layout_style: "standard",
+    hero_style: "banner",
+    product_card_style: "minimal",
+    footer_style: "standard",
+    custom_css: "",
+  });
+  const [themeSaving, setThemeSaving] = useState(false);
+
+  // Load branding + theme data
+  useEffect(() => {
     if (!currentStore) return;
     supabase
       .from("stores")
@@ -67,7 +85,32 @@ export default function SettingsPage() {
           });
         }
       });
-  });
+
+    supabase
+      .from("store_themes")
+      .select("*")
+      .eq("store_id", currentStore.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setThemeForm({
+            primary_color: (data as any).primary_color || "#2563eb",
+            secondary_color: (data as any).secondary_color || "#64748b",
+            accent_color: (data as any).accent_color || "#f59e0b",
+            background_color: (data as any).background_color || "#ffffff",
+            text_color: (data as any).text_color || "#0f172a",
+            heading_font: (data as any).heading_font || "Inter",
+            body_font: (data as any).body_font || "Inter",
+            button_radius: (data as any).button_radius || "md",
+            layout_style: (data as any).layout_style || "standard",
+            hero_style: (data as any).hero_style || "banner",
+            product_card_style: (data as any).product_card_style || "minimal",
+            footer_style: (data as any).footer_style || "standard",
+            custom_css: (data as any).custom_css || "",
+          });
+        }
+      });
+  }, [currentStore]);
 
   const handleSaveBranding = async () => {
     if (!currentStore) return;
