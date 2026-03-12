@@ -11,8 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDeleteVariant } from "@/hooks/use-data";
-import { ArrowLeft, Save, Plus, Trash2, ImagePlus } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { ArrowLeft, Save, Plus, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 
 export default function ProductForm() {
   const { id } = useParams();
@@ -20,9 +22,11 @@ export default function ProductForm() {
   const isEdit = !!id && id !== "new";
   const { data: existing, isLoading } = useProduct(isEdit ? id : undefined);
   const { data: categories = [] } = useCategories();
+  const { currentStore } = useAuth();
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteVariant = useDeleteVariant();
+  const [productImages, setProductImages] = useState<string[]>([]);
 
   const [form, setForm] = useState({
     title: "", description: "", sku: "", barcode: "",
@@ -51,6 +55,7 @@ export default function ProductForm() {
         slug: existing.slug || "",
         track_inventory: existing.track_inventory ?? true,
       });
+      setProductImages(existing.images || []);
     }
   }, [existing]);
 
@@ -77,6 +82,7 @@ export default function ProductForm() {
       seo_description: form.seo_description || undefined,
       slug: form.slug || undefined,
       track_inventory: form.track_inventory,
+      images: productImages,
     };
 
     if (isEdit) {
@@ -181,11 +187,12 @@ export default function ProductForm() {
                 <Card>
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Media</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2">
-                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                      <ImagePlus className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-xs text-muted-foreground">Drag and drop images here, or click to browse</p>
-                      <Button variant="outline" size="sm" className="h-7 text-xs mt-3">Upload Images</Button>
-                    </div>
+                    <ProductImageUpload
+                      storeId={currentStore?.id || ""}
+                      productId={isEdit ? id : undefined}
+                      images={productImages}
+                      onImagesChange={setProductImages}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
