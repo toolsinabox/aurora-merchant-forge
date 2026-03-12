@@ -7,9 +7,30 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCustomers } from "@/hooks/use-data";
-import { Search, Plus, Users, DollarSign, ShoppingCart } from "lucide-react";
+import { Search, Plus, Users, DollarSign, ShoppingCart, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+
+function downloadCSV(data: any[], filename: string) {
+  if (data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  const csv = [
+    headers.join(","),
+    ...data.map((row) =>
+      headers.map((h) => {
+        const val = row[h];
+        const str = val === null || val === undefined ? "" : String(val);
+        return str.includes(",") || str.includes('"') || str.includes("\n") ? `"${str.replace(/"/g, '""')}"` : str;
+      }).join(",")
+    ),
+  ].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function Customers() {
   const navigate = useNavigate();
@@ -26,6 +47,21 @@ export default function Customers() {
   const totalRevenue = customers.reduce((s, c) => s + Number(c.total_spent), 0);
   const avgOrders = customers.length > 0 ? (customers.reduce((s, c) => s + c.total_orders, 0) / customers.length).toFixed(1) : "0";
 
+  const handleExport = () => {
+    const data = filtered.map((c) => ({
+      name: c.name,
+      email: c.email || "",
+      phone: c.phone || "",
+      segment: c.segment,
+      total_orders: c.total_orders,
+      total_spent: c.total_spent,
+      tags: (c.tags || []).join("; "),
+      created_at: c.created_at,
+    }));
+    downloadCSV(data, `customers-${new Date().toISOString().split("T")[0]}.csv`);
+    toast.success(`Exported ${data.length} customers`);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -34,7 +70,12 @@ export default function Customers() {
             <h1 className="text-lg font-semibold">Customers</h1>
             <p className="text-xs text-muted-foreground">{customers.length} total customers</p>
           </div>
-          <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Customer</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
+              <Download className="h-3.5 w-3.5" /> Export
+            </Button>
+            <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Customer</Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
