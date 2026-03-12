@@ -10,6 +10,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home } from "lucide-react";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
+import { ImageLightbox } from "@/components/storefront/ImageLightbox";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
@@ -32,6 +33,7 @@ export default function StorefrontProductDetail() {
   const [added, setAdded] = useState(false);
   const [zooming, setZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -145,6 +147,7 @@ export default function StorefrontProductDetail() {
               onMouseEnter={() => setZooming(true)}
               onMouseLeave={() => setZooming(false)}
               onMouseMove={handleImageMouseMove}
+              onClick={() => images.length > 0 && setLightboxOpen(true)}
             >
               {images[selectedImage] ? (
                 <img
@@ -290,6 +293,15 @@ export default function StorefrontProductDetail() {
           </div>
         )}
       </div>
+      {lightboxOpen && images.length > 0 && (
+        <ImageLightbox
+          images={images}
+          currentIndex={selectedImage}
+          onClose={() => setLightboxOpen(false)}
+          onNavigate={setSelectedImage}
+          getImageUrl={getImageUrl}
+        />
+      )}
     </StorefrontLayout>
   );
 }

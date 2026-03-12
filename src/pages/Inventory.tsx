@@ -7,19 +7,24 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useProducts, useInventoryLocations, useCreateLocation } from "@/hooks/use-data";
-import { Search, Plus, AlertTriangle, Package, Warehouse } from "lucide-react";
+import { useProducts, useInventoryLocations, useCreateLocation, useStockAdjustments, useInventoryStock } from "@/hooks/use-data";
+import { Search, Plus, AlertTriangle, Package, Warehouse, History, ArrowUpDown } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+import { format } from "date-fns";
 
 export default function Inventory() {
   const { data: products = [], isLoading: loadingProducts } = useProducts();
   const { data: locations = [], isLoading: loadingLocations } = useInventoryLocations();
+  const { data: adjustments = [] } = useStockAdjustments();
+  const { data: inventoryStockData = [] } = useInventoryStock();
   const createLocation = useCreateLocation();
   const [search, setSearch] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
   const [locOpen, setLocOpen] = useState(false);
   const [newLoc, setNewLoc] = useState({ name: "", type: "warehouse", address: "" });
+  const [showHistory, setShowHistory] = useState(false);
 
   const getVariantStock = (p: any) => {
     if (p.product_variants && p.product_variants.length > 0) {
@@ -61,38 +66,48 @@ export default function Inventory() {
             <h1 className="text-lg font-semibold">Inventory</h1>
             <p className="text-xs text-muted-foreground">Track stock across all locations</p>
           </div>
-          <Dialog open={locOpen} onOpenChange={setLocOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Location</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle className="text-sm">New Location</DialogTitle></DialogHeader>
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <Label className="text-xs">Name</Label>
-                  <Input className="h-8 text-xs" value={newLoc.name} onChange={(e) => setNewLoc({ ...newLoc, name: e.target.value })} placeholder="Main Warehouse" />
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant={showHistory ? "default" : "outline"}
+              className="h-8 text-xs gap-1"
+              onClick={() => setShowHistory(!showHistory)}
+            >
+              <History className="h-3.5 w-3.5" /> Adjustments
+            </Button>
+            <Dialog open={locOpen} onOpenChange={setLocOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Location</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle className="text-sm">New Location</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Name</Label>
+                    <Input className="h-8 text-xs" value={newLoc.name} onChange={(e) => setNewLoc({ ...newLoc, name: e.target.value })} placeholder="Main Warehouse" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Type</Label>
+                    <Select value={newLoc.type} onValueChange={(v) => setNewLoc({ ...newLoc, type: v })}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="warehouse" className="text-xs">Warehouse</SelectItem>
+                        <SelectItem value="store" className="text-xs">Store</SelectItem>
+                        <SelectItem value="dropship" className="text-xs">Dropship</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Address</Label>
+                    <Input className="h-8 text-xs" value={newLoc.address} onChange={(e) => setNewLoc({ ...newLoc, address: e.target.value })} placeholder="123 Main St" />
+                  </div>
+                  <Button size="sm" className="h-8 text-xs w-full" onClick={handleCreateLocation} disabled={createLocation.isPending}>
+                    {createLocation.isPending ? "Creating..." : "Create Location"}
+                  </Button>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Type</Label>
-                  <Select value={newLoc.type} onValueChange={(v) => setNewLoc({ ...newLoc, type: v })}>
-                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="warehouse" className="text-xs">Warehouse</SelectItem>
-                      <SelectItem value="store" className="text-xs">Store</SelectItem>
-                      <SelectItem value="dropship" className="text-xs">Dropship</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Address</Label>
-                  <Input className="h-8 text-xs" value={newLoc.address} onChange={(e) => setNewLoc({ ...newLoc, address: e.target.value })} placeholder="123 Main St" />
-                </div>
-                <Button size="sm" className="h-8 text-xs w-full" onClick={handleCreateLocation} disabled={createLocation.isPending}>
-                  {createLocation.isPending ? "Creating..." : "Create Location"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -113,6 +128,62 @@ export default function Inventory() {
             <div><p className="text-2xs text-muted-foreground">Out of Stock</p><p className="text-lg font-bold">{outOfStock}</p></div>
           </CardContent></Card>
         </div>
+
+        {/* Stock Adjustment History */}
+        {showHistory && (
+          <Card>
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <ArrowUpDown className="h-4 w-4" /> Stock Adjustment History
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Product</TableHead>
+                    <TableHead className="text-xs h-8">Location</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Change</TableHead>
+                    <TableHead className="text-xs h-8">Reason</TableHead>
+                    <TableHead className="text-xs h-8">By</TableHead>
+                    <TableHead className="text-xs h-8">Date</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {adjustments.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">
+                        No stock adjustments recorded yet
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    adjustments.map((adj: any) => {
+                      // Find matching inventory stock record
+                      const stockRecord = inventoryStockData.find((s: any) => s.id === adj.inventory_stock_id);
+                      return (
+                        <TableRow key={adj.id} className="text-xs">
+                          <TableCell className="py-2 font-medium">
+                            {(stockRecord as any)?.products?.title || "—"}
+                            {(stockRecord as any)?.product_variants?.name && (
+                              <span className="text-muted-foreground ml-1">({(stockRecord as any).product_variants.name})</span>
+                            )}
+                          </TableCell>
+                          <TableCell className="py-2">{(stockRecord as any)?.inventory_locations?.name || "—"}</TableCell>
+                          <TableCell className={`py-2 text-right font-mono font-medium ${adj.quantity_change > 0 ? "text-success" : "text-destructive"}`}>
+                            {adj.quantity_change > 0 ? "+" : ""}{adj.quantity_change}
+                          </TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{adj.reason || "—"}</TableCell>
+                          <TableCell className="py-2">{(adj.profiles as any)?.display_name || "—"}</TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{format(new Date(adj.created_at), "MMM d, HH:mm")}</TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
         {locations.length > 0 && (
           <Card>

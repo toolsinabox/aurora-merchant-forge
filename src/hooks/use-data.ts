@@ -609,6 +609,87 @@ export function useUpdateReturn() {
   });
 }
 
+// ===================== STOCK ADJUSTMENTS =====================
+
+export function useStockAdjustments(inventoryStockId?: string) {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["stock_adjustments", currentStore?.id, inventoryStockId],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      let query = supabase
+        .from("stock_adjustments")
+        .select("*, profiles:adjusted_by(display_name)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (inventoryStockId) {
+        query = query.eq("inventory_stock_id", inventoryStockId);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateStockAdjustment() {
+  const qc = useQueryClient();
+  const { currentStore, user } = useAuth();
+  return useMutation({
+    mutationFn: async (adj: { inventory_stock_id: string; quantity_change: number; reason?: string }) => {
+      if (!currentStore || !user) throw new Error("Not authenticated");
+      const { data, error } = await supabase
+        .from("stock_adjustments")
+        .insert({
+          ...adj,
+          store_id: currentStore.id,
+          adjusted_by: user.id,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      // Update the inventory_stock quantity
+      const { data: stock } = await supabase
+        .from("inventory_stock")
+        .select("quantity")
+        .eq("id", adj.inventory_stock_id)
+        .single();
+      if (stock) {
+        await supabase
+          .from("inventory_stock")
+          .update({ quantity: stock.quantity + adj.quantity_change })
+          .eq("id", adj.inventory_stock_id);
+      }
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["stock_adjustments"] });
+      qc.invalidateQueries({ queryKey: ["inventory_stock"] });
+      toast.success("Stock adjusted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useInventoryStock() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["inventory_stock", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("inventory_stock")
+        .select("*, products(title), product_variants(name), inventory_locations(name)")
+        .eq("store_id", currentStore.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+}
+
 // ===================== STORE =====================
 
 export function useUpdateStore() {

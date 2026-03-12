@@ -1,15 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useProducts, useOrders, useCustomers } from "@/hooks/use-data";
+import { supabase } from "@/integrations/supabase/client";
 import {
   DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
   Users, Plus, ExternalLink, ArrowRight,
 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -121,13 +122,64 @@ export default function Dashboard() {
 
   const isEmptyStore = !loadingProducts && !loadingOrders && products.length === 0 && orders.length === 0;
 
-  // Top selling products (by price as proxy — ideally by order count)
+  // Top selling products by order item count
+  const [orderItems, setOrderItems] = useState<any[]>([]);
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase
+      .from("order_items")
+      .select("product_id, quantity, products(title, price, images)")
+      .eq("store_id", currentStore.id)
+      .then(({ data }) => { if (data) setOrderItems(data); });
+  }, [currentStore]);
+
   const topProducts = useMemo(() => {
-    return products
-      .filter((p) => p.status === "active")
-      .sort((a, b) => b.price - a.price)
-      .slice(0, 5);
-  }, [products]);
+    const map = new Map<string, { title: string; price: number; images: string[]; sold: number }>();
+    orderItems.forEach((item: any) => {
+      if (!item.product_id || !item.products) return;
+      const existing = map.get(item.product_id);
+      if (existing) {
+        existing.sold += item.quantity;
+      } else {
+        map.set(item.product_id, {
+          title: item.products.title,
+          price: item.products.price,
+          images: item.products.images || [],
+          sold: item.quantity,
+        });
+      }
+    });
+    return Array.from(map.entries())
+      .sort((a, b) => b[1].sold - a[1].sold)
+      .slice(0, 5)
+      .map(([id, data]) => ({ id, ...data }));
+  }, [orderItems]);
+
+  // Customer growth data
+  const customerGrowthData = useMemo(() => {
+    const now = new Date();
+    const result: { date: string; customers: number }[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0];
+      const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const count = customers.filter((c: any) => c.created_at?.startsWith(dateStr)).length;
+      result.push({ date: label, customers: count });
+    }
+    return result;
+  }, [customers]);
+
+  // Order status breakdown for pie chart
+  const statusBreakdown = useMemo(() => {
+    const map: Record<string, number> = {};
+    orders.forEach((o: any) => {
+      map[o.status] = (map[o.status] || 0) + 1;
+    });
+    return Object.entries(map).map(([name, value]) => ({ name, value }));
+  }, [orders]);
+
+  const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))"];
 
   return (
     <AdminLayout>
@@ -291,7 +343,10 @@ export default function Dashboard() {
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium truncate">{p.title}</p>
                           </div>
-                          <span className="text-xs font-semibold">${Number(p.price).toFixed(2)}</span>
+                          <div className="text-right">
+                            <span className="text-xs font-semibold">{p.sold} sold</span>
+                            <p className="text-2xs text-muted-foreground">${Number(p.price).toFixed(2)}</p>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -300,21 +355,78 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Customer + Low Stock summary row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Card>
+            {/* Customer Growth + Order Status */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+              <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
-                  <CardTitle className="text-sm font-medium">Customers</CardTitle>
+                  <CardTitle className="text-sm font-medium">Customer Growth (30 Days)</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/customers")}>
                     View all <ArrowRight className="h-3 w-3" />
                   </Button>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  {loadingCustomers ? <Skeleton className="h-[200px] w-full" /> : (
+                    <ResponsiveContainer width="100%" height={200}>
+                      <LineChart data={customerGrowthData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+                        <XAxis dataKey="date" tick={{ fontSize: 9 }} stroke="hsl(var(--muted-foreground))" interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+                        <Line type="monotone" dataKey="customers" stroke="hsl(var(--success))" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-sm font-medium">Order Status</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 flex items-center justify-center">
+                  {loadingOrders ? <Skeleton className="h-[200px] w-full" /> : statusBreakdown.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-6">No orders yet</p>
+                  ) : (
+                    <div className="w-full">
+                      <ResponsiveContainer width="100%" height={160}>
+                        <PieChart>
+                          <Pie data={statusBreakdown} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={2} dataKey="value">
+                            {statusBreakdown.map((_, idx) => (
+                              <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 justify-center mt-2">
+                        {statusBreakdown.map((s, idx) => (
+                          <div key={s.name} className="flex items-center gap-1.5 text-xs">
+                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: PIE_COLORS[idx % PIE_COLORS.length] }} />
+                            <span className="capitalize text-muted-foreground">{s.name}</span>
+                            <span className="font-medium">{s.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Inventory Alerts */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <Users className="h-4 w-4" /> Customers
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-2">
                   {loadingCustomers ? <Skeleton className="h-16 w-full" /> : (
                     <div className="flex items-center gap-6">
                       <div>
                         <p className="text-2xl font-bold">{customers.length}</p>
-                        <p className="text-xs text-muted-foreground">Total customers</p>
+                        <p className="text-xs text-muted-foreground">Total</p>
                       </div>
                       <div>
                         <p className="text-2xl font-bold">{customers.filter((c: any) => c.segment === "new").length}</p>
