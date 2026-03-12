@@ -186,11 +186,12 @@ export default function ProductForm() {
                 <Card>
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Media</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2">
-                    <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                      <ImagePlus className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                      <p className="text-xs text-muted-foreground">Drag and drop images here, or click to browse</p>
-                      <Button variant="outline" size="sm" className="h-7 text-xs mt-3">Upload Images</Button>
-                    </div>
+                    <ProductImageUpload
+                      storeId={currentStore?.id || ""}
+                      productId={isEdit ? id : undefined}
+                      images={productImages}
+                      onImagesChange={setProductImages}
+                    />
                   </CardContent>
                 </Card>
               </TabsContent>
