@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useReturns, useUpdateReturn } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, RotateCcw } from "lucide-react";
+import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
 
