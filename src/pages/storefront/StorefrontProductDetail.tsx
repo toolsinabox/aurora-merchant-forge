@@ -250,29 +250,38 @@ export default function StorefrontProductDetail() {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{product.title}</h1>
               {product.subtitle && <p className="text-muted-foreground mt-1">{product.subtitle}</p>}
               
-              <div className="flex items-baseline gap-3 mt-3">
-                <span className="text-2xl font-bold">${Number(finalPrice).toFixed(2)}</span>
-                {promoActive && (
-                  <>
-                    <span className="text-lg text-muted-foreground line-through">${Number(price).toFixed(2)}</span>
-                    <Badge variant="destructive" className="text-xs">
-                      {Math.round((1 - Number(product.promo_price) / Number(price)) * 100)}% OFF
-                    </Badge>
-                  </>
-                )}
-                {!promoActive && product.compare_at_price && product.compare_at_price > finalPrice && (
-                  <>
-                    <span className="text-lg text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
-                    <span className="text-sm font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
-                      {Math.round((1 - Number(finalPrice) / Number(product.compare_at_price)) * 100)}% OFF
-                    </span>
-                  </>
-                )}
-              </div>
-              {promoActive && product.promo_end && (
-                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> Sale ends {new Date(product.promo_end).toLocaleDateString()}
-                </p>
+              {product.poa ? (
+                <div className="mt-3">
+                  <span className="text-xl font-semibold text-primary">Contact for Price</span>
+                  <p className="text-sm text-muted-foreground mt-1">This product is available on application. Please contact us for pricing.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-3 mt-3">
+                    <span className="text-2xl font-bold">${Number(finalPrice).toFixed(2)}</span>
+                    {promoActive && (
+                      <>
+                        <span className="text-lg text-muted-foreground line-through">${Number(price).toFixed(2)}</span>
+                        <Badge variant="destructive" className="text-xs">
+                          {Math.round((1 - Number(product.promo_price) / Number(price)) * 100)}% OFF
+                        </Badge>
+                      </>
+                    )}
+                    {!promoActive && product.compare_at_price && product.compare_at_price > finalPrice && (
+                      <>
+                        <span className="text-lg text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
+                        <span className="text-sm font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
+                          {Math.round((1 - Number(finalPrice) / Number(product.compare_at_price)) * 100)}% OFF
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {promoActive && product.promo_end && (
+                    <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> Sale ends {new Date(product.promo_end).toLocaleDateString()}
+                    </p>
+                  )}
+                </>
               )}
               {applicableTier && (
                 <p className="text-xs text-primary mt-1">Bulk price applied: {applicableTier.tier_name} (min {applicableTier.min_quantity} units)</p>
