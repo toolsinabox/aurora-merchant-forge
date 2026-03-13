@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -92,6 +92,11 @@ export default function StorefrontAccount() {
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
   const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses">("orders");
+
+  // Edit profile state
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: "", phone: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
 
   // Return request dialog
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
@@ -386,12 +391,46 @@ export default function StorefrontAccount() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="text-sm flex items-center gap-2"><User className="h-4 w-4" /> Profile</CardTitle>
+              {!loading && customer && !editingProfile && (
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setProfileForm({ name: customer.name || "", phone: customer.phone || "" }); setEditingProfile(true); }}>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+              )}
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               {loading ? (
                 <><Skeleton className="h-4 w-32" /><Skeleton className="h-4 w-48" /></>
+              ) : editingProfile ? (
+                <div className="space-y-3">
+                  <div>
+                    <Label className="text-xs">Name</Label>
+                    <Input className="h-9" value={profileForm.name} onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Phone</Label>
+                    <Input className="h-9" value={profileForm.phone} onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })} />
+                  </div>
+                  <p className="text-xs text-muted-foreground">{user.email} (cannot be changed)</p>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="h-8" disabled={savingProfile} onClick={async () => {
+                      if (!profileForm.name.trim()) { toast.error("Name is required"); return; }
+                      setSavingProfile(true);
+                      try {
+                        const { error } = await supabase.from("customers").update({ name: profileForm.name.trim(), phone: profileForm.phone.trim() || null }).eq("id", customer.id);
+                        if (error) throw error;
+                        setCustomer({ ...customer, name: profileForm.name.trim(), phone: profileForm.phone.trim() || null });
+                        setEditingProfile(false);
+                        toast.success("Profile updated");
+                      } catch (err: any) { toast.error(err.message); }
+                      finally { setSavingProfile(false); }
+                    }}>
+                      {savingProfile ? "Saving..." : "Save"}
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => setEditingProfile(false)}>Cancel</Button>
+                  </div>
+                </div>
               ) : (
                 <>
                   <p className="font-medium">{customer?.name || user.email}</p>
