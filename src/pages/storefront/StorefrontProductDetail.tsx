@@ -355,25 +355,32 @@ export default function StorefrontProductDetail() {
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                className="flex-1 h-12 text-base font-medium gap-2"
-                onClick={handleAddToCart}
-                disabled={currentVariant && currentVariant.stock <= 0}
-              >
-                {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
-              </Button>
-              {store && (
+            {!product.poa && (
+              <div className="flex gap-3">
                 <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
-                  onClick={() => toggleItem(product.id, store.id)}
+                  className="flex-1 h-12 text-base font-medium gap-2"
+                  onClick={handleAddToCart}
+                  disabled={currentVariant && currentVariant.stock <= 0}
                 >
-                  <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                  {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
                 </Button>
-              )}
-            </div>
+                {store && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
+                    onClick={() => toggleItem(product.id, store.id)}
+                  >
+                    <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                  </Button>
+                )}
+              </div>
+            )}
+            {product.poa && (
+              <Button variant="outline" className="w-full h-12" onClick={() => window.location.href = `mailto:${store?.contact_email || ''}`}>
+                Contact Us for Pricing
+              </Button>
+            )}
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 pt-2">

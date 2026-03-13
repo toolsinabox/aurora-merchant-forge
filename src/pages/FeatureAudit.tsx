@@ -696,7 +696,7 @@ const featureData: FeatureCategory[] = [
     category: "B2B / Wholesale",
     icon: <Building className="h-5 w-5" />,
     features: [
-      { name: "Customer Groups (Wholesale/Retail/VIP)", description: "Assign customers to price-tier groups", status: "not_started" },
+      { name: "Customer Groups (Wholesale/Retail/VIP)", description: "Assign customers to price-tier groups", status: "done", notes: "customer_groups table with CRUD in Settings, assignable on customer detail" },
       { name: "Group-Based Pricing", description: "Show different prices per customer group", status: "done", notes: "Pricing tiers with user_group exist" },
       { name: "Wholesale Registration Form", description: "Separate wholesale signup with admin approval", status: "not_started" },
       { name: "Wholesale Approval Workflow", description: "Admin reviews and approves wholesale applicants", status: "not_started" },
