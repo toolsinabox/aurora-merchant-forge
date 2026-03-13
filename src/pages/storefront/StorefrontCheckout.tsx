@@ -246,6 +246,22 @@ export default function StorefrontCheckout() {
           .from("customers").select("id").eq("store_id", storeId).eq("email", form.email).maybeSingle();
         if (emailCust) customerId = emailCust.id;
       }
+      // Auto-create customer record if none found
+      if (!customerId) {
+        const { data: newCust } = await supabase
+          .from("customers")
+          .insert({
+            store_id: storeId,
+            name: form.name,
+            email: form.email,
+            phone: form.phone || null,
+            user_id: user?.id || null,
+            segment: "new",
+          } as any)
+          .select("id")
+          .single();
+        if (newCust) customerId = newCust.id;
+      }
 
       const { data: order, error: orderErr } = await supabase
         .from("orders")
