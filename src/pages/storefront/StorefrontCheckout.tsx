@@ -441,6 +441,18 @@ export default function StorefrontCheckout() {
         } as any).eq("id", appliedVoucher.id);
       }
 
+      // Deduct store credit
+      if (storeCreditAmount > 0 && customerId) {
+        await supabase.from("store_credit_transactions" as any).insert({
+          customer_id: customerId,
+          store_id: storeId,
+          amount: storeCreditAmount,
+          type: "debit",
+          description: `Order ${orderNum}`,
+          order_id: order.id,
+        });
+      }
+
       setOrderNumber(orderNum);
       setOrderTotal(finalTotal);
       setCompleted(true);
