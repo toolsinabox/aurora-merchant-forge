@@ -244,6 +244,34 @@ export default function Analytics() {
         .slice(0, 10);
       setSlowMovingProducts(slowMoving);
 
+      // Stock turnover report: (units sold / average stock) for each product
+      const { data: stockData } = await supabase
+        .from("inventory_stock")
+        .select("product_id, quantity")
+        .eq("store_id", currentStore.id);
+      const stockByProduct: Record<string, number> = {};
+      (stockData || []).forEach((s: any) => {
+        stockByProduct[s.product_id] = (stockByProduct[s.product_id] || 0) + Number(s.quantity);
+      });
+      const turnover = (allProducts || [])
+        .map((p: any) => {
+          const stock = stockByProduct[p.id] || 0;
+          const sold = unitsSoldMap[p.id] || 0;
+          const avgStock = stock > 0 ? stock : 1;
+          const rate = sold / avgStock;
+          return {
+            title: productMap[p.id]?.title || p.id.slice(0, 8),
+            stock,
+            unitsSold: sold,
+            costPrice: Number(p.cost_price) || Number(p.price),
+            turnoverRate: Math.round(rate * 100) / 100,
+          };
+        })
+        .filter((p: any) => p.stock > 0 || p.unitsSold > 0)
+        .sort((a: any, b: any) => b.turnoverRate - a.turnoverRate)
+        .slice(0, 15);
+      setStockTurnoverData(turnover);
+
       setLoadingTopProducts(false);
     };
     fetchData();
