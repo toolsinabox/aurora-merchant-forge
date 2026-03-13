@@ -80,6 +80,8 @@ import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 import Quotes from "./pages/Quotes.tsx";
 import PrintQuote from "./pages/PrintQuote.tsx";
 import Layby from "./pages/Layby.tsx";
+import Webhooks from "./pages/Webhooks.tsx";
+import MediaLibrary from "./pages/MediaLibrary.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
