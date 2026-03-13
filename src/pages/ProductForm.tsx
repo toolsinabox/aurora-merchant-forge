@@ -645,7 +645,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" value={shipping.selling_unit} onChange={(e) => setShipping(p => ({ ...p, selling_unit: e.target.value }))} placeholder="e.g. Each, Pack" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Base Unit</Label>
+                        <FieldLabel label="Base Unit" field="base_unit" />
                         <Input className="h-8 text-xs" value={shipping.base_unit} onChange={(e) => setShipping(p => ({ ...p, base_unit: e.target.value }))} placeholder="e.g. Kg, L" />
                       </div>
                       <div className="space-y-1">
