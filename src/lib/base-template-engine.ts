@@ -304,6 +304,19 @@ function processValueTags(template: string, ctx: TemplateContext): string {
   });
 }
 
+// Process template includes: [!include slug!]
+// Resolves sub-templates from the includes map in context
+function processIncludes(template: string, ctx: TemplateContext, depth = 0): string {
+  if (depth > 5) return template; // prevent infinite recursion
+  const includeRegex = /\[!include\s+([\w\-]+)!\]/g;
+  return template.replace(includeRegex, (_, slug: string) => {
+    const includes = (ctx as any).includes as Record<string, string> | undefined;
+    if (!includes || !includes[slug]) return `<!-- include "${slug}" not found -->`;
+    // Recursively process includes within includes
+    return processIncludes(includes[slug], ctx, depth + 1);
+  });
+}
+
 /**
  * Render a B@SE template string with the given context data.
  */
@@ -313,13 +326,16 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 1. Strip comments
   result = stripComments(result);
 
-  // 2. Process blocks (iterators)
+  // 2. Process includes (sub-templates)
+  result = processIncludes(result, ctx);
+
+  // 3. Process blocks (iterators)
   result = processBlocks(result, ctx);
 
-  // 3. Process conditionals
+  // 4. Process conditionals
   result = processConditionals(result, ctx);
 
-  // 4. Process value tags
+  // 5. Process value tags
   result = processValueTags(result, ctx);
 
   return result;
