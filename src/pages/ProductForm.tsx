@@ -308,7 +308,7 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">SKU</Label>
+                        <FieldLabel label="SKU" field="sku" />
                         <Input className="h-8 text-xs font-mono" value={form.sku} onChange={(e) => update("sku", e.target.value)} />
                       </div>
                       <div className="space-y-1">
