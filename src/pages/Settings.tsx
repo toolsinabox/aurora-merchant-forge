@@ -657,6 +657,7 @@ export default function SettingsPage() {
             <TabsTrigger value="wholesale" className="text-xs h-7">Wholesale</TabsTrigger>
             <TabsTrigger value="inventory" className="text-xs h-7">Inventory</TabsTrigger>
             <TabsTrigger value="payments" className="text-xs h-7">Payments</TabsTrigger>
+            <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
