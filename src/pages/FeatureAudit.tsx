@@ -775,7 +775,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Export (CSV/XML)", description: "Export orders for accounting/analytics", status: "done", notes: "Orders tab in Export Wizard with field selection, status filter, date range, customer details, and line items" },
       { name: "Category Import / Export", description: "Bulk manage categories via CSV", status: "done", notes: "Categories tab in Export Wizard with name, slug, description, hierarchy, and SEO fields" },
       { name: "Image Bulk Upload (ZIP)", description: "Upload multiple product images via ZIP file", status: "not_started" },
-      { name: "Scheduled Auto-Exports", description: "Automated exports on schedule (e.g., nightly order export)", status: "not_started" },
+      { name: "Scheduled Auto-Exports", description: "Automated exports on schedule (e.g., nightly order export)", status: "done", notes: "scheduled_exports table with entity type, frequency (daily/weekly/monthly), field selection, filters, email recipient; scheduled-export edge function generates CSV and emails it" },
       { name: "Data Transformations on Import", description: "Transform data during import (case, math, concatenate)", status: "done", notes: "Transforms: lowercase, UPPERCASE, Capitalize, Trim whitespace, URL Slug applied during product import" },
     ],
   },
