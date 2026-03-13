@@ -45,6 +45,9 @@ export default function StorefrontCheckout() {
   const [voucherLoading, setVoucherLoading] = useState(false);
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
 
+  // Gift message
+  const [giftMessage, setGiftMessage] = useState("");
+
   // Delivery method
   const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">("shipping");
 
@@ -756,6 +759,21 @@ export default function StorefrontCheckout() {
                     <Button type="button" variant="outline" size="sm" onClick={applyVoucher} disabled={voucherLoading} className="h-9 px-3 shrink-0">
                       {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Gift className="h-3 w-3" />}
                     </Button>
+                  </div>
+                )}
+
+                {/* Gift Voucher Message */}
+                {appliedVoucher && (
+                  <div className="space-y-1">
+                    <Label className="text-xs flex items-center gap-1"><Gift className="h-3 w-3" /> Gift Message (optional)</Label>
+                    <Textarea
+                      value={giftMessage}
+                      onChange={(e) => setGiftMessage(e.target.value)}
+                      placeholder="Add a personal message to include with the gift voucher..."
+                      className="min-h-[60px] text-xs"
+                      maxLength={500}
+                    />
+                    <p className="text-2xs text-muted-foreground">{giftMessage.length}/500 characters</p>
                   </div>
                 )}
 

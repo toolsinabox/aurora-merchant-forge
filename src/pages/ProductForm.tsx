@@ -17,6 +17,7 @@ import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 import { FieldLabel } from "@/components/products/BaseTag";
+import { ProductAddonsTab } from "@/components/products/ProductAddonsTab";
 
 export default function ProductForm() {
   const { id } = useParams();
@@ -286,6 +287,7 @@ export default function ProductForm() {
             <TabsTrigger value="media" className="text-xs h-7">Media</TabsTrigger>
             <TabsTrigger value="variants" className="text-xs h-7">Variants ({variants.length})</TabsTrigger>
             <TabsTrigger value="specifics" className="text-xs h-7">Specifics</TabsTrigger>
+            <TabsTrigger value="addons" className="text-xs h-7">Addons</TabsTrigger>
             <TabsTrigger value="merchandising" className="text-xs h-7">Merchandising</TabsTrigger>
             <TabsTrigger value="seo" className="text-xs h-7">SEO</TabsTrigger>
             <TabsTrigger value="advanced" className="text-xs h-7">Advanced</TabsTrigger>
@@ -839,6 +841,11 @@ export default function ProductForm() {
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* ADDONS TAB */}
+              <TabsContent value="addons" className="mt-0 space-y-3">
+                <ProductAddonsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
               </TabsContent>
 
               {/* SEO TAB */}

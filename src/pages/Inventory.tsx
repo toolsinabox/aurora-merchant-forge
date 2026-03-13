@@ -396,24 +396,39 @@ export default function Inventory() {
                   <TableHead className="text-xs h-8">Product</TableHead>
                   <TableHead className="text-xs h-8">SKU</TableHead>
                   <TableHead className="text-xs h-8">Bin Location</TableHead>
+                  <TableHead className="text-xs h-8">Batch/Lot</TableHead>
+                  <TableHead className="text-xs h-8">Expiry</TableHead>
                   <TableHead className="text-xs h-8 text-right">Stock</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loadingProducts ? (
-                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={5}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : inventoryItems.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
                 ) : (
                   inventoryItems.map((p) => {
                     const stock = getVariantStock(p);
+                    const stockRecord = (inventoryStockData as any[]).find((s: any) => s.product_id === p.id);
+                    const expDate = stockRecord?.expiry_date;
+                    const isExpired = expDate && new Date(expDate) < new Date();
+                    const isExpiringSoon = expDate && !isExpired && new Date(expDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
                     return (
                       <TableRow key={p.id} className="text-xs">
                         <TableCell className="py-2 font-medium">{p.title}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">
-                          {(inventoryStockData as any[]).find((s: any) => s.product_id === p.id)?.bin_location || "—"}
+                          {stockRecord?.bin_location || "—"}
+                        </TableCell>
+                        <TableCell className="py-2 text-muted-foreground">
+                          {stockRecord?.batch_number || stockRecord?.lot_number
+                            ? `${stockRecord?.batch_number || ""}${stockRecord?.batch_number && stockRecord?.lot_number ? " / " : ""}${stockRecord?.lot_number || ""}`
+                            : "—"}
+                        </TableCell>
+                        <TableCell className={`py-2 ${isExpired ? "text-destructive font-medium" : isExpiringSoon ? "text-orange-600 font-medium" : "text-muted-foreground"}`}>
+                          {expDate ? format(new Date(expDate), "dd MMM yyyy") : "—"}
+                          {isExpired && " ⚠️"}
                         </TableCell>
                         <TableCell className="py-2 text-right">{stock}</TableCell>
                         <TableCell className="py-2"><StatusBadge status={getStockStatus(stock)} /></TableCell>
