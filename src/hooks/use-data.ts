@@ -945,6 +945,163 @@ export function useInventoryStock() {
   });
 }
 
+// ===================== ORDER SHIPMENTS =====================
+
+export function useOrderShipments(orderId: string | undefined) {
+  return useQuery({
+    queryKey: ["order_shipments", orderId],
+    queryFn: async () => {
+      if (!orderId) return [];
+      const { data, error } = await supabase
+        .from("order_shipments" as any)
+        .select("*, shipment_items(*, order_items:order_item_id(title, sku, quantity))")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!orderId,
+  });
+}
+
+export function useCreateShipment() {
+  const qc = useQueryClient();
+  const { currentStore, user } = useAuth();
+  return useMutation({
+    mutationFn: async (shipment: {
+      order_id: string;
+      carrier?: string;
+      tracking_number?: string;
+      tracking_url?: string;
+      notes?: string;
+      items: { order_item_id: string; quantity: number }[];
+    }) => {
+      if (!currentStore) throw new Error("No store");
+      const shipmentNumber = `SHP-${Date.now().toString(36).toUpperCase()}`;
+      const { data: newShipment, error: shipErr } = await supabase
+        .from("order_shipments" as any)
+        .insert({
+          order_id: shipment.order_id,
+          store_id: currentStore.id,
+          shipment_number: shipmentNumber,
+          carrier: shipment.carrier || null,
+          tracking_number: shipment.tracking_number || null,
+          tracking_url: shipment.tracking_url || null,
+          status: "pending",
+          notes: shipment.notes || null,
+        })
+        .select()
+        .single();
+      if (shipErr) throw shipErr;
+      if (shipment.items.length > 0) {
+        const itemRows = shipment.items.map((i) => ({
+          shipment_id: (newShipment as any).id,
+          order_item_id: i.order_item_id,
+          quantity: i.quantity,
+          store_id: currentStore.id,
+        }));
+        const { error: itemsErr } = await supabase.from("shipment_items" as any).insert(itemRows);
+        if (itemsErr) throw itemsErr;
+      }
+      // Add timeline event
+      await supabase.from("order_timeline" as any).insert({
+        order_id: shipment.order_id,
+        store_id: currentStore.id,
+        user_id: user?.id || null,
+        event_type: "shipment_created",
+        title: "Shipment created",
+        description: `${shipmentNumber}${shipment.carrier ? ` via ${shipment.carrier}` : ""}${shipment.tracking_number ? ` — ${shipment.tracking_number}` : ""}`,
+      });
+      return newShipment;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["order_shipments", vars.order_id] });
+      qc.invalidateQueries({ queryKey: ["order_timeline", vars.order_id] });
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      toast.success("Shipment created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useUpdateShipment() {
+  const qc = useQueryClient();
+  const { currentStore, user } = useAuth();
+  return useMutation({
+    mutationFn: async ({ id, orderId, ...updates }: { id: string; orderId: string; status?: string; carrier?: string; tracking_number?: string; tracking_url?: string; shipped_at?: string; delivered_at?: string }) => {
+      const { data, error } = await supabase
+        .from("order_shipments" as any)
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      if (updates.status && currentStore) {
+        const statusLabels: Record<string, string> = { pending: "Shipment pending", shipped: "Shipment shipped", in_transit: "Shipment in transit", delivered: "Shipment delivered" };
+        await supabase.from("order_timeline" as any).insert({
+          order_id: orderId,
+          store_id: currentStore.id,
+          user_id: user?.id || null,
+          event_type: "shipment_status",
+          title: statusLabels[updates.status] || `Shipment ${updates.status}`,
+          description: `Shipment updated to ${updates.status}`,
+        });
+      }
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["order_shipments", vars.orderId] });
+      qc.invalidateQueries({ queryKey: ["order_timeline", vars.orderId] });
+      toast.success("Shipment updated");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== ORDER TIMELINE =====================
+
+export function useOrderTimeline(orderId: string | undefined) {
+  return useQuery({
+    queryKey: ["order_timeline", orderId],
+    queryFn: async () => {
+      if (!orderId) return [];
+      const { data, error } = await supabase
+        .from("order_timeline" as any)
+        .select("*")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!orderId,
+  });
+}
+
+export function useCreateTimelineEvent() {
+  const qc = useQueryClient();
+  const { currentStore, user } = useAuth();
+  return useMutation({
+    mutationFn: async (event: { order_id: string; event_type?: string; title: string; description?: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("order_timeline" as any)
+        .insert({
+          ...event,
+          store_id: currentStore.id,
+          user_id: user?.id || null,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["order_timeline", vars.order_id] });
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
 // ===================== STORE =====================
 
 export function useUpdateStore() {

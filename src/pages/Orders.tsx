@@ -108,6 +108,7 @@ export default function Orders() {
                   <TableHead className="text-xs h-8">Items</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                   <TableHead className="text-xs h-8">Payment</TableHead>
+                  <TableHead className="text-xs h-8">Fulfillment</TableHead>
                   <TableHead className="text-xs h-8 text-right">Total</TableHead>
                   <TableHead className="text-xs h-8">Date</TableHead>
                 </TableRow>
