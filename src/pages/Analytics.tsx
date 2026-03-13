@@ -89,12 +89,16 @@ export default function Analytics() {
 
   // Top selling products from order_items
   const [topSellingProducts, setTopSellingProducts] = useState<any[]>([]);
+  const [salesByCategory, setSalesByCategory] = useState<any[]>([]);
+  const [couponStats, setCouponStats] = useState<any[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
     if (!currentStore) return;
-    const fetchTopSelling = async () => {
+    const fetchData = async () => {
       setLoadingTopProducts(true);
+
+      // Fetch order items with product info
       const { data: items } = await supabase
         .from("order_items")
         .select("product_id, title, quantity, total")
@@ -108,13 +112,45 @@ export default function Analytics() {
         productMap[key].revenue += Number(item.total);
       });
       
-      const sorted = Object.values(productMap)
-        .sort((a, b) => b.revenue - a.revenue)
-        .slice(0, 10);
-      setTopSellingProducts(sorted);
+      setTopSellingProducts(
+        Object.values(productMap).sort((a, b) => b.revenue - a.revenue).slice(0, 10)
+      );
+
+      // Sales by category
+      const { data: cats } = await supabase
+        .from("categories")
+        .select("id, name")
+        .eq("store_id", currentStore.id);
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, category_id")
+        .eq("store_id", currentStore.id);
+      
+      const catMap: Record<string, string> = {};
+      (cats || []).forEach((c: any) => { catMap[c.id] = c.name; });
+      const prodCatMap: Record<string, string> = {};
+      (prods || []).forEach((p: any) => { if (p.category_id) prodCatMap[p.id] = catMap[p.category_id] || "Other"; });
+      
+      const catRevenue: Record<string, number> = {};
+      (items || []).forEach((item: any) => {
+        const cat = prodCatMap[item.product_id] || "Uncategorized";
+        catRevenue[cat] = (catRevenue[cat] || 0) + Number(item.total);
+      });
+      setSalesByCategory(
+        Object.entries(catRevenue).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
+      );
+
+      // Coupon usage stats
+      const { data: coupons } = await supabase
+        .from("coupons")
+        .select("code, discount_type, discount_value, used_count, max_uses, is_active")
+        .eq("store_id", currentStore.id)
+        .order("used_count", { ascending: false });
+      setCouponStats((coupons || []).filter((c: any) => c.used_count > 0));
+
       setLoadingTopProducts(false);
     };
-    fetchTopSelling();
+    fetchData();
   }, [currentStore]);
 
   // Top customers
@@ -334,6 +370,57 @@ export default function Analytics() {
                         <TableCell className="py-1.5 font-medium truncate max-w-[200px]">{c.name}</TableCell>
                         <TableCell className="py-1.5 text-right">{c.total_orders}</TableCell>
                         <TableCell className="py-1.5 text-right font-medium">${Number(c.total_spent).toLocaleString()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sales by Category + Coupon Usage */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Category</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : salesByCategory.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No category data yet</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={salesByCategory} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      {salesByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Coupon Usage</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : couponStats.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No coupon usage yet</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Code</TableHead>
+                      <TableHead className="text-xs h-8">Discount</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Uses</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {couponStats.map((c: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-mono font-medium">{c.code}</TableCell>
+                        <TableCell className="py-1.5">{c.discount_type === 'percentage' ? `${c.discount_value}%` : `$${c.discount_value}`}</TableCell>
+                        <TableCell className="py-1.5 text-right">{c.used_count}{c.max_uses ? `/${c.max_uses}` : ''}</TableCell>
+                        <TableCell className="py-1.5 text-right">{c.is_active ? '✓' : '✗'}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

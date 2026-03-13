@@ -50,12 +50,18 @@ export default function StorefrontCheckout() {
   const [shippingZones, setShippingZones] = useState<any[]>([]);
   const [selectedZone, setSelectedZone] = useState<string>("");
   const [shippingCost, setShippingCost] = useState(0);
+  const [isTaxExempt, setIsTaxExempt] = useState(false);
+  const [taxRate, setTaxRate] = useState(0);
 
   useEffect(() => {
     async function loadData() {
       // Load shipping zones (public)
       const { data: zones } = await supabase.from("shipping_zones").select("*").order("name");
       if (zones && zones.length > 0) setShippingZones(zones);
+
+      // Load default tax rate
+      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate").limit(1);
+      if (taxRates && taxRates.length > 0) setTaxRate(Number((taxRates[0] as any).rate) / 100);
 
       if (!user) return;
       const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
@@ -67,6 +73,15 @@ export default function StorefrontCheckout() {
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
+        // Check if customer group is tax exempt
+        if ((c as any).customer_group_id) {
+          const { data: grp } = await supabase
+            .from("customer_groups" as any)
+            .select("is_tax_exempt")
+            .eq("id", (c as any).customer_group_id)
+            .maybeSingle();
+          if (grp && (grp as any).is_tax_exempt) setIsTaxExempt(true);
+        }
         const { data: addrs } = await supabase
           .from("customer_addresses" as any)
           .select("*")
@@ -99,7 +114,8 @@ export default function StorefrontCheckout() {
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
-  const finalTotal = subtotalAfterDiscount + shippingCost;
+  const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
+  const finalTotal = subtotalAfterDiscount + shippingCost + taxAmount;
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
@@ -198,6 +214,7 @@ export default function StorefrontCheckout() {
           items_count: items.reduce((s, i) => s + i.quantity, 0),
           subtotal: totalPrice,
           discount: discountAmount,
+          tax: taxAmount,
           shipping: shippingCost,
           total: finalTotal,
           status: "pending",
@@ -501,6 +518,18 @@ export default function StorefrontCheckout() {
                     <span className="text-muted-foreground">Shipping</span>
                     <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
                   </div>
+                  {taxAmount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Tax</span>
+                      <span>${taxAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {isTaxExempt && taxRate > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span className="text-xs">Tax Exempt</span>
+                      <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>

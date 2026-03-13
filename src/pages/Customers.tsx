@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCustomers } from "@/hooks/use-data";
-import { Search, Plus, Users, DollarSign, ShoppingCart, Download } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
@@ -35,8 +38,12 @@ function downloadCSV(data: any[], filename: string) {
 export default function Customers() {
   const navigate = useNavigate();
   const { data: customers = [], isLoading } = useCustomers();
+  const { currentStore } = useAuth();
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [segFilter, setSegFilter] = useState("all");
+  const [importing, setImporting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || (c.email || "").toLowerCase().includes(search.toLowerCase());
@@ -62,6 +69,46 @@ export default function Customers() {
     toast.success(`Exported ${data.length} customers`);
   };
 
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentStore) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const lines = text.split("\n").filter(Boolean);
+      if (lines.length < 2) { toast.error("CSV must have header + data rows"); return; }
+      const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/"/g, ""));
+      const nameIdx = headers.findIndex(h => h === "name");
+      const emailIdx = headers.findIndex(h => h === "email");
+      const phoneIdx = headers.findIndex(h => h === "phone");
+      const segIdx = headers.findIndex(h => h === "segment");
+      const tagsIdx = headers.findIndex(h => h === "tags");
+      if (nameIdx === -1) { toast.error("CSV must have a 'name' column"); return; }
+
+      const rows = lines.slice(1).map(line => {
+        const cols = line.split(",").map(c => c.trim().replace(/^"|"$/g, ""));
+        return {
+          store_id: currentStore.id,
+          name: cols[nameIdx] || "Unknown",
+          email: emailIdx >= 0 ? cols[emailIdx] || null : null,
+          phone: phoneIdx >= 0 ? cols[phoneIdx] || null : null,
+          segment: segIdx >= 0 ? cols[segIdx] || "new" : "new",
+          tags: tagsIdx >= 0 && cols[tagsIdx] ? cols[tagsIdx].split(";").map((t: string) => t.trim()).filter(Boolean) : null,
+        };
+      });
+
+      const { error } = await supabase.from("customers").insert(rows as any);
+      if (error) throw error;
+      toast.success(`Imported ${rows.length} customers`);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message || "Import failed");
+    } finally {
+      setImporting(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -71,6 +118,10 @@ export default function Customers() {
             <p className="text-xs text-muted-foreground">{customers.length} total customers</p>
           </div>
           <div className="flex gap-2">
+            <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => fileRef.current?.click()} disabled={importing}>
+              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} Import
+            </Button>
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
