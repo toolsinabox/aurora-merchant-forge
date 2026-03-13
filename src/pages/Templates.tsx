@@ -438,7 +438,7 @@ export default function Templates() {
                 <p className="text-muted-foreground mb-2">Syntax: <code className="bg-muted px-1 rounded">[%block%]...content...[%/block%]</code></p>
                 <div className="flex flex-wrap gap-1">
                   {SUPPORTED_BLOCKS.map((blk) => (
-                    <Badge key={blk} variant="outline" className="font-mono text-[10px] text-blue-600">{blk}</Badge>
+                    <Badge key={blk} variant="outline" className="font-mono text-[10px] text-primary">{blk}</Badge>
                   ))}
                 </div>
                 <p className="text-muted-foreground mt-2">Inside blocks, use <code className="bg-muted px-1 rounded">[@index@]</code>, <code className="bg-muted px-1 rounded">[@count@]</code>, <code className="bg-muted px-1 rounded">[@first@]</code>, <code className="bg-muted px-1 rounded">[@last@]</code></p>
