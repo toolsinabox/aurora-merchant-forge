@@ -67,9 +67,28 @@ export default function OrderDetail() {
   const [newTag, setNewTag] = useState("");
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentForm, setPaymentForm] = useState({ amount: "", method: "manual", reference: "", notes: "" });
+  const [creditNoteOpen, setCreditNoteOpen] = useState(false);
+  const [creditForm, setCreditForm] = useState({ amount: "", reason: "", notes: "" });
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: payments = [] } = useOrderPayments(id);
   const createPayment = useCreateOrderPayment();
+
+  // Credit notes
+  const { data: creditNotes = [] } = useQuery({
+    queryKey: ["credit-notes", id],
+    queryFn: async () => {
+      if (!id) return [];
+      const { data } = await supabase
+        .from("credit_notes" as any)
+        .select("*")
+        .eq("order_id", id)
+        .order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!id,
+  });
 
   // Shipment form state
   const [shipForm, setShipForm] = useState({
