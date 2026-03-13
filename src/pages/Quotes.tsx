@@ -13,11 +13,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Plus, FileText, ArrowRight } from "lucide-react";
+import { Plus, FileText, ArrowRight, Printer } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
 export default function Quotes() {
   const { currentStore, user } = useAuth();
+  const navigate = useNavigate();
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
@@ -268,6 +270,9 @@ export default function Quotes() {
                           {q.converted_order_id && (
                             <span className="text-[10px] text-muted-foreground">Converted</span>
                           )}
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => navigate(`quotes/${q.id}/print`)}>
+                            <Printer className="h-3 w-3" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>

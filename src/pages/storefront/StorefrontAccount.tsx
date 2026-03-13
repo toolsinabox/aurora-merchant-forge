@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -91,8 +91,9 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
+  const [quotes, setQuotes] = useState<any[]>([]);
 
   // Edit profile state
   const [editingProfile, setEditingProfile] = useState(false);
@@ -136,7 +137,7 @@ export default function StorefrontAccount() {
       setCustomer(cust);
 
       if (cust) {
-        const [ordsRes, retsRes, addrsRes, vouchersRes] = await Promise.all([
+        const [ordsRes, retsRes, addrsRes, vouchersRes, quotesRes] = await Promise.all([
           supabase
             .from("orders")
             .select("*, order_items(*, products(title, images))")
@@ -157,11 +158,17 @@ export default function StorefrontAccount() {
             .select("*")
             .or(`purchased_by.eq.${user!.id},recipient_email.eq.${cust.email || ""}`)
             .order("created_at", { ascending: false }),
+          supabase
+            .from("order_quotes" as any)
+            .select("*, order_quote_items(*)")
+            .eq("customer_id", cust.id)
+            .order("created_at", { ascending: false }),
         ]);
         setOrders(ordsRes.data || []);
         setReturns(retsRes.data || []);
         setAddresses(addrsRes.data || []);
         setVouchers(vouchersRes.data || []);
+        setQuotes(quotesRes.data || []);
       }
 
       // Load wishlist products
@@ -460,6 +467,7 @@ export default function StorefrontAccount() {
                 { key: "wishlist", label: "Wishlist", icon: Heart, count: wishlistProducts.length },
                 { key: "returns", label: "Returns", icon: RotateCcw, count: returns.length },
                 { key: "vouchers", label: "Vouchers", icon: Gift, count: vouchers.length },
+                { key: "quotes", label: "Quotes", icon: FileQuestion, count: quotes.length },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
@@ -721,6 +729,66 @@ export default function StorefrontAccount() {
                             <TableCell className="font-medium">${Number(v.balance).toFixed(2)}</TableCell>
                             <TableCell><StatusBadge status={v.is_active ? "active" : "inactive"} /></TableCell>
                             <TableCell className="text-xs text-muted-foreground">{v.expires_at ? new Date(v.expires_at).toLocaleDateString() : "Never"}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Quotes Tab */}
+            {activeTab === "quotes" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">My Quotes</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {quotes.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <FileQuestion className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+                      <p className="text-sm text-muted-foreground">No quotes yet.</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Quote #</TableHead>
+                          <TableHead className="text-xs">Date</TableHead>
+                          <TableHead className="text-xs">Status</TableHead>
+                          <TableHead className="text-xs text-right">Total</TableHead>
+                          <TableHead className="text-xs">Valid Until</TableHead>
+                          <TableHead className="text-xs">Action</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {quotes.map((q: any) => (
+                          <TableRow key={q.id} className="text-sm">
+                            <TableCell className="font-mono text-xs">{q.quote_number}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{new Date(q.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell><StatusBadge status={q.status} /></TableCell>
+                            <TableCell className="text-right font-medium">${Number(q.total).toFixed(2)}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{q.valid_until ? new Date(q.valid_until).toLocaleDateString() : "—"}</TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                {q.status === "sent" && (
+                                  <>
+                                    <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={async () => {
+                                      await supabase.from("order_quotes" as any).update({ status: "approved", approved_at: new Date().toISOString() }).eq("id", q.id);
+                                      toast.success("Quote approved");
+                                      setQuotes(quotes.map((x: any) => x.id === q.id ? { ...x, status: "approved" } : x));
+                                    }}>Approve</Button>
+                                    <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={async () => {
+                                      await supabase.from("order_quotes" as any).update({ status: "rejected" }).eq("id", q.id);
+                                      toast.success("Quote rejected");
+                                      setQuotes(quotes.map((x: any) => x.id === q.id ? { ...x, status: "rejected" } : x));
+                                    }}>Reject</Button>
+                                  </>
+                                )}
+                                {q.status === "converted" && <span className="text-[10px] text-muted-foreground">Converted</span>}
+                              </div>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
