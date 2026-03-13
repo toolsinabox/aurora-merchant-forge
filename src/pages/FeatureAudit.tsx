@@ -99,7 +99,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax-Inclusive Flag", description: "Price includes tax (vs tax-exclusive)", status: "done" },
       { name: "Preorder Quantity", description: "Quantity available for preorder before stock arrives", status: "done" },
       { name: "P.O.A / Special Order Products", description: "Price On Application — hide price, show 'Contact for Price'", status: "done", notes: "poa boolean on products table, storefront hides price and shows contact CTA" },
-      { name: "Multi-Currency Pricing", description: "Display/sell in multiple currencies with conversion rules", status: "not_started", notes: "Neto Currency API supports multiple currencies" },
+      { name: "Multi-Currency Pricing", description: "Display/sell in multiple currencies with conversion rules", status: "done", notes: "currencies table with exchange rates; storefront CurrencySwitcher component converts all prices using selected currency rate; useCurrency hook persists selection in localStorage" },
     ],
   },
 
