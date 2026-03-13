@@ -378,7 +378,7 @@ export default function ProductForm() {
                       <Textarea className="text-xs min-h-[60px]" value={form.terms_conditions} onChange={(e) => update("terms_conditions", e.target.value)} />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Warranty</Label>
+                      <FieldLabel label="Warranty" field="warranty" />
                       <Input className="h-8 text-xs" value={form.warranty} onChange={(e) => update("warranty", e.target.value)} placeholder="e.g. 2 Year Manufacturer Warranty" />
                     </div>
                     <div className="space-y-1">
