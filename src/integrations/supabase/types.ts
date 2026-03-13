@@ -468,6 +468,7 @@ export type Database = {
           discount_percent: number | null
           id: string
           is_tax_exempt: boolean | null
+          min_order_amount: number | null
           name: string
           store_id: string
           updated_at: string
@@ -478,6 +479,7 @@ export type Database = {
           discount_percent?: number | null
           id?: string
           is_tax_exempt?: boolean | null
+          min_order_amount?: number | null
           name: string
           store_id: string
           updated_at?: string
@@ -488,6 +490,7 @@ export type Database = {
           discount_percent?: number | null
           id?: string
           is_tax_exempt?: boolean | null
+          min_order_amount?: number | null
           name?: string
           store_id?: string
           updated_at?: string
@@ -2763,6 +2766,61 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      supplier_products: {
+        Row: {
+          created_at: string
+          id: string
+          is_preferred: boolean | null
+          product_id: string
+          store_id: string
+          supplier_cost: number | null
+          supplier_id: string
+          supplier_sku: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_preferred?: boolean | null
+          product_id: string
+          store_id: string
+          supplier_cost?: number | null
+          supplier_id: string
+          supplier_sku?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_preferred?: boolean | null
+          product_id?: string
+          store_id?: string
+          supplier_cost?: number | null
+          supplier_id?: string
+          supplier_sku?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_products_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "supplier_products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       suppliers: {
         Row: {
