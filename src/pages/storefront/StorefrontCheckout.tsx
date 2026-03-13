@@ -456,6 +456,10 @@ export default function StorefrontCheckout() {
                       <span>-${discountAmount.toFixed(2)}</span>
                     </div>
                   )}
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Shipping</span>
+                    <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
+                  </div>
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
