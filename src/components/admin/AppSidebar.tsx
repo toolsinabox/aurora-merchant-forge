@@ -24,6 +24,7 @@ const catalogNav = [
   { title: "Products", url: "/products", icon: Package },
   { title: "Categories", url: "/categories", icon: Layers },
   { title: "Inventory", url: "/inventory", icon: Warehouse },
+  { title: "Stock Adjustments", url: "/stock-adjustments", icon: History },
   { title: "Suppliers", url: "/suppliers", icon: Building },
   { title: "Purchase Orders", url: "/purchase-orders", icon: ClipboardCopy },
 ];
