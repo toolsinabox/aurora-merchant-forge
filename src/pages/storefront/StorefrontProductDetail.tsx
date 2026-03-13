@@ -479,6 +479,64 @@ export default function StorefrontProductDetail() {
               );
             })()}
 
+            {/* Request a Quote Button */}
+            {user && store && (
+              <Button
+                variant="outline"
+                className="w-full h-10 gap-2 text-sm"
+                disabled={rfqSubmitting}
+                onClick={async () => {
+                  setRfqSubmitting(true);
+                  try {
+                    // Create quote with this product
+                    const quoteNumber = `RFQ-${Date.now().toString(36).toUpperCase()}`;
+                    // Find or create customer record
+                    const { data: existingCust } = await supabase
+                      .from("customers")
+                      .select("id")
+                      .eq("store_id", store.id)
+                      .eq("user_id", user.id)
+                      .maybeSingle();
+                    const customerId = existingCust?.id || null;
+
+                    const { data: quote, error: qErr } = await supabase
+                      .from("order_quotes")
+                      .insert({
+                        store_id: store.id,
+                        quote_number: quoteNumber,
+                        customer_id: customerId,
+                        status: "draft",
+                        subtotal: Number(finalPrice) * quantity,
+                        total: Number(finalPrice) * quantity,
+                        notes: `Quote requested from storefront for ${product.title}`,
+                      })
+                      .select("id")
+                      .single();
+                    if (qErr) throw qErr;
+                    // Add quote item
+                    await supabase.from("order_quote_items").insert({
+                      quote_id: quote.id,
+                      store_id: store.id,
+                      product_id: product.id,
+                      variant_id: selectedVariant || null,
+                      title: product.title + (selectedVariant ? ` (${variants.find((v: any) => v.id === selectedVariant)?.name || ""})` : ""),
+                      quantity,
+                      unit_price: Number(finalPrice),
+                      total: Number(finalPrice) * quantity,
+                      sku: product.sku || null,
+                    });
+                    toast.success("Quote request submitted!", { description: `Reference: ${quoteNumber}` });
+                  } catch (err) {
+                    toast.error("Failed to submit quote request");
+                  } finally {
+                    setRfqSubmitting(false);
+                  }
+                }}
+              >
+                <FileText className="h-4 w-4" /> Request a Quote
+              </Button>
+            )}
+
             {/* Back in Stock Notification - show when out of stock */}
             {!product.poa && (currentVariant ? (currentVariant.stock <= 0 && !(product.preorder_quantity > 0)) : (product.track_inventory && product.status === "active")) && !notifySubmitted && (
               <div className="border rounded-lg p-4 bg-muted/30 space-y-2">
