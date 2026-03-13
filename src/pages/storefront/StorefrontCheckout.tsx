@@ -11,7 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X, MapPin } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin, Truck } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 
 interface AppliedCoupon {
@@ -44,10 +44,17 @@ export default function StorefrontCheckout() {
     notes: "",
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [shippingZones, setShippingZones] = useState<any[]>([]);
+  const [selectedZone, setSelectedZone] = useState<string>("");
+  const [shippingCost, setShippingCost] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
-    async function prefill() {
+    async function loadData() {
+      // Load shipping zones (public)
+      const { data: zones } = await supabase.from("shipping_zones").select("*").order("name");
+      if (zones && zones.length > 0) setShippingZones(zones);
+
+      if (!user) return;
       const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
       const c = custs?.[0];
       if (c) {
@@ -57,7 +64,6 @@ export default function StorefrontCheckout() {
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
-        // Load saved addresses
         const { data: addrs } = await supabase
           .from("customer_addresses" as any)
           .select("*")
@@ -72,7 +78,7 @@ export default function StorefrontCheckout() {
         setForm((prev) => ({ ...prev, email: user!.email || prev.email }));
       }
     }
-    prefill();
+    loadData();
   }, [user]);
 
   const applyAddress = (addr: any) => {
@@ -89,7 +95,17 @@ export default function StorefrontCheckout() {
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
-  const finalTotal = Math.max(0, totalPrice - discountAmount);
+  const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
+  const finalTotal = subtotalAfterDiscount + shippingCost;
+
+  const handleZoneChange = (zoneId: string) => {
+    setSelectedZone(zoneId);
+    const zone = shippingZones.find((z) => z.id === zoneId);
+    if (zone) {
+      const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
+      setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+    }
+  };
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
@@ -177,6 +193,7 @@ export default function StorefrontCheckout() {
           items_count: items.reduce((s, i) => s + i.quantity, 0),
           subtotal: totalPrice,
           discount: discountAmount,
+          shipping: shippingCost,
           total: finalTotal,
           status: "pending",
           payment_status: "pending",
@@ -324,6 +341,54 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
+              {/* Shipping Method */}
+              {shippingZones.length > 0 && (
+                <div className="border rounded-lg p-5 space-y-4">
+                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h2>
+                  <div className="space-y-2">
+                    {shippingZones.map((zone) => {
+                      const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
+                      return (
+                        <label
+                          key={zone.id}
+                          className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                            selectedZone === zone.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="shipping_zone"
+                              value={zone.id}
+                              checked={selectedZone === zone.id}
+                              onChange={() => handleZoneChange(zone.id)}
+                              className="accent-primary"
+                            />
+                            <div>
+                              <p className="text-sm font-medium">{zone.name}</p>
+                              <p className="text-xs text-muted-foreground">{zone.regions}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            {isFree ? (
+                              <div>
+                                <span className="text-sm font-medium text-primary">Free</span>
+                                <p className="text-2xs text-muted-foreground line-through">${Number(zone.flat_rate).toFixed(2)}</p>
+                              </div>
+                            ) : (
+                              <span className="text-sm font-medium">${Number(zone.flat_rate).toFixed(2)}</span>
+                            )}
+                            {zone.free_above && !isFree && (
+                              <p className="text-2xs text-muted-foreground">Free over ${Number(zone.free_above).toFixed(0)}</p>
+                            )}
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
@@ -391,6 +456,10 @@ export default function StorefrontCheckout() {
                       <span>-${discountAmount.toFixed(2)}</span>
                     </div>
                   )}
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Shipping</span>
+                    <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
+                  </div>
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
