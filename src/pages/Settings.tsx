@@ -307,6 +307,8 @@ export default function SettingsPage() {
   const [brandForm, setBrandForm] = useState({
     primary_color: "#2563eb",
     banner_text: "",
+    banner_start: "",
+    banner_end: "",
     description: "",
     logo_url: "",
     favicon_url: "",
