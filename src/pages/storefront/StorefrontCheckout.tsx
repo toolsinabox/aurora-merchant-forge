@@ -138,8 +138,82 @@ export default function StorefrontCheckout() {
     if (zone) {
       const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
       setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+      // Estimate delivery: 3-7 business days from now
+      const minDate = addBusinessDays(new Date(), 3);
+      const maxDate = addBusinessDays(new Date(), 7);
+      setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
     }
   };
+
+  // Auto-apply coupons on load
+  useEffect(() => {
+    if (autoAppliedCoupon || appliedCoupon || totalPrice <= 0) return;
+    const tryAutoApply = async () => {
+      const { data: coupons } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("is_active", true)
+        .order("discount_value", { ascending: false });
+      if (!coupons) return;
+      for (const coupon of coupons as any[]) {
+        if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) continue;
+        if (coupon.max_uses && coupon.used_count >= coupon.max_uses) continue;
+        if (coupon.min_order_amount && totalPrice < Number(coupon.min_order_amount)) continue;
+        // Only auto-apply coupons with no product/category restriction (site-wide)
+        if (coupon.product_ids?.length > 0 || coupon.category_ids?.length > 0) continue;
+        const amt = coupon.discount_type === "percentage"
+          ? totalPrice * (Number(coupon.discount_value) / 100)
+          : Math.min(Number(coupon.discount_value), totalPrice);
+        setAppliedCoupon({
+          id: coupon.id, code: coupon.code,
+          discount_type: coupon.discount_type,
+          discount_value: Number(coupon.discount_value),
+          discountAmount: Math.round(amt * 100) / 100,
+        });
+        setAutoAppliedCoupon(true);
+        toast.success(`Coupon ${coupon.code} auto-applied!`);
+        break;
+      }
+    };
+    tryAutoApply();
+  }, [totalPrice, autoAppliedCoupon, appliedCoupon]);
+
+  // Load upsell products
+  useEffect(() => {
+    if (items.length === 0) return;
+    const productIds = items.map(i => i.product_id).filter(Boolean);
+    const loadUpsells = async () => {
+      // Get related products
+      const { data: relations } = await supabase
+        .from("product_relations")
+        .select("related_product_id")
+        .in("product_id", productIds)
+        .in("relation_type", ["upsell", "cross_sell"])
+        .limit(4);
+      if (relations && relations.length > 0) {
+        const relIds = relations.map((r: any) => r.related_product_id).filter((id: string) => !productIds.includes(id));
+        if (relIds.length > 0) {
+          const { data: prods } = await supabase
+            .from("products")
+            .select("id, title, price, images, slug")
+            .in("id", relIds)
+            .eq("status", "active")
+            .limit(4);
+          setUpsellProducts(prods || []);
+          return;
+        }
+      }
+      // Fallback: random active products not in cart
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, title, price, images, slug")
+        .eq("status", "active")
+        .not("id", "in", `(${productIds.join(",")})`)
+        .limit(4);
+      setUpsellProducts(prods || []);
+    };
+    loadUpsells();
+  }, [items]);
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
