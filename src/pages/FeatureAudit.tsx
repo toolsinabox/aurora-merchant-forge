@@ -216,7 +216,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Duplication / Reorder", description: "Clone an existing order as new", status: "done", notes: "Duplicate action on orders list" },
       { name: "Multi-Address Checkout / Split Shipping", description: "Ship different items to different addresses in one order", status: "not_started", notes: "Neto has address.template.html for multi-address" },
       { name: "Order Export (CSV/XML)", description: "Bulk export orders in various formats", status: "done", notes: "Orders tab in Export Wizard with field selection, status filter, date range, customer details, and line items options" },
-      { name: "Order Import", description: "Bulk import orders from CSV/XML", status: "not_started" },
+      { name: "Order Import", description: "Bulk import orders from CSV/XML", status: "done", notes: "Order import in Import Wizard with order_number, status, financials, customer email lookup, and tag mapping" },
       { name: "Order Tags / Flags", description: "Tag or flag orders for internal workflows", status: "done", notes: "Tags array on orders with add/remove UI on order detail page" },
       { name: "Batch Order Processing", description: "Bulk update status, print labels for multiple orders", status: "done", notes: "Bulk status update, batch print packing slips, shipping labels, and invoices from orders list" },
       { name: "Order Fraud Detection Flags", description: "Automated fraud scoring and risk flags on orders", status: "done", notes: "Fraud Risk card on order detail with heuristic scoring: high value, address mismatch, no account, high qty, first order" },
