@@ -413,7 +413,7 @@ const featureData: FeatureCategory[] = [
       { name: "Coupon Active Toggle", description: "Enable/disable coupons", status: "done" },
       { name: "Per-Customer Usage Limit", description: "Limit uses per customer", status: "done" },
       { name: "Product-Specific Coupons", description: "Restrict coupon to specific products/categories", status: "done" },
-      { name: "Auto-Apply Coupons", description: "Automatically apply coupon based on cart rules", status: "not_started" },
+      { name: "Auto-Apply Coupons", description: "Automatically apply coupon based on cart rules", status: "done", notes: "Checkout auto-applies best eligible site-wide coupon on load" },
       { name: "Gift Vouchers (GetVoucher / AddVoucher / UpdateVoucher)", description: "Create, sell, and redeem gift vouchers/certificates", status: "done", notes: "Full gift voucher CRUD admin" },
       { name: "Gift Voucher Purchase (Storefront)", description: "Customers purchase gift vouchers with custom value/message", status: "not_started" },
       { name: "Gift Voucher Email Delivery", description: "Send gift voucher to recipient by email on scheduled date", status: "not_started", notes: "Neto has gift_voucher system email" },
