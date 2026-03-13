@@ -63,6 +63,8 @@ import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
 import PlatformMerchants from "./pages/platform/PlatformMerchants.tsx";
 import PlatformSettings from "./pages/platform/PlatformSettings.tsx";
+import PlatformCustomers from "./pages/platform/PlatformCustomers.tsx";
+import PlatformAnalytics from "./pages/platform/PlatformAnalytics.tsx";
 const queryClient = new QueryClient();
 
 // Check if we're on a store subdomain
