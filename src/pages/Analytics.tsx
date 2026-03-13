@@ -378,6 +378,57 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Sales by Category + Coupon Usage */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Category</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : salesByCategory.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No category data yet</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={salesByCategory} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      {salesByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Coupon Usage</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : couponStats.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No coupon usage yet</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Code</TableHead>
+                      <TableHead className="text-xs h-8">Discount</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Uses</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {couponStats.map((c: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-mono font-medium">{c.code}</TableCell>
+                        <TableCell className="py-1.5">{c.discount_type === 'percentage' ? `${c.discount_value}%` : `$${c.discount_value}`}</TableCell>
+                        <TableCell className="py-1.5 text-right">{c.used_count}{c.max_uses ? `/${c.max_uses}` : ''}</TableCell>
+                        <TableCell className="py-1.5 text-right">{c.is_active ? '✓' : '✗'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AdminLayout>
   );

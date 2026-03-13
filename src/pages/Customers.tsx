@@ -118,6 +118,10 @@ export default function Customers() {
             <p className="text-xs text-muted-foreground">{customers.length} total customers</p>
           </div>
           <div className="flex gap-2">
+            <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => fileRef.current?.click()} disabled={importing}>
+              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} Import
+            </Button>
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
