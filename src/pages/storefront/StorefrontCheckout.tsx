@@ -846,13 +846,15 @@ export default function StorefrontCheckout() {
                   </div>
                   {taxAmount > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tax</span>
+                      <span className="text-muted-foreground">
+                        {taxMode === "gst" ? "GST" : taxMode === "vat" ? "VAT" : "Tax"}
+                      </span>
                       <span>${taxAmount.toFixed(2)}</span>
                     </div>
                   )}
                   {isTaxExempt && taxRate > 0 && (
                     <div className="flex justify-between text-primary">
-                      <span className="text-xs">Tax Exempt</span>
+                      <span className="text-xs">{taxMode === "gst" ? "GST" : taxMode === "vat" ? "VAT" : "Tax"} Exempt</span>
                       <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
                     </div>
                   )}
