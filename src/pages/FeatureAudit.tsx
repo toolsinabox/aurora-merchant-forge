@@ -240,7 +240,7 @@ const featureData: FeatureCategory[] = [
       { name: "Payment Receipts / Confirmation", description: "Generate payment receipts", status: "done", notes: "Printable payment receipt page accessible from payment history on order detail" },
       { name: "Saved Payment Methods", description: "Store card details for repeat purchases (tokenized)", status: "not_started" },
       { name: "Pay Order from Account", description: "Customer can pay outstanding orders from their account page", status: "done", notes: "Pay button on storefront account order detail for unpaid orders, records payment and updates status" },
-      { name: "Layby / Lay-Away", description: "Installment payment plans managed in-platform", status: "not_started" },
+      { name: "Layby / Lay-Away", description: "Installment payment plans managed in-platform", status: "done", notes: "layby_plans and layby_payments tables, admin Layby page with KPI cards, plan list with progress bars, payment recording dialog, cancel action, auto-completes order payment status when fully paid" },
       { name: "Account Credit / Store Credit", description: "Customer account credit balance for future purchases", status: "done", notes: "store_credit_transactions table with credit/debit types, Store Credit card on customer detail with balance display, transaction history, manual add; checkout integration with checkbox to apply credit balance" },
     ],
   },
