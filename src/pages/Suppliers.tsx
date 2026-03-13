@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Building, Trash2, Pencil, Truck, Search, Package, Star } from "lucide-react";
+import { Plus, Building, Trash2, Pencil, Truck, Search, Package, Star, BarChart3, TrendingUp } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -29,6 +29,67 @@ interface SupplierForm {
   payment_terms: string;
   is_dropship: boolean;
   is_active: boolean;
+}
+
+function SupplierPerformance({ suppliers, storeId }: { suppliers: any[]; storeId?: string }) {
+  const { data: poData = [] } = useQuery({
+    queryKey: ["supplier-performance", storeId],
+    queryFn: async () => {
+      if (!storeId) return [];
+      const { data } = await supabase
+        .from("purchase_orders")
+        .select("id, supplier_id, status, total, created_at, expected_date")
+        .eq("store_id", storeId);
+      return data || [];
+    },
+    enabled: !!storeId,
+  });
+
+  const stats = suppliers.map((s: any) => {
+    const pos = poData.filter((p: any) => p.supplier_id === s.id);
+    const totalPOs = pos.length;
+    const totalSpend = pos.reduce((sum: number, p: any) => sum + Number(p.total || 0), 0);
+    const received = pos.filter((p: any) => p.status === "received" || p.status === "closed");
+    const onTime = received.filter((p: any) => {
+      if (!p.expected_date) return true;
+      return new Date(p.expected_date) >= new Date(p.created_at);
+    });
+    const onTimeRate = received.length > 0 ? Math.round((onTime.length / received.length) * 100) : 0;
+    return { id: s.id, name: s.name, totalPOs, totalSpend, received: received.length, onTimeRate, isActive: s.is_active };
+  }).filter(s => s.totalPOs > 0).sort((a, b) => b.totalSpend - a.totalSpend);
+
+  if (stats.length === 0) return <p className="text-sm text-muted-foreground text-center py-6">No purchase order data for performance analysis.</p>;
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Supplier</TableHead>
+          <TableHead className="text-right">POs</TableHead>
+          <TableHead className="text-right">Total Spend</TableHead>
+          <TableHead className="text-right">Received</TableHead>
+          <TableHead className="text-right">On-Time %</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {stats.map(s => (
+          <TableRow key={s.id}>
+            <TableCell className="font-medium">{s.name}</TableCell>
+            <TableCell className="text-right">{s.totalPOs}</TableCell>
+            <TableCell className="text-right">${s.totalSpend.toFixed(2)}</TableCell>
+            <TableCell className="text-right">{s.received}</TableCell>
+            <TableCell className="text-right">
+              <span className={s.onTimeRate >= 80 ? "text-primary" : s.onTimeRate >= 50 ? "text-amber-600" : "text-destructive"}>
+                {s.onTimeRate}%
+              </span>
+            </TableCell>
+            <TableCell><Badge variant={s.isActive ? "default" : "outline"}>{s.isActive ? "Active" : "Inactive"}</Badge></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
 }
 
 const emptyForm: SupplierForm = {
@@ -206,6 +267,7 @@ export default function Suppliers() {
           <TabsList>
             <TabsTrigger value="list">Suppliers</TabsTrigger>
             <TabsTrigger value="products">Product Assignments</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list">
@@ -327,6 +389,17 @@ export default function Suppliers() {
                     ))}
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="performance" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Supplier Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SupplierPerformance suppliers={suppliers} storeId={currentStore?.id} />
               </CardContent>
             </Card>
           </TabsContent>

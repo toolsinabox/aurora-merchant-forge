@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -386,6 +386,33 @@ export default function StorefrontAccount() {
                 <StatusBadge status={selectedOrder.payment_status} />
                 <StatusBadge status={selectedOrder.fulfillment_status} />
               </div>
+              {selectedOrder.payment_status === "pending" && (
+                <Button
+                  size="sm"
+                  className="w-full mt-2 gap-2"
+                  onClick={async () => {
+                    try {
+                      // Record payment and update status
+                      await supabase.from("order_payments").insert({
+                        order_id: selectedOrder.id,
+                        store_id: selectedOrder.store_id,
+                        amount: Number(selectedOrder.total),
+                        payment_method: "account",
+                        recorded_by: user!.id,
+                        notes: "Paid from customer account",
+                      });
+                      await supabase.from("orders").update({ payment_status: "paid" }).eq("id", selectedOrder.id);
+                      setSelectedOrder({ ...selectedOrder, payment_status: "paid" });
+                      setOrders(orders.map(o => o.id === selectedOrder.id ? { ...o, payment_status: "paid" } : o));
+                      toast.success("Payment recorded successfully!");
+                    } catch (err: any) {
+                      toast.error(err.message);
+                    }
+                  }}
+                >
+                  <CreditCard className="h-4 w-4" /> Pay ${Number(selectedOrder.total).toFixed(2)}
+                </Button>
+              )}
             </CardContent>
           </Card>
         </div>

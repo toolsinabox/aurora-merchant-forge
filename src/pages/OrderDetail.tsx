@@ -21,7 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
   Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
-  Scissors, Merge,
+  Scissors, Merge, AlertTriangle, ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -604,6 +604,61 @@ export default function OrderDetail() {
                     </div>
                   </>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Fraud Risk Assessment */}
+            <Card>
+              <CardHeader className="py-3 px-4">
+                <CardTitle className="text-sm flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Fraud Risk</CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 pt-0 text-xs space-y-2">
+                {(() => {
+                  const flags: { label: string; level: "low" | "medium" | "high" }[] = [];
+                  // High value order
+                  if (Number(order.total) > 500) flags.push({ label: "High value order (>$500)", level: Number(order.total) > 2000 ? "high" : "medium" });
+                  // Mismatched addresses
+                  if ((order as any).billing_address && (order as any).shipping_address && (order as any).billing_address !== (order as any).shipping_address) {
+                    flags.push({ label: "Billing ≠ Shipping address", level: "medium" });
+                  }
+                  // No customer linked
+                  if (!order.customer_id) flags.push({ label: "No customer account linked", level: "medium" });
+                  // Multiple items of same product
+                  const maxQty = orderItems.reduce((m: number, i: any) => Math.max(m, i.quantity), 0);
+                  if (maxQty >= 5) flags.push({ label: `High quantity (${maxQty} of one item)`, level: "medium" });
+                  // First order from customer
+                  if (order.customers && Number((order.customers as any).total_orders) <= 1) {
+                    flags.push({ label: "First order from customer", level: "low" });
+                  }
+
+                  const riskScore = flags.reduce((s, f) => s + (f.level === "high" ? 3 : f.level === "medium" ? 2 : 1), 0);
+                  const overallRisk = riskScore >= 6 ? "high" : riskScore >= 3 ? "medium" : "low";
+                  const riskColors = { low: "text-primary", medium: "text-amber-600", high: "text-destructive" };
+                  const riskBg = { low: "bg-primary/10", medium: "bg-amber-100", high: "bg-destructive/10" };
+
+                  return (
+                    <>
+                      <div className={`flex items-center justify-between p-2 rounded-md ${riskBg[overallRisk]}`}>
+                        <span className="font-medium">Risk Level</span>
+                        <Badge variant={overallRisk === "high" ? "destructive" : overallRisk === "medium" ? "secondary" : "outline"} className="capitalize text-[10px]">
+                          {overallRisk === "low" ? "Low" : overallRisk === "medium" ? "Medium" : "High"}
+                        </Badge>
+                      </div>
+                      {flags.length === 0 ? (
+                        <p className="text-muted-foreground">No fraud indicators detected.</p>
+                      ) : (
+                        <div className="space-y-1">
+                          {flags.map((f, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                              <AlertTriangle className={`h-3 w-3 shrink-0 ${riskColors[f.level]}`} />
+                              <span>{f.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </CardContent>
             </Card>
 
