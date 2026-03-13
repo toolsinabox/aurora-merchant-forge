@@ -15,6 +15,8 @@ import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { ImageLightbox } from "@/components/storefront/ImageLightbox";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { RenderedTemplate } from "@/components/storefront/RenderedTemplate";
+import type { TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -405,6 +407,27 @@ export default function StorefrontProductDetail() {
             )}
           </Tabs>
         </div>
+
+        {/* B@SE Template Content Blocks */}
+        {store && product && (
+          <div className="mt-8">
+            <RenderedTemplate
+              storeId={store.id}
+              templateType="content_block"
+              contextType="product"
+              context={{
+                product,
+                variants,
+                specifics,
+                pricing_tiers: pricingTiers,
+                cross_sells: crossSells,
+                shipping: shipping || undefined,
+                store,
+              } as TemplateContext}
+              className="prose prose-sm max-w-none"
+            />
+          </div>
+        )}
 
         {/* Cross-sells / Related Products */}
         {allRelated.length > 0 && (
