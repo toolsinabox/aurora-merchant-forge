@@ -571,7 +571,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Registration Email", description: "Welcome email on customer signup", status: "not_started", notes: "Neto has customer_registration_emails" },
       { name: "Customer Auto-Registration Email", description: "Auto-created account credentials email", status: "not_started" },
       { name: "Password Reset Email", description: "Password reset link email", status: "partial" },
-      { name: "Abandoned Cart Email", description: "Reminder email for abandoned carts", status: "not_started" },
+      { name: "Abandoned Cart Email", description: "Reminder email for abandoned carts", status: "done", notes: "abandoned-cart-email edge function sends recovery email with cart items, total, and CTA button, updates recovery_status" },
       { name: "Wishlist Reminder Email", description: "Periodic wishlist item reminder", status: "not_started" },
       { name: "Gift Voucher Email", description: "Gift voucher delivery to recipient", status: "not_started" },
       { name: "Back in Stock / Notify Me Email", description: "Notification when product is restocked", status: "not_started" },
