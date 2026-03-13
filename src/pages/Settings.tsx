@@ -855,6 +855,31 @@ export default function SettingsPage() {
           </TabsContent>
 
           <TabsContent value="tax" className="space-y-3">
+            {/* Tax Mode */}
+            <Card>
+              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Tax Mode</CardTitle></CardHeader>
+              <CardContent className="p-4 pt-2 space-y-2">
+                <p className="text-xs text-muted-foreground">Choose how tax is labeled and calculated across your store.</p>
+                <div className="flex items-center gap-2">
+                  <Select
+                    defaultValue="standard"
+                    onValueChange={async (v) => {
+                      if (!currentStore) return;
+                      await supabase.from("stores").update({ tax_mode: v } as any).eq("id", currentStore.id);
+                      toast.success(`Tax mode set to ${v.toUpperCase()}`);
+                    }}
+                  >
+                    <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Select tax mode" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="standard" className="text-xs">Standard (Tax)</SelectItem>
+                      <SelectItem value="gst" className="text-xs">GST (Goods & Services Tax)</SelectItem>
+                      <SelectItem value="vat" className="text-xs">VAT (Value Added Tax)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                 <CardTitle className="text-sm">Tax Rates</CardTitle>

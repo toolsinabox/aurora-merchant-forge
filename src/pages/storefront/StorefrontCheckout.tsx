@@ -64,12 +64,16 @@ export default function StorefrontCheckout() {
   const [shippingCost, setShippingCost] = useState(0);
   const [isTaxExempt, setIsTaxExempt] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
+  const [taxMode, setTaxMode] = useState("standard");
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
   const [storeCreditBalance, setStoreCreditBalance] = useState(0);
   const [useStoreCredit, setUseStoreCredit] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
+  const [canPayOnAccount, setCanPayOnAccount] = useState(false);
+  const [payOnAccount, setPayOnAccount] = useState(false);
+  const [creditTerms, setCreditTerms] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -77,9 +81,11 @@ export default function StorefrontCheckout() {
       const { data: zones } = await supabase.from("shipping_zones").select("*").order("name");
       if (zones && zones.length > 0) setShippingZones(zones);
 
-      // Load default tax rate
+      // Load default tax rate and tax mode
       const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate").limit(1);
       if (taxRates && taxRates.length > 0) setTaxRate(Number((taxRates[0] as any).rate) / 100);
+      const { data: storeData } = await supabase.from("stores").select("tax_mode").limit(1).maybeSingle();
+      if (storeData && (storeData as any).tax_mode) setTaxMode((storeData as any).tax_mode);
 
       if (!user) return;
       const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
@@ -98,14 +104,18 @@ export default function StorefrontCheckout() {
           const bal = (credits as any[]).reduce((s: number, t: any) => s + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)), 0);
           setStoreCreditBalance(Math.max(0, bal));
         }
-        // Check if customer group is tax exempt
+        // Check if customer group is tax exempt and has credit terms
         if ((c as any).customer_group_id) {
           const { data: grp } = await supabase
             .from("customer_groups" as any)
-            .select("is_tax_exempt")
+            .select("is_tax_exempt, credit_terms, credit_limit")
             .eq("id", (c as any).customer_group_id)
             .maybeSingle();
           if (grp && (grp as any).is_tax_exempt) setIsTaxExempt(true);
+          if (grp && (grp as any).credit_terms) {
+            setCanPayOnAccount(true);
+            setCreditTerms((grp as any).credit_terms);
+          }
         }
         const { data: addrs } = await supabase
           .from("customer_addresses" as any)
@@ -398,8 +408,8 @@ export default function StorefrontCheckout() {
           shipping: actualShipping,
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
-          payment_status: "pending",
-          notes: form.notes || null,
+          payment_status: payOnAccount ? "pending" : "pending",
+          notes: form.notes ? (payOnAccount ? `[Pay on Account - ${creditTerms}] ${form.notes}` : form.notes) : (payOnAccount ? `Pay on Account - ${creditTerms}` : null),
           shipping_address: shippingAddr,
           billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
@@ -815,9 +825,25 @@ export default function StorefrontCheckout() {
                     </div>
                     {useStoreCredit && <span className="text-xs font-medium text-primary">-${storeCreditAmount.toFixed(2)}</span>}
                   </div>
-                )}
+                 )}
 
-                <Separator />
+                 {/* Pay on Account (B2B) */}
+                 {canPayOnAccount && (
+                   <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                     <div className="flex items-center gap-2 text-sm">
+                       <Checkbox
+                         id="pay_on_account"
+                         checked={payOnAccount}
+                         onCheckedChange={(checked) => setPayOnAccount(!!checked)}
+                       />
+                       <label htmlFor="pay_on_account" className="text-xs cursor-pointer">
+                         Pay on Account ({creditTerms})
+                       </label>
+                     </div>
+                   </div>
+                 )}
+
+                 <Separator />
 
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
@@ -836,13 +862,15 @@ export default function StorefrontCheckout() {
                   </div>
                   {taxAmount > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tax</span>
+                      <span className="text-muted-foreground">
+                        {taxMode === "gst" ? "GST" : taxMode === "vat" ? "VAT" : "Tax"}
+                      </span>
                       <span>${taxAmount.toFixed(2)}</span>
                     </div>
                   )}
                   {isTaxExempt && taxRate > 0 && (
                     <div className="flex justify-between text-primary">
-                      <span className="text-xs">Tax Exempt</span>
+                      <span className="text-xs">{taxMode === "gst" ? "GST" : taxMode === "vat" ? "VAT" : "Tax"} Exempt</span>
                       <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
                     </div>
                   )}
