@@ -632,7 +632,7 @@ const featureData: FeatureCategory[] = [
       { name: "eBay Category Mapping", description: "Map product categories to eBay categories", status: "not_started" },
       { name: "Amazon Integration", description: "List products on Amazon marketplace", status: "not_started" },
       { name: "Amazon Order Import", description: "Import Amazon orders", status: "not_started" },
-      { name: "Google Shopping Feed", description: "Product data feed for Google Merchant Center", status: "not_started" },
+      { name: "Google Shopping Feed", description: "Product data feed for Google Merchant Center", status: "done", notes: "Edge function generates Google Merchant Center compatible XML feed" },
       { name: "Facebook / Instagram Shop", description: "Sync catalog to Facebook/Instagram Shop", status: "not_started" },
       { name: "Catch.com.au Integration", description: "Australian marketplace integration", status: "not_started" },
       { name: "Kogan Integration", description: "Kogan marketplace listing and sync", status: "not_started" },
