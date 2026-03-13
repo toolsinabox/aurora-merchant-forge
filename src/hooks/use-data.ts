@@ -1123,7 +1123,7 @@ export function useUpdateStore() {
       return data;
     },
     onSuccess: (data) => {
-      setCurrentStore({ id: data.id, name: data.name, currency: data.currency, timezone: data.timezone });
+      setCurrentStore({ id: data.id, name: data.name, slug: data.slug, currency: data.currency, timezone: data.timezone });
       toast.success("Store settings saved");
     },
     onError: (e) => toast.error(e.message),
