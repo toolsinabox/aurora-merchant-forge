@@ -58,6 +58,7 @@ export default function StorefrontProductDetail() {
   const [estimateZip, setEstimateZip] = useState("");
   const [cartPopupOpen, setCartPopupOpen] = useState(false);
   const [cartPopupItem, setCartPopupItem] = useState<any>(null);
+  const [rfqSubmitting, setRfqSubmitting] = useState(false);
   const { items: cartItems, totalItems: cartItemCount, totalPrice: cartTotal } = useCart();
 
   useEffect(() => {
