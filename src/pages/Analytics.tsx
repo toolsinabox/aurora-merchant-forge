@@ -273,6 +273,25 @@ export default function Analytics() {
         .slice(0, 15);
       setStockTurnoverData(turnover);
 
+      // Inventory valuation report (average cost basis)
+      let totalRetailVal = 0, totalCostVal = 0, totalUnitsVal = 0;
+      const valuationItems = (allProducts || [])
+        .map((p: any) => {
+          const stock = stockByProduct[p.id] || 0;
+          const cost = Number(p.cost_price) || 0;
+          const retail = Number(p.price) || 0;
+          const costValue = stock * cost;
+          const retailValue = stock * retail;
+          totalRetailVal += retailValue;
+          totalCostVal += costValue;
+          totalUnitsVal += stock;
+          return { title: productMap[p.id]?.title || p.id.slice(0, 8), stock, costPrice: cost, retailPrice: retail, costValue, retailValue };
+        })
+        .filter((p: any) => p.stock > 0)
+        .sort((a: any, b: any) => b.costValue - a.costValue)
+        .slice(0, 15);
+      setInventoryValuation({ totalRetail: totalRetailVal, totalCost: totalCostVal, totalUnits: totalUnitsVal, items: valuationItems });
+
       setLoadingTopProducts(false);
     };
     fetchData();
