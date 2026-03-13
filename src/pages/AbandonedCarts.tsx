@@ -50,10 +50,10 @@ export default function AbandonedCarts() {
   });
 
   const markEmailSent = useMutation({
-    mutationFn: async (id: string) => {
-      // Trigger recovery email via edge function
+    mutationFn: async ({ id, couponCode }: { id: string; couponCode?: string }) => {
+      // Trigger recovery email via edge function (with optional coupon)
       const { error: fnErr } = await supabase.functions.invoke("abandoned-cart-email", {
-        body: { cart_id: id, store_id: currentStore?.id },
+        body: { cart_id: id, store_id: currentStore?.id, coupon_code: couponCode || undefined },
       });
       if (fnErr) throw fnErr;
     },
