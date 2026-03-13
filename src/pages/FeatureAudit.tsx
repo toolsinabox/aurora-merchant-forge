@@ -874,7 +874,7 @@ const featureData: FeatureCategory[] = [
       { name: "Payment Gateway Configuration", description: "Configure and enable payment providers", status: "not_started" },
       { name: "Email / SMTP Configuration", description: "Configure outgoing email settings", status: "not_started" },
       { name: "Notification Preferences", description: "Configure which notifications to receive", status: "not_started" },
-      { name: "Checkout Settings", description: "Guest checkout, minimum order, checkout fields", status: "not_started" },
+      { name: "Checkout Settings", description: "Guest checkout, minimum order, checkout fields", status: "done", notes: "Checkout tab in Settings with guest checkout toggle and min order amount, enforced at checkout" },
       { name: "Inventory Settings", description: "Default low stock threshold, backorder rules", status: "partial" },
       { name: "SEO Settings (Global)", description: "Site-wide meta tags, sitemap settings", status: "not_started" },
       { name: "Social Media Links", description: "Store social media profile links", status: "done", notes: "social_links JSONB field on stores table, displayed in storefront footer" },
