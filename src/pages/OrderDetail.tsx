@@ -725,6 +725,50 @@ export default function OrderDetail() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Refund Dialog */}
+      <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Process Refund</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Refund Amount</Label>
+              <Input type="number" step="0.01" placeholder="0.00" value={refundForm.amount}
+                onChange={(e) => setRefundForm({ ...refundForm, amount: e.target.value })} />
+              <p className="text-xs text-muted-foreground">Order total: ${Number(order.total).toFixed(2)}</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Reason</Label>
+              <Textarea value={refundForm.reason}
+                onChange={(e) => setRefundForm({ ...refundForm, reason: e.target.value })} className="min-h-[50px] text-sm" placeholder="Reason for refund..." />
+            </div>
+            <Button className="w-full" size="sm" disabled={!refundForm.amount || Number(refundForm.amount) <= 0}
+              onClick={async () => {
+                if (!order) return;
+                const amount = Number(refundForm.amount);
+                await supabase.from("order_refunds" as any).insert({
+                  store_id: order.store_id,
+                  order_id: order.id,
+                  amount,
+                  reason: refundForm.reason || null,
+                  refunded_by: user?.id || null,
+                  status: "completed",
+                });
+                await createTimelineEvent.mutateAsync({
+                  order_id: order.id,
+                  event_type: "payment",
+                  title: "Refund processed",
+                  description: `$${amount.toFixed(2)} refunded${refundForm.reason ? ` — ${refundForm.reason}` : ""}`,
+                });
+                await updateOrder.mutateAsync({ id: order.id, payment_status: "refunded" } as any);
+                toast.success(`Refund of $${amount.toFixed(2)} processed`);
+                setRefundOpen(false);
+                setRefundForm({ amount: "", reason: "" });
+              }}
+            >Process Refund</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
