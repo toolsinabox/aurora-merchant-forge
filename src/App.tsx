@@ -85,6 +85,8 @@ import MediaLibrary from "./pages/MediaLibrary.tsx";
 import ContentBlocks from "./pages/ContentBlocks.tsx";
 import Backorders from "./pages/Backorders.tsx";
 import StaffActivity from "./pages/StaffActivity.tsx";
+import ApiKeys from "./pages/ApiKeys.tsx";
+import RolePermissions from "./pages/RolePermissions.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -186,6 +188,8 @@ const App = () => (
                   <Route path="/_cpanel/content-blocks" element={<RequireAuth><ContentBlocks /></RequireAuth>} />
                   <Route path="/_cpanel/backorders" element={<RequireAuth><Backorders /></RequireAuth>} />
                   <Route path="/_cpanel/staff-activity" element={<RequireAuth><StaffActivity /></RequireAuth>} />
+                  <Route path="/_cpanel/api-keys" element={<RequireAuth><ApiKeys /></RequireAuth>} />
+                  <Route path="/_cpanel/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -258,6 +262,8 @@ const App = () => (
                   <Route path="/content-blocks" element={<RequireAuth><ContentBlocks /></RequireAuth>} />
                   <Route path="/backorders" element={<RequireAuth><Backorders /></RequireAuth>} />
                   <Route path="/staff-activity" element={<RequireAuth><StaffActivity /></RequireAuth>} />
+                  <Route path="/api-keys" element={<RequireAuth><ApiKeys /></RequireAuth>} />
+                  <Route path="/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 

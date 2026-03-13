@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard, ShieldAlert } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard, ShieldAlert, FileText, Download } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -91,10 +91,11 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [disputes, setDisputes] = useState<any[]>([]);
+  const [customerFiles, setCustomerFiles] = useState<any[]>([]);
 
   // Dispute form state
   const [disputeOpen, setDisputeOpen] = useState(false);
@@ -184,6 +185,14 @@ export default function StorefrontAccount() {
           .eq("customer_id", cust.id)
           .order("created_at", { ascending: false });
         setDisputes(disputesData || []);
+
+        // Load customer files
+        const { data: filesData } = await supabase
+          .from("customer_files")
+          .select("*")
+          .eq("customer_id", cust.id)
+          .order("created_at", { ascending: false });
+        setCustomerFiles(filesData || []);
       }
 
       // Load wishlist products
@@ -511,6 +520,7 @@ export default function StorefrontAccount() {
                 { key: "vouchers", label: "Vouchers", icon: Gift, count: vouchers.length },
                 { key: "quotes", label: "Quotes", icon: FileQuestion, count: quotes.length },
                 { key: "disputes", label: "Disputes", icon: ShieldAlert, count: disputes.length },
+                { key: "files", label: "Files", icon: FileText, count: customerFiles.length },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
@@ -960,6 +970,50 @@ export default function StorefrontAccount() {
                             <TableCell className="text-xs capitalize">{d.dispute_type}</TableCell>
                             <TableCell><Badge variant={d.status === "resolved" ? "default" : d.status === "closed" ? "destructive" : "secondary"} className="text-[10px] capitalize">{d.status.replace("_", " ")}</Badge></TableCell>
                             <TableCell className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Files Tab */}
+            {activeTab === "files" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">My Files & Documents</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {customerFiles.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
+                      <p className="text-sm text-muted-foreground">No files available</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">File Name</TableHead>
+                          <TableHead className="text-xs">Description</TableHead>
+                          <TableHead className="text-xs">Size</TableHead>
+                          <TableHead className="text-xs">Uploaded</TableHead>
+                          <TableHead className="text-xs w-16"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {customerFiles.map((f: any) => (
+                          <TableRow key={f.id} className="text-sm">
+                            <TableCell className="font-medium">{f.file_name}</TableCell>
+                            <TableCell className="text-muted-foreground text-xs max-w-[200px] truncate">{f.description || "—"}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{f.file_size ? `${(f.file_size / 1024).toFixed(1)} KB` : "—"}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{new Date(f.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              <a href={f.file_url} target="_blank" rel="noopener noreferrer">
+                                <Button variant="ghost" size="icon" className="h-7 w-7"><Download className="h-3.5 w-3.5" /></Button>
+                              </a>
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
