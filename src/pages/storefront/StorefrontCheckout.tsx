@@ -12,7 +12,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X, MapPin, Truck } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 
 interface AppliedCoupon {
@@ -38,6 +38,14 @@ export default function StorefrontCheckout() {
   const [couponCode, setCouponCode] = useState("");
   const [couponLoading, setCouponLoading] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+
+  // Gift voucher state
+  const [voucherCode, setVoucherCode] = useState("");
+  const [voucherLoading, setVoucherLoading] = useState(false);
+  const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
+
+  // Delivery method
+  const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">("shipping");
 
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
@@ -114,8 +122,11 @@ export default function StorefrontCheckout() {
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
+  const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost;
   const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
-  const finalTotal = subtotalAfterDiscount + shippingCost + taxAmount;
+  const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
+  const voucherAmount = appliedVoucher?.amountUsed ?? 0;
+  const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount);
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
@@ -176,6 +187,37 @@ export default function StorefrontCheckout() {
     setCouponCode("");
   };
 
+  const applyVoucher = async () => {
+    const code = voucherCode.trim().toUpperCase();
+    if (!code) return;
+    setVoucherLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("gift_vouchers")
+        .select("id, code, balance, is_active, expires_at")
+        .eq("code", code)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) { toast.error("Invalid voucher code"); return; }
+      const v = data as any;
+      if (v.expires_at && new Date(v.expires_at) < new Date()) { toast.error("This voucher has expired"); return; }
+      if (Number(v.balance) <= 0) { toast.error("This voucher has no remaining balance"); return; }
+      const amountUsed = Math.min(Number(v.balance), totalBeforeVoucher);
+      setAppliedVoucher({ id: v.id, code: v.code, balance: Number(v.balance), amountUsed });
+      toast.success(`Voucher applied! $${amountUsed.toFixed(2)} credit`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to apply voucher");
+    } finally {
+      setVoucherLoading(false);
+    }
+  };
+
+  const removeVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherCode("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
@@ -215,9 +257,9 @@ export default function StorefrontCheckout() {
           subtotal: totalPrice,
           discount: discountAmount,
           tax: taxAmount,
-          shipping: shippingCost,
+          shipping: actualShipping,
           total: finalTotal,
-          status: "pending",
+          status: deliveryMethod === "pickup" ? "processing" : "pending",
           payment_status: "pending",
           notes: form.notes || null,
           shipping_address: shippingAddr,
@@ -250,6 +292,15 @@ export default function StorefrontCheckout() {
         if (couponData) {
           await supabase.from("coupons").update({ used_count: (couponData as any).used_count + 1 } as any).eq("id", appliedCoupon.id);
         }
+      }
+
+      // Deduct gift voucher balance
+      if (appliedVoucher) {
+        const newBalance = Math.max(0, appliedVoucher.balance - appliedVoucher.amountUsed);
+        await supabase.from("gift_vouchers").update({
+          balance: newBalance,
+          redeemed_at: newBalance === 0 ? new Date().toISOString() : null,
+        } as any).eq("id", appliedVoucher.id);
       }
 
       setOrderNumber(orderNum);
@@ -399,8 +450,29 @@ export default function StorefrontCheckout() {
                 )}
               </div>
 
+              {/* Delivery Method Toggle */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold">Delivery Method</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryMethod === "shipping" ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <input type="radio" name="delivery" value="shipping" checked={deliveryMethod === "shipping"} onChange={() => setDeliveryMethod("shipping")} className="accent-primary" />
+                    <div>
+                      <p className="text-sm font-medium flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" /> Delivery</p>
+                      <p className="text-xs text-muted-foreground">Ship to your address</p>
+                    </div>
+                  </label>
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryMethod === "pickup" ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <input type="radio" name="delivery" value="pickup" checked={deliveryMethod === "pickup"} onChange={() => setDeliveryMethod("pickup")} className="accent-primary" />
+                    <div>
+                      <p className="text-sm font-medium flex items-center gap-1.5"><Store className="h-3.5 w-3.5" /> Click & Collect</p>
+                      <p className="text-xs text-muted-foreground">Pick up in store — Free</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
               {/* Shipping Method */}
-              {shippingZones.length > 0 && (
+              {deliveryMethod === "shipping" && shippingZones.length > 0 && (
                 <div className="border rounded-lg p-5 space-y-4">
                   <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h2>
                   <div className="space-y-2">
@@ -503,6 +575,35 @@ export default function StorefrontCheckout() {
 
                 <Separator />
 
+                {/* Gift Voucher */}
+                {appliedVoucher ? (
+                  <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Gift className="h-3.5 w-3.5 text-primary" />
+                      <span className="font-mono font-medium text-xs">{appliedVoucher.code}</span>
+                      <span className="text-muted-foreground">(-${appliedVoucher.amountUsed.toFixed(2)})</span>
+                    </div>
+                    <button type="button" onClick={removeVoucher} className="text-muted-foreground hover:text-destructive">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Gift voucher code"
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value)}
+                      className="h-9 uppercase text-xs font-mono"
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyVoucher())}
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={applyVoucher} disabled={voucherLoading} className="h-9 px-3 shrink-0">
+                      {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Gift className="h-3 w-3" />}
+                    </Button>
+                  </div>
+                )}
+
+                <Separator />
+
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
@@ -516,7 +617,7 @@ export default function StorefrontCheckout() {
                   )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
+                    <span>{deliveryMethod === "pickup" ? "Pickup (Free)" : actualShipping > 0 ? `$${actualShipping.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
                   </div>
                   {taxAmount > 0 && (
                     <div className="flex justify-between">
@@ -528,6 +629,12 @@ export default function StorefrontCheckout() {
                     <div className="flex justify-between text-primary">
                       <span className="text-xs">Tax Exempt</span>
                       <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
+                    </div>
+                  )}
+                  {voucherAmount > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span>Gift Voucher</span>
+                      <span>-${voucherAmount.toFixed(2)}</span>
                     </div>
                   )}
                 </div>

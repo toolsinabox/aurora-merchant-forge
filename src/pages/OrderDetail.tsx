@@ -20,7 +20,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
-  Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign,
+  Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -169,6 +169,9 @@ export default function OrderDetail() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" className="text-xs gap-1" onClick={() => navigate(`/orders/${order.id}/print`)}>
+              <Printer className="h-3.5 w-3.5" /> Print Invoice
+            </Button>
             <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="text-xs gap-1"><Truck className="h-3.5 w-3.5" /> Create Shipment</Button>
