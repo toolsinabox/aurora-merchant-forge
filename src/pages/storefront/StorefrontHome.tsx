@@ -149,32 +149,61 @@ export default function StorefrontHome() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
               {products.map((p) => (
-                <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
-                  <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-3 relative">
-                    {p.images?.[0] ? (
-                      <img
-                        src={getImageUrl(p.images[0])}
-                        alt={p.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
-                    )}
-                    {p.compare_at_price && p.compare_at_price > p.price && (
-                      <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-md">
-                        Sale
-                      </span>
-                    )}
+                <div key={p.id} className="group relative">
+                  <Link to={`${basePath}/product/${p.id}`}>
+                    <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-3 relative">
+                      {p.images?.[0] ? (
+                        <img
+                          src={getImageUrl(p.images[0])}
+                          alt={p.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
+                      )}
+                      {p.compare_at_price && p.compare_at_price > p.price && (
+                        <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-md">
+                          Sale
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2 leading-snug">{p.title}</h3>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <p className="text-sm font-bold">${Number(p.price).toFixed(2)}</p>
+                      {p.compare_at_price && p.compare_at_price > p.price && (
+                        <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
+                      )}
+                    </div>
+                  </Link>
+                  <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="h-8 w-8 rounded-full shadow-sm"
+                      onClick={() => { toggleItem(p.id, store?.id); }}
+                    >
+                      <Heart className={`h-3.5 w-3.5 ${isWishlisted(p.id) ? "fill-destructive text-destructive" : ""}`} />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="icon"
+                      className="h-8 w-8 rounded-full shadow-sm"
+                      onClick={() => {
+                        addItem({
+                          product_id: p.id,
+                          title: p.title,
+                          price: Number(p.price),
+                          image: p.images?.[0] ? getImageUrl(p.images[0]) : undefined,
+                          sku: p.sku,
+                        });
+                        toast.success("Added to cart");
+                      }}
+                    >
+                      <ShoppingCart className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
-                  <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2 leading-snug">{p.title}</h3>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <p className="text-sm font-bold">${Number(p.price).toFixed(2)}</p>
-                    {p.compare_at_price && p.compare_at_price > p.price && (
-                      <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
-                    )}
-                  </div>
-                </Link>
+                </div>
               ))}
             </div>
           </section>
