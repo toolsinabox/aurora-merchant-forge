@@ -45,6 +45,9 @@ export default function StorefrontCheckout() {
   const [voucherLoading, setVoucherLoading] = useState(false);
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
 
+  // Gift message
+  const [giftMessage, setGiftMessage] = useState("");
+
   // Delivery method
   const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">("shipping");
 
