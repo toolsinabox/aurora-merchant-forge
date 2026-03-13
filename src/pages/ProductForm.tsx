@@ -17,6 +17,7 @@ import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 import { FieldLabel } from "@/components/products/BaseTag";
+import { ProductAddonsTab } from "@/components/products/ProductAddonsTab";
 
 export default function ProductForm() {
   const { id } = useParams();
