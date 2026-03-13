@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { useCompare } from "@/contexts/CompareContext";
 import { useCart } from "@/contexts/CartContext";
