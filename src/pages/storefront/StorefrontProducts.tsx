@@ -10,12 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { useCompare } from "@/contexts/CompareContext";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
+import { ProductQuickView } from "@/components/storefront/ProductQuickView";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -24,7 +25,7 @@ type SpecFilter = Record<string, string[]>;
 
 const PAGE_SIZES = [12, 24, 48];
 
-function ProductCard({ p, basePath, store }: { p: any; basePath: string; store: any }) {
+function ProductCard({ p, basePath, store, onQuickView }: { p: any; basePath: string; store: any; onQuickView: (product: any) => void }) {
   const { items: compareItems, addItem: addCompare, removeItem: removeCompare, isComparing } = useCompare();
   const { addItem } = useCart();
   const { toggleItem, isWishlisted } = useWishlist();
@@ -60,6 +61,18 @@ function ProductCard({ p, basePath, store }: { p: any; basePath: string; store: 
 
       {/* Action buttons overlay */}
       <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 rounded-full shadow-sm"
+          title="Quick View"
+          onClick={(e) => {
+            e.preventDefault();
+            onQuickView(p);
+          }}
+        >
+          <Eye className="h-3.5 w-3.5" />
+        </Button>
         <Button
           variant="secondary"
           size="icon"
@@ -185,6 +198,7 @@ export default function StorefrontProducts() {
   const [brandFilter, setBrandFilter] = useState<string[]>([]);
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
   const [showFilters, setShowFilters] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
 
@@ -423,7 +437,7 @@ export default function StorefrontProducts() {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {paginated.map((p) => (
-                    <ProductCard key={p.id} p={p} basePath={basePath} store={store} />
+                    <ProductCard key={p.id} p={p} basePath={basePath} store={store} onQuickView={setQuickViewProduct} />
                   ))}
                 </div>
 
@@ -489,6 +503,13 @@ export default function StorefrontProducts() {
           </div>
         </div>
       </div>
+      <ProductQuickView
+        product={quickViewProduct}
+        open={!!quickViewProduct}
+        onOpenChange={(open) => { if (!open) setQuickViewProduct(null); }}
+        basePath={basePath}
+        storeId={store?.id}
+      />
     </StorefrontLayout>
   );
 }

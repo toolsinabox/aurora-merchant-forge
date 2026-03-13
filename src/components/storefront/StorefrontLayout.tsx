@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { StorefrontSearch } from "./StorefrontSearch";
+import { NewsletterSignup } from "./NewsletterSignup";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
@@ -155,6 +156,12 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                   </>
                 )}
               </nav>
+              {storeId && (
+                <div className="mt-4">
+                  <h3 className="font-bold text-sm mb-2">Newsletter</h3>
+                  <NewsletterSignup storeId={storeId} />
+                </div>
+              )}
             </div>
           </div>
           <div className="border-t pt-6 text-center text-xs text-muted-foreground">
