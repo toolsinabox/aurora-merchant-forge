@@ -155,9 +155,21 @@ export default function StorefrontAccount() {
     navigate(basePath || "/");
   };
 
-  const viewOrderDetail = (order: any) => {
+  // Load shipments when viewing order detail
+  const [shipments, setShipments] = useState<any[]>([]);
+  const [shipmentsLoading, setShipmentsLoading] = useState(false);
+
+  const viewOrderDetail = async (order: any) => {
     setSelectedOrder(order);
     setOrderItems(order.order_items || []);
+    setShipmentsLoading(true);
+    const { data } = await supabase
+      .from("order_shipments" as any)
+      .select("*, shipment_items(*, order_items:order_item_id(title, sku))")
+      .eq("order_id", order.id)
+      .order("created_at", { ascending: false });
+    setShipments(data || []);
+    setShipmentsLoading(false);
   };
 
   const handleReturnRequest = async () => {
