@@ -316,7 +316,7 @@ const featureData: FeatureCategory[] = [
       { name: "Quote Invoice Page", description: "Post-quote success page (quote_invoice.template.html)", status: "not_started" },
       { name: "Empty Cart Page", description: "Display when cart is empty (empty.template.html)", status: "not_started" },
       { name: "404 Page", description: "Custom 404 not found page (404.template.html)", status: "done" },
-      { name: "Content Pages (CMS)", description: "Generic content pages (default.template.html)", status: "not_started", notes: "About, Contact, FAQ, etc." },
+      { name: "Content Pages (CMS)", description: "Generic content pages (default.template.html)", status: "done", notes: "Storefront CMS page route with slug-based rendering" },
       { name: "Blog Pages", description: "Blog listing and blog post pages", status: "not_started" },
       { name: "Store Finder / Stockist Page", description: "Store locator with map (store_finder.template.html)", status: "not_started" },
       { name: "Modal / Popup Template", description: "Modal wrapper template (modal.template.html)", status: "not_started" },
