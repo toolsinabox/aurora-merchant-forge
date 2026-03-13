@@ -89,6 +89,7 @@ import ApiKeys from "./pages/ApiKeys.tsx";
 import RolePermissions from "./pages/RolePermissions.tsx";
 import Adverts from "./pages/Adverts.tsx";
 import Sessions from "./pages/Sessions.tsx";
+import EmailTemplates from "./pages/EmailTemplates.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -195,6 +196,7 @@ const App = () => (
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
                   <Route path="/_cpanel/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
+                  <Route path="/_cpanel/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -271,6 +273,7 @@ const App = () => (
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
                   <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
+                  <Route path="/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

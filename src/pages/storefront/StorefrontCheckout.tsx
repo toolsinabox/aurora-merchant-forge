@@ -463,6 +463,11 @@ export default function StorefrontCheckout() {
         });
       }
 
+      // Trigger order confirmation + admin notification emails
+      supabase.functions.invoke("order-email-trigger", {
+        body: { order_id: order.id, store_id: storeId, trigger_type: "order_created" },
+      }).catch(() => {});
+
       setOrderNumber(orderNum);
       setOrderTotal(finalTotal);
       setCompleted(true);

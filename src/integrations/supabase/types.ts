@@ -937,6 +937,97 @@ export type Database = {
           },
         ]
       }
+      email_queue: {
+        Row: {
+          created_at: string
+          error: string | null
+          html_body: string
+          id: string
+          sent_at: string | null
+          status: string
+          store_id: string
+          subject: string
+          template_key: string | null
+          to_email: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          html_body: string
+          id?: string
+          sent_at?: string | null
+          status?: string
+          store_id: string
+          subject: string
+          template_key?: string | null
+          to_email: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          html_body?: string
+          id?: string
+          sent_at?: string | null
+          status?: string
+          store_id?: string
+          subject?: string
+          template_key?: string | null
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_queue_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_templates: {
+        Row: {
+          created_at: string
+          html_body: string
+          id: string
+          is_active: boolean
+          name: string
+          store_id: string
+          subject: string
+          template_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          html_body?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          store_id: string
+          subject?: string
+          template_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          html_body?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          store_id?: string
+          subject?: string
+          template_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_templates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       gift_vouchers: {
         Row: {
           balance: number

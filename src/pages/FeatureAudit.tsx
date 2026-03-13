@@ -563,7 +563,7 @@ const featureData: FeatureCategory[] = [
     category: "System Emails & Notifications",
     icon: <Mail className="h-5 w-5" />,
     features: [
-      { name: "Order Confirmation Email", description: "Automated email on order placement", status: "not_started" },
+      { name: "Order Confirmation Email", description: "Automated email on order placement", status: "done", notes: "order-email-trigger edge function sends order confirmation with items table to customer email on checkout, queued in email_queue table" },
       { name: "Order Shipped / Tracking Email", description: "Email with tracking info when order ships", status: "not_started" },
       { name: "Order Delivered Email", description: "Email when order is marked delivered", status: "not_started" },
       { name: "Order Follow-Up Email", description: "Post-delivery follow-up / review request", status: "not_started" },
@@ -579,11 +579,11 @@ const featureData: FeatureCategory[] = [
       { name: "Dispute/Warranty Emails", description: "Emails for dispute raised, updated, resolved", status: "not_started" },
       { name: "Dropship Notification Email", description: "Emails to dropship suppliers for new orders", status: "not_started" },
       { name: "Import Notification Email", description: "Email with login details on customer import", status: "not_started" },
-      { name: "Contact Form Email", description: "Email sent to admin when contact form submitted", status: "not_started" },
+      { name: "Contact Form Email", description: "Email sent to admin when contact form submitted", status: "done", notes: "contact-email edge function queues admin notification with contact details in email_queue table" },
       { name: "eBay Notification Emails", description: "eBay listing/sale event notifications", status: "not_started" },
       { name: "Batch Job Error Email", description: "Notification when automated batch jobs fail", status: "not_started" },
       { name: "Low Stock Alert Email", description: "Alert admin when stock falls below threshold", status: "not_started" },
-      { name: "New Order Admin Notification", description: "Admin email on new order received", status: "not_started" },
+      { name: "New Order Admin Notification", description: "Admin email on new order received", status: "done", notes: "order-email-trigger edge function sends admin notification with order summary to store contact_email" },
     ],
   },
 
