@@ -558,7 +558,7 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Reorder Qty</Label>
+                        <FieldLabel label="Reorder Qty" field="reorder_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.reorder_quantity} onChange={(e) => update("reorder_quantity", e.target.value)} />
                       </div>
                       <div className="space-y-1">
