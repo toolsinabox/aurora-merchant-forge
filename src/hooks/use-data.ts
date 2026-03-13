@@ -625,6 +625,47 @@ export function useCreateOrder() {
       }));
       const { error: itemsErr } = await supabase.from("order_items").insert(itemRows);
       if (itemsErr) throw itemsErr;
+
+      // Auto-route dropship items: find products with dropship suppliers and notify
+      try {
+        const productIds = order.items.map(i => i.product_id);
+        const { data: dropshipLinks } = await supabase
+          .from("supplier_products")
+          .select("product_id, supplier_id, suppliers!inner(id, name, email, is_dropship, is_active)")
+          .in("product_id", productIds)
+          .eq("is_preferred", true);
+
+        if (dropshipLinks && dropshipLinks.length > 0) {
+          const dropshipItems = (dropshipLinks as any[]).filter(
+            (link: any) => link.suppliers?.is_dropship && link.suppliers?.is_active && link.suppliers?.email
+          );
+          // Group by supplier
+          const bySupplier = new Map<string, { supplier: any; productIds: string[] }>();
+          for (const link of dropshipItems) {
+            const sid = link.supplier_id;
+            if (!bySupplier.has(sid)) {
+              bySupplier.set(sid, { supplier: link.suppliers, productIds: [] });
+            }
+            bySupplier.get(sid)!.productIds.push(link.product_id);
+          }
+          // Trigger dropship notification for each supplier
+          for (const [, entry] of bySupplier) {
+            const dropshipOrderItems = order.items.filter(i => entry.productIds.includes(i.product_id));
+            if (dropshipOrderItems.length > 0) {
+              supabase.functions.invoke("dropship-notification", {
+                body: {
+                  store_id: currentStore.id,
+                  order_id: newOrder.id,
+                  supplier_id: entry.supplier.id,
+                },
+              }).catch(() => {}); // fire-and-forget
+            }
+          }
+        }
+      } catch (_) {
+        // Non-critical: don't fail order creation if dropship routing fails
+      }
+
       return newOrder;
     },
     onSuccess: () => {
