@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
-  CreditCard,
+  CreditCard, Webhook, Image,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -55,12 +55,14 @@ const marketingNav = [
 
 const contentNav = [
   { title: "Content Pages", url: `${prefix}/content-pages`, icon: FileText },
+  { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
 ];
 
 const systemNav = [
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
+  { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "Redirects", url: `${prefix}/redirects`, icon: ExternalLink },
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },

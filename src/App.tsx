@@ -80,6 +80,8 @@ import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 import Quotes from "./pages/Quotes.tsx";
 import PrintQuote from "./pages/PrintQuote.tsx";
 import Layby from "./pages/Layby.tsx";
+import Webhooks from "./pages/Webhooks.tsx";
+import MediaLibrary from "./pages/MediaLibrary.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -176,6 +178,8 @@ const App = () => (
                   <Route path="/_cpanel/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/_cpanel/quotes/:id/print" element={<RequireAuth><PrintQuote /></RequireAuth>} />
                   <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
+                  <Route path="/_cpanel/webhooks" element={<RequireAuth><Webhooks /></RequireAuth>} />
+                  <Route path="/_cpanel/media" element={<RequireAuth><MediaLibrary /></RequireAuth>} />
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -243,6 +247,8 @@ const App = () => (
                   <Route path="/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/quotes/:id/print" element={<RequireAuth><PrintQuote /></RequireAuth>} />
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
+                  <Route path="/webhooks" element={<RequireAuth><Webhooks /></RequireAuth>} />
+                  <Route path="/media" element={<RequireAuth><MediaLibrary /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
