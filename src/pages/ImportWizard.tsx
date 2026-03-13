@@ -552,7 +552,7 @@ export default function ImportWizard() {
                     <TableRow>
                       <TableHead className="text-xs h-8">#</TableHead>
                       {Object.keys(mappings).map((k: string) => (
-                        <TableHead key={k} className="text-xs h-8">{PRODUCT_FIELDS.find((f) => f.key === k)?.label || k}</TableHead>
+                        <TableHead key={k} className="text-xs h-8">{ACTIVE_FIELDS.find((f) => f.key === k)?.label || k}</TableHead>
                       ))}
                     </TableRow>
                   </TableHeader>
