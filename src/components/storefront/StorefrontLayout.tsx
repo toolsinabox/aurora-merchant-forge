@@ -36,9 +36,17 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       if (s) {
         setStoreId(s.id);
         if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
+        // Load categories for mega menu
+        supabase.from("categories").select("id, name, slug, parent_id, sort_order")
+          .eq("store_id", s.id).order("sort_order").then(({ data }) => {
+            setCategories(data || []);
+          });
       }
     });
   }, [storeSlug]);
+
+  const parentCategories = categories.filter(c => !c.parent_id);
+  const getChildren = (parentId: string) => categories.filter(c => c.parent_id === parentId);
 
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
