@@ -921,7 +921,7 @@ const featureData: FeatureCategory[] = [
       { name: "Maropost Marketing Cloud", description: "Native integration with Maropost Marketing", status: "not_started" },
       { name: "Maropost Service Cloud", description: "Customer service/helpdesk integration", status: "not_started" },
       { name: "Retail Express POS", description: "Maropost's own POS system integration", status: "not_started" },
-      { name: "LiveChat / Zendesk / Tidio", description: "Customer support chat widget", status: "not_started" },
+      { name: "LiveChat / Zendesk / Tidio", description: "Customer support chat widget", status: "done", notes: "chat_widget_code column on stores table; embed code input in Settings Branding tab; storefront layout dynamically injects chat widget script from store config" },
     ],
   },
 ];
