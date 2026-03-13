@@ -327,10 +327,24 @@ export default function POS() {
     <AdminLayout>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between mb-3">
-          <TabsList>
-            <TabsTrigger value="sale">New Sale</TabsTrigger>
-            <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-3">
+            <TabsList>
+              <TabsTrigger value="sale">New Sale</TabsTrigger>
+              <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
+            </TabsList>
+            {registers.length > 0 && (
+              <Select value={selectedRegister} onValueChange={setSelectedRegister}>
+                <SelectTrigger className="w-[160px] h-8 text-xs">
+                  <SelectValue placeholder="Select register..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {registers.map((r: any) => (
+                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
           <Button variant="outline" size="sm" onClick={() => setShowEOD(true)} className="gap-2">
             <Clock className="h-4 w-4" /> End of Day
           </Button>
