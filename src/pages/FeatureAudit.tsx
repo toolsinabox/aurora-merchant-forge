@@ -472,7 +472,7 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Supplier CRUD (GetSupplier / AddSupplier / UpdateSupplier)", description: "Manage supplier records via API", status: "done" },
       { name: "Supplier Contact Details", description: "Store supplier name, email, phone, address", status: "done" },
-      { name: "Supplier Product Assignments", description: "Assign products/SKUs to specific suppliers", status: "not_started" },
+      { name: "Supplier Product Assignments", description: "Assign products/SKUs to specific suppliers", status: "done", notes: "supplier_products table with Product Assignments tab on Suppliers page, preferred supplier star toggle" },
       { name: "Supplier Pricing / Cost", description: "Supplier-specific cost price per product", status: "partial", notes: "cost_price field exists but not supplier-linked" },
       { name: "Purchase Orders to Suppliers", description: "Generate and send POs to suppliers", status: "done", notes: "PO CRUD with supplier linking" },
       { name: "Supplier Lead Times", description: "Expected delivery timeframes per supplier", status: "done" },
