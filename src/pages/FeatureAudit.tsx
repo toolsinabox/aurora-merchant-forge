@@ -550,7 +550,7 @@ const featureData: FeatureCategory[] = [
       { name: "Wishlist Reminder Emails", description: "Remind customers about wishlist items", status: "not_started", notes: "Neto has wishlist system email" },
       { name: "Order Follow-Up Email", description: "Automated post-purchase follow-up email", status: "not_started", notes: "Neto has order_follow_up email" },
       { name: "Newsletter Subscription", description: "Newsletter signup form and mailing list", status: "done", notes: "Email signup in storefront footer with newsletter_subscribers table" },
-      { name: "Popup / Slide-In Promotions", description: "On-site promotional popups", status: "not_started" },
+      { name: "Popup / Slide-In Promotions", description: "On-site promotional popups", status: "done", notes: "PromoPopup component with 3s delay, dismiss persistence in localStorage, signup CTA" },
       { name: "Referral / Loyalty Program", description: "Points-based loyalty or referral rewards", status: "not_started" },
       { name: "Google Ads Integration", description: "Conversion tracking and remarketing for Google Ads", status: "not_started" },
       { name: "Facebook Pixel Integration", description: "Meta/Facebook pixel for conversion tracking", status: "not_started" },
