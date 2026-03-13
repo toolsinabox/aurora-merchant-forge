@@ -82,6 +82,33 @@ const INTEGRATIONS: Integration[] = [
     ],
     docs_url: "https://developers.sendle.com/",
   },
+  {
+    key: "startrack", name: "StarTrack", logo: "⭐", description: "StarTrack express and premium shipping services (AU)",
+    category: "shipping",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "account_number", label: "Account Number", type: "text", placeholder: "1234567890" },
+      { key: "password", label: "Password", type: "password", placeholder: "xxxxxxxx" },
+    ],
+  },
+  {
+    key: "aramex", name: "Fastway / Aramex", logo: "🟧", description: "Aramex (formerly Fastway) courier services",
+    category: "shipping",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "account_number", label: "Account Number", type: "text", placeholder: "12345" },
+    ],
+  },
+  {
+    key: "ups_fedex_dhl", name: "UPS / FedEx / DHL", logo: "🌍", description: "International carrier rate integration",
+    category: "shipping",
+    fields: [
+      { key: "carrier", label: "Carrier", type: "text", placeholder: "ups / fedex / dhl" },
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "account_number", label: "Account Number", type: "text", placeholder: "1234567890" },
+      { key: "api_secret", label: "API Secret", type: "password", placeholder: "xxxxxxxx" },
+    ],
+  },
   // Marketplace
   {
     key: "ebay", name: "eBay", logo: "🛒", description: "List products on eBay, sync orders and inventory",
@@ -174,6 +201,32 @@ const INTEGRATIONS: Integration[] = [
       { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
     ],
     docs_url: "https://apidocs.unleashedsoftware.com/",
+  },
+  {
+    key: "maropost_marketing", name: "Maropost Marketing Cloud", logo: "📧", description: "Native integration with Maropost Marketing automation",
+    category: "automation",
+    fields: [
+      { key: "account_id", label: "Account ID", type: "text", placeholder: "12345" },
+      { key: "auth_token", label: "Auth Token", type: "password", placeholder: "xxxxxxxx" },
+    ],
+    docs_url: "https://www.maropost.com/",
+  },
+  {
+    key: "maropost_service", name: "Maropost Service Cloud", logo: "🎧", description: "Customer service and helpdesk integration",
+    category: "automation",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "subdomain", label: "Subdomain", type: "text", placeholder: "yourcompany" },
+    ],
+    docs_url: "https://www.maropost.com/",
+  },
+  {
+    key: "retail_express", name: "Retail Express POS", logo: "🏪", description: "Maropost's own POS system integration for omnichannel retail",
+    category: "automation",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "store_code", label: "Store Code", type: "text", placeholder: "STORE01" },
+    ],
   },
 ];
 
