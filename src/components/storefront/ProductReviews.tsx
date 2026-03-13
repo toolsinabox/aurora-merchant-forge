@@ -143,6 +143,15 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
         .limit(1);
       const authorName = custs?.[0]?.name || user.email?.split("@")[0] || "Anonymous";
 
+      // Upload photos
+      const uploadedPaths: string[] = [];
+      for (const photo of reviewPhotos) {
+        const ext = photo.name.split('.').pop();
+        const path = `reviews/${storeId}/${productId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("product-images").upload(path, photo);
+        if (!uploadError) uploadedPaths.push(path);
+      }
+
       const { error } = await supabase.from("product_reviews" as any).insert({
         store_id: storeId,
         product_id: productId,
@@ -151,7 +160,8 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
         title: title || null,
         body: body || null,
         author_name: authorName,
-      });
+        review_photos: uploadedPaths.length > 0 ? uploadedPaths : undefined,
+      } as any);
       if (error) throw error;
 
       toast.success("Review submitted!");
