@@ -476,7 +476,7 @@ const featureData: FeatureCategory[] = [
       { name: "Supplier Pricing / Cost", description: "Supplier-specific cost price per product", status: "partial", notes: "cost_price field exists but not supplier-linked" },
       { name: "Purchase Orders to Suppliers", description: "Generate and send POs to suppliers", status: "done", notes: "PO CRUD with supplier linking" },
       { name: "Supplier Lead Times", description: "Expected delivery timeframes per supplier", status: "done" },
-      { name: "Supplier Performance Tracking", description: "Track on-time delivery and quality metrics", status: "not_started" },
+      { name: "Supplier Performance Tracking", description: "Track on-time delivery and quality metrics", status: "done", notes: "Performance tab on Suppliers page showing PO count, total spend, received count, on-time delivery % per supplier" },
       { name: "Dropship Supplier Management", description: "Configure suppliers as dropship sources", status: "done" },
     ],
   },
