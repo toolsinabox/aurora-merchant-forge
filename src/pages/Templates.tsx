@@ -106,6 +106,7 @@ export default function Templates() {
     template_type: "content_block",
     context_type: "product",
     content: "",
+    custom_css: "",
     is_active: true,
   });
 
