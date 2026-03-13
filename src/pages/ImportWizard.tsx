@@ -15,6 +15,8 @@ import { Upload, ArrowLeft, ArrowRight, Check, AlertTriangle, FileSpreadsheet, S
 import { useNavigate } from "react-router-dom";
 import { useImportTemplates, useCreateImportTemplate, useDeleteImportTemplate } from "@/hooks/use-data";
 
+type ImportEntity = "products" | "orders";
+
 // Maropost-aligned product fields
 const PRODUCT_FIELDS = [
   { key: "title", label: "Name *", group: "Basic" },
@@ -68,6 +70,23 @@ const PRODUCT_FIELDS = [
   { key: "misc5", label: "Misc 5", group: "Custom" },
 ];
 
+const ORDER_FIELDS = [
+  { key: "order_number", label: "Order Number *", group: "Basic" },
+  { key: "status", label: "Status", group: "Basic" },
+  { key: "payment_status", label: "Payment Status", group: "Basic" },
+  { key: "fulfillment_status", label: "Fulfillment Status", group: "Basic" },
+  { key: "subtotal", label: "Subtotal", group: "Financial" },
+  { key: "tax", label: "Tax", group: "Financial" },
+  { key: "shipping", label: "Shipping", group: "Financial" },
+  { key: "discount", label: "Discount", group: "Financial" },
+  { key: "total", label: "Total", group: "Financial" },
+  { key: "notes", label: "Notes", group: "Details" },
+  { key: "shipping_address", label: "Shipping Address", group: "Details" },
+  { key: "billing_address", label: "Billing Address", group: "Details" },
+  { key: "tags", label: "Tags", group: "Details" },
+  { key: "customer_email", label: "Customer Email (lookup)", group: "Customer" },
+];
+
 type FieldMapping = Record<string, { source: string; static_value?: string; transform?: string }>;
 
 function parseCSV(text: string, delimiter = ","): { headers: string[]; rows: string[][] } {
@@ -102,6 +121,9 @@ export default function ImportWizard() {
   const [importing, setImporting] = useState(false);
   const [results, setResults] = useState<{ success: number; errors: { row: number; error: string }[] } | null>(null);
   const [templateName, setTemplateName] = useState("");
+  const [entityType, setEntityType] = useState<ImportEntity>("products");
+
+  const ACTIVE_FIELDS = entityType === "orders" ? ORDER_FIELDS : PRODUCT_FIELDS;
 
   const { data: templates = [] } = useImportTemplates();
   const createTemplate = useCreateImportTemplate();
@@ -120,7 +142,7 @@ export default function ImportWizard() {
       const autoMap: FieldMapping = {};
       parsed.headers.forEach((h) => {
         const normalized = h.toLowerCase().replace(/[^a-z0-9]/g, "_");
-        const match = PRODUCT_FIELDS.find((f) =>
+        const match = ACTIVE_FIELDS.find((f) =>
           f.key === normalized || f.label.toLowerCase().replace(/[^a-z0-9]/g, "_") === normalized
           || f.key.includes(normalized) || normalized.includes(f.key)
         );
@@ -138,7 +160,84 @@ export default function ImportWizard() {
     toast.success(`Loaded template: ${template.name}`);
   };
 
+  const handleImportOrders = async () => {
+    if (!currentStore || !user) return;
+    setImporting(true);
+    const errors: { row: number; error: string }[] = [];
+    let success = 0;
+
+    for (let i = 0; i < csvData.rows.length; i++) {
+      const row = csvData.rows[i];
+      const order: any = { store_id: currentStore.id };
+
+      for (const [fieldKey, mapping] of Object.entries(mappings)) {
+        if (fieldKey === "customer_email") continue; // handled separately
+        if (mapping.source === "__static__") {
+          order[fieldKey] = staticValues[fieldKey] || mapping.static_value || "";
+        } else {
+          const colIndex = csvData.headers.indexOf(mapping.source);
+          if (colIndex >= 0) order[fieldKey] = row[colIndex] || "";
+        }
+      }
+
+      // Numeric coercion
+      ["subtotal", "tax", "shipping", "discount", "total"].forEach(f => {
+        if (order[f]) order[f] = parseFloat(order[f]) || 0;
+      });
+      if (order.tags && typeof order.tags === "string") order.tags = order.tags.split(",").map((t: string) => t.trim()).filter(Boolean);
+      if (!order.order_number) {
+        errors.push({ row: i + 2, error: "Missing required field: order_number" });
+        continue;
+      }
+      if (!order.status) order.status = "pending";
+      if (!order.payment_status) order.payment_status = "unpaid";
+      if (!order.fulfillment_status) order.fulfillment_status = "unfulfilled";
+
+      // Lookup customer by email if provided
+      const emailMapping = mappings["customer_email"];
+      if (emailMapping) {
+        let email = "";
+        if (emailMapping.source === "__static__") email = staticValues["customer_email"] || "";
+        else {
+          const colIndex = csvData.headers.indexOf(emailMapping.source);
+          email = colIndex >= 0 ? row[colIndex] || "" : "";
+        }
+        if (email) {
+          const { data: custs } = await supabase
+            .from("customers")
+            .select("id")
+            .eq("store_id", currentStore.id)
+            .eq("email", email)
+            .limit(1);
+          if (custs && custs.length > 0) order.customer_id = custs[0].id;
+        }
+      }
+
+      try {
+        const { error } = await supabase.from("orders").insert(order);
+        if (error) throw error;
+        success++;
+      } catch (err: any) {
+        errors.push({ row: i + 2, error: err.message });
+      }
+    }
+
+    await supabase.from("import_logs" as any).insert({
+      store_id: currentStore.id, user_id: user.id, entity_type: "orders",
+      file_name: fileName, total_rows: csvData.rows.length,
+      success_count: success, error_count: errors.length,
+      errors: errors as any, status: errors.length === 0 ? "completed" : "completed_with_errors",
+      completed_at: new Date().toISOString(),
+    });
+
+    setResults({ success, errors });
+    setImporting(false);
+    setStep(3);
+    toast.success(`Import complete: ${success} orders created, ${errors.length} errors`);
+  };
+
   const handleImport = async () => {
+    if (entityType === "orders") return handleImportOrders();
     if (!currentStore || !user) return;
     setImporting(true);
     const errors: { row: number; error: string }[] = [];
@@ -232,7 +331,7 @@ export default function ImportWizard() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">Import Products</h1>
+              <h1 className="text-lg font-semibold">Import {entityType === "orders" ? "Orders" : "Products"}</h1>
               <p className="text-xs text-muted-foreground">Bulk import via CSV with field mapping</p>
             </div>
           </div>
@@ -256,6 +355,22 @@ export default function ImportWizard() {
         {/* STEP 0: Upload */}
         {step === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Import Type & Upload</CardTitle></CardHeader>
+              <CardContent className="p-4 pt-2 pb-2">
+                <div className="space-y-1 mb-3">
+                  <Label className="text-xs">Entity Type</Label>
+                  <Select value={entityType} onValueChange={(v) => setEntityType(v as ImportEntity)}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="products" className="text-xs">Products</SelectItem>
+                      <SelectItem value="orders" className="text-xs">Orders</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+            <div />
             <Card>
               <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Upload CSV File</CardTitle></CardHeader>
               <CardContent className="p-4 pt-2 space-y-3">
@@ -328,10 +443,10 @@ export default function ImportWizard() {
             <Card>
               <CardContent className="p-4 space-y-1">
                 {Object.entries(
-                  PRODUCT_FIELDS.reduce((acc, f) => {
+                  ACTIVE_FIELDS.reduce((acc, f) => {
                     (acc[f.group] = acc[f.group] || []).push(f);
                     return acc;
-                  }, {} as Record<string, typeof PRODUCT_FIELDS>)
+                  }, {} as Record<string, typeof ACTIVE_FIELDS>)
                 ).map(([group, fields]) => (
                   <div key={group} className="mb-3">
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{group}</h3>
@@ -436,8 +551,8 @@ export default function ImportWizard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs h-8">#</TableHead>
-                      {Object.keys(mappings).map((k) => (
-                        <TableHead key={k} className="text-xs h-8">{PRODUCT_FIELDS.find((f) => f.key === k)?.label || k}</TableHead>
+                      {Object.keys(mappings).map((k: string) => (
+                        <TableHead key={k} className="text-xs h-8">{ACTIVE_FIELDS.find((f) => f.key === k)?.label || k}</TableHead>
                       ))}
                     </TableRow>
                   </TableHeader>
@@ -466,7 +581,7 @@ export default function ImportWizard() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-xs">
                   <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  <span>This will create {csvData.rows.length} new products. Existing products with matching SKUs will NOT be updated — duplicates may be created.</span>
+                  <span>This will create {csvData.rows.length} new {entityType}. Existing records will NOT be updated — duplicates may be created.</span>
                 </div>
               </CardContent>
             </Card>
@@ -509,7 +624,9 @@ export default function ImportWizard() {
                 )}
 
                 <div className="flex gap-2">
-                  <Button size="sm" className="text-xs" onClick={() => navigate("/products")}>View Products</Button>
+                  <Button size="sm" className="text-xs" onClick={() => navigate(entityType === "orders" ? "/orders" : "/products")}>
+                    View {entityType === "orders" ? "Orders" : "Products"}
+                  </Button>
                   <Button size="sm" variant="outline" className="text-xs" onClick={() => { setStep(0); setResults(null); setCsvData({ headers: [], rows: [] }); }}>Import More</Button>
                 </div>
               </CardContent>

@@ -1604,6 +1604,7 @@ export type Database = {
           is_approved: boolean
           product_id: string
           rating: number
+          review_photos: string[] | null
           store_id: string
           title: string | null
           updated_at: string
@@ -1620,6 +1621,7 @@ export type Database = {
           is_approved?: boolean
           product_id: string
           rating: number
+          review_photos?: string[] | null
           store_id: string
           title?: string | null
           updated_at?: string
@@ -1636,6 +1638,7 @@ export type Database = {
           is_approved?: boolean
           product_id?: string
           rating?: number
+          review_photos?: string[] | null
           store_id?: string
           title?: string | null
           updated_at?: string

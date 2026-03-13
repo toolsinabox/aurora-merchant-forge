@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Search, ClipboardList, Printer } from "lucide-react";
+import { Plus, Trash2, Search, ClipboardList, Printer, PackageCheck } from "lucide-react";
 import { format } from "date-fns";
 
 interface POForm {
@@ -45,6 +45,11 @@ export default function PurchaseOrders() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<POForm>({ ...emptyForm });
   const [search, setSearch] = useState("");
+  const [receiveOpen, setReceiveOpen] = useState(false);
+  const [receivePO, setReceivePO] = useState<any>(null);
+  const [poItems, setPOItems] = useState<any[]>([]);
+  const [receiveQtys, setReceiveQtys] = useState<Record<string, number>>({});
+  const [loadingItems, setLoadingItems] = useState(false);
 
   const { data: pos = [], isLoading } = useQuery({
     queryKey: ["purchase_orders", currentStore?.id],
@@ -126,6 +131,75 @@ export default function PurchaseOrders() {
       toast.success("PO deleted");
     },
   });
+
+  const openReceiveDialog = async (po: any) => {
+    setReceivePO(po);
+    setReceiveOpen(true);
+    setLoadingItems(true);
+    const { data } = await supabase
+      .from("purchase_order_items")
+      .select("*")
+      .eq("purchase_order_id", po.id)
+      .order("title");
+    const items = data || [];
+    setPOItems(items);
+    const qtys: Record<string, number> = {};
+    items.forEach((item: any) => {
+      qtys[item.id] = 0;
+    });
+    setReceiveQtys(qtys);
+    setLoadingItems(false);
+  };
+
+  const handleReceiveItems = async () => {
+    if (!receivePO || !currentStore) return;
+    let anyReceived = false;
+    for (const item of poItems) {
+      const qty = receiveQtys[item.id] || 0;
+      if (qty <= 0) continue;
+      anyReceived = true;
+      const newReceived = Math.min(item.quantity_received + qty, item.quantity_ordered);
+      await supabase
+        .from("purchase_order_items")
+        .update({ quantity_received: newReceived })
+        .eq("id", item.id);
+      
+      // Update inventory stock if product is tracked
+      if (item.product_id) {
+        const { data: stockRows } = await supabase
+          .from("inventory_stock")
+          .select("id, quantity")
+          .eq("product_id", item.product_id)
+          .eq("store_id", currentStore.id)
+          .limit(1);
+        if (stockRows && stockRows.length > 0) {
+          await supabase
+            .from("inventory_stock")
+            .update({ quantity: stockRows[0].quantity + qty })
+            .eq("id", stockRows[0].id);
+        }
+      }
+    }
+    if (!anyReceived) {
+      toast.error("Enter quantities to receive");
+      return;
+    }
+    // Check if all items fully received
+    const { data: updatedItems } = await supabase
+      .from("purchase_order_items")
+      .select("quantity_ordered, quantity_received")
+      .eq("purchase_order_id", receivePO.id);
+    const allReceived = (updatedItems || []).every((i: any) => i.quantity_received >= i.quantity_ordered);
+    const someReceived = (updatedItems || []).some((i: any) => i.quantity_received > 0);
+    const newStatus = allReceived ? "received" : someReceived ? "partial" : receivePO.status;
+    const update: any = { status: newStatus };
+    if (allReceived) update.received_date = new Date().toISOString();
+    await supabase.from("purchase_orders").update(update).eq("id", receivePO.id);
+    
+    queryClient.invalidateQueries({ queryKey: ["purchase_orders"] });
+    toast.success(allReceived ? "All items received — PO marked as received" : "Items received — PO partially fulfilled");
+    setReceiveOpen(false);
+  };
 
   const filtered = pos.filter((p: any) =>
     p.po_number.toLowerCase().includes(search.toLowerCase()) ||
@@ -219,6 +293,11 @@ export default function PurchaseOrders() {
                     <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
+                        {["sent", "partial"].includes(p.status) && (
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Receive Items" onClick={() => openReceiveDialog(p)}>
+                            <PackageCheck className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                         <Link to={`/purchase-orders/${p.id}/print`}>
                           <Button variant="ghost" size="icon" className="h-7 w-7" title="Print PO"><Printer className="h-3.5 w-3.5" /></Button>
                         </Link>
@@ -231,6 +310,65 @@ export default function PurchaseOrders() {
             </Table>
           </CardContent>
         </Card>
+        {/* Receive Items Dialog */}
+        <Dialog open={receiveOpen} onOpenChange={setReceiveOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Receive Items — {receivePO?.po_number}</DialogTitle>
+            </DialogHeader>
+            {loadingItems ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">Loading items...</p>
+            ) : poItems.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">No line items on this PO. Add items first.</p>
+            ) : (
+              <div className="space-y-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Item</TableHead>
+                      <TableHead className="text-xs w-20">Ordered</TableHead>
+                      <TableHead className="text-xs w-20">Received</TableHead>
+                      <TableHead className="text-xs w-24">Receive Now</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {poItems.map((item: any) => {
+                      const remaining = item.quantity_ordered - item.quantity_received;
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell className="text-sm">
+                            <div>{item.title}</div>
+                            {item.sku && <span className="text-xs text-muted-foreground font-mono">{item.sku}</span>}
+                          </TableCell>
+                          <TableCell className="text-sm">{item.quantity_ordered}</TableCell>
+                          <TableCell className="text-sm">{item.quantity_received}</TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={remaining}
+                              className="h-7 w-20 text-xs"
+                              value={receiveQtys[item.id] || 0}
+                              onChange={(e) => setReceiveQtys(prev => ({ ...prev, [item.id]: Math.min(Number(e.target.value), remaining) }))}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+                <div className="flex justify-between">
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => {
+                    const all: Record<string, number> = {};
+                    poItems.forEach((item: any) => { all[item.id] = item.quantity_ordered - item.quantity_received; });
+                    setReceiveQtys(all);
+                  }}>Receive All</Button>
+                  <Button size="sm" className="text-xs" onClick={handleReceiveItems}>Confirm Receipt</Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

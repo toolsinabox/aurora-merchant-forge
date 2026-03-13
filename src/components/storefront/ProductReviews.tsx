@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Star, ShieldCheck } from "lucide-react";
+import { Star, ShieldCheck, ImagePlus, X } from "lucide-react";
 import { toast } from "sonner";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const getReviewImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
 interface ProductReviewsProps {
   productId: string;
@@ -53,6 +56,26 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [userReview, setUserReview] = useState<any>(null);
+  const [reviewPhotos, setReviewPhotos] = useState<File[]>([]);
+  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (reviewPhotos.length + files.length > 5) {
+      toast.error("Maximum 5 photos per review");
+      return;
+    }
+    const newPhotos = [...reviewPhotos, ...files];
+    setReviewPhotos(newPhotos);
+    setPhotoPreviewUrls(newPhotos.map(f => URL.createObjectURL(f)));
+  };
+
+  const removePhoto = (index: number) => {
+    const next = reviewPhotos.filter((_, i) => i !== index);
+    setReviewPhotos(next);
+    setPhotoPreviewUrls(next.map(f => URL.createObjectURL(f)));
+  };
 
   const loadReviews = async () => {
     const { data } = await supabase
@@ -120,6 +143,15 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
         .limit(1);
       const authorName = custs?.[0]?.name || user.email?.split("@")[0] || "Anonymous";
 
+      // Upload photos
+      const uploadedPaths: string[] = [];
+      for (const photo of reviewPhotos) {
+        const ext = photo.name.split('.').pop();
+        const path = `reviews/${storeId}/${productId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("product-images").upload(path, photo);
+        if (!uploadError) uploadedPaths.push(path);
+      }
+
       const { error } = await supabase.from("product_reviews" as any).insert({
         store_id: storeId,
         product_id: productId,
@@ -128,7 +160,8 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
         title: title || null,
         body: body || null,
         author_name: authorName,
-      });
+        review_photos: uploadedPaths.length > 0 ? uploadedPaths : undefined,
+      } as any);
       if (error) throw error;
 
       toast.success("Review submitted!");
@@ -136,6 +169,8 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
       setTitle("");
       setBody("");
       setRating(5);
+      setReviewPhotos([]);
+      setPhotoPreviewUrls([]);
       await loadReviews();
     } catch (err: any) {
       toast.error(err.message || "Failed to submit review");
@@ -202,6 +237,25 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
               className="min-h-[80px]"
             />
           </div>
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Photos (optional, up to 5)</label>
+            <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoSelect} />
+            <div className="flex gap-2 flex-wrap">
+              {photoPreviewUrls.map((url, i) => (
+                <div key={i} className="relative w-16 h-16 rounded border overflow-hidden">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => removePhoto(i)} className="absolute top-0 right-0 bg-background/80 rounded-bl p-0.5">
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              {reviewPhotos.length < 5 && (
+                <button type="button" onClick={() => photoInputRef.current?.click()} className="w-16 h-16 rounded border border-dashed flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">
+                  <ImagePlus className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={submitting}>
               {submitting ? "Submitting..." : "Submit Review"}
@@ -242,6 +296,15 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
                 </div>
                 {review.title && <p className="font-medium text-sm">{review.title}</p>}
                 {review.body && <p className="text-sm text-muted-foreground">{review.body}</p>}
+                {review.review_photos && review.review_photos.length > 0 && (
+                  <div className="flex gap-2 mt-2 flex-wrap">
+                    {review.review_photos.map((photo: string, i: number) => (
+                      <a key={i} href={getReviewImageUrl(photo)} target="_blank" rel="noopener noreferrer">
+                        <img src={getReviewImageUrl(photo)} alt={`Review photo ${i + 1}`} className="w-20 h-20 rounded object-cover border hover:opacity-80 transition-opacity" />
+                      </a>
+                    ))}
+                  </div>
+                )}
                 {review.admin_reply && (
                   <div className="ml-6 mt-2 border-l-2 border-primary/30 pl-3 py-1">
                     <p className="text-xs font-medium text-primary">Store Response</p>
