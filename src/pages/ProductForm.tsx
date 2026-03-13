@@ -312,7 +312,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs font-mono" value={form.sku} onChange={(e) => update("sku", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Barcode / UPC / EAN</Label>
+                        <FieldLabel label="Barcode / UPC / EAN" field="barcode" />
                         <Input className="h-8 text-xs font-mono" value={form.barcode} onChange={(e) => update("barcode", e.target.value)} />
                       </div>
                     </div>
