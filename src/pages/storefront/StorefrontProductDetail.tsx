@@ -307,6 +307,12 @@ export default function StorefrontProductDetail() {
                 <>
                   <div className="flex items-baseline gap-3 mt-3">
                     <span className="text-2xl font-bold">${Number(finalPrice).toFixed(2)}</span>
+                    {product.tax_inclusive === false && (
+                      <span className="text-xs text-muted-foreground">ex. tax</span>
+                    )}
+                    {product.tax_inclusive === true && (
+                      <span className="text-xs text-muted-foreground">inc. tax</span>
+                    )}
                     {promoActive && (
                       <>
                         <span className="text-lg text-muted-foreground line-through">${Number(price).toFixed(2)}</span>
