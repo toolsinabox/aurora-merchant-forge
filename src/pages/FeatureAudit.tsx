@@ -593,7 +593,7 @@ const featureData: FeatureCategory[] = [
     icon: <Printer className="h-5 w-5" />,
     features: [
       { name: "Invoice PDF", description: "Printable tax invoice document", status: "done", notes: "Print-friendly invoice page with browser print" },
-      { name: "Packing Slip PDF", description: "Printable packing slip for warehouse", status: "partial", notes: "Same print layout can serve as packing slip" },
+      { name: "Packing Slip PDF", description: "Printable packing slip for warehouse", status: "done", notes: "Dedicated packing slip page without prices" },
       { name: "Pick List PDF", description: "Warehouse pick list document", status: "done", notes: "Printable pick list page with aggregated items and per-order breakdown" },
       { name: "Shipping Label", description: "Printable shipping labels", status: "not_started" },
       { name: "Quote Document PDF", description: "Printable quote/estimate document", status: "not_started" },
