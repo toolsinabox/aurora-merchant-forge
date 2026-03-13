@@ -842,6 +842,11 @@ export default function ProductForm() {
                 </Card>
               </TabsContent>
 
+              {/* ADDONS TAB */}
+              <TabsContent value="addons" className="mt-0 space-y-3">
+                <ProductAddonsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
+              </TabsContent>
+
               {/* SEO TAB */}
               <TabsContent value="seo" className="mt-0 space-y-3">
                 <Card>
