@@ -3549,7 +3549,9 @@ export type Database = {
           default_low_stock_threshold: number | null
           description: string | null
           favicon_url: string | null
+          fb_pixel_id: string | null
           ga_tracking_id: string | null
+          gtm_container_id: string | null
           guest_checkout_enabled: boolean
           id: string
           is_suspended: boolean
@@ -3583,7 +3585,9 @@ export type Database = {
           default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
+          fb_pixel_id?: string | null
           ga_tracking_id?: string | null
+          gtm_container_id?: string | null
           guest_checkout_enabled?: boolean
           id?: string
           is_suspended?: boolean
@@ -3617,7 +3621,9 @@ export type Database = {
           default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
+          fb_pixel_id?: string | null
           ga_tracking_id?: string | null
+          gtm_container_id?: string | null
           guest_checkout_enabled?: boolean
           id?: string
           is_suspended?: boolean

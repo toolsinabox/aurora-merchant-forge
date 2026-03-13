@@ -496,6 +496,8 @@ export default function SettingsPage() {
     logo_url: "",
     favicon_url: "",
     ga_tracking_id: "",
+    gtm_container_id: "",
+    fb_pixel_id: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
@@ -523,7 +525,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id")
+      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
@@ -537,6 +539,8 @@ export default function SettingsPage() {
             logo_url: (data as any).logo_url || "",
             favicon_url: (data as any).favicon_url || "",
             ga_tracking_id: (data as any).ga_tracking_id || "",
+            gtm_container_id: (data as any).gtm_container_id || "",
+            fb_pixel_id: (data as any).fb_pixel_id || "",
           });
         }
       });
@@ -581,6 +585,8 @@ export default function SettingsPage() {
         logo_url: brandForm.logo_url || null,
         favicon_url: brandForm.favicon_url || null,
         ga_tracking_id: brandForm.ga_tracking_id || null,
+        gtm_container_id: brandForm.gtm_container_id || null,
+        fb_pixel_id: brandForm.fb_pixel_id || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
@@ -733,6 +739,14 @@ export default function SettingsPage() {
                   <div className="space-y-1">
                     <Label className="text-xs">Google Analytics Tracking ID</Label>
                     <Input className="h-8 text-xs" value={brandForm.ga_tracking_id} onChange={(e) => setBrandForm({ ...brandForm, ga_tracking_id: e.target.value })} placeholder="G-XXXXXXXXXX" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Tag Manager Container ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.gtm_container_id} onChange={(e) => setBrandForm({ ...brandForm, gtm_container_id: e.target.value })} placeholder="GTM-XXXXXXX" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Facebook / Meta Pixel ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.fb_pixel_id} onChange={(e) => setBrandForm({ ...brandForm, fb_pixel_id: e.target.value })} placeholder="1234567890" />
                   </div>
                 </div>
                 <div className="space-y-1">
