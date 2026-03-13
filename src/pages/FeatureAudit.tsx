@@ -754,7 +754,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax Report / BAS Summary", description: "Tax collected summary for accounting", status: "done", notes: "Tax report on Analytics page with total tax, taxed orders, and monthly bar chart" },
       { name: "Coupon Usage Report", description: "Coupon redemption and revenue impact", status: "done", notes: "Coupon usage table on Analytics page showing code, discount, uses" },
       { name: "Google Analytics Integration", description: "GA4 tracking code integration", status: "done", notes: "GA tracking ID field in store settings, gtag.js dynamically injected into storefront" },
-      { name: "Custom Report Builder", description: "Build custom reports with filters and date ranges", status: "not_started" },
+      { name: "Custom Report Builder", description: "Build custom reports with filters and date ranges", status: "done", notes: "Admin /report-builder page with entity selection (orders, products, customers, order items, categories, coupons), date range filters, status filter, field toggle badges, run query with results table, CSV export" },
       { name: "Scheduled Report Emails", description: "Auto-send reports by email on schedule", status: "done", notes: "scheduled-report-email edge function generates weekly/monthly performance reports with revenue, orders, AOV, new customers, low stock alerts, and emails to store contact" },
     ],
   },
