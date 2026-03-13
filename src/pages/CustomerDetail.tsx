@@ -67,6 +67,7 @@ export default function CustomerDetail() {
         notes: editForm.notes || null,
         segment: editForm.segment,
         tags,
+        customer_group_id: editForm.customer_group_id || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
