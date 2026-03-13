@@ -109,6 +109,55 @@ export default function Suppliers() {
     (s.email || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  // Supplier products
+  const [spOpen, setSpOpen] = useState(false);
+  const [spSupplierId, setSpSupplierId] = useState<string>("");
+  const [spProductSearch, setSpProductSearch] = useState("");
+  const [spProducts, setSpProducts] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+
+  const { data: supplierProducts = [], refetch: refetchSP } = useQuery({
+    queryKey: ["supplier_products", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase
+        .from("supplier_products" as any)
+        .select("*, suppliers(name), products(title, sku)")
+        .eq("store_id", currentStore.id);
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+
+  const loadProducts = async (q: string) => {
+    if (!currentStore) return;
+    const query = supabase.from("products").select("id, title, sku").eq("store_id", currentStore.id).eq("status", "active").limit(20);
+    if (q) query.ilike("title", `%${q}%`);
+    const { data } = await query;
+    setAllProducts(data || []);
+  };
+
+  const addSupplierProduct = async (productId: string) => {
+    if (!currentStore || !spSupplierId) return;
+    const { error } = await supabase.from("supplier_products" as any).insert({
+      supplier_id: spSupplierId, product_id: productId, store_id: currentStore.id,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Product assigned to supplier");
+    refetchSP();
+  };
+
+  const removeSupplierProduct = async (id: string) => {
+    await supabase.from("supplier_products" as any).delete().eq("id", id);
+    toast.success("Product removed from supplier");
+    refetchSP();
+  };
+
+  const togglePreferred = async (id: string, current: boolean) => {
+    await supabase.from("supplier_products" as any).update({ is_preferred: !current }).eq("id", id);
+    refetchSP();
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -153,12 +202,19 @@ export default function Suppliers() {
           </Dialog>
         </div>
 
+        <Tabs defaultValue="list">
+          <TabsList>
+            <TabsTrigger value="list">Suppliers</TabsTrigger>
+            <TabsTrigger value="products">Product Assignments</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="list">
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search suppliers..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
         </div>
 
-        <Card>
+        <Card className="mt-4">
           <CardContent className="p-0">
             <Table>
               <TableHeader>
@@ -197,6 +253,84 @@ export default function Suppliers() {
             </Table>
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="products" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2"><Package className="h-4 w-4" /> Assign Products to Suppliers</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-3">
+                  <Select value={spSupplierId} onValueChange={(v) => { setSpSupplierId(v); }}>
+                    <SelectTrigger className="w-48"><SelectValue placeholder="Select supplier" /></SelectTrigger>
+                    <SelectContent>
+                      {suppliers.map((s: any) => (
+                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search products to add..."
+                      value={spProductSearch}
+                      onChange={e => { setSpProductSearch(e.target.value); loadProducts(e.target.value); }}
+                      onFocus={() => loadProducts(spProductSearch)}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+
+                {spSupplierId && allProducts.length > 0 && spProductSearch && (
+                  <div className="border rounded-md max-h-40 overflow-y-auto">
+                    {allProducts.map((p: any) => (
+                      <div key={p.id} className="flex items-center justify-between px-3 py-2 hover:bg-muted/50 text-sm">
+                        <span>{p.title} {p.sku && <span className="text-muted-foreground">({p.sku})</span>}</span>
+                        <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => { addSupplierProduct(p.id); setSpProductSearch(""); setAllProducts([]); }}>
+                          <Plus className="h-3 w-3 mr-1" /> Assign
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Supplier</TableHead>
+                      <TableHead>Product</TableHead>
+                      <TableHead>SKU</TableHead>
+                      <TableHead>Preferred</TableHead>
+                      <TableHead className="w-12"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(supplierProducts as any[]).length === 0 ? (
+                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No product assignments yet</TableCell></TableRow>
+                    ) : (supplierProducts as any[]).filter(sp => !spSupplierId || sp.supplier_id === spSupplierId).map((sp: any) => (
+                      <TableRow key={sp.id}>
+                        <TableCell className="font-medium">{sp.suppliers?.name || "—"}</TableCell>
+                        <TableCell>{sp.products?.title || "—"}</TableCell>
+                        <TableCell className="text-muted-foreground font-mono text-xs">{sp.products?.sku || "—"}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => togglePreferred(sp.id, sp.is_preferred)}>
+                            <Star className={`h-3.5 w-3.5 ${sp.is_preferred ? "fill-primary text-primary" : "text-muted-foreground"}`} />
+                          </Button>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeSupplierProduct(sp.id)}>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </AdminLayout>
   );

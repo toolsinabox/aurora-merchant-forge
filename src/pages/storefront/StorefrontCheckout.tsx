@@ -312,12 +312,25 @@ export default function StorefrontCheckout() {
       }
     }
 
-    // Check minimum order amount
+    // Check minimum order amount (store-wide)
     const { data: storeMin } = await supabase.from("stores").select("min_order_amount").limit(1).maybeSingle();
     const minOrder = Number((storeMin as any)?.min_order_amount) || 0;
     if (minOrder > 0 && totalPrice < minOrder) {
       toast.error(`Minimum order amount is $${minOrder.toFixed(2)}`);
       return;
+    }
+
+    // Check wholesale group min order amount
+    if (user) {
+      const { data: cust } = await supabase.from("customers").select("customer_group_id").eq("user_id", user.id).maybeSingle();
+      if (cust && (cust as any).customer_group_id) {
+        const { data: grp } = await supabase.from("customer_groups" as any).select("min_order_amount, name").eq("id", (cust as any).customer_group_id).maybeSingle();
+        const groupMin = Number((grp as any)?.min_order_amount) || 0;
+        if (groupMin > 0 && totalPrice < groupMin) {
+          toast.error(`Minimum order for ${(grp as any)?.name || "your group"} is $${groupMin.toFixed(2)}`);
+          return;
+        }
+      }
     }
 
     setSubmitting(true);
