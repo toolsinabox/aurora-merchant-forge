@@ -168,6 +168,15 @@ export default function StorefrontProductDetail() {
 
   return (
     <StorefrontLayout storeName={store?.name}>
+      <SEOHead
+        title={product.seo_title || `${product.title} — ${store?.name || "Store"}`}
+        description={product.seo_description || product.short_description || product.description?.slice(0, 160)}
+        image={images[0] ? getImageUrl(images[0]) : undefined}
+        url={window.location.href}
+        type="product"
+        price={Number(finalPrice)}
+        currency={store?.currency || "USD"}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6">
