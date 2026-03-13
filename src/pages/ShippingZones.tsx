@@ -119,7 +119,8 @@ export default function ShippingZones() {
                 <TableRow>
                   <TableHead className="text-xs h-8">Name</TableHead>
                   <TableHead className="text-xs h-8">Regions</TableHead>
-                  <TableHead className="text-xs h-8 text-right">Flat Rate</TableHead>
+                  <TableHead className="text-xs h-8">Rate Type</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Rate</TableHead>
                   <TableHead className="text-xs h-8 text-right">Free Above</TableHead>
                   <TableHead className="text-xs h-8 w-20"></TableHead>
                 </TableRow>
