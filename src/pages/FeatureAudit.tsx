@@ -306,7 +306,7 @@ const featureData: FeatureCategory[] = [
       { name: "Shopping Cart Page", description: "View cart page (shopping_cart.template.html)", status: "done" },
       { name: "One-Page Checkout", description: "Single-page checkout flow (onepage.template.html)", status: "done" },
       { name: "Checkout — Shipping Options", description: "Shipping method selection (shipping_options.template.html)", status: "done", notes: "Shipping zone radio selection with free-above threshold display" },
-      { name: "Checkout — Address Form", description: "Multi-address checkout support (address.template.html)", status: "partial" },
+      { name: "Checkout — Address Form", description: "Multi-address checkout support (address.template.html)", status: "done", notes: "Full shipping address form with saved addresses dropdown for logged-in users, separate billing address with 'same as shipping' toggle" },
       { name: "Checkout — Cart Items Summary", description: "Order summary sidebar in checkout (cart_items.template.html)", status: "done" },
       { name: "Checkout — Voucher/Coupon Redemption", description: "Coupon code entry (redeem_vouchers.template.html)", status: "done", notes: "Coupon apply/remove at checkout" },
       { name: "Checkout — Gift Voucher Message", description: "Gift voucher message entry (voucher_msg.template.html)", status: "done", notes: "Gift message textarea appears at checkout when a gift voucher is applied, with 500 char limit" },
