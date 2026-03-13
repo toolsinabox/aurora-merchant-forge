@@ -240,6 +240,7 @@ export default function POS() {
       await supabase.from("pos_register_sessions" as any).insert({
         store_id: storeId,
         opened_by: user.id,
+        register_id: selectedRegister || null,
         opening_float: Number(openingFloat),
         expected_cash: expectedCash,
         actual_cash: Number(actualCash),
