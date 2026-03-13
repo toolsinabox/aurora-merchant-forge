@@ -250,6 +250,10 @@ function processBlocks(template: string, ctx: TemplateContext): string {
       case "adverts":
         items = ctx.adverts || [];
         break;
+      case "thumb":
+      case "thumblist":
+        items = ctx.thumblist || [];
+        break;
       default:
         return "";
     }
