@@ -8,11 +8,14 @@ import { Label } from "@/components/ui/label";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProducts, useInventoryLocations, useCreateLocation, useStockAdjustments, useInventoryStock } from "@/hooks/use-data";
-import { Search, Plus, AlertTriangle, Package, Warehouse, History, ArrowUpDown } from "lucide-react";
+import { Search, Plus, AlertTriangle, Package, Warehouse, History, ArrowUpDown, ArrowLeftRight } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function Inventory() {
   const { data: products = [], isLoading: loadingProducts } = useProducts();
@@ -20,11 +23,20 @@ export default function Inventory() {
   const { data: adjustments = [] } = useStockAdjustments();
   const { data: inventoryStockData = [] } = useInventoryStock();
   const createLocation = useCreateLocation();
+  const { currentStore, user } = useAuth();
+  const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [stockFilter, setStockFilter] = useState("all");
   const [locOpen, setLocOpen] = useState(false);
   const [newLoc, setNewLoc] = useState({ name: "", type: "warehouse", address: "" });
   const [showHistory, setShowHistory] = useState(false);
+
+  // Transfer dialog
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [transferForm, setTransferForm] = useState({
+    fromLocationId: "", toLocationId: "", productId: "", quantity: 1, reason: "",
+  });
+  const [transferring, setTransferring] = useState(false);
 
   const getVariantStock = (p: any) => {
     if (p.product_variants && p.product_variants.length > 0) {
@@ -58,6 +70,79 @@ export default function Inventory() {
     );
   };
 
+  // Find stock record for transfer source
+  const sourceStock = (inventoryStockData as any[]).find(
+    (s: any) => s.location_id === transferForm.fromLocationId && s.product_id === transferForm.productId
+  );
+
+  const handleTransfer = async () => {
+    if (!currentStore || !user) return;
+    const { fromLocationId, toLocationId, productId, quantity, reason } = transferForm;
+    if (!fromLocationId || !toLocationId || !productId || quantity <= 0) {
+      toast.error("All fields required"); return;
+    }
+    if (fromLocationId === toLocationId) {
+      toast.error("Source and destination must differ"); return;
+    }
+
+    setTransferring(true);
+    try {
+      // Find or create source and dest stock records
+      const { data: fromStock } = await supabase
+        .from("inventory_stock")
+        .select("id, quantity")
+        .eq("store_id", currentStore.id)
+        .eq("location_id", fromLocationId)
+        .eq("product_id", productId)
+        .maybeSingle();
+
+      if (!fromStock || fromStock.quantity < quantity) {
+        toast.error("Insufficient stock at source location");
+        setTransferring(false);
+        return;
+      }
+
+      // Decrease source
+      await supabase.from("inventory_stock").update({ quantity: fromStock.quantity - quantity }).eq("id", fromStock.id);
+
+      // Increase or create dest
+      const { data: toStock } = await supabase
+        .from("inventory_stock")
+        .select("id, quantity")
+        .eq("store_id", currentStore.id)
+        .eq("location_id", toLocationId)
+        .eq("product_id", productId)
+        .maybeSingle();
+
+      if (toStock) {
+        await supabase.from("inventory_stock").update({ quantity: toStock.quantity + quantity }).eq("id", toStock.id);
+      } else {
+        await supabase.from("inventory_stock").insert({
+          store_id: currentStore.id,
+          location_id: toLocationId,
+          product_id: productId,
+          quantity,
+          low_stock_threshold: 5,
+        });
+      }
+
+      // Log adjustments
+      await supabase.from("stock_adjustments").insert([
+        { store_id: currentStore.id, inventory_stock_id: fromStock.id, quantity_change: -quantity, adjusted_by: user.id, reason: reason || `Transfer to ${locations.find((l) => l.id === toLocationId)?.name}` },
+      ]);
+
+      qc.invalidateQueries({ queryKey: ["inventory_stock"] });
+      qc.invalidateQueries({ queryKey: ["stock_adjustments"] });
+      toast.success(`Transferred ${quantity} units`);
+      setTransferOpen(false);
+      setTransferForm({ fromLocationId: "", toLocationId: "", productId: "", quantity: 1, reason: "" });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setTransferring(false);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -75,6 +160,61 @@ export default function Inventory() {
             >
               <History className="h-3.5 w-3.5" /> Adjustments
             </Button>
+            <Dialog open={transferOpen} onOpenChange={setTransferOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="h-8 text-xs gap-1"><ArrowLeftRight className="h-3.5 w-3.5" /> Transfer</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle className="text-sm">Stock Transfer</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Product</Label>
+                    <Select value={transferForm.productId} onValueChange={(v) => setTransferForm({ ...transferForm, productId: v })}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select product" /></SelectTrigger>
+                      <SelectContent>
+                        {products.map((p) => <SelectItem key={p.id} value={p.id} className="text-xs">{p.title}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs">From Location</Label>
+                      <Select value={transferForm.fromLocationId} onValueChange={(v) => setTransferForm({ ...transferForm, fromLocationId: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Source" /></SelectTrigger>
+                        <SelectContent>
+                          {locations.map((l) => <SelectItem key={l.id} value={l.id} className="text-xs">{l.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">To Location</Label>
+                      <Select value={transferForm.toLocationId} onValueChange={(v) => setTransferForm({ ...transferForm, toLocationId: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Destination" /></SelectTrigger>
+                        <SelectContent>
+                          {locations.filter((l) => l.id !== transferForm.fromLocationId).map((l) => <SelectItem key={l.id} value={l.id} className="text-xs">{l.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Quantity</Label>
+                      <Input type="number" min={1} className="h-8 text-xs" value={transferForm.quantity} onChange={(e) => setTransferForm({ ...transferForm, quantity: +e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Reason</Label>
+                      <Input className="h-8 text-xs" value={transferForm.reason} onChange={(e) => setTransferForm({ ...transferForm, reason: e.target.value })} placeholder="Optional" />
+                    </div>
+                  </div>
+                  {sourceStock && (
+                    <p className="text-xs text-muted-foreground">Available at source: {(sourceStock as any).quantity} units</p>
+                  )}
+                  <Button size="sm" className="w-full text-xs" onClick={handleTransfer} disabled={transferring}>
+                    {transferring ? "Transferring..." : "Transfer Stock"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
             <Dialog open={locOpen} onOpenChange={setLocOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Location</Button>
@@ -129,7 +269,6 @@ export default function Inventory() {
           </CardContent></Card>
         </div>
 
-        {/* Stock Adjustment History */}
         {showHistory && (
           <Card>
             <CardHeader className="p-4 pb-2">
@@ -158,7 +297,6 @@ export default function Inventory() {
                     </TableRow>
                   ) : (
                     adjustments.map((adj: any) => {
-                      // Find matching inventory stock record
                       const stockRecord = inventoryStockData.find((s: any) => s.id === adj.inventory_stock_id);
                       return (
                         <TableRow key={adj.id} className="text-xs">
