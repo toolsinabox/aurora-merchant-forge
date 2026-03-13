@@ -44,6 +44,9 @@ export default function StorefrontCheckout() {
     notes: "",
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [shippingZones, setShippingZones] = useState<any[]>([]);
+  const [selectedZone, setSelectedZone] = useState<string>("");
+  const [shippingCost, setShippingCost] = useState(0);
 
   useEffect(() => {
     if (!user) return;
