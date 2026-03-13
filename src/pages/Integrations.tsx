@@ -202,7 +202,32 @@ const INTEGRATIONS: Integration[] = [
     ],
     docs_url: "https://apidocs.unleashedsoftware.com/",
   },
-];
+  {
+    key: "maropost_marketing", name: "Maropost Marketing Cloud", logo: "📧", description: "Native integration with Maropost Marketing automation",
+    category: "automation",
+    fields: [
+      { key: "account_id", label: "Account ID", type: "text", placeholder: "12345" },
+      { key: "auth_token", label: "Auth Token", type: "password", placeholder: "xxxxxxxx" },
+    ],
+    docs_url: "https://www.maropost.com/",
+  },
+  {
+    key: "maropost_service", name: "Maropost Service Cloud", logo: "🎧", description: "Customer service and helpdesk integration",
+    category: "automation",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "subdomain", label: "Subdomain", type: "text", placeholder: "yourcompany" },
+    ],
+    docs_url: "https://www.maropost.com/",
+  },
+  {
+    key: "retail_express", name: "Retail Express POS", logo: "🏪", description: "Maropost's own POS system integration for omnichannel retail",
+    category: "automation",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "store_code", label: "Store Code", type: "text", placeholder: "STORE01" },
+    ],
+  },
 
 const CATEGORY_META = {
   email_marketing: { label: "Email Marketing", icon: Mail, color: "text-primary" },
