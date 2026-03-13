@@ -71,7 +71,14 @@ export default function OrderDetail() {
   const [creditForm, setCreditForm] = useState({ amount: "", reason: "", notes: "" });
   const [refundOpen, setRefundOpen] = useState(false);
   const [refundForm, setRefundForm] = useState({ amount: "", reason: "" });
-  const { user } = useAuth();
+  const [splitOpen, setSplitOpen] = useState(false);
+  const [splitItems, setSplitItems] = useState<Record<string, number>>({});
+  const [splitting, setSplitting] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
+  const [mergeOrderNumber, setMergeOrderNumber] = useState("");
+  const [mergeTarget, setMergeTarget] = useState<any>(null);
+  const [merging, setMerging] = useState(false);
+  const { user, currentStore } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: payments = [] } = useOrderPayments(id);
