@@ -50,6 +50,8 @@ export default function StorefrontCheckout() {
   const [shippingZones, setShippingZones] = useState<any[]>([]);
   const [selectedZone, setSelectedZone] = useState<string>("");
   const [shippingCost, setShippingCost] = useState(0);
+  const [isTaxExempt, setIsTaxExempt] = useState(false);
+  const [taxRate, setTaxRate] = useState(0);
 
   useEffect(() => {
     async function loadData() {
