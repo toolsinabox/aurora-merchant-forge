@@ -511,7 +511,7 @@ const featureData: FeatureCategory[] = [
       { name: "Static Blocks / Widgets", description: "Reusable content blocks embeddable on any page", status: "not_started" },
       { name: "WYSIWYG Content Editor", description: "Rich text editor for content pages", status: "not_started" },
       { name: "Content Reviews", description: "Reviews on content pages (not just products)", status: "not_started" },
-      { name: "Media Library / Asset Management", description: "Central repository for images, files, and media", status: "not_started" },
+      { name: "Media Library / Asset Management", description: "Central repository for images, files, and media", status: "done", notes: "media_assets table with CRUD, admin Media Library page with grid view, folder filtering, file upload, copy URL, and delete" },
     ],
   },
 
