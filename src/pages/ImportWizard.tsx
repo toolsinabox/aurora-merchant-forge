@@ -336,6 +336,8 @@ export default function ImportWizard() {
             // Apply transforms
             if (mapping.transform === "lowercase") value = value.toLowerCase();
             if (mapping.transform === "uppercase") value = value.toUpperCase();
+            if (mapping.transform === "capitalize") value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+            if (mapping.transform === "trim") value = value.trim();
             if (mapping.transform === "slug") value = value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
             product[fieldKey] = value;
           }
@@ -569,8 +571,10 @@ export default function ImportWizard() {
                             <SelectTrigger className="h-7 text-xs"><SelectValue placeholder="No transform" /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="none" className="text-xs">No transform</SelectItem>
-                              <SelectItem value="lowercase" className="text-xs">Lowercase</SelectItem>
+                              <SelectItem value="lowercase" className="text-xs">lowercase</SelectItem>
                               <SelectItem value="uppercase" className="text-xs">UPPERCASE</SelectItem>
+                              <SelectItem value="capitalize" className="text-xs">Capitalize</SelectItem>
+                              <SelectItem value="trim" className="text-xs">Trim whitespace</SelectItem>
                               <SelectItem value="slug" className="text-xs">URL Slug</SelectItem>
                             </SelectContent>
                           </Select>

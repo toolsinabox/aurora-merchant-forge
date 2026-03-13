@@ -363,18 +363,33 @@ export default function Suppliers() {
                       <TableHead>Supplier</TableHead>
                       <TableHead>Product</TableHead>
                       <TableHead>SKU</TableHead>
+                      <TableHead>Supplier Cost</TableHead>
                       <TableHead>Preferred</TableHead>
                       <TableHead className="w-12"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {(supplierProducts as any[]).length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No product assignments yet</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-6">No product assignments yet</TableCell></TableRow>
                     ) : (supplierProducts as any[]).filter(sp => !spSupplierId || sp.supplier_id === spSupplierId).map((sp: any) => (
                       <TableRow key={sp.id}>
                         <TableCell className="font-medium">{sp.suppliers?.name || "—"}</TableCell>
                         <TableCell>{sp.products?.title || "—"}</TableCell>
                         <TableCell className="text-muted-foreground font-mono text-xs">{sp.products?.sku || "—"}</TableCell>
+                        <TableCell>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            className="h-7 w-24 text-xs"
+                            placeholder="—"
+                            defaultValue={sp.supplier_cost || ""}
+                            onBlur={async (e) => {
+                              const val = e.target.value ? parseFloat(e.target.value) : null;
+                              await supabase.from("supplier_products" as any).update({ supplier_cost: val }).eq("id", sp.id);
+                              refetchSP();
+                            }}
+                          />
+                        </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => togglePreferred(sp.id, sp.is_preferred)}>
                             <Star className={`h-3.5 w-3.5 ${sp.is_preferred ? "fill-primary text-primary" : "text-muted-foreground"}`} />

@@ -2455,6 +2455,8 @@ export type Database = {
           free_above: number | null
           id: string
           name: string
+          per_kg_rate: number | null
+          rate_type: string
           regions: string
           store_id: string
         }
@@ -2464,6 +2466,8 @@ export type Database = {
           free_above?: number | null
           id?: string
           name: string
+          per_kg_rate?: number | null
+          rate_type?: string
           regions: string
           store_id: string
         }
@@ -2473,6 +2477,8 @@ export type Database = {
           free_above?: number | null
           id?: string
           name?: string
+          per_kg_rate?: number | null
+          rate_type?: string
           regions?: string
           store_id?: string
         }
