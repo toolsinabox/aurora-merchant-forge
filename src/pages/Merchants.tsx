@@ -9,9 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Store, Package, ShoppingCart, Users, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+
+const PLATFORM_DOMAINS = ["localhost", "lovable.app", "lovable.dev", "lovableproject.com", "127.0.0.1"];
+
+function getStorefrontUrl(slug: string): string {
+  const hostname = window.location.hostname;
+  const isPreview = PLATFORM_DOMAINS.some((d) => hostname.includes(d));
+  
+  if (isPreview) {
+    // In preview/dev, fall back to path-based routing
+    return `/store/${slug}`;
+  }
+  
+  // In production, use subdomain-based URL
+  const parts = hostname.split(".");
+  const baseDomain = parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
+  return `https://${slug}.${baseDomain}`;
+}
 
 interface MerchantStore {
   id: string;
@@ -165,11 +181,17 @@ export default function Merchants() {
                         </TableCell>
                         <TableCell>
                           {m.slug ? (
-                            <Link to={`/store/${m.slug}`} target="_blank">
-                              <Button variant="ghost" size="icon" className="h-7 w-7" title="View Storefront">
-                                <ExternalLink className="h-3.5 w-3.5" />
-                              </Button>
-                            </Link>
+                            <div className="flex items-center gap-1">
+                              <a
+                                href={getStorefrontUrl(m.slug)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Button variant="ghost" size="icon" className="h-7 w-7" title={`Visit ${m.slug}.yourdomain.com`}>
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                </Button>
+                              </a>
+                            </div>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
