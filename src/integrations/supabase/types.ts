@@ -4425,6 +4425,7 @@ export type Database = {
           banner_end: string | null
           banner_start: string | null
           banner_text: string | null
+          chat_widget_code: string | null
           contact_email: string | null
           created_at: string
           currency: string
@@ -4465,6 +4466,7 @@ export type Database = {
           banner_end?: string | null
           banner_start?: string | null
           banner_text?: string | null
+          chat_widget_code?: string | null
           contact_email?: string | null
           created_at?: string
           currency?: string
@@ -4505,6 +4507,7 @@ export type Database = {
           banner_end?: string | null
           banner_start?: string | null
           banner_text?: string | null
+          chat_widget_code?: string | null
           contact_email?: string | null
           created_at?: string
           currency?: string

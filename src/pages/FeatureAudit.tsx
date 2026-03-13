@@ -774,7 +774,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Export (CSV)", description: "Bulk export customers to CSV", status: "done", notes: "Export button on customers page with filtered CSV download" },
       { name: "Order Export (CSV/XML)", description: "Export orders for accounting/analytics", status: "done", notes: "Orders tab in Export Wizard with field selection, status filter, date range, customer details, and line items" },
       { name: "Category Import / Export", description: "Bulk manage categories via CSV", status: "done", notes: "Categories tab in Export Wizard with name, slug, description, hierarchy, and SEO fields" },
-      { name: "Image Bulk Upload (ZIP)", description: "Upload multiple product images via ZIP file", status: "partial", notes: "ZIP upload infrastructure ready; requires JSZip client-side extraction and product-image matching by filename/SKU" },
+      { name: "Image Bulk Upload (ZIP)", description: "Upload multiple product images via ZIP file", status: "done", notes: "ZipImageUpload component with JSZip extraction, auto-matches images to products by SKU/barcode/title/ID, uploads to product-images storage bucket, updates product images array" },
       { name: "Scheduled Auto-Exports", description: "Automated exports on schedule (e.g., nightly order export)", status: "done", notes: "scheduled_exports table with entity type, frequency (daily/weekly/monthly), field selection, filters, email recipient; scheduled-export edge function generates CSV and emails it" },
       { name: "Data Transformations on Import", description: "Transform data during import (case, math, concatenate)", status: "done", notes: "Transforms: lowercase, UPPERCASE, Capitalize, Trim whitespace, URL Slug applied during product import" },
     ],
@@ -888,7 +888,7 @@ const featureData: FeatureCategory[] = [
     category: "API & Developer Tools",
     icon: <Code className="h-5 w-5" />,
     features: [
-      { name: "RESTful API (Products, Orders, Customers)", description: "CRUD API for core entities", status: "partial", notes: "Internal Supabase SDK, not public REST API" },
+      { name: "RESTful API (Products, Orders, Customers)", description: "CRUD API for core entities", status: "done", notes: "rest-api edge function with API key auth (x-api-key header), GET/POST/PUT/DELETE for products, orders, customers, inventory, categories, coupons; pagination, search, status filters, scope-based access control" },
       { name: "API Authentication (API Keys)", description: "Authenticate API requests with store keys", status: "done", notes: "api_keys table with scoped keys, SHA-256 hashed storage, prefix display" },
       { name: "API Rate Limiting", description: "Throttle API requests per key", status: "done", notes: "api_rate_limits table tracking per-key request counts per time window, rate_limit column on api_keys (default 1000 req/hour)" },
       { name: "Webhook API", description: "Register and manage webhooks", status: "done", notes: "webhooks table with full CRUD, admin Webhooks page with 12 event types, signing secret, active toggle" },
@@ -896,7 +896,7 @@ const featureData: FeatureCategory[] = [
       { name: "Add-On Types (Custom Panel / Shipping / Payment)", description: "Different add-on types for different integration points", status: "done", notes: "addon_type column supports custom_panel, integration, shipping, pricing, accounting, data_feed types with color-coded badges" },
       { name: "Developer Sandbox / Test Mode", description: "Test environment for development", status: "done", notes: "Test/Production mode toggle on API Docs page with Sandbox badge indicator" },
       { name: "API Documentation (Auto-Generated)", description: "Public API docs for developers", status: "done", notes: "Admin /api-docs page with 5 API sections (Products, Orders, Customers, Inventory, Webhooks), expandable endpoints with method badges, query params, request body, example responses, cURL examples, copy-to-clipboard, quick start guide" },
-      { name: "Batch API Requests", description: "Execute multiple API calls in single request", status: "not_started" },
+      { name: "Batch API Requests", description: "Execute multiple API calls in single request", status: "done", notes: "batch-api edge function accepts array of up to 20 requests with method/path/body, forwards to rest-api, returns all results in parallel; authenticated via x-api-key" },
     ],
   },
 
@@ -921,7 +921,7 @@ const featureData: FeatureCategory[] = [
       { name: "Maropost Marketing Cloud", description: "Native integration with Maropost Marketing", status: "not_started" },
       { name: "Maropost Service Cloud", description: "Customer service/helpdesk integration", status: "not_started" },
       { name: "Retail Express POS", description: "Maropost's own POS system integration", status: "not_started" },
-      { name: "LiveChat / Zendesk / Tidio", description: "Customer support chat widget", status: "not_started" },
+      { name: "LiveChat / Zendesk / Tidio", description: "Customer support chat widget", status: "done", notes: "chat_widget_code column on stores table; embed code input in Settings Branding tab; storefront layout dynamically injects chat widget script from store config" },
     ],
   },
 ];

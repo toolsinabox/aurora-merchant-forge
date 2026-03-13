@@ -101,6 +101,21 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
           if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
           link.href = faviconUrl;
         }
+        // Inject chat widget if configured
+        const chatCode = (s as any).chat_widget_code;
+        if (chatCode && !document.querySelector("script[data-chat-widget]")) {
+          const chatContainer = document.createElement("div");
+          chatContainer.setAttribute("data-chat-widget", "true");
+          chatContainer.innerHTML = chatCode;
+          // Move script tags to execute them
+          chatContainer.querySelectorAll("script").forEach(oldScript => {
+            const newScript = document.createElement("script");
+            Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+            newScript.textContent = oldScript.textContent;
+            newScript.setAttribute("data-chat-widget", "true");
+            document.body.appendChild(newScript);
+          });
+        }
       }
     });
   }, [storeSlug]);

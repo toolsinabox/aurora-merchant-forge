@@ -500,6 +500,7 @@ export default function SettingsPage() {
     fb_pixel_id: "",
     google_ads_id: "",
     google_ads_conversion_label: "",
+    chat_widget_code: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
@@ -527,7 +528,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id, google_ads_id, google_ads_conversion_label, smtp_config")
+      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id, google_ads_id, google_ads_conversion_label, chat_widget_code, smtp_config")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
@@ -545,6 +546,7 @@ export default function SettingsPage() {
             fb_pixel_id: (data as any).fb_pixel_id || "",
             google_ads_id: (data as any).google_ads_id || "",
             google_ads_conversion_label: (data as any).google_ads_conversion_label || "",
+            chat_widget_code: (data as any).chat_widget_code || "",
           });
           if ((data as any).smtp_config) {
             setSmtpForm({ ...(data as any).smtp_config });
@@ -596,6 +598,7 @@ export default function SettingsPage() {
         fb_pixel_id: brandForm.fb_pixel_id || null,
         google_ads_id: brandForm.google_ads_id || null,
         google_ads_conversion_label: brandForm.google_ads_conversion_label || null,
+        chat_widget_code: brandForm.chat_widget_code || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
@@ -803,6 +806,12 @@ export default function SettingsPage() {
                 <div className="space-y-1">
                   <Label className="text-xs">Store Description</Label>
                   <Input className="h-8 text-xs" value={brandForm.description} onChange={(e) => setBrandForm({ ...brandForm, description: e.target.value })} placeholder="A short description of your store..." />
+                </div>
+                <Separator />
+                <div className="space-y-1">
+                  <Label className="text-xs">LiveChat / Support Widget Code</Label>
+                  <Textarea className="text-xs font-mono min-h-[60px]" value={brandForm.chat_widget_code} onChange={(e) => setBrandForm({ ...brandForm, chat_widget_code: e.target.value })} placeholder="Paste your chat widget embed code (Tidio, LiveChat, Zendesk, Intercom, etc.)" />
+                  <p className="text-2xs text-muted-foreground">Paste the full &lt;script&gt; embed code from your chat provider. It will be injected on your storefront.</p>
                 </div>
                 <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
                   <div className="h-10 w-10 rounded-lg" style={{ backgroundColor: brandForm.primary_color }} />
