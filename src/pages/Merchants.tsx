@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Store, Package, ShoppingCart, Users } from "lucide-react";
+import { Search, Store, Package, ShoppingCart, Users, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 
@@ -105,22 +107,23 @@ export default function Merchants() {
                     <TableHead>Owner</TableHead>
                     <TableHead className="text-center">Products</TableHead>
                     <TableHead className="text-center">Orders</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Joined</TableHead>
-                  </TableRow>
-                </TableHeader>
+                     <TableHead>Slug</TableHead>
+                     <TableHead>Joined</TableHead>
+                     <TableHead className="w-10"></TableHead>
+                   </TableRow>
+                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     Array.from({ length: 5 }).map((_, i) => (
                       <TableRow key={i}>
-                        {Array.from({ length: 6 }).map((_, j) => (
+                        {Array.from({ length: 7 }).map((_, j) => (
                           <TableCell key={j}><Skeleton className="h-4 w-full" /></TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-sm text-muted-foreground py-8">
+                     <TableCell colSpan={7} className="text-center text-sm text-muted-foreground py-8">
                         No merchants found
                       </TableCell>
                     </TableRow>
@@ -160,8 +163,20 @@ export default function Merchants() {
                         <TableCell className="text-muted-foreground">
                           {format(new Date(m.created_at), "MMM d, yyyy")}
                         </TableCell>
+                        <TableCell>
+                          {m.slug ? (
+                            <Link to={`/store/${m.slug}`} target="_blank">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="View Storefront">
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Button>
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
                       </TableRow>
                     ))
+
                   )}
                 </TableBody>
               </Table>
