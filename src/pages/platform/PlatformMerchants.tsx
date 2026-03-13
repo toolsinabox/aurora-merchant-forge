@@ -8,12 +8,21 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Store, ExternalLink, Ban, CheckCircle2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Search, Store, ExternalLink, Ban, CheckCircle2, Settings2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+
+const PLAN_DEFAULTS: Record<string, any> = {
+  free: { products: 50, orders_per_month: 100, staff: 2, storage_mb: 500 },
+  basic: { products: 500, orders_per_month: 1000, staff: 5, storage_mb: 2000 },
+  pro: { products: 5000, orders_per_month: 10000, staff: 20, storage_mb: 10000 },
+  enterprise: { products: -1, orders_per_month: -1, staff: -1, storage_mb: 50000 },
+};
 
 const TIERS = ["free", "basic", "pro", "enterprise"] as const;
 
