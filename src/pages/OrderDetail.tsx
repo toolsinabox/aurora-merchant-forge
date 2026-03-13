@@ -60,6 +60,12 @@ export default function OrderDetail() {
   const [notes, setNotes] = useState<string | null>(null);
   const [shipDialogOpen, setShipDialogOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [newTag, setNewTag] = useState("");
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({ amount: "", method: "manual", reference: "", notes: "" });
+
+  const { data: payments = [] } = useOrderPayments(id);
+  const createPayment = useCreateOrderPayment();
 
   // Shipment form state
   const [shipForm, setShipForm] = useState({
