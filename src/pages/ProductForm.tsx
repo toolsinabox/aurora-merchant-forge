@@ -884,7 +884,7 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <div key={n} className="space-y-1">
-                        <Label className="text-xs">Misc {n}</Label>
+                        <FieldLabel label={`Misc ${n}`} field={`misc${n}`} />
                         <Input className="h-8 text-xs" value={(form as any)[`misc${n}`]} onChange={(e) => update(`misc${n}`, e.target.value)} placeholder={`Custom field ${n}`} />
                       </div>
                     ))}
