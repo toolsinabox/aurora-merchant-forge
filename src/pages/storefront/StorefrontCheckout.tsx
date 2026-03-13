@@ -631,6 +631,12 @@ export default function StorefrontCheckout() {
                       <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
                     </div>
                   )}
+                  {voucherAmount > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span>Gift Voucher</span>
+                      <span>-${voucherAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
