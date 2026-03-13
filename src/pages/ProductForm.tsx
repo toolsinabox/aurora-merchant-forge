@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
+import { FieldLabel } from "@/components/products/BaseTag";
 
 export default function ProductForm() {
   const { id } = useParams();
@@ -298,36 +299,36 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Basic Information</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Title *</Label>
+                      <FieldLabel label="Title *" field="title" />
                       <Input className="h-8 text-xs" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Product title" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Subtitle</Label>
+                      <FieldLabel label="Subtitle" field="subtitle" />
                       <Input className="h-8 text-xs" value={form.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="Product subtitle" />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">SKU</Label>
+                        <FieldLabel label="SKU" field="sku" />
                         <Input className="h-8 text-xs font-mono" value={form.sku} onChange={(e) => update("sku", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Barcode / UPC / EAN</Label>
+                        <FieldLabel label="Barcode / UPC / EAN" field="barcode" />
                         <Input className="h-8 text-xs font-mono" value={form.barcode} onChange={(e) => update("barcode", e.target.value)} />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Brand</Label>
+                        <FieldLabel label="Brand" field="brand" />
                         <Input className="h-8 text-xs" value={form.brand} onChange={(e) => update("brand", e.target.value)} placeholder="Brand name" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Model #</Label>
+                        <FieldLabel label="Model #" field="model_number" />
                         <Input className="h-8 text-xs" value={form.model_number} onChange={(e) => update("model_number", e.target.value)} />
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Product Type</Label>
+                        <FieldLabel label="Product Type" field="product_type" />
                         <Select value={form.product_type} onValueChange={(v) => update("product_type", v)}>
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
@@ -339,11 +340,11 @@ export default function ProductForm() {
                         </Select>
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Custom Label</Label>
+                        <FieldLabel label="Custom Label" field="custom_label" />
                         <Input className="h-8 text-xs" value={form.custom_label} onChange={(e) => update("custom_label", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Supplier Code</Label>
+                        <FieldLabel label="Supplier Code" field="supplier_item_code" />
                         <Input className="h-8 text-xs" value={form.supplier_item_code} onChange={(e) => update("supplier_item_code", e.target.value)} />
                       </div>
                     </div>
@@ -357,35 +358,35 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Descriptions & Content</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Description</Label>
+                      <FieldLabel label="Description" field="description" />
                       <Textarea className="text-xs min-h-[100px]" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Full product description" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Short Description</Label>
+                      <FieldLabel label="Short Description" field="short_description" />
                       <Textarea className="text-xs min-h-[60px]" value={form.short_description} onChange={(e) => update("short_description", e.target.value)} placeholder="Brief summary for listings" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Features</Label>
+                      <FieldLabel label="Features" field="features" />
                       <Textarea className="text-xs min-h-[80px]" value={form.features} onChange={(e) => update("features", e.target.value)} placeholder="Key features (one per line)" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Specifications</Label>
+                      <FieldLabel label="Specifications" field="specifications" />
                       <Textarea className="text-xs min-h-[80px]" value={form.specifications} onChange={(e) => update("specifications", e.target.value)} placeholder="Technical specifications" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Terms & Conditions</Label>
+                      <FieldLabel label="Terms & Conditions" field="terms_conditions" />
                       <Textarea className="text-xs min-h-[60px]" value={form.terms_conditions} onChange={(e) => update("terms_conditions", e.target.value)} />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Warranty</Label>
+                      <FieldLabel label="Warranty" field="warranty" />
                       <Input className="h-8 text-xs" value={form.warranty} onChange={(e) => update("warranty", e.target.value)} placeholder="e.g. 2 Year Manufacturer Warranty" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Availability Description</Label>
+                      <FieldLabel label="Availability Description" field="availability_description" />
                       <Input className="h-8 text-xs" value={form.availability_description} onChange={(e) => update("availability_description", e.target.value)} placeholder="e.g. Usually ships in 2-3 days" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Internal Notes</Label>
+                      <FieldLabel label="Internal Notes" field="internal_notes" />
                       <Textarea className="text-xs min-h-[60px]" value={form.internal_notes} onChange={(e) => update("internal_notes", e.target.value)} placeholder="Internal notes (not visible to customers)" />
                     </div>
                   </CardContent>
@@ -399,15 +400,15 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Price (Default)</Label>
+                        <FieldLabel label="Price (Default)" field="price" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.price} onChange={(e) => update("price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">RRP / Compare At</Label>
+                        <FieldLabel label="RRP / Compare At" field="compare_at_price" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.compare_at_price} onChange={(e) => update("compare_at_price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Cost Price</Label>
+                        <FieldLabel label="Cost Price" field="cost_price" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.cost_price} onChange={(e) => update("cost_price", e.target.value)} placeholder="0.00" />
                       </div>
                     </div>
@@ -424,21 +425,21 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo Price</Label>
+                        <FieldLabel label="Promo Price" field="promo_price" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.promo_price} onChange={(e) => update("promo_price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo Tag</Label>
+                        <FieldLabel label="Promo Tag" field="promo_tag" />
                         <Input className="h-8 text-xs" value={form.promo_tag} onChange={(e) => update("promo_tag", e.target.value)} placeholder="e.g. SALE, CLEARANCE" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo Start</Label>
+                        <FieldLabel label="Promo Start" field="promo_start" />
                         <Input className="h-8 text-xs" type="datetime-local" value={form.promo_start} onChange={(e) => update("promo_start", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo End</Label>
+                        <FieldLabel label="Promo End" field="promo_end" />
                         <Input className="h-8 text-xs" type="datetime-local" value={form.promo_end} onChange={(e) => update("promo_end", e.target.value)} />
                       </div>
                     </div>
@@ -523,11 +524,11 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Tax Settings</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Tax Free Item</Label>
+                      <FieldLabel label="Tax Free Item" field="tax_free" />
                       <Switch checked={form.tax_free} onCheckedChange={(v) => update("tax_free", v)} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Price is Tax Inclusive</Label>
+                      <FieldLabel label="Price is Tax Inclusive" field="tax_inclusive" />
                       <Switch checked={form.tax_inclusive} onCheckedChange={(v) => update("tax_inclusive", v)} />
                     </div>
                   </CardContent>
@@ -540,7 +541,7 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Inventory Control</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Track Inventory</Label>
+                      <FieldLabel label="Track Inventory" field="track_inventory" />
                       <Switch checked={form.track_inventory} onCheckedChange={(v) => update("track_inventory", v)} />
                     </div>
                     <div className="flex items-center justify-between">
@@ -557,15 +558,15 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Reorder Qty</Label>
+                        <FieldLabel label="Reorder Qty" field="reorder_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.reorder_quantity} onChange={(e) => update("reorder_quantity", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Restock Qty</Label>
+                        <FieldLabel label="Restock Qty" field="restock_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.restock_quantity} onChange={(e) => update("restock_quantity", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Preorder Qty</Label>
+                        <FieldLabel label="Preorder Qty" field="preorder_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.preorder_quantity} onChange={(e) => update("preorder_quantity", e.target.value)} />
                       </div>
                     </div>
@@ -580,24 +581,24 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="grid grid-cols-4 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Weight (kg)</Label>
+                        <FieldLabel label="Weight (kg)" field="shipping_weight" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_weight} onChange={(e) => setShipping(p => ({ ...p, shipping_weight: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Length (m)</Label>
+                        <FieldLabel label="Length (m)" field="shipping_length" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_length} onChange={(e) => setShipping(p => ({ ...p, shipping_length: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Width (m)</Label>
+                        <FieldLabel label="Width (m)" field="shipping_width" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_width} onChange={(e) => setShipping(p => ({ ...p, shipping_width: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Height (m)</Label>
+                        <FieldLabel label="Height (m)" field="shipping_height" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_height} onChange={(e) => setShipping(p => ({ ...p, shipping_height: e.target.value }))} />
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Cubic (m³)</Label>
+                      <FieldLabel label="Cubic (m³)" field="shipping_cubic" />
                       <Input className="h-8 text-xs" type="number" step="0.001" value={shipping.shipping_cubic} onChange={(e) => setShipping(p => ({ ...p, shipping_cubic: e.target.value }))} />
                     </div>
                   </CardContent>
@@ -634,17 +635,17 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" value={shipping.shipping_category} onChange={(e) => setShipping(p => ({ ...p, shipping_category: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Flat Rate Charge</Label>
+                        <FieldLabel label="Flat Rate Charge" field="flat_rate_charge" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.flat_rate_charge} onChange={(e) => setShipping(p => ({ ...p, flat_rate_charge: e.target.value }))} />
                       </div>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Selling Unit</Label>
+                        <FieldLabel label="Selling Unit" field="selling_unit" />
                         <Input className="h-8 text-xs" value={shipping.selling_unit} onChange={(e) => setShipping(p => ({ ...p, selling_unit: e.target.value }))} placeholder="e.g. Each, Pack" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Base Unit</Label>
+                        <FieldLabel label="Base Unit" field="base_unit" />
                         <Input className="h-8 text-xs" value={shipping.base_unit} onChange={(e) => setShipping(p => ({ ...p, base_unit: e.target.value }))} placeholder="e.g. Kg, L" />
                       </div>
                       <div className="space-y-1">
@@ -846,21 +847,21 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">SEO</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Page Title</Label>
+                      <FieldLabel label="Page Title" field="seo_title" />
                       <Input className="h-8 text-xs" value={form.seo_title} onChange={(e) => update("seo_title", e.target.value)} placeholder="SEO page title" />
                       <p className="text-2xs text-muted-foreground">{form.seo_title.length}/60 characters</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Meta Description</Label>
+                      <FieldLabel label="Meta Description" field="seo_description" />
                       <Textarea className="text-xs min-h-[60px]" value={form.seo_description} onChange={(e) => update("seo_description", e.target.value)} placeholder="SEO description" />
                       <p className="text-2xs text-muted-foreground">{form.seo_description.length}/160 characters</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Meta Keywords</Label>
+                      <FieldLabel label="Meta Keywords" field="seo_keywords" />
                       <Input className="h-8 text-xs" value={form.seo_keywords} onChange={(e) => update("seo_keywords", e.target.value)} placeholder="Comma-separated keywords" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">URL Slug</Label>
+                      <FieldLabel label="URL Slug" field="slug" />
                       <Input className="h-8 text-xs font-mono" value={form.slug} onChange={(e) => update("slug", e.target.value)} />
                     </div>
                     <div className="flex items-center justify-between">
@@ -883,7 +884,7 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <div key={n} className="space-y-1">
-                        <Label className="text-xs">Misc {n}</Label>
+                        <FieldLabel label={`Misc ${n}`} field={`misc${n}`} />
                         <Input className="h-8 text-xs" value={(form as any)[`misc${n}`]} onChange={(e) => update(`misc${n}`, e.target.value)} placeholder={`Custom field ${n}`} />
                       </div>
                     ))}
@@ -931,11 +932,11 @@ export default function ProductForm() {
                     </Select>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Tags</Label>
+                    <FieldLabel label="Tags" field="tags" />
                     <Input className="h-8 text-xs" value={form.tags} onChange={(e) => update("tags", e.target.value)} placeholder="Comma separated tags" />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Search Keywords</Label>
+                    <FieldLabel label="Search Keywords" field="search_keywords" />
                     <Input className="h-8 text-xs" value={form.search_keywords} onChange={(e) => update("search_keywords", e.target.value)} placeholder="Additional search terms" />
                   </div>
                 </CardContent>
