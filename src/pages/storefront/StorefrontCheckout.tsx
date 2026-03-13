@@ -122,8 +122,11 @@ export default function StorefrontCheckout() {
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
+  const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost;
   const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
-  const finalTotal = subtotalAfterDiscount + shippingCost + taxAmount;
+  const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
+  const voucherAmount = appliedVoucher?.amountUsed ?? 0;
+  const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount);
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
