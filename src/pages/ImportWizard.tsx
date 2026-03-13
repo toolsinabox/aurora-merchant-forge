@@ -15,7 +15,7 @@ import { Upload, ArrowLeft, ArrowRight, Check, AlertTriangle, FileSpreadsheet, S
 import { useNavigate } from "react-router-dom";
 import { useImportTemplates, useCreateImportTemplate, useDeleteImportTemplate } from "@/hooks/use-data";
 
-type ImportEntity = "products" | "orders";
+type ImportEntity = "products" | "orders" | "reviews";
 
 // Maropost-aligned product fields
 const PRODUCT_FIELDS = [
