@@ -271,6 +271,14 @@ export default function SettingsPage() {
                     <Label className="text-xs">Logo URL</Label>
                     <Input className="h-8 text-xs" value={brandForm.logo_url} onChange={(e) => setBrandForm({ ...brandForm, logo_url: e.target.value })} placeholder="https://..." />
                   </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Favicon URL</Label>
+                    <Input className="h-8 text-xs" value={brandForm.favicon_url} onChange={(e) => setBrandForm({ ...brandForm, favicon_url: e.target.value })} placeholder="https://example.com/favicon.ico" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Analytics Tracking ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.ga_tracking_id} onChange={(e) => setBrandForm({ ...brandForm, ga_tracking_id: e.target.value })} placeholder="G-XXXXXXXXXX" />
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Banner Text</Label>
