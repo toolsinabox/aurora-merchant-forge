@@ -284,7 +284,7 @@ const featureData: FeatureCategory[] = [
       { name: "Multiple Shipping Addresses", description: "Customers save multiple delivery addresses", status: "done", notes: "Customer addresses CRUD with default billing/shipping" },
       { name: "Customer Files / Documents", description: "Upload contracts/documents to customer records", status: "not_started", notes: "Neto has customer/files templates" },
       { name: "Customer Logo Upload (Dropship)", description: "B2B customers upload their logo for dropship labels", status: "not_started", notes: "Neto has logos templates" },
-      { name: "Wholesale Registration", description: "Separate wholesale registration form with approval workflow", status: "not_started", notes: "Neto has wholesaleregister templates" },
+      { name: "Wholesale Registration", description: "Separate wholesale registration form with approval workflow", status: "done", notes: "Storefront /wholesale page and wholesale_applications table" },
       { name: "Customer Auto-Registration on Purchase", description: "Automatically create customer account on first purchase", status: "done", notes: "Checkout auto-creates customer record if no existing record found for email" },
       { name: "Customer Merge", description: "Merge duplicate customer records", status: "not_started" },
       { name: "Customer Export", description: "Export customers to CSV", status: "done", notes: "CSV download on admin customers page" },
