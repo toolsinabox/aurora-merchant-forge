@@ -31,6 +31,79 @@ interface SupplierForm {
   is_active: boolean;
 }
 
+function SupplierPerformance({ suppliers, storeId }: { suppliers: any[]; storeId?: string }) {
+  const { data: poData = [] } = useQuery({
+    queryKey: ["supplier-performance", storeId],
+    queryFn: async () => {
+      if (!storeId) return [];
+      const { data } = await supabase
+        .from("purchase_orders")
+        .select("id, supplier_id, status, total, created_at, expected_date")
+        .eq("store_id", storeId);
+      return data || [];
+    },
+    enabled: !!storeId,
+  });
+
+  const stats = suppliers.map((s: any) => {
+    const pos = poData.filter((p: any) => p.supplier_id === s.id);
+    const totalPOs = pos.length;
+    const totalSpend = pos.reduce((sum: number, p: any) => sum + Number(p.total || 0), 0);
+    const received = pos.filter((p: any) => p.status === "received" || p.status === "closed");
+    const onTime = received.filter((p: any) => {
+      if (!p.expected_date) return true;
+      return new Date(p.expected_date) >= new Date(p.created_at);
+    });
+    const onTimeRate = received.length > 0 ? Math.round((onTime.length / received.length) * 100) : 0;
+    return { id: s.id, name: s.name, totalPOs, totalSpend, received: received.length, onTimeRate, isActive: s.is_active };
+  }).filter(s => s.totalPOs > 0).sort((a, b) => b.totalSpend - a.totalSpend);
+
+  if (stats.length === 0) return <p className="text-sm text-muted-foreground text-center py-6">No purchase order data available for performance analysis.</p>;
+
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Supplier</TableHead>
+          <TableHead className="text-right">POs</TableHead>
+          <TableHead className="text-right">Total Spend</TableHead>
+          <TableHead className="text-right">Received</TableHead>
+          <TableHead className="text-right">On-Time %</TableHead>
+          <TableHead>Status</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {stats.map(s => (
+          <TableRow key={s.id}>
+            <TableCell className="font-medium">{s.name}</TableCell>
+            <TableCell className="text-right">{s.totalPOs}</TableCell>
+            <TableCell className="text-right">${s.totalSpend.toFixed(2)}</TableCell>
+            <TableCell className="text-right">{s.received}</TableCell>
+            <TableCell className="text-right">
+              <span className={s.onTimeRate >= 80 ? "text-primary" : s.onTimeRate >= 50 ? "text-amber-600" : "text-destructive"}>
+                {s.onTimeRate}%
+              </span>
+            </TableCell>
+            <TableCell><Badge variant={s.isActive ? "default" : "outline"}>{s.isActive ? "Active" : "Inactive"}</Badge></TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+}
+  name: string;
+  contact_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  website: string;
+  notes: string;
+  lead_time_days: number;
+  payment_terms: string;
+  is_dropship: boolean;
+  is_active: boolean;
+}
+
 const emptyForm: SupplierForm = {
   name: "", contact_name: "", email: "", phone: "", address: "",
   website: "", notes: "", lead_time_days: 0, payment_terms: "", is_dropship: false, is_active: true,
