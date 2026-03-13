@@ -221,6 +221,8 @@ export default function Returns() {
             </Table>
           </CardContent>
         </Card>
+        </TabsContent>
+        </Tabs>
       </div>
 
       {/* Detail Dialog */}
