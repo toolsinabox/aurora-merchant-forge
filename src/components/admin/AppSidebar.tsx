@@ -62,6 +62,7 @@ const contentNav = [
 const systemNav = [
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
+  { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "Redirects", url: `${prefix}/redirects`, icon: ExternalLink },
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
