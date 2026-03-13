@@ -143,6 +143,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/store/:storeSlug/account" element={<StorefrontAccount />} />
                   <Route path="/store/:storeSlug/page/:pageSlug" element={<StorefrontContentPage />} />
+                  <Route path="/store/:storeSlug/blog" element={<StorefrontBlog />} />
                   <Route path="/store/:storeSlug/track-order" element={<StorefrontTrackOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
