@@ -93,6 +93,11 @@ export default function StorefrontAccount() {
   const [storeId, setStoreId] = useState("");
   const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses">("orders");
 
+  // Edit profile state
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: "", phone: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+
   // Return request dialog
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
   const [returnOrderId, setReturnOrderId] = useState("");
