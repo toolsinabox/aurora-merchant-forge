@@ -507,7 +507,7 @@ const featureData: FeatureCategory[] = [
       { name: "Contact Page with Form", description: "Contact form page with email notification", status: "done", notes: "Storefront /contact page with form that stores submissions in contact_submissions table" },
       { name: "FAQ Page", description: "Frequently asked questions page", status: "done", notes: "Via CMS page type: faq" },
       { name: "Blog / News Articles", description: "Blog listing and post pages", status: "done", notes: "Via CMS page type: blog" },
-      { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "partial", notes: "Banner text field exists" },
+      { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "done", notes: "Banner text with start/end datetime scheduling in Settings branding, displayed conditionally on storefront header based on current date" },
       { name: "Static Blocks / Widgets", description: "Reusable content blocks embeddable on any page", status: "not_started" },
       { name: "WYSIWYG Content Editor", description: "Rich text editor for content pages", status: "not_started" },
       { name: "Content Reviews", description: "Reviews on content pages (not just products)", status: "not_started" },
