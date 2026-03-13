@@ -227,6 +227,10 @@ export default function Returns() {
             </div>
           </TabsContent>
 
+          <TabsContent value="disputes">
+            <DisputesTab />
+          </TabsContent>
+
           <TabsContent value="list">
 
         <Card>
