@@ -9,9 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Store, Package, ShoppingCart, Users, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+
+const PLATFORM_DOMAINS = ["localhost", "lovable.app", "lovable.dev", "lovableproject.com", "127.0.0.1"];
+
+function getStorefrontUrl(slug: string): string {
+  const hostname = window.location.hostname;
+  const isPreview = PLATFORM_DOMAINS.some((d) => hostname.includes(d));
+  
+  if (isPreview) {
+    // In preview/dev, fall back to path-based routing
+    return `/store/${slug}`;
+  }
+  
+  // In production, use subdomain-based URL
+  const parts = hostname.split(".");
+  const baseDomain = parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
+  return `https://${slug}.${baseDomain}`;
+}
 
 interface MerchantStore {
   id: string;
