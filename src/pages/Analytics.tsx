@@ -96,6 +96,7 @@ export default function Analytics() {
   const [acquisitionData, setAcquisitionData] = useState<{ newCustomers: number; returning: number; byMonth: any[] }>({ newCustomers: 0, returning: 0, byMonth: [] });
   const [slowMovingProducts, setSlowMovingProducts] = useState<any[]>([]);
   const [stockTurnoverData, setStockTurnoverData] = useState<any[]>([]);
+  const [inventoryValuation, setInventoryValuation] = useState<{ totalRetail: number; totalCost: number; totalUnits: number; items: any[] }>({ totalRetail: 0, totalCost: 0, totalUnits: 0, items: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -271,6 +272,25 @@ export default function Analytics() {
         .sort((a: any, b: any) => b.turnoverRate - a.turnoverRate)
         .slice(0, 15);
       setStockTurnoverData(turnover);
+
+      // Inventory valuation report (average cost basis)
+      let totalRetailVal = 0, totalCostVal = 0, totalUnitsVal = 0;
+      const valuationItems = (allProducts || [])
+        .map((p: any) => {
+          const stock = stockByProduct[p.id] || 0;
+          const cost = Number(p.cost_price) || 0;
+          const retail = Number(p.price) || 0;
+          const costValue = stock * cost;
+          const retailValue = stock * retail;
+          totalRetailVal += retailValue;
+          totalCostVal += costValue;
+          totalUnitsVal += stock;
+          return { title: productMap[p.id]?.title || p.id.slice(0, 8), stock, costPrice: cost, retailPrice: retail, costValue, retailValue };
+        })
+        .filter((p: any) => p.stock > 0)
+        .sort((a: any, b: any) => b.costValue - a.costValue)
+        .slice(0, 15);
+      setInventoryValuation({ totalRetail: totalRetailVal, totalCost: totalCostVal, totalUnits: totalUnitsVal, items: valuationItems });
 
       setLoadingTopProducts(false);
     };
@@ -708,6 +728,57 @@ export default function Analytics() {
                     ))}
                   </TableBody>
                 </Table>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Inventory Valuation Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Inventory Valuation</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                <>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="text-center p-2 bg-muted/50 rounded-md">
+                      <p className="text-2xs text-muted-foreground">Total Units</p>
+                      <p className="text-sm font-bold">{inventoryValuation.totalUnits.toLocaleString()}</p>
+                    </div>
+                    <div className="text-center p-2 bg-muted/50 rounded-md">
+                      <p className="text-2xs text-muted-foreground">Cost Value</p>
+                      <p className="text-sm font-bold">${inventoryValuation.totalCost.toFixed(2)}</p>
+                    </div>
+                    <div className="text-center p-2 bg-muted/50 rounded-md">
+                      <p className="text-2xs text-muted-foreground">Retail Value</p>
+                      <p className="text-sm font-bold">${inventoryValuation.totalRetail.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  {inventoryValuation.items.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-4">No inventory data</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs h-8">Product</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Stock</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Cost/Unit</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Cost Value</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Retail Value</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {inventoryValuation.items.map((p: any, i: number) => (
+                          <TableRow key={i} className="text-xs">
+                            <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                            <TableCell className="py-1.5 text-right font-mono">{p.stock}</TableCell>
+                            <TableCell className="py-1.5 text-right">${p.costPrice.toFixed(2)}</TableCell>
+                            <TableCell className="py-1.5 text-right font-semibold">${p.costValue.toFixed(2)}</TableCell>
+                            <TableCell className="py-1.5 text-right">${p.retailValue.toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>

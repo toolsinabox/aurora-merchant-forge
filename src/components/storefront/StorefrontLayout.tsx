@@ -10,6 +10,7 @@ import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { StorefrontSearch } from "./StorefrontSearch";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { CookieConsentBanner } from "./CookieConsentBanner";
+import { PromoPopup } from "./PromoPopup";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
@@ -217,6 +218,8 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 <Link to={`${basePath}/contact`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
                 <Link to={`${basePath}/cart`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cart</Link>
                 <Link to={`${basePath}/track-order`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Track Order</Link>
+                <Link to={`${basePath}/page/terms-and-conditions`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms & Conditions</Link>
+                <Link to={`${basePath}/page/privacy-policy`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy Policy</Link>
               </nav>
             </div>
             <div>
@@ -257,6 +260,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       </footer>
 
       <CookieConsentBanner />
+      <PromoPopup basePath={basePath} storeName={storeName} />
     </div>
   );
 }
