@@ -26,6 +26,7 @@ import OrderDetail from "./pages/OrderDetail.tsx";
 import PrintInvoice from "./pages/PrintInvoice.tsx";
 import PrintPickList from "./pages/PrintPickList.tsx";
 import PrintPurchaseOrder from "./pages/PrintPurchaseOrder.tsx";
+import PrintPackingSlip from "./pages/PrintPackingSlip.tsx";
 import Customers from "./pages/Customers.tsx";
 import CustomerDetail from "./pages/CustomerDetail.tsx";
 import Marketing from "./pages/Marketing.tsx";
