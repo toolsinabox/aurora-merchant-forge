@@ -9,10 +9,18 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
+  Collapsible, CollapsibleContent, CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
   CheckCircle, Circle, Clock, Search, BarChart3, Package, ShoppingCart,
   Users, Truck, Settings, Globe, Megaphone, CreditCard, FileText,
   Layers, Shield, Zap, Database, Store, Palette, Mail, Boxes,
   Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift,
+  ChevronDown, MapPin, Warehouse, PenTool, FileCode, Link, Image,
+  AlertTriangle, DollarSign, Percent, Printer, Share2, Code,
+  LayoutDashboard, Bell, Upload, Download, UserCheck, Key, Eye,
+  MessageSquare, Star, Heart, RefreshCw, Scissors, ShieldCheck,
+  HardDrive, Monitor, Workflow, Building, ArrowLeftRight,
 } from "lucide-react";
 
 type Status = "done" | "partial" | "not_started";
@@ -30,832 +38,1065 @@ interface FeatureCategory {
   features: Feature[];
 }
 
+// ────────────────────────────────────────────────────
+// COMPREHENSIVE MAROPOST / NETO FEATURE AUDIT
+// Source: Maropost API docs, Neto template structure,
+// system emails, control panel, add-ons, & marketing site
+// ────────────────────────────────────────────────────
+
 const featureData: FeatureCategory[] = [
+  // ═══════ 1. PRODUCT MANAGEMENT — CORE ═══════
   {
     category: "Product Management — Core",
     icon: <Package className="h-5 w-5" />,
     features: [
-      { name: "Product CRUD", description: "Create, read, update, delete products", status: "done" },
+      { name: "Product CRUD (AddItem / UpdateItem / GetItem)", description: "Create, read, update, delete products via API", status: "done" },
       { name: "Product Variants (Variations)", description: "Parent/child SKU with size, color, option-based variants", status: "done" },
-      { name: "Product Images", description: "Multiple image upload, reorder, gallery with zoom", status: "done" },
+      { name: "Product Images (multiple)", description: "Multiple image upload, reorder, gallery with zoom", status: "done" },
       { name: "Product Categories (3-level tree)", description: "Hierarchical categories with parent/child, unlimited depth", status: "done" },
       { name: "Product Tags", description: "Tagging system for filtering and organization", status: "done" },
-      { name: "Product SKU / Barcode", description: "SKU and barcode fields per product/variant", status: "done" },
+      { name: "Product SKU / Barcode / Model Number", description: "SKU, barcode, and model number fields per product/variant", status: "done" },
       { name: "Product Status (Active/Draft/Archived)", description: "Manage product lifecycle status", status: "done" },
-      { name: "Product Approval Workflow", description: "Approval flag for marketplace/multi-vendor products", status: "done" },
+      { name: "Product Approval Workflow", description: "Approval flag for marketplace/multi-vendor products (is_approved)", status: "done" },
       { name: "Product Brand", description: "Brand field per product", status: "done" },
       { name: "Product Type / Subtype", description: "Product type and subtype classification", status: "done" },
       { name: "Track Inventory Toggle", description: "Per-product toggle for inventory tracking", status: "done" },
       { name: "Is Sold / Is Bought Flags", description: "Control whether product is sold, bought, or both", status: "done" },
       { name: "Is Inventoried Flag", description: "Flag for inventory-tracked vs non-inventoried items", status: "done" },
+      { name: "Virtual Product Flag", description: "Mark product as digital/virtual (no shipping required)", status: "done" },
+      { name: "Kit / Bundle Products (is_kit)", description: "Bundle products from multiple SKUs", status: "done" },
+      { name: "Editable Bundle", description: "Allow customers to customize kit components at checkout", status: "done" },
+      { name: "Cost Price / Compare-At Price", description: "Cost price for margin calculation, compare price for display", status: "done" },
+      { name: "Promo Price / Promo Schedule", description: "Promotional pricing with start/end dates and promo tag", status: "done" },
+      { name: "Custom Label", description: "Custom label field for product (New, Sale, etc.)", status: "done" },
+      { name: "Subtitle", description: "Product subtitle field", status: "done" },
+      { name: "Short Description", description: "Short product description for listings", status: "done" },
+      { name: "Features Field", description: "Bullet-point feature list", status: "done" },
+      { name: "Specifications Field", description: "Technical specification text field", status: "done" },
+      { name: "Warranty Field", description: "Warranty information per product", status: "done" },
+      { name: "Terms & Conditions Field", description: "Per-product terms and conditions text", status: "done" },
+      { name: "Internal Notes", description: "Staff-only notes on product (not visible to customers)", status: "done" },
+      { name: "Misc Fields (misc1-misc5)", description: "Five custom misc fields for extended product data", status: "done" },
+      { name: "Availability Description", description: "Custom stock availability text (e.g. 'Ships in 3-5 days')", status: "done" },
+      { name: "Supplier Item Code", description: "Supplier-specific code per product", status: "done" },
+      { name: "Auto URL Update", description: "Automatic slug generation from product title", status: "done" },
+      { name: "Product Slug / SEO URL", description: "Clean URL slug per product", status: "done" },
     ],
   },
+
+  // ═══════ 2. PRODUCT — PRICING & TIERS ═══════
   {
-    category: "Product Management — Descriptions & Content",
-    icon: <BookOpen className="h-5 w-5" />,
+    category: "Product — Pricing & Tiers",
+    icon: <DollarSign className="h-5 w-5" />,
     features: [
-      { name: "Product Title", description: "Main product name/title", status: "done" },
-      { name: "Product Subtitle", description: "Secondary title/tagline", status: "done" },
-      { name: "Short Description", description: "Brief product summary for listings", status: "done" },
-      { name: "Full Description (Rich Text)", description: "HTML-capable full product description", status: "done" },
-      { name: "Features Field", description: "Dedicated features/bullet points field", status: "done" },
-      { name: "Specifications Field", description: "Technical specifications text", status: "done" },
-      { name: "Terms & Conditions", description: "Per-product terms and conditions text", status: "done" },
-      { name: "Warranty Info", description: "Warranty terms per product", status: "done" },
-      { name: "Availability Description", description: "Custom availability/lead time text", status: "done" },
-      { name: "Internal Notes", description: "Private staff-only notes", status: "done" },
-      { name: "Search Keywords", description: "Additional keywords for search indexing", status: "done" },
-      { name: "Product Videos", description: "Embedded video on product pages (YouTube/Vimeo)", status: "not_started" },
-      { name: "PDF Brochure Upload", description: "Upload downloadable PDF brochures per product", status: "not_started", notes: "Maropost add-on feature" },
-      { name: "Advanced Product Descriptions", description: "Multiple description tabs/sections on storefront", status: "not_started" },
-    ],
-  },
-  {
-    category: "Product Management — Pricing",
-    icon: <Tag className="h-5 w-5" />,
-    features: [
-      { name: "Sell Price", description: "Main product price", status: "done" },
-      { name: "Cost Price (COGS)", description: "Cost of goods sold for margin tracking", status: "done" },
-      { name: "Compare at Price (RRP)", description: "Recommended retail / was price for strikethrough", status: "done" },
-      { name: "Promo Price with Schedule", description: "Promotional price with start and end date", status: "done" },
-      { name: "Promo Tag", description: "Custom promotional label/badge", status: "done" },
-      { name: "Multilevel / Volume Pricing", description: "Tiered pricing based on quantity purchased", status: "done" },
-      { name: "User-Group Pricing", description: "Different prices per customer group (wholesale, VIP)", status: "done", notes: "Pricing tiers exist with user_group field" },
+      { name: "Base Price", description: "Standard retail price", status: "done" },
+      { name: "Compare-At / RRP Price", description: "Was-price for strike-through display", status: "done" },
+      { name: "Cost Price", description: "Wholesale/cost price for margin reporting", status: "done" },
+      { name: "Promotional Price with Schedule", description: "Time-limited promotional price (promo_start, promo_end)", status: "done" },
+      { name: "Tiered / Volume Pricing", description: "Price breaks by quantity (min_quantity tiers)", status: "done" },
+      { name: "Customer Group Pricing", description: "Different prices per customer group/user_group", status: "done" },
       { name: "Tax-Free Flag", description: "Mark product as tax exempt", status: "done" },
-      { name: "Tax-Inclusive Flag", description: "Prices include or exclude tax", status: "done" },
-      { name: "Variant-Level Pricing", description: "Individual price per variant", status: "done" },
-      { name: "Price Groups (Customer Groups)", description: "Assign different price lists per customer group", status: "partial", notes: "Pricing tiers exist but no customer group assignment UI" },
-      { name: "Wholesale Ex-GST Pricing", description: "Show ex-GST prices for wholesale customer groups", status: "not_started" },
-      { name: "Maximum Discount Rule", description: "Prevent product from being discounted beyond a limit", status: "not_started" },
-      { name: "Web Price (Separate)", description: "Different price for online store vs in-store/POS", status: "not_started" },
-      { name: "Outlet-Specific Pricing", description: "Different prices per store location/outlet", status: "not_started" },
-      { name: "Currency-Specific Pricing", description: "Set prices in multiple currencies", status: "not_started" },
-      { name: "Supplier Buy Price (Ex Tax)", description: "Supplier's native currency buy price", status: "not_started", notes: "Maropost Retail Express feature" },
-      { name: "Direct Costs / Landed Cost", description: "Freight, duties, handling costs added to COGS", status: "not_started" },
-      { name: "Markup Target % Calculator", description: "Calculate sell price from cost + markup %", status: "not_started" },
+      { name: "Tax-Inclusive Flag", description: "Price includes tax (vs tax-exclusive)", status: "done" },
+      { name: "Preorder Quantity", description: "Quantity available for preorder before stock arrives", status: "done" },
+      { name: "P.O.A / Special Order Products", description: "Price On Application — hide price, show 'Contact for Price'", status: "not_started", notes: "Neto supports POA products where pricing is hidden" },
+      { name: "Multi-Currency Pricing", description: "Display/sell in multiple currencies with conversion rules", status: "not_started", notes: "Neto Currency API supports multiple currencies" },
     ],
   },
+
+  // ═══════ 3. PRODUCT — SHIPPING DIMENSIONS ═══════
   {
-    category: "Product Management — Specifics & Attributes",
-    icon: <Layers className="h-5 w-5" />,
-    features: [
-      { name: "Product Specifics (Key-Value)", description: "Custom attributes like Color, Material, Size as filterable specs", status: "done" },
-      { name: "Specifics Sort Order", description: "Control display order of specifics", status: "done" },
-      { name: "Product Relations (Related)", description: "Related product linking", status: "done" },
-      { name: "Product Relations (Cross-Sell)", description: "Cross-sell product suggestions", status: "done" },
-      { name: "Product Relations (Up-Sell)", description: "Up-sell product recommendations", status: "done" },
-      { name: "Custom Fields (Misc 1-5)", description: "Five generic custom text fields", status: "done" },
-      { name: "Custom Label", description: "Custom label field for internal use", status: "done" },
-      { name: "Supplier Item Code", description: "Supplier/vendor code tracking", status: "done" },
-      { name: "Model Number", description: "Manufacturer model number", status: "done" },
-      { name: "Product Options (Non-Inventoried)", description: "Extra options like gift wrapping, engraving, gift messages", status: "not_started", notes: "Major Maropost add-on" },
-      { name: "Custom Attributes (Unlimited)", description: "Create unlimited custom attributes beyond defaults", status: "not_started", notes: "Maropost Retail Express supports custom attributes" },
-      { name: "Season Attribute", description: "Season classification for fashion/retail", status: "not_started" },
-      { name: "Product Finder / Fitment Guide", description: "Dynamic product finder (car parts by make/model/year)", status: "not_started", notes: "Complex feature requiring dedicated UI" },
-    ],
-  },
-  {
-    category: "Product Management — Shipping & Dimensions",
-    icon: <Boxes className="h-5 w-5" />,
-    features: [
-      { name: "Shipping Weight", description: "Product weight for shipping calculations", status: "done" },
-      { name: "Shipping Dimensions (L×W×H)", description: "Length, width, height for dimensional weight", status: "done" },
-      { name: "Actual Dimensions (L×W×H)", description: "Actual product dimensions (vs shipping box)", status: "done" },
-      { name: "Shipping Cubic Measurement", description: "Cubic size of shipping box(es)", status: "done" },
-      { name: "Flat Rate Charge per Product", description: "Per-product flat-rate shipping override", status: "done" },
-      { name: "Shipping Category", description: "Classify products for shipping rule matching", status: "done" },
-      { name: "Selling Unit / Base Unit", description: "Selling unit (each, pack, carton) with base unit qty", status: "done" },
-      { name: "Number of Cartons", description: "How many cartons the product ships in", status: "done" },
-      { name: "Requires Packaging Flag", description: "Whether product needs packaging/assembly", status: "done" },
-      { name: "Virtual Product Flag", description: "Digital/virtual product (no shipping)", status: "done" },
-    ],
-  },
-  {
-    category: "Product Management — SEO",
-    icon: <Globe className="h-5 w-5" />,
-    features: [
-      { name: "SEO Title (Meta Title)", description: "Custom page title for search engines", status: "done" },
-      { name: "SEO Description (Meta Desc)", description: "Custom meta description for SERP", status: "done" },
-      { name: "SEO Keywords", description: "Meta keywords field", status: "done" },
-      { name: "Product Slug / URL", description: "Custom URL slug per product", status: "done" },
-      { name: "Auto URL Update Toggle", description: "Toggle automatic slug generation from title", status: "done" },
-      { name: "Canonical URLs", description: "Canonical tags to prevent duplicate content", status: "not_started" },
-      { name: "Sitemap Generation", description: "Automatic XML sitemap for products", status: "not_started" },
-      { name: "Structured Data (JSON-LD)", description: "Product schema markup for rich snippets", status: "not_started" },
-      { name: "301 Redirect Management", description: "Manage URL redirects when slugs change", status: "not_started" },
-    ],
-  },
-  {
-    category: "Product Management — Bulk Operations",
-    icon: <Database className="h-5 w-5" />,
-    features: [
-      { name: "Bulk Edit (Multi-Select)", description: "Select multiple products and edit price/status/category", status: "done" },
-      { name: "Product Import (CSV)", description: "CSV import with column mapping and templates", status: "done" },
-      { name: "Product Export (CSV)", description: "Export products to CSV with field selection", status: "done" },
-      { name: "Import Templates (Saved Mappings)", description: "Save and reuse import field mappings", status: "done" },
-      { name: "Import Log / History", description: "Track import history with success/error counts", status: "done" },
-      { name: "Product Cloning / Duplicate", description: "Duplicate a product with all its data", status: "not_started" },
-      { name: "Bulk Image Upload", description: "Upload images for multiple products at once", status: "not_started" },
-      { name: "Scheduled Price Updates", description: "Schedule price changes for future dates", status: "not_started" },
-      { name: "Mass Upload via FTP", description: "Automated product feed via FTP/SFTP", status: "not_started" },
-      { name: "Saved Product Filters", description: "Save custom product search/filter combinations", status: "not_started" },
-    ],
-  },
-  {
-    category: "Product Types — Special",
-    icon: <Gift className="h-5 w-5" />,
-    features: [
-      { name: "Regular Products", description: "Standard standalone products", status: "done" },
-      { name: "Variation Products (Parent/Child)", description: "Products differentiated by specific feature (size, color)", status: "done" },
-      { name: "Kit / Bundle Products", description: "Standard kits (fixed components)", status: "done" },
-      { name: "Editable Bundle Products", description: "Customizable kits where customer picks components", status: "done", notes: "editable_bundle flag exists" },
-      { name: "Electronic Gift Vouchers / Gift Cards", description: "Digital gift vouchers purchasable online, redeemable in-store/online", status: "not_started", notes: "Core Maropost product type" },
-      { name: "Subscription Products", description: "Recurring subscription/auto-order products", status: "not_started" },
-      { name: "Digital Download Products", description: "Downloadable files (software, music, ebooks)", status: "not_started" },
-      { name: "Service Products", description: "Non-physical service bookings", status: "not_started" },
-      { name: "Package Products (Retail Express)", description: "Grouped packages for POS retail", status: "not_started" },
-    ],
-  },
-  {
-    category: "Inventory Management",
-    icon: <Database className="h-5 w-5" />,
-    features: [
-      { name: "Multi-Warehouse Inventory", description: "Track stock across multiple warehouse locations", status: "done" },
-      { name: "Stock Levels per Location", description: "Individual quantity per product per warehouse", status: "done" },
-      { name: "Low Stock Threshold Alerts", description: "Configurable low-stock threshold per product", status: "done" },
-      { name: "Stock Adjustments with Reason", description: "Manual stock adjustments with reason tracking", status: "done" },
-      { name: "Inventory Locations CRUD", description: "Create and manage warehouse/store locations with type/address", status: "done" },
-      { name: "Reorder Quantity", description: "Suggested reorder quantity per product", status: "done" },
-      { name: "Preorder / Backorder Quantity", description: "Track preorder/incoming quantities", status: "done" },
-      { name: "Restock Quantity", description: "Restock level tracking per product", status: "done" },
-      { name: "Variant-Level Inventory", description: "Stock tracking per variant per location", status: "done" },
-      { name: "Inventory History / Audit Log", description: "Full history of stock changes with user attribution", status: "done" },
-      { name: "Stock Transfers Between Locations", description: "Transfer stock between warehouses with tracking", status: "not_started", notes: "Maropost has full stock transfer workflow" },
-      { name: "Purchase Orders (POs)", description: "Create POs to suppliers, track incoming stock", status: "not_started", notes: "Core Maropost feature with full PO workflow" },
-      { name: "Purchase Order Receiving (GRN)", description: "Receive goods against POs with quantity verification", status: "not_started" },
-      { name: "Supplier Management", description: "Supplier directory with contacts, lead times, default supplier per product", status: "not_started" },
-      { name: "Supplier Returns", description: "Return goods to suppliers with tracking", status: "not_started" },
-      { name: "Stock Take / Cycle Count", description: "Physical stock count reconciliation per location", status: "not_started" },
-      { name: "Auto Replenishment Rules", description: "Auto-generate POs when stock drops below threshold", status: "not_started", notes: "Maropost has never/always/out-of-stock replenish modes" },
-      { name: "Stock Replenishment Wizard", description: "Guided stock reorder suggestions based on sales velocity", status: "not_started" },
-      { name: "Batch / Lot Tracking", description: "Track inventory by batch or lot number", status: "not_started" },
-      { name: "Serial Number Tracking", description: "Track individual serial numbers per unit", status: "not_started" },
-      { name: "Inventory Forecasting", description: "Demand forecasting based on sales history", status: "not_started" },
-      { name: "Multi-Channel Stock Sync", description: "Auto-sync stock across website, eBay, Amazon, POS", status: "not_started" },
-      { name: "Core Product Flag", description: "Mark products as core/staple items", status: "not_started" },
-    ],
-  },
-  {
-    category: "Order Management",
-    icon: <ShoppingCart className="h-5 w-5" />,
-    features: [
-      { name: "Order List & Advanced Filtering", description: "View all orders with status, date, customer, amount filters", status: "done" },
-      { name: "Order Detail View", description: "Detailed order view with line items, totals, timeline", status: "done" },
-      { name: "Order Status Management", description: "Pending → Confirmed → Processing → Shipped → Delivered → Cancelled", status: "done" },
-      { name: "Payment Status Tracking", description: "Pending, paid, partially paid, refunded", status: "done" },
-      { name: "Fulfillment Status", description: "Unfulfilled, partial, fulfilled tracking separate from order status", status: "done" },
-      { name: "Order Timeline / Event Log", description: "Chronological audit trail of all order events", status: "done" },
-      { name: "Order Notes (Internal)", description: "Staff-only internal notes on orders", status: "done" },
-      { name: "Manual Order Creation", description: "Create orders manually from admin panel", status: "done" },
-      { name: "Shipping Address Capture", description: "Capture and display shipping address", status: "done" },
-      { name: "Shipment Creation with Tracking", description: "Create shipments with carrier, tracking number, tracking URL", status: "done" },
-      { name: "Split Shipments", description: "Ship different line items in separate packages", status: "done" },
-      { name: "Shipment Items Linking", description: "Link specific order items to specific shipments with quantities", status: "done" },
-      { name: "Order Number Search", description: "Search by order number, customer, email", status: "done" },
-      { name: "Coupon / Discount Application", description: "Apply coupon codes with calculated discounts", status: "done" },
-      { name: "Tax on Orders", description: "Tax amount on orders", status: "partial", notes: "Field exists; no automatic tax calculation engine" },
-      { name: "Shipping Cost on Orders", description: "Shipping charge on orders", status: "partial", notes: "Field exists; no real-time carrier rate integration" },
-      { name: "Order Invoices / PDF Generation", description: "Generate printable invoice PDF per order", status: "not_started" },
-      { name: "Packing Slips", description: "Generate packing slips for warehouse fulfillment", status: "not_started" },
-      { name: "Consignment Notes", description: "Generate consignment notes for shipping", status: "not_started" },
-      { name: "Bulk Order Actions", description: "Bulk update status, bulk print labels/invoices", status: "not_started" },
-      { name: "Order Email Notifications", description: "Automated emails on confirm, ship, deliver", status: "not_started" },
-      { name: "Backorders / Pre-Orders", description: "Accept orders on out-of-stock items, track separately", status: "not_started" },
-      { name: "Order Editing (Post-Placement)", description: "Edit order items, quantities, addresses after placement", status: "not_started" },
-      { name: "Order Holds", description: "Place orders on hold pending review/verification", status: "not_started" },
-      { name: "Dropship Order Routing", description: "Automatically route orders to dropship suppliers", status: "not_started", notes: "Maropost has full dropship workflow" },
-      { name: "Pick Lists Generation", description: "Generate pick lists for warehouse staff", status: "not_started" },
-      { name: "Custom Order Labels", description: "Custom label system for order organization", status: "not_started" },
-      { name: "Customer PO Number Capture", description: "Capture customer's purchase order number at checkout", status: "not_started", notes: "B2B feature" },
-      { name: "Order Splitting", description: "Split a single order into multiple orders", status: "not_started" },
-      { name: "Order Merging", description: "Merge multiple orders from same customer", status: "not_started" },
-    ],
-  },
-  {
-    category: "Pick, Pack & Ship (Warehouse Operations)",
-    icon: <Boxes className="h-5 w-5" />,
-    features: [
-      { name: "Pick'n'Pack Mobile App", description: "Mobile barcode scanning for order picking and packing", status: "not_started", notes: "Maropost Commerce Pick'n'Pack add-on" },
-      { name: "Barcode Scanning", description: "Scan product barcodes during pick/pack for verification", status: "not_started" },
-      { name: "Pick Verification", description: "Verify picked items match order before packing", status: "not_started" },
-      { name: "Pack Verification", description: "Verify packed items before shipping label generation", status: "not_started" },
-      { name: "Batch Picking", description: "Pick multiple orders simultaneously in warehouse", status: "not_started" },
-      { name: "Wireless Printer Support", description: "Print labels/slips from mobile scanner device", status: "not_started" },
-      { name: "Bin Location Management", description: "Assign and track bin locations for products in warehouse", status: "not_started" },
-    ],
-  },
-  {
-    category: "Returns & Refunds (RMA)",
-    icon: <Repeat className="h-5 w-5" />,
-    features: [
-      { name: "Return Request Creation", description: "Create return merchandise authorizations (RMAs)", status: "done" },
-      { name: "Return Reasons", description: "Capture reason for return from configurable list", status: "done" },
-      { name: "Return Status Workflow", description: "Pending → Approved → Received → Completed status flow", status: "done" },
-      { name: "Refund Amount Tracking", description: "Track refund amount per return", status: "done" },
-      { name: "Admin Notes on Returns", description: "Internal staff notes per return", status: "done" },
-      { name: "Return-to-Order Linking", description: "Link returns to original orders and customers", status: "done" },
-      { name: "Custom RMA Reasons", description: "Create custom return reason types", status: "not_started", notes: "Maropost allows custom reasons/statuses/outcomes" },
-      { name: "Custom RMA Statuses", description: "Create custom return status types", status: "not_started" },
-      { name: "RMA Outcomes (Return to Stock/Write Off/Credit)", description: "Configurable outcomes: return to stock, write off, issue credit, replacement", status: "not_started", notes: "Core Maropost RMA feature" },
-      { name: "Automatic Stock Adjustment on Return", description: "Auto-restock items when return outcome is 'return to stock'", status: "not_started" },
-      { name: "Customer-Initiated Returns Portal", description: "Self-service return portal for customers", status: "not_started" },
-      { name: "Return Shipping Labels", description: "Generate and send return shipping labels", status: "not_started" },
-      { name: "Exchange Processing", description: "Process exchanges (return + new order) in one flow", status: "not_started" },
-      { name: "Credit Notes / Store Credit", description: "Issue store credit instead of monetary refund", status: "not_started", notes: "Maropost adds credit to customer account" },
-      { name: "RMA Line Items", description: "Return specific line items, not entire order", status: "not_started" },
-      { name: "Adjustment Notes Generation", description: "Auto-generate adjustment notes for accounting", status: "not_started" },
-    ],
-  },
-  {
-    category: "Customer Management",
-    icon: <Users className="h-5 w-5" />,
-    features: [
-      { name: "Customer List & Search", description: "View, search, filter all customers", status: "done" },
-      { name: "Customer Detail View", description: "Individual customer profile with order history", status: "done" },
-      { name: "Customer Segments", description: "New, returning, VIP segment classification", status: "done" },
-      { name: "Customer Tags", description: "Custom tags for segmentation and filtering", status: "done" },
-      { name: "Customer Notes (Internal)", description: "Internal notes per customer", status: "done" },
-      { name: "Customer Order History", description: "View all orders for a customer", status: "done" },
-      { name: "Customer Spend Tracking", description: "Total orders and total spent lifetime metrics", status: "done" },
-      { name: "Customer Wishlists", description: "Save products to wishlist from storefront", status: "done" },
-      { name: "Customer Reviews", description: "Leave and manage product reviews with ratings", status: "done" },
-      { name: "Customer Account Portal", description: "Self-service account management for customers", status: "partial", notes: "Basic storefront account page exists" },
-      { name: "Customer Groups (Wholesale/Retail/VIP)", description: "Assign customers to groups for pricing, visibility, payment terms", status: "not_started", notes: "Major Maropost add-on feature" },
-      { name: "Customer Import (CSV)", description: "Bulk import customers via CSV", status: "not_started" },
-      { name: "Customer Export (CSV)", description: "Export customer data to CSV", status: "not_started" },
-      { name: "Multiple Saved Addresses", description: "Multiple shipping/billing addresses per customer", status: "not_started" },
-      { name: "Customer Communication Log", description: "Log of all emails/messages sent to customer", status: "not_started" },
-      { name: "Customer Payment Terms", description: "Set payment schedules (30/60/90 day terms) per customer", status: "not_started", notes: "B2B wholesale feature" },
-      { name: "Customer Credit Limits", description: "Set maximum credit limit per customer account", status: "not_started" },
-      { name: "Manual Account Approval", description: "Require admin approval for new customer registrations", status: "not_started" },
-      { name: "Customer-Specific Invoices", description: "Different invoice template per customer/group", status: "not_started" },
-      { name: "Automatic Payment Reminders", description: "Auto-send payment reminders for outstanding invoices", status: "not_started" },
-      { name: "Customer Loyalty Points", description: "Earn and redeem loyalty points with configurable ratios", status: "not_started", notes: "Maropost supports per-product loyalty ratios" },
-      { name: "Wholesale Registration Form", description: "Separate wholesale customer registration with extra fields", status: "not_started" },
-      { name: "eRFM Customer Analysis", description: "Recency, Frequency, Monetary + Engagement scoring", status: "not_started", notes: "Maropost Marketing Cloud feature" },
-    ],
-  },
-  {
-    category: "Storefront / Online Store",
-    icon: <Store className="h-5 w-5" />,
-    features: [
-      { name: "Multi-Store Support", description: "Multiple storefronts from one admin", status: "done" },
-      { name: "Storefront Home Page", description: "Public-facing store home page", status: "done" },
-      { name: "Product Listing Page (Grid)", description: "Browse all products with grid view", status: "done" },
-      { name: "Product Detail Page", description: "Full product page with images, description, variants, reviews", status: "done" },
-      { name: "Shopping Cart", description: "Add to cart, update quantities, remove items", status: "done" },
-      { name: "Checkout Flow", description: "Checkout with address and order placement", status: "done" },
-      { name: "Customer Auth (Login/Signup)", description: "Customer registration and login on storefront", status: "done" },
-      { name: "Product Search", description: "Keyword search across products", status: "done" },
-      { name: "Product Comparison", description: "Compare multiple products side by side", status: "done" },
-      { name: "Wishlist", description: "Save products for later from storefront", status: "done" },
-      { name: "Product Reviews Display", description: "Show customer reviews and ratings on product pages", status: "done" },
-      { name: "Image Lightbox / Zoom", description: "Full-screen image viewer with zoom", status: "done" },
-      { name: "Subdomain Storefronts", description: "Each store accessible via subdomain", status: "done" },
-      { name: "Path-based Storefronts", description: "Store accessible via /store/:slug path", status: "done" },
-      { name: "Responsive Mobile Design", description: "Mobile-friendly storefront layout", status: "done" },
-      { name: "Category Navigation / Browsing", description: "Browse and filter products by category on storefront", status: "partial", notes: "Categories exist but no storefront nav filter UI" },
-      { name: "Banner / Announcement Bar", description: "Configurable top banner with custom message", status: "partial", notes: "Banner text field exists on store" },
-      { name: "Product Filters (Specifics-Based)", description: "Filter by size, color, brand, etc using product specifics", status: "not_started", notes: "Core Maropost feature — faceted filtering" },
-      { name: "Sort Options (Price/Popular/New)", description: "Sort product listings by various criteria", status: "not_started" },
-      { name: "Pagination / Infinite Scroll", description: "Paginate product listings for large catalogs", status: "not_started" },
-      { name: "Drag-and-Drop Page Builder", description: "Visual WYSIWYG store page builder", status: "not_started", notes: "Major Maropost feature" },
-      { name: "CMS / Content Pages", description: "Static pages: About, Contact, FAQ, Policies", status: "not_started" },
-      { name: "Blog / Articles", description: "Built-in blog for content marketing", status: "not_started" },
-      { name: "Buying Guides", description: "Educational content pages to help customers choose", status: "not_started" },
-      { name: "Custom Forms", description: "Custom forms (contact, inquiry, feedback, quote request)", status: "not_started" },
-      { name: "Navigation Menu Builder", description: "Custom header/footer menu management", status: "not_started" },
-      { name: "Product Quick View", description: "Quick view popup from product grid", status: "not_started" },
-      { name: "Recently Viewed Products", description: "Track and display recently viewed items", status: "not_started" },
-      { name: "Related Products Display", description: "Show related/cross-sell on product page", status: "not_started", notes: "Data exists in product_relations, not rendered on storefront" },
-      { name: "Popular / Trending Products", description: "Auto-ranked products by sales velocity (7-day/all-time)", status: "not_started", notes: "Maropost has Most Popular, Trending, Top Sellers" },
-      { name: "Breadcrumb Navigation", description: "Breadcrumb trail showing category hierarchy", status: "not_started" },
-      { name: "Store Locator", description: "Map-based physical store/pickup location locator", status: "not_started" },
-      { name: "Gift Cards Purchase/Redeem", description: "Buy and redeem digital gift cards on storefront", status: "not_started" },
-      { name: "Hide Prices (Login Required)", description: "Hide pricing until customer logs in (wholesale)", status: "not_started", notes: "Key B2B/wholesale feature" },
-      { name: "Mini Cart / Cart Drawer", description: "Slide-out cart panel without leaving current page", status: "not_started" },
-      { name: "Sticky Add to Cart", description: "Fixed add-to-cart bar on scroll", status: "not_started" },
-      { name: "Product Tabs (Description/Specs/Reviews)", description: "Tabbed content on product page", status: "not_started" },
-    ],
-  },
-  {
-    category: "Themes & Templates",
-    icon: <Palette className="h-5 w-5" />,
-    features: [
-      { name: "Store Theme Settings", description: "Colors, fonts, button radius, layout style per store", status: "done" },
-      { name: "B@SE Template Engine", description: "Custom template engine with value tags, iterators, conditionals", status: "done" },
-      { name: "Template Management (CRUD)", description: "Create/edit/delete templates per store", status: "done" },
-      { name: "Template Types", description: "Header, footer, product, category, home, email template types", status: "done" },
-      { name: "Custom CSS per Store", description: "Custom CSS injection per store theme", status: "done" },
-      { name: "Format Pipes (18+)", description: "Template pipes: currency, date, truncate, uppercase, etc", status: "done" },
-      { name: "Template Preview", description: "Live preview of template rendering with sample data", status: "done" },
-      { name: "Context Types (Product/Category/Global)", description: "Templates scoped to different data contexts", status: "done" },
-      { name: "Pre-Built Theme Library", description: "Selectable pre-designed themes (Premium themes)", status: "not_started", notes: "Maropost has multiple starter/premium themes" },
-      { name: "Theme Import/Export", description: "Export and import theme packages", status: "not_started" },
-      { name: "Theme Versioning / History", description: "Version history for theme changes with rollback", status: "not_started" },
-      { name: "Email Templates (Transactional)", description: "Customizable email templates for all transactional emails", status: "not_started" },
-      { name: "Invoice Templates", description: "Customizable print/PDF invoice layouts", status: "not_started" },
-      { name: "Template Sets per Customer", description: "Assign different template sets to different customers", status: "not_started" },
-    ],
-  },
-  {
-    category: "Marketing & Promotions",
-    icon: <Megaphone className="h-5 w-5" />,
-    features: [
-      { name: "Campaign Manager", description: "Create and manage email/SMS/push campaigns", status: "done" },
-      { name: "Campaign Types (Email/SMS/Push)", description: "Multiple campaign channel types", status: "done" },
-      { name: "Campaign Status Workflow", description: "Draft, scheduled, sent, archived status flow", status: "done" },
-      { name: "Audience Segmentation", description: "Target campaigns by customer segment", status: "done" },
-      { name: "Audience Tags Targeting", description: "Target campaigns by customer tags", status: "done" },
-      { name: "Abandoned Cart Tracking", description: "Track and monitor abandoned carts in real-time", status: "done" },
-      { name: "Campaign Statistics (Sent/Opened/Clicked)", description: "Track delivery, open, and click metrics per campaign", status: "done" },
-      { name: "Coupon Codes (% and Fixed)", description: "Create discount codes with percentage or fixed amount", status: "done" },
-      { name: "Coupon Usage Limits", description: "Max uses and minimum order amount restrictions", status: "done" },
-      { name: "Coupon Date Ranges", description: "Start and expiry dates for coupon validity", status: "done" },
-      { name: "Abandoned Cart Recovery Emails", description: "Automated recovery emails for abandoned carts", status: "not_started", notes: "Tracking exists; automation edge function needed" },
-      { name: "A/B Testing (Campaigns)", description: "Test email subject lines, content, send times", status: "not_started", notes: "Maropost Marketing Cloud feature" },
-      { name: "Marketing Automation Journeys", description: "Multi-step trigger-based automated email/SMS sequences", status: "not_started", notes: "Maropost Journey builder" },
-      { name: "Transactional Campaigns", description: "Trigger-based emails (order confirm, ship, etc)", status: "not_started" },
-      { name: "Recurring Campaigns", description: "Auto-recurring campaigns on schedule", status: "not_started" },
-      { name: "AI Product Recommendations", description: "AI-powered product recommendations engine", status: "not_started", notes: "Maropost Merchandising Cloud" },
-      { name: "AI-Powered Site Search", description: "Intelligent search with auto-complete, synonyms, typo tolerance", status: "not_started", notes: "Maropost Merchandising Cloud (Findify)" },
-      { name: "Personalization Engine", description: "Personalized content/products per customer behavior", status: "not_started" },
-      { name: "Social Media Integration", description: "Publish products to Facebook, Instagram", status: "not_started" },
-      { name: "Google Shopping Feed", description: "Product feed for Google Shopping / Merchant Center", status: "not_started" },
-      { name: "Pricing Promotions", description: "Quantity-based, bundle, BOGO discount rules", status: "not_started", notes: "Maropost Pricing Promotions module" },
-      { name: "Popups & Exit-Intent", description: "Exit-intent popups, promo banners, email capture", status: "not_started" },
-      { name: "Affiliate Program", description: "Affiliate tracking, referral links, commission management", status: "not_started" },
-      { name: "Customer Referral Program", description: "Referral program with reward tracking", status: "not_started" },
-      { name: "Web Tracking / Behavior Analytics", description: "Track page views, product views, customer behavior on site", status: "not_started", notes: "Maropost Marketing Cloud web tracking" },
-      { name: "ISP Deliverability Reports", description: "Email deliverability analysis by ISP", status: "not_started" },
-    ],
-  },
-  {
-    category: "Payments & Checkout",
-    icon: <CreditCard className="h-5 w-5" />,
-    features: [
-      { name: "Checkout Page", description: "Customer checkout flow on storefront", status: "done" },
-      { name: "Order Summary at Checkout", description: "Display cart items and totals at checkout", status: "done" },
-      { name: "Coupon Application at Checkout", description: "Apply coupon codes during checkout", status: "partial", notes: "Coupons exist but checkout coupon UI is basic" },
-      { name: "Stripe Integration", description: "Stripe credit card, Apple Pay, Google Pay", status: "not_started", notes: "Primary Maropost payment gateway" },
-      { name: "PayPal Integration", description: "PayPal standard + advanced payments", status: "not_started" },
-      { name: "Afterpay (BNPL)", description: "Afterpay buy now pay later", status: "not_started" },
-      { name: "ZipPay / ZipMoney (BNPL)", description: "Zip payment installment options", status: "not_started" },
-      { name: "eWAY Gateway", description: "eWAY credit card processing (AU/NZ)", status: "not_started" },
-      { name: "Apple Pay / Google Pay", description: "Web payment methods via Stripe", status: "not_started" },
-      { name: "Saved/Stored Cards", description: "Save credit cards for returning customers", status: "not_started" },
-      { name: "3D Secure Authentication", description: "3D Secure verification for fraud prevention", status: "not_started" },
-      { name: "Multiple Payment Methods", description: "Offer multiple payment gateways simultaneously", status: "not_started" },
-      { name: "Group-Specific Payment Methods", description: "Show different payment options per customer group", status: "not_started", notes: "B2B feature" },
-      { name: "Payment Terms (30/60/90 Day)", description: "Invoice-based payment terms for wholesale/B2B", status: "not_started" },
-      { name: "Partial Payments / Deposits / Layby", description: "Accept deposits or layby payments", status: "not_started" },
-      { name: "Gift Card Redemption", description: "Apply gift card balance at checkout", status: "not_started" },
-      { name: "Store Credit Redemption", description: "Apply store credit at checkout", status: "not_started" },
-      { name: "Guest Checkout", description: "Allow checkout without creating an account", status: "not_started" },
-      { name: "Multi-Currency Support", description: "Display prices and accept payment in multiple currencies", status: "not_started", notes: "Currency field exists on store but no conversion engine" },
-      { name: "Managed Checkout (Hosted)", description: "Maropost-hosted secure checkout page", status: "not_started" },
-      { name: "Checkout Settings (Configurable)", description: "Configure required fields, guest checkout, PO capture, etc", status: "not_started" },
-    ],
-  },
-  {
-    category: "Shipping & Fulfillment",
+    category: "Product — Shipping & Dimensions",
     icon: <Truck className="h-5 w-5" />,
     features: [
-      { name: "Shipping Zones", description: "Define shipping regions with flat-rate pricing", status: "done" },
-      { name: "Free Shipping Threshold", description: "Free shipping above configurable amount per zone", status: "done" },
-      { name: "Flat Rate Shipping per Zone", description: "Fixed shipping cost per zone", status: "done" },
-      { name: "Product Shipping Dimensions", description: "Weight and dimensional data per product for calculation", status: "done" },
-      { name: "Flat Rate per Product Override", description: "Per-product flat rate shipping charge", status: "done" },
-      { name: "Shipment Creation", description: "Create shipments with carrier and tracking number", status: "done" },
-      { name: "Multiple Shipments per Order", description: "Split orders into multiple shipments", status: "done" },
-      { name: "Australia Post eParcel (Live Rates)", description: "Real-time shipping rates from Australia Post", status: "not_started", notes: "Major Maropost carrier integration" },
-      { name: "Australia Post MyPost Business", description: "Self-serve label configuration for MyPost Business", status: "not_started" },
-      { name: "Couriers Please Integration", description: "Live rates and labels for Couriers Please", status: "not_started" },
-      { name: "Sendle Integration", description: "Sendle shipping labels and rates", status: "not_started" },
-      { name: "StarTrack Integration", description: "StarTrack labels and tracking", status: "not_started" },
-      { name: "TNT Integration", description: "TNT shipping integration", status: "not_started" },
-      { name: "Aramex (Fastway) Integration", description: "Aramex/Fastway courier integration", status: "not_started" },
-      { name: "FedEx Integration", description: "FedEx rates and label printing", status: "not_started" },
-      { name: "DHL Integration", description: "DHL shipping integration", status: "not_started" },
-      { name: "Allied Express Integration", description: "Allied Express labels and rates", status: "not_started" },
-      { name: "Neto Commerce Ship Module", description: "Built-in shipping label generation across carriers", status: "not_started", notes: "Maropost Commerce Ship add-on" },
-      { name: "ShipStation Integration", description: "Sync orders to ShipStation for fulfillment", status: "not_started" },
-      { name: "Real-Time Carrier Rate Calculator", description: "Live rates from multiple carriers at checkout", status: "not_started" },
-      { name: "Shipping Label Printing", description: "Generate and print shipping labels from admin", status: "not_started" },
-      { name: "Click & Collect", description: "Buy online, pick up in store", status: "not_started" },
-      { name: "Delivery Date/Time Selection", description: "Let customers choose delivery date and time window", status: "not_started" },
-      { name: "Shipping Rules Engine", description: "Complex rules: weight-based, item-count, value-based, dimensions", status: "not_started" },
-      { name: "Import Carrier Rates (CSV)", description: "Upload custom rate tables for carriers", status: "not_started" },
-      { name: "Carrier Booking / Pickup Request", description: "Book pickup with carrier from admin panel", status: "not_started" },
+      { name: "Shipping Weight", description: "Product weight for shipping calculations", status: "done" },
+      { name: "Shipping Length / Width / Height", description: "Box dimensions for volumetric weight", status: "done" },
+      { name: "Shipping Cubic", description: "Calculated cubic volume for freight", status: "done" },
+      { name: "Actual Dimensions (L×W×H)", description: "Real product dimensions (vs shipping box)", status: "done" },
+      { name: "Flat Rate Shipping Charge", description: "Per-product flat rate shipping override", status: "done" },
+      { name: "Shipping Category", description: "Assign product to a shipping category (fragile, oversized, etc.)", status: "done" },
+      { name: "Selling Unit / Base Unit / Base Unit Qty", description: "Selling unit vs base unit (e.g., sell by box, base is each)", status: "done" },
+      { name: "Cartons", description: "Number of cartons the product ships in", status: "done" },
+      { name: "Requires Packaging", description: "Flag for items needing special packaging", status: "done" },
+      { name: "Free Shipping Override", description: "Per-product free shipping flag", status: "not_started" },
+      { name: "Dangerous Goods Flag", description: "Hazmat/dangerous goods shipping restrictions", status: "not_started" },
     ],
   },
+
+  // ═══════ 4. PRODUCT — SPECIFICS & RELATIONS ═══════
+  {
+    category: "Product — Specifics & Relations",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Product Specifics (Key-Value Pairs)", description: "Custom attribute pairs (e.g., Material: Cotton)", status: "done" },
+      { name: "Product Relations — Cross-Sells", description: "Related products shown on product page", status: "done" },
+      { name: "Product Relations — Up-Sells", description: "Higher-value alternatives suggested at checkout", status: "done" },
+      { name: "Product Relations — Accessories", description: "Recommended accessories / add-ons", status: "done" },
+      { name: "Product Relations — Related", description: "General related products", status: "done" },
+      { name: "Child Products", description: "Parent-child product hierarchy (non-variant children)", status: "partial", notes: "Variants exist but not full child-product hierarchy" },
+      { name: "Editable Kit Components", description: "Components within an editable bundle that customers configure", status: "partial" },
+      { name: "Product Addons / Custom Options", description: "Customizable fields (text engraving, color picker, file upload)", status: "not_started", notes: "Maropost Commerce Product Options add-on" },
+    ],
+  },
+
+  // ═══════ 5. PRODUCT — SEO ═══════
+  {
+    category: "Product — SEO",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "SEO Title (Meta Title)", description: "Custom meta title per product", status: "done" },
+      { name: "SEO Description (Meta Description)", description: "Custom meta description per product", status: "done" },
+      { name: "SEO Keywords", description: "Meta keywords per product", status: "done" },
+      { name: "Search Keywords", description: "Internal search keywords (separate from SEO)", status: "done" },
+      { name: "Canonical URL", description: "Set canonical URL to prevent duplicate content", status: "not_started" },
+      { name: "Open Graph Tags", description: "OG title/description/image for social sharing", status: "not_started" },
+      { name: "Structured Data (JSON-LD Product)", description: "Schema.org Product markup for rich results", status: "not_started" },
+      { name: "XML Sitemap Generation", description: "Auto-generated sitemap.xml for products/categories", status: "not_started" },
+      { name: "301 Redirect Manager", description: "Manage URL redirects when slugs change", status: "not_started" },
+      { name: "Google Shopping Feed", description: "Product data feed for Google Merchant Center", status: "not_started", notes: "Neto has built-in Google Shopping integration" },
+    ],
+  },
+
+  // ═══════ 6. INVENTORY / STOCK CONTROL ═══════
+  {
+    category: "Inventory / Stock Control",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Warehouse Stock Tracking", description: "Track stock levels across multiple warehouse locations", status: "done" },
+      { name: "Stock Adjustments", description: "Manual stock adjustments with reason tracking", status: "done" },
+      { name: "Low Stock Threshold Alerts", description: "Configurable low-stock threshold per product/location", status: "done" },
+      { name: "Reorder Quantity", description: "Suggested reorder quantity per product", status: "done" },
+      { name: "Restock Quantity", description: "Restock level target", status: "done" },
+      { name: "Warehouse Locations CRUD", description: "Add/edit/delete warehouse and store locations", status: "done" },
+      { name: "Warehouse Types (Warehouse/Store/Dropship)", description: "Different location types", status: "done" },
+      { name: "Stock by Variant", description: "Track inventory per variant within each warehouse", status: "done" },
+      { name: "Stock Transfer Between Warehouses", description: "Transfer stock from one location to another", status: "not_started" },
+      { name: "Purchase Orders (PO Creation)", description: "Create purchase orders to suppliers", status: "not_started", notes: "Neto has full PO module" },
+      { name: "Purchase Order Receiving", description: "Receive stock against purchase orders, partial receipts", status: "not_started" },
+      { name: "Purchase Order Status Workflow", description: "Draft → Sent → Partial → Received → Closed", status: "not_started" },
+      { name: "Stock Count / Stocktake", description: "Physical stock count reconciliation", status: "not_started" },
+      { name: "Backorder Management", description: "Manage products on backorder, auto-allocate when stock arrives", status: "not_started" },
+      { name: "Preorder Management", description: "Accept preorders before stock arrives", status: "not_started" },
+      { name: "Batch / Lot Tracking", description: "Track products by batch or lot number", status: "not_started" },
+      { name: "Serial Number Tracking", description: "Track individual units by serial number", status: "not_started" },
+      { name: "Expiry Date Tracking", description: "Track expiry dates for perishable goods", status: "not_started" },
+      { name: "Bin Location Management", description: "Assign bin/shelf locations within warehouses", status: "not_started" },
+      { name: "Inventory Valuation Reports", description: "FIFO/LIFO/Average cost valuation", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 7. ORDERS / INVOICES ═══════
+  {
+    category: "Orders / Invoices",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Order CRUD (GetOrder / AddOrder / UpdateOrder)", description: "Full order lifecycle management", status: "done" },
+      { name: "Order Number Generation", description: "Auto-incrementing or custom order numbers", status: "done" },
+      { name: "Order Status Workflow", description: "New → Processing → Shipped → Completed / Cancelled", status: "done" },
+      { name: "Payment Status (Paid/Unpaid/Partial/Refunded)", description: "Track payment status per order", status: "done" },
+      { name: "Fulfillment Status (Unfulfilled/Partial/Fulfilled)", description: "Track shipping fulfillment status", status: "done" },
+      { name: "Order Items (Line Items)", description: "Products, quantities, prices per order line", status: "done" },
+      { name: "Order Notes (Internal/Customer)", description: "Add notes to orders visible to staff or customer", status: "done" },
+      { name: "Order Timeline / History", description: "Chronological event log for each order", status: "done" },
+      { name: "Shipping Address", description: "Shipping address per order", status: "done" },
+      { name: "Billing Address", description: "Separate billing address", status: "partial", notes: "Single address field currently" },
+      { name: "Order Subtotal / Tax / Shipping / Discount / Total", description: "Full order financial breakdown", status: "done" },
+      { name: "Coupon Application to Orders", description: "Apply discount coupons to orders", status: "done" },
+      { name: "Order Shipments (Partial Shipments)", description: "Multiple shipments per order with tracking", status: "done" },
+      { name: "Shipment Items (Line-level Fulfillment)", description: "Track which items are in which shipment", status: "done" },
+      { name: "Tracking Number / URL / Carrier", description: "Carrier, tracking number, tracking URL per shipment", status: "done" },
+      { name: "Manual Order Creation (Admin)", description: "Staff can create orders from the admin panel", status: "done" },
+      { name: "Order Quotes", description: "Create and send quotes that customers can approve/reject", status: "not_started", notes: "Neto has full quote workflow (approve_quote templates)" },
+      { name: "Quote to Order Conversion", description: "Convert approved quote into a live order", status: "not_started" },
+      { name: "Invoice Generation (PDF)", description: "Generate printable PDF invoices", status: "not_started", notes: "Neto has invoice.template.html" },
+      { name: "Packing Slip Generation (PDF)", description: "Generate printable packing slips", status: "not_started", notes: "Neto system documents: packing slip" },
+      { name: "Pick List Generation", description: "Generate warehouse pick lists from orders", status: "not_started" },
+      { name: "Credit Notes", description: "Issue credit notes against orders", status: "not_started" },
+      { name: "Order Splitting", description: "Split single order into multiple orders", status: "not_started" },
+      { name: "Order Merging", description: "Merge multiple orders from same customer", status: "not_started" },
+      { name: "Order Duplication / Reorder", description: "Clone an existing order as new", status: "not_started" },
+      { name: "Multi-Address Checkout / Split Shipping", description: "Ship different items to different addresses in one order", status: "not_started", notes: "Neto has address.template.html for multi-address" },
+      { name: "Order Export (CSV/XML)", description: "Bulk export orders in various formats", status: "partial", notes: "Export wizard exists" },
+      { name: "Order Import", description: "Bulk import orders from CSV/XML", status: "not_started" },
+      { name: "Order Tags / Flags", description: "Tag or flag orders for internal workflows", status: "not_started" },
+      { name: "Batch Order Processing", description: "Bulk update status, print labels for multiple orders", status: "not_started" },
+      { name: "Order Fraud Detection Flags", description: "Automated fraud scoring and risk flags on orders", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 8. PAYMENTS ═══════
+  {
+    category: "Payments",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Payment Recording (GetPayment / AddPayment)", description: "Record and retrieve payments against orders", status: "partial", notes: "Payment status tracked but no gateway integration" },
+      { name: "Stripe Integration", description: "Accept credit card payments via Stripe", status: "not_started" },
+      { name: "PayPal Integration", description: "PayPal checkout / express checkout", status: "not_started" },
+      { name: "Afterpay / Zip Pay (BNPL)", description: "Buy Now Pay Later integrations", status: "not_started" },
+      { name: "Square Payment Integration", description: "Square payment processing", status: "not_started" },
+      { name: "eWAY Payment Gateway", description: "eWAY (Australia) payment gateway", status: "not_started" },
+      { name: "Braintree Integration", description: "Braintree (PayPal) payment processing", status: "not_started" },
+      { name: "Manual / Offline Payments", description: "Record manual payments (bank transfer, check, cash)", status: "not_started" },
+      { name: "Payment Refunds", description: "Process full or partial refunds", status: "not_started" },
+      { name: "Payment Receipts / Confirmation", description: "Generate payment receipts", status: "not_started" },
+      { name: "Saved Payment Methods", description: "Store card details for repeat purchases (tokenized)", status: "not_started" },
+      { name: "Pay Order from Account", description: "Customer can pay outstanding orders from their account page", status: "not_started", notes: "Neto has pay_order templates" },
+      { name: "Layby / Lay-Away", description: "Installment payment plans managed in-platform", status: "not_started" },
+      { name: "Account Credit / Store Credit", description: "Customer account credit balance for future purchases", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 9. RMA / RETURNS / DISPUTES ═══════
+  {
+    category: "RMA / Returns / Disputes",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Returns CRUD", description: "Create, view, and manage return requests (GetRma / AddRma / UpdateRma)", status: "done" },
+      { name: "Return Reason", description: "Reason for return", status: "done" },
+      { name: "Return Status Workflow", description: "Pending → Approved → Received → Refunded / Rejected", status: "done" },
+      { name: "Refund Amount Tracking", description: "Track refund amounts per return", status: "done" },
+      { name: "Admin Notes on Returns", description: "Internal staff notes per return", status: "done" },
+      { name: "Customer-Initiated Returns (Storefront)", description: "Customers can submit returns from their account", status: "not_started" },
+      { name: "Return Shipping Labels", description: "Generate prepaid return shipping labels", status: "not_started" },
+      { name: "Exchange / Replacement Orders", description: "Create replacement orders linked to returns", status: "not_started" },
+      { name: "Warranty Claims (Disputes)", description: "Customer warranty dispute system with status workflow", status: "not_started", notes: "Neto has full warranty/dispute templates" },
+      { name: "Dispute Types (Refund/Repair/Replace)", description: "Different dispute resolution types", status: "not_started" },
+      { name: "Dispute Reason Selection", description: "Pre-defined dispute reasons for customers to choose from", status: "not_started" },
+      { name: "Dispute Email Notifications", description: "Automated emails when disputes are raised, updated, closed", status: "not_started" },
+      { name: "RMA Report", description: "Reporting on return rates, reasons, costs", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 10. CUSTOMERS / CRM ═══════
+  {
+    category: "Customers / CRM",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Customer CRUD (GetCustomer / AddCustomer / UpdateCustomer)", description: "Full customer management", status: "done" },
+      { name: "Customer Segments", description: "Segment customers (VIP, New, At-Risk)", status: "done" },
+      { name: "Customer Tags", description: "Tag customers for marketing and filtering", status: "done" },
+      { name: "Customer Notes", description: "Internal notes on customer records", status: "done" },
+      { name: "Customer Order History", description: "View all orders per customer", status: "done" },
+      { name: "Customer Total Orders / Total Spent", description: "Aggregate spending metrics per customer", status: "done" },
+      { name: "Customer Detail Page", description: "Comprehensive customer profile view", status: "done" },
+      { name: "Customer Groups (Retail / Wholesale / VIP)", description: "Assign customers to groups for pricing/access control", status: "not_started", notes: "Neto has user groups tied to pricing tiers" },
+      { name: "Customer Credit Terms / Limits", description: "B2B credit limits, payment terms (Net 30, etc.)", status: "not_started" },
+      { name: "Customer Statements", description: "Generate and email customer account statements", status: "not_started", notes: "Neto has customer_statement_email" },
+      { name: "Multiple Shipping Addresses", description: "Customers save multiple delivery addresses", status: "not_started", notes: "Neto has edit_address templates" },
+      { name: "Customer Files / Documents", description: "Upload contracts/documents to customer records", status: "not_started", notes: "Neto has customer/files templates" },
+      { name: "Customer Logo Upload (Dropship)", description: "B2B customers upload their logo for dropship labels", status: "not_started", notes: "Neto has logos templates" },
+      { name: "Wholesale Registration", description: "Separate wholesale registration form with approval workflow", status: "not_started", notes: "Neto has wholesaleregister templates" },
+      { name: "Customer Auto-Registration on Purchase", description: "Automatically create customer account on first purchase", status: "not_started" },
+      { name: "Customer Merge", description: "Merge duplicate customer records", status: "not_started" },
+      { name: "Customer Export", description: "Export customers to CSV", status: "not_started" },
+      { name: "Customer Import", description: "Bulk import customers from CSV", status: "not_started" },
+      { name: "Customer Lifetime Value (CLV)", description: "Calculated CLV metric per customer", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 11. STOREFRONT — PAGES & TEMPLATES ═══════
+  {
+    category: "Storefront — Pages & Templates",
+    icon: <Store className="h-5 w-5" />,
+    features: [
+      { name: "Homepage Template", description: "Customizable homepage (home.template.html)", status: "done" },
+      { name: "Product Listing Page (Category)", description: "Category/collection product listing (category.template.html)", status: "done" },
+      { name: "Product Detail Page", description: "Full product page with images, options, reviews (products/template.html)", status: "done" },
+      { name: "Products Landing Page (/products)", description: "All-products page listing all categories", status: "done" },
+      { name: "Search Results Page", description: "Search results template (search_results.template.html)", status: "partial", notes: "Basic search exists" },
+      { name: "Shopping Cart Page", description: "View cart page (shopping_cart.template.html)", status: "done" },
+      { name: "One-Page Checkout", description: "Single-page checkout flow (onepage.template.html)", status: "done" },
+      { name: "Checkout — Shipping Options", description: "Shipping method selection (shipping_options.template.html)", status: "not_started" },
+      { name: "Checkout — Address Form", description: "Multi-address checkout support (address.template.html)", status: "partial" },
+      { name: "Checkout — Cart Items Summary", description: "Order summary sidebar in checkout (cart_items.template.html)", status: "done" },
+      { name: "Checkout — Voucher/Coupon Redemption", description: "Coupon code entry (redeem_vouchers.template.html)", status: "not_started" },
+      { name: "Checkout — Gift Voucher Message", description: "Gift voucher message entry (voucher_msg.template.html)", status: "not_started" },
+      { name: "Checkout — Upsell Page", description: "Pre-checkout upsells (upsell.template.html)", status: "not_started" },
+      { name: "Checkout — Error Handling", description: "Cart error display (cart.error.html)", status: "not_started" },
+      { name: "Invoice / Thank You Page", description: "Post-checkout success page (invoice.template.html)", status: "not_started" },
+      { name: "Quote Invoice Page", description: "Post-quote success page (quote_invoice.template.html)", status: "not_started" },
+      { name: "Empty Cart Page", description: "Display when cart is empty (empty.template.html)", status: "not_started" },
+      { name: "404 Page", description: "Custom 404 not found page (404.template.html)", status: "done" },
+      { name: "Content Pages (CMS)", description: "Generic content pages (default.template.html)", status: "not_started", notes: "About, Contact, FAQ, etc." },
+      { name: "Blog Pages", description: "Blog listing and blog post pages", status: "not_started" },
+      { name: "Store Finder / Stockist Page", description: "Store locator with map (store_finder.template.html)", status: "not_started" },
+      { name: "Modal / Popup Template", description: "Modal wrapper template (modal.template.html)", status: "not_started" },
+      { name: "Add-to-Cart Popup (nPopup)", description: "Ajax add-to-cart confirmation popup (npopup.template.html)", status: "not_started" },
+      { name: "Sidebar Template", description: "Reusable sidebar includes (sidebar.template.html)", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 12. STOREFRONT — CUSTOMER ACCOUNT ═══════
+  {
+    category: "Storefront — Customer Account",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Customer Login Page", description: "Login form (login.template.html)", status: "done" },
+      { name: "Customer Registration Page", description: "Registration form (register/template.html)", status: "done" },
+      { name: "Account Dashboard", description: "Account home with order summary (customer/template.html)", status: "partial" },
+      { name: "View Order History", description: "List past orders from account (nr_view_order)", status: "not_started" },
+      { name: "View Single Order Detail", description: "View order details (order.template.html)", status: "not_started" },
+      { name: "View Quote Detail", description: "View quote details (quote.template.html)", status: "not_started" },
+      { name: "Print Order / Invoice", description: "Print-friendly order view (customer/print/)", status: "not_started" },
+      { name: "Track Order", description: "Order tracking page (track_order/)", status: "not_started" },
+      { name: "Pay Outstanding Order", description: "Pay unpaid orders from account (pay_order/)", status: "not_started" },
+      { name: "Edit Account Details", description: "Edit billing/contact info (edit_account/)", status: "not_started" },
+      { name: "Edit Shipping Addresses", description: "Manage multiple addresses (edit_address/)", status: "not_started" },
+      { name: "Change Password", description: "Password change form (edit_pwd/)", status: "done" },
+      { name: "Forgot Password", description: "Password reset flow (forgotpwd/)", status: "done" },
+      { name: "Forgot Username", description: "Username recovery flow (forgotusr/)", status: "not_started" },
+      { name: "Reset Password (Post-Purchase)", description: "Set password after auto-registration (resetpwd/)", status: "done" },
+      { name: "Wishlist (Favourites)", description: "Save/view/reorder wishlist items (favourites/ & wishlist/)", status: "done" },
+      { name: "View Customer Vouchers", description: "View gift vouchers on account (vouchers/)", status: "not_started" },
+      { name: "View Customer Files", description: "View/download uploaded documents (files/)", status: "not_started" },
+      { name: "Approve/Reject Quotes", description: "Customer approves or deletes quotes (approve_quote/)", status: "not_started" },
+      { name: "My Store / Stockist Management", description: "Customers manage their stockist listing (mystore/)", status: "not_started" },
+      { name: "Write Product Review", description: "Submit product review from account (write_review/)", status: "not_started" },
+      { name: "Write Content Review", description: "Submit content/page review (write_contentreview/)", status: "not_started" },
+      { name: "Submit Warranty Dispute", description: "Open/view warranty disputes (warranty/)", status: "not_started" },
+      { name: "Logout Page", description: "Logout confirmation (logout.template.html)", status: "done" },
+    ],
+  },
+
+  // ═══════ 13. STOREFRONT — PRODUCT DISPLAY ═══════
+  {
+    category: "Storefront — Product Display",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Product Image Gallery", description: "Multiple images with thumbnails and zoom (images.template.html)", status: "done" },
+      { name: "Image Lightbox", description: "Full-screen image viewer", status: "done" },
+      { name: "Buying Options / Add to Cart", description: "Variant selector and add-to-cart (buying_options.template.html)", status: "done" },
+      { name: "Product Header (Price, Title, Sale)", description: "Product header include (header.template.html)", status: "done" },
+      { name: "Child Products Display", description: "Non-variant child product listing (child_products.template.html)", status: "not_started" },
+      { name: "Editable Kit Components UI", description: "Kit component configuration (components.template.html)", status: "not_started" },
+      { name: "Product Thumbnails (Grid/List/Box)", description: "Product card layouts (thumbs/product/)", status: "done" },
+      { name: "Content Thumbnails", description: "Content page card layout (thumbs/content/)", status: "not_started" },
+      { name: "Advert Thumbnails (Banner/Carousel/Scroll/Text)", description: "Promotional ad placements (thumbs/advert/)", status: "not_started" },
+      { name: "Product Reviews Display", description: "Star ratings and review text on product page", status: "done" },
+      { name: "Product Compare", description: "Side-by-side product comparison", status: "done" },
+      { name: "Notify Me (Back in Stock)", description: "Email notification when out-of-stock item returns", status: "not_started", notes: "Neto has notify_me system email" },
+      { name: "Recently Viewed Products", description: "Track and display recently viewed items", status: "not_started" },
+      { name: "Product Quick View", description: "Quick view popup without navigating away", status: "not_started" },
+      { name: "Shipping Calculator on Product Page", description: "Estimate shipping cost on product page", status: "not_started" },
+      { name: "Product Tabs (Description/Specs/Reviews)", description: "Tabbed content on product page", status: "partial" },
+    ],
+  },
+
+  // ═══════ 14. CATEGORIES ═══════
+  {
+    category: "Categories",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Category CRUD (GetCategory / AddCategory / UpdateCategory)", description: "Full category management via API", status: "done" },
+      { name: "Category Hierarchy (Parent/Child)", description: "Unlimited depth category tree", status: "done" },
+      { name: "Category Slug / SEO URL", description: "Clean URLs for categories", status: "done" },
+      { name: "Category Sort Order", description: "Custom sort order for menu display", status: "done" },
+      { name: "Category Description / Content", description: "Rich text content on category pages", status: "not_started" },
+      { name: "Category Image / Banner", description: "Hero image or banner per category", status: "not_started" },
+      { name: "Category SEO Fields", description: "Meta title/description per category", status: "not_started" },
+      { name: "Category Filters (Faceted Navigation)", description: "Filter products by specifics within a category", status: "not_started" },
+      { name: "Smart / Automated Categories", description: "Auto-populate categories based on product rules", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 15. COUPONS & GIFT VOUCHERS ═══════
+  {
+    category: "Coupons & Gift Vouchers",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Coupon CRUD", description: "Create and manage discount coupons", status: "done" },
+      { name: "Percentage Discount", description: "Percentage-based coupon discounts", status: "done" },
+      { name: "Fixed Amount Discount", description: "Dollar-off coupon discounts", status: "done" },
+      { name: "Free Shipping Coupon", description: "Coupon that provides free shipping", status: "not_started" },
+      { name: "Min Order Amount Requirement", description: "Minimum order value for coupon validity", status: "done" },
+      { name: "Coupon Usage Limits (Max Uses)", description: "Limit total uses of a coupon", status: "done" },
+      { name: "Coupon Expiry Date", description: "Set coupon start/end dates", status: "done" },
+      { name: "Coupon Active Toggle", description: "Enable/disable coupons", status: "done" },
+      { name: "Per-Customer Usage Limit", description: "Limit uses per customer", status: "not_started" },
+      { name: "Product-Specific Coupons", description: "Restrict coupon to specific products/categories", status: "not_started" },
+      { name: "Auto-Apply Coupons", description: "Automatically apply coupon based on cart rules", status: "not_started" },
+      { name: "Gift Vouchers (GetVoucher / AddVoucher / UpdateVoucher)", description: "Create, sell, and redeem gift vouchers/certificates", status: "not_started", notes: "Neto has full Voucher API" },
+      { name: "Gift Voucher Purchase (Storefront)", description: "Customers purchase gift vouchers with custom value/message", status: "not_started" },
+      { name: "Gift Voucher Email Delivery", description: "Send gift voucher to recipient by email on scheduled date", status: "not_started", notes: "Neto has gift_voucher system email" },
+      { name: "Gift Voucher Balance Tracking", description: "Track remaining balance on vouchers", status: "not_started" },
+      { name: "Gift Voucher Redemption at Checkout", description: "Apply voucher balance as payment", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 16. SHIPPING ═══════
+  {
+    category: "Shipping",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Shipping Zones", description: "Define zones by region with flat rates", status: "done" },
+      { name: "Free Shipping Above Threshold", description: "Free shipping over X amount per zone", status: "done" },
+      { name: "Flat Rate Shipping", description: "Flat rate per zone", status: "done" },
+      { name: "Shipping Methods (GetShippingMethods / AddShippingQuote)", description: "Dynamic shipping method management via API", status: "not_started" },
+      { name: "Weight-Based Shipping Rates", description: "Calculate shipping based on order weight", status: "not_started" },
+      { name: "Volumetric/Cubic Shipping Rates", description: "Calculate using dimensional weight", status: "not_started" },
+      { name: "Real-Time Carrier Rates (Australia Post)", description: "Live rates from Australia Post API", status: "not_started" },
+      { name: "Real-Time Carrier Rates (Sendle)", description: "Live rates from Sendle courier API", status: "not_started" },
+      { name: "Real-Time Carrier Rates (StarTrack)", description: "Live rates from StarTrack", status: "not_started" },
+      { name: "Real-Time Carrier Rates (Fastway/Aramex)", description: "Live courier rates from Aramex/Fastway", status: "not_started" },
+      { name: "Real-Time Carrier Rates (UPS/FedEx/DHL)", description: "International carrier rate integration", status: "not_started" },
+      { name: "Shipping Label Printing", description: "Print carrier-specific shipping labels", status: "not_started" },
+      { name: "Shipping Tracking Emails", description: "Automated tracking notification emails to customers", status: "not_started" },
+      { name: "Click & Collect / Pickup in Store", description: "In-store pickup option at checkout", status: "not_started" },
+      { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "not_started", notes: "Neto has dropship system with emails" },
+      { name: "Dropship Notifications", description: "Automated dropship supplier email notifications", status: "not_started" },
+      { name: "Delivery Date Estimation", description: "Estimated delivery date on checkout", status: "not_started" },
+      { name: "Shipping Rules / Restrictions", description: "Restrict shipping methods by product, location, weight", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 17. TAX ═══════
+  {
+    category: "Tax",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Tax Rates by Region", description: "Configure tax rates per region/state", status: "done" },
+      { name: "Tax-Free Products", description: "Mark individual products as tax exempt", status: "done" },
+      { name: "Tax-Inclusive Pricing", description: "Display prices inclusive of tax", status: "done" },
+      { name: "Tax-Exclusive Pricing", description: "Display prices exclusive of tax, add at checkout", status: "partial" },
+      { name: "GST / VAT Handling", description: "Australian GST or European VAT calculation", status: "not_started" },
+      { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "not_started" },
+      { name: "Tax Reporting / BAS Report", description: "Tax summary reports for accounting", status: "not_started" },
+      { name: "Auto Tax Calculation by Address", description: "Calculate tax based on shipping destination", status: "not_started" },
+      { name: "Multi-Tax (State + County)", description: "Compound tax rates for US states", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 18. SUPPLIERS ═══════
+  {
+    category: "Suppliers",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Supplier CRUD (GetSupplier / AddSupplier / UpdateSupplier)", description: "Manage supplier records via API", status: "not_started" },
+      { name: "Supplier Contact Details", description: "Store supplier name, email, phone, address", status: "not_started" },
+      { name: "Supplier Product Assignments", description: "Assign products/SKUs to specific suppliers", status: "not_started" },
+      { name: "Supplier Pricing / Cost", description: "Supplier-specific cost price per product", status: "partial", notes: "cost_price field exists but not supplier-linked" },
+      { name: "Purchase Orders to Suppliers", description: "Generate and send POs to suppliers", status: "not_started" },
+      { name: "Supplier Lead Times", description: "Expected delivery timeframes per supplier", status: "not_started" },
+      { name: "Supplier Performance Tracking", description: "Track on-time delivery and quality metrics", status: "not_started" },
+      { name: "Dropship Supplier Management", description: "Configure suppliers as dropship sources", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 19. CURRENCY ═══════
+  {
+    category: "Currency & Localization",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Store Default Currency", description: "Configure store base currency", status: "done" },
+      { name: "Currency Display Format", description: "Format currency symbol and decimals", status: "partial" },
+      { name: "Multi-Currency Support (GetCurrency / AddCurrency)", description: "Add/manage multiple currencies via API", status: "not_started", notes: "Neto has full Currency API" },
+      { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "not_started" },
+      { name: "Currency Switcher (Storefront)", description: "Customer can switch display currency on storefront", status: "not_started" },
+      { name: "Currency-Specific Pricing", description: "Set prices in each supported currency", status: "not_started" },
+      { name: "Multi-Language Support", description: "Translate storefront content into multiple languages", status: "not_started" },
+      { name: "Timezone Configuration", description: "Store timezone setting", status: "done" },
+    ],
+  },
+
+  // ═══════ 20. CONTENT / CMS ═══════
+  {
+    category: "Content / CMS",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Content Pages CRUD (GetContent / AddContent / UpdateContent)", description: "Manage CMS pages via API", status: "not_started" },
+      { name: "About Page", description: "About us content page", status: "not_started" },
+      { name: "Contact Page with Form", description: "Contact form page with email notification", status: "not_started", notes: "Neto has contact_form_email" },
+      { name: "FAQ Page", description: "Frequently asked questions page", status: "not_started" },
+      { name: "Blog / News Articles", description: "Blog listing and post pages", status: "not_started" },
+      { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "partial", notes: "Banner text field exists" },
+      { name: "Static Blocks / Widgets", description: "Reusable content blocks embeddable on any page", status: "not_started" },
+      { name: "WYSIWYG Content Editor", description: "Rich text editor for content pages", status: "not_started" },
+      { name: "Content Reviews", description: "Reviews on content pages (not just products)", status: "not_started" },
+      { name: "Media Library / Asset Management", description: "Central repository for images, files, and media", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 21. REVIEWS ═══════
+  {
+    category: "Reviews & Ratings",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Product Reviews CRUD", description: "Create and manage product reviews", status: "done" },
+      { name: "Star Ratings (1-5)", description: "Numerical star rating per review", status: "done" },
+      { name: "Review Title & Body", description: "Structured review content", status: "done" },
+      { name: "Review Approval/Moderation", description: "Admin approves reviews before display", status: "done" },
+      { name: "Review Author Name", description: "Display reviewer name", status: "done" },
+      { name: "Review Response (Admin Reply)", description: "Admin can reply to customer reviews", status: "not_started" },
+      { name: "Review Photos", description: "Customers upload photos with reviews", status: "not_started" },
+      { name: "Verified Purchase Badge", description: "Mark reviews from verified buyers", status: "not_started" },
+      { name: "Review Aggregation / Average Rating", description: "Calculate and display average rating per product", status: "partial" },
+      { name: "Review Reminders (Post-Purchase)", description: "Automated email asking for review after delivery", status: "not_started", notes: "Neto has order_follow_up email" },
+      { name: "Review Import/Export", description: "Bulk import reviews from CSV/other platforms", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 22. MARKETING & CAMPAIGNS ═══════
+  {
+    category: "Marketing & Campaigns",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Marketing Campaign CRUD", description: "Create and manage marketing campaigns", status: "done" },
+      { name: "Email Campaigns", description: "Email campaign type with subject/content", status: "done" },
+      { name: "SMS Campaigns", description: "SMS campaign type", status: "partial", notes: "Campaign type exists, no SMS gateway" },
+      { name: "Audience Segmentation", description: "Target campaigns by customer segment/tags", status: "done" },
+      { name: "Campaign Scheduling", description: "Schedule campaigns for future send", status: "done" },
+      { name: "Campaign Statistics (Open/Click/Revenue)", description: "Track campaign performance metrics", status: "partial" },
+      { name: "Abandoned Cart Recovery", description: "Automated emails for abandoned carts", status: "partial", notes: "Abandoned cart table exists, no automation" },
+      { name: "Abandoned Cart Email Template", description: "Customizable abandoned cart email", status: "not_started", notes: "Neto has abandoned_cart_email template" },
+      { name: "Wishlist Reminder Emails", description: "Remind customers about wishlist items", status: "not_started", notes: "Neto has wishlist system email" },
+      { name: "Order Follow-Up Email", description: "Automated post-purchase follow-up email", status: "not_started", notes: "Neto has order_follow_up email" },
+      { name: "Newsletter Subscription", description: "Newsletter signup form and mailing list", status: "not_started" },
+      { name: "Popup / Slide-In Promotions", description: "On-site promotional popups", status: "not_started" },
+      { name: "Referral / Loyalty Program", description: "Points-based loyalty or referral rewards", status: "not_started" },
+      { name: "Google Ads Integration", description: "Conversion tracking and remarketing for Google Ads", status: "not_started" },
+      { name: "Facebook Pixel Integration", description: "Meta/Facebook pixel for conversion tracking", status: "not_started" },
+      { name: "Affiliate Program", description: "Affiliate tracking with commission management", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 23. SYSTEM EMAILS & NOTIFICATIONS ═══════
+  {
+    category: "System Emails & Notifications",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Order Confirmation Email", description: "Automated email on order placement", status: "not_started" },
+      { name: "Order Shipped / Tracking Email", description: "Email with tracking info when order ships", status: "not_started" },
+      { name: "Order Delivered Email", description: "Email when order is marked delivered", status: "not_started" },
+      { name: "Order Follow-Up Email", description: "Post-delivery follow-up / review request", status: "not_started" },
+      { name: "Payment Confirmation Email", description: "Receipt email on successful payment", status: "not_started" },
+      { name: "Customer Registration Email", description: "Welcome email on customer signup", status: "not_started", notes: "Neto has customer_registration_emails" },
+      { name: "Customer Auto-Registration Email", description: "Auto-created account credentials email", status: "not_started" },
+      { name: "Password Reset Email", description: "Password reset link email", status: "partial" },
+      { name: "Abandoned Cart Email", description: "Reminder email for abandoned carts", status: "not_started" },
+      { name: "Wishlist Reminder Email", description: "Periodic wishlist item reminder", status: "not_started" },
+      { name: "Gift Voucher Email", description: "Gift voucher delivery to recipient", status: "not_started" },
+      { name: "Back in Stock / Notify Me Email", description: "Notification when product is restocked", status: "not_started" },
+      { name: "Customer Statement Email", description: "Account statement with transaction history", status: "not_started" },
+      { name: "Dispute/Warranty Emails", description: "Emails for dispute raised, updated, resolved", status: "not_started" },
+      { name: "Dropship Notification Email", description: "Emails to dropship suppliers for new orders", status: "not_started" },
+      { name: "Import Notification Email", description: "Email with login details on customer import", status: "not_started" },
+      { name: "Contact Form Email", description: "Email sent to admin when contact form submitted", status: "not_started" },
+      { name: "eBay Notification Emails", description: "eBay listing/sale event notifications", status: "not_started" },
+      { name: "Batch Job Error Email", description: "Notification when automated batch jobs fail", status: "not_started" },
+      { name: "Low Stock Alert Email", description: "Alert admin when stock falls below threshold", status: "not_started" },
+      { name: "New Order Admin Notification", description: "Admin email on new order received", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 24. PRINTABLE DOCUMENTS ═══════
+  {
+    category: "Printable Documents",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Invoice PDF", description: "Printable tax invoice document", status: "not_started" },
+      { name: "Packing Slip PDF", description: "Printable packing slip for warehouse", status: "not_started" },
+      { name: "Pick List PDF", description: "Warehouse pick list document", status: "not_started" },
+      { name: "Shipping Label", description: "Printable shipping labels", status: "not_started" },
+      { name: "Quote Document PDF", description: "Printable quote/estimate document", status: "not_started" },
+      { name: "Credit Note PDF", description: "Printable credit note document", status: "not_started" },
+      { name: "Purchase Order PDF", description: "Printable PO for suppliers", status: "not_started" },
+      { name: "Customer Statement PDF", description: "Printable account statement", status: "not_started" },
+      { name: "Gift Voucher Print", description: "Printable gift voucher/card", status: "not_started" },
+      { name: "Barcode Labels", description: "Print barcode/SKU labels for products", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 25. ACCOUNTING INTEGRATION ═══════
+  {
+    category: "Accounting Integration",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Accounting System CRUD (GetAccountingSystem)", description: "Manage accounting system connections via API", status: "not_started" },
+      { name: "Xero Integration", description: "Sync invoices, payments, and contacts to Xero", status: "not_started" },
+      { name: "MYOB Integration", description: "Sync orders and payments to MYOB", status: "not_started" },
+      { name: "QuickBooks Integration", description: "Sync to QuickBooks Online", status: "not_started" },
+      { name: "Reckon Integration", description: "Sync to Reckon Accounts", status: "not_started" },
+      { name: "Chart of Accounts Mapping", description: "Map sales categories to accounting chart of accounts", status: "not_started" },
+      { name: "Auto-Post Invoices", description: "Automatically post invoices to accounting software", status: "not_started" },
+      { name: "Payment Reconciliation", description: "Match payments between ecommerce and accounting", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 26. MARKETPLACE INTEGRATIONS ═══════
+  {
+    category: "Marketplace Integrations",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "eBay Listing Sync", description: "Publish products to eBay and sync orders/stock", status: "not_started", notes: "Neto has full eBay integration with templates" },
+      { name: "eBay Order Import", description: "Import eBay orders into platform", status: "not_started" },
+      { name: "eBay Stock Sync", description: "Real-time stock sync between platform and eBay", status: "not_started" },
+      { name: "eBay Category Mapping", description: "Map product categories to eBay categories", status: "not_started" },
+      { name: "Amazon Integration", description: "List products on Amazon marketplace", status: "not_started" },
+      { name: "Amazon Order Import", description: "Import Amazon orders", status: "not_started" },
+      { name: "Google Shopping Feed", description: "Product data feed for Google Merchant Center", status: "not_started" },
+      { name: "Facebook / Instagram Shop", description: "Sync catalog to Facebook/Instagram Shop", status: "not_started" },
+      { name: "Catch.com.au Integration", description: "Australian marketplace integration", status: "not_started" },
+      { name: "Kogan Integration", description: "Kogan marketplace listing and sync", status: "not_started" },
+      { name: "TradeMe Integration", description: "NZ marketplace integration", status: "not_started" },
+      { name: "MyDeal Integration", description: "MyDeal marketplace listing", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 27. WAREHOUSE / PICK-PACK-SHIP ═══════
+  {
+    category: "Warehouse / Pick-Pack-Ship",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Warehouse API (GetWarehouse / AddWarehouse / UpdateWarehouse)", description: "Full warehouse management via API", status: "partial", notes: "Location CRUD exists, not full warehouse API" },
+      { name: "Pick & Pack Workflow", description: "Guided pick → pack → ship workflow in admin", status: "not_started" },
+      { name: "Barcode Scanning (Pick)", description: "Scan product barcodes during pick process", status: "not_started" },
+      { name: "Barcode Scanning (Receive)", description: "Scan barcodes when receiving stock", status: "not_started" },
+      { name: "Batch Printing (Labels + Slips)", description: "Print multiple shipping labels and packing slips", status: "not_started" },
+      { name: "Warehouse Dashboard", description: "Overview of pending picks, packs, and dispatches", status: "not_started" },
+      { name: "Multi-Warehouse Order Routing", description: "Route order items to nearest/best warehouse", status: "not_started" },
+      { name: "Stock Count / Stocktake Mode", description: "In-warehouse stock counting with barcode scanning", status: "not_started" },
+      { name: "Goods Receipt / Inbound", description: "Receive inventory shipments against POs", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 28. ABANDONED CART ═══════
+  {
+    category: "Abandoned Cart",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Abandoned Cart Tracking", description: "Track and store abandoned shopping sessions", status: "done" },
+      { name: "Abandoned Cart List (Admin)", description: "Admin view of all abandoned carts", status: "partial" },
+      { name: "Abandoned Cart Customer Info", description: "Track email/customer linked to abandoned cart", status: "done" },
+      { name: "Abandoned Cart Recovery Email", description: "Automated recovery email with cart contents", status: "not_started" },
+      { name: "Abandoned Cart Recovery Status", description: "Track whether cart was recovered or lost", status: "done" },
+      { name: "Abandoned Cart Recovery Stats", description: "Dashboard metrics: recovery rate, revenue recovered", status: "not_started" },
+      { name: "Multi-Step Recovery Sequences", description: "Send multiple follow-up emails over time", status: "not_started" },
+      { name: "Abandoned Cart with Coupon Incentive", description: "Include discount coupon in recovery email", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 29. WEBHOOKS / NOTIFICATION EVENTS ═══════
+  {
+    category: "Webhooks / Notification Events",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Webhook Registration", description: "Register webhooks for events via API", status: "not_started", notes: "Neto has Notification Events API" },
+      { name: "Order Created Webhook", description: "Trigger on new order placed", status: "not_started" },
+      { name: "Order Updated Webhook", description: "Trigger on order status change", status: "not_started" },
+      { name: "Product Updated Webhook", description: "Trigger on product creation/update", status: "not_started" },
+      { name: "Customer Created Webhook", description: "Trigger on new customer registration", status: "not_started" },
+      { name: "Payment Received Webhook", description: "Trigger on payment event", status: "not_started" },
+      { name: "Stock Level Changed Webhook", description: "Trigger when stock levels change", status: "not_started" },
+      { name: "Shipment Dispatched Webhook", description: "Trigger when shipment is dispatched", status: "not_started" },
+      { name: "RMA Created Webhook", description: "Trigger on return/RMA creation", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 30. B2B / WHOLESALE ═══════
+  {
+    category: "B2B / Wholesale",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Customer Groups (Wholesale/Retail/VIP)", description: "Assign customers to price-tier groups", status: "not_started" },
+      { name: "Group-Based Pricing", description: "Show different prices per customer group", status: "done", notes: "Pricing tiers with user_group exist" },
+      { name: "Wholesale Registration Form", description: "Separate wholesale signup with admin approval", status: "not_started" },
+      { name: "Wholesale Approval Workflow", description: "Admin reviews and approves wholesale applicants", status: "not_started" },
+      { name: "Credit Terms (Net 7/14/30/60/90)", description: "Allow B2B customers to order on credit", status: "not_started" },
+      { name: "Credit Limit per Customer", description: "Set maximum credit balance per customer", status: "not_started" },
+      { name: "Order Minimum for Wholesale", description: "Minimum order value/quantity for wholesale customers", status: "not_started" },
+      { name: "Tax-Exempt B2B Customers", description: "Exclude tax for registered wholesale customers", status: "not_started" },
+      { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number or Tax ID", status: "not_started" },
+      { name: "Quote / RFQ Workflow", description: "Request for quote → Admin pricing → Customer approval → Order", status: "not_started" },
+      { name: "Bulk/Quick Order Form", description: "Enter multiple SKUs and quantities on single form", status: "not_started" },
+      { name: "Restricted Product Visibility", description: "Show/hide products or categories by customer group", status: "not_started" },
+      { name: "Account Payment (Pay on Account)", description: "Allow B2B customers to pay on their account balance", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 31. POS (POINT OF SALE) ═══════
+  {
+    category: "POS (Point of Sale)",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "POS Interface", description: "In-store point of sale touchscreen interface", status: "not_started" },
+      { name: "POS Product Search / Barcode Scan", description: "Search products or scan barcodes in POS", status: "not_started" },
+      { name: "POS Payment Processing", description: "Accept card, cash, split payments in POS", status: "not_started" },
+      { name: "POS Gift Voucher Redemption", description: "Redeem gift vouchers at POS", status: "not_started" },
+      { name: "POS Receipts", description: "Print or email POS receipts", status: "not_started" },
+      { name: "POS Cash Drawer Integration", description: "Open cash drawer from POS", status: "not_started" },
+      { name: "POS Offline Mode", description: "Operate POS without internet connection", status: "not_started" },
+      { name: "POS Multi-Register", description: "Multiple POS registers per store location", status: "not_started" },
+      { name: "POS End-of-Day Reconciliation", description: "Cash up and reconcile POS at end of day", status: "not_started" },
+      { name: "POS Customer Lookup", description: "Search and attach customer to POS sale", status: "not_started" },
+      { name: "POS Layby/Deposit", description: "Take deposits and manage layby from POS", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 32. ANALYTICS & REPORTING ═══════
   {
     category: "Analytics & Reporting",
     icon: <BarChart3 className="h-5 w-5" />,
     features: [
-      { name: "Dashboard Overview Widgets", description: "Summary stats: revenue, orders, customers on dashboard", status: "done" },
-      { name: "Analytics Page", description: "Dedicated analytics page with charts", status: "done" },
-      { name: "Revenue Reports", description: "Revenue over time, by product, by category", status: "partial", notes: "Page exists, needs real data queries" },
-      { name: "Order Reports", description: "Order volume, average value, fulfillment metrics", status: "partial" },
-      { name: "Customer Reports", description: "New vs returning, lifetime value, segments", status: "partial" },
-      { name: "Product Performance (Best Sellers)", description: "Top-selling products, low performers, margin analysis", status: "not_started" },
-      { name: "Inventory Reports", description: "Stock levels, turnover, dead stock, reorder suggestions", status: "not_started" },
-      { name: "Campaign Reports (Email)", description: "Campaign delivery, open, click, bounce, revenue metrics", status: "not_started", notes: "Campaign stats field exists but no detailed reports" },
-      { name: "Campaign Reports (SMS)", description: "SMS campaign delivery and engagement reports", status: "not_started" },
-      { name: "A/B Test Results", description: "Comparative results for A/B tested campaigns", status: "not_started" },
-      { name: "Journey Reports", description: "Performance metrics for automation journeys", status: "not_started" },
-      { name: "Custom Report Builder", description: "Build custom reports with filters, date ranges, metrics", status: "not_started" },
-      { name: "Scheduled Report Emails", description: "Email reports on recurring schedule", status: "not_started" },
-      { name: "Google Analytics Integration (GA4)", description: "GA4 tracking and ecommerce events", status: "not_started" },
-      { name: "Conversion Funnel Analysis", description: "Track visitors: browse → cart → checkout → purchase", status: "not_started" },
-      { name: "Sales by Channel Report", description: "Revenue breakdown by web, eBay, Amazon, POS, etc", status: "not_started" },
-      { name: "Real-Time Sales Dashboard", description: "Live sales and visitor metrics", status: "not_started" },
-      { name: "Website Traffic Reports", description: "Page views, sessions, referral sources", status: "not_started" },
-      { name: "Growth & Attrition Reports", description: "Customer growth and churn analysis", status: "not_started" },
-      { name: "eRFM Heatmap & Scoring", description: "Visual RFM analysis with customer movement flow", status: "not_started" },
-      { name: "Glew Analytics Integration", description: "Deep ecommerce analytics via Glew add-on", status: "not_started" },
-      { name: "Style Performance Reports", description: "Sales performance by product style/group (Manufacturer SKU)", status: "not_started" },
+      { name: "Dashboard Overview (KPIs)", description: "Summary cards for revenue, orders, customers", status: "done" },
+      { name: "Revenue Over Time Chart", description: "Line/bar chart of revenue by day/week/month", status: "partial" },
+      { name: "Orders Over Time Chart", description: "Order count trend chart", status: "partial" },
+      { name: "Top Selling Products Report", description: "Products ranked by units sold / revenue", status: "not_started" },
+      { name: "Top Customers Report", description: "Customers ranked by total spent", status: "not_started" },
+      { name: "Sales by Category Report", description: "Revenue breakdown by product category", status: "not_started" },
+      { name: "Sales by Channel Report", description: "Revenue by channel (web, eBay, POS, etc.)", status: "not_started" },
+      { name: "Customer Acquisition Report", description: "New vs returning customer metrics", status: "not_started" },
+      { name: "Conversion Rate / Funnel Analytics", description: "Visitor → Cart → Checkout → Purchase funnel", status: "not_started" },
+      { name: "Average Order Value (AOV) Trend", description: "Track AOV over time", status: "not_started" },
+      { name: "Profit Margin Report", description: "Revenue minus cost analysis", status: "not_started" },
+      { name: "Inventory Value Report", description: "Total stock value across all locations", status: "not_started" },
+      { name: "Slow-Moving Stock Report", description: "Products with low sales velocity", status: "not_started" },
+      { name: "Stock Turnover Report", description: "Inventory turnover rate analysis", status: "not_started" },
+      { name: "Abandoned Cart Report", description: "Abandoned cart stats and recovery metrics", status: "not_started" },
+      { name: "Tax Report / BAS Summary", description: "Tax collected summary for accounting", status: "not_started" },
+      { name: "Coupon Usage Report", description: "Coupon redemption and revenue impact", status: "not_started" },
+      { name: "Google Analytics Integration", description: "GA4 tracking code integration", status: "not_started" },
+      { name: "Custom Report Builder", description: "Build custom reports with filters and date ranges", status: "not_started" },
+      { name: "Scheduled Report Emails", description: "Auto-send reports by email on schedule", status: "not_started" },
     ],
   },
+
+  // ═══════ 33. IMPORT / EXPORT ═══════
   {
-    category: "Marketplace & Channels",
-    icon: <Globe className="h-5 w-5" />,
+    category: "Import / Export",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
     features: [
-      { name: "Multi-Store Management", description: "Manage multiple stores from one admin", status: "done" },
-      { name: "Store Slug / URL", description: "Unique URL per store", status: "done" },
-      { name: "eBay Integration", description: "List products, sync orders, manage listings on eBay", status: "not_started", notes: "Core Maropost integration with Marketplace Maximizer" },
-      { name: "eBay Template Management", description: "Custom eBay listing templates", status: "not_started" },
-      { name: "Amazon Integration", description: "List and sync products/orders with Amazon", status: "not_started" },
-      { name: "Google Shopping Feed", description: "Product data feed for Google Merchant Center", status: "not_started" },
-      { name: "Facebook / Instagram Shop", description: "Sync product catalog to Meta commerce", status: "not_started" },
-      { name: "Catch Marketplace", description: "Australian Catch marketplace integration", status: "not_started" },
-      { name: "Kogan Marketplace", description: "Kogan marketplace integration", status: "not_started" },
-      { name: "Custom Data Feeds (Product)", description: "Build custom product feeds with field mapping, rules, filters", status: "not_started", notes: "Maropost's powerful feed builder" },
-      { name: "Custom Data Feeds (Order)", description: "Push order data to 3PL/logistics providers", status: "not_started" },
-      { name: "Marketplace Order Sync", description: "Sync marketplace orders back to platform automatically", status: "not_started" },
-      { name: "Channel-Specific Pricing", description: "Different pricing per marketplace/channel", status: "not_started" },
-      { name: "Multi-Store Import/Export Sync", description: "Sync data between multiple Neto stores via feeds", status: "not_started" },
-      { name: "Shopify Publish/Sync", description: "Publish products to connected Shopify stores", status: "not_started", notes: "Retail Express feature" },
+      { name: "Product Import (CSV)", description: "Bulk import products from CSV files", status: "done" },
+      { name: "Product Export (CSV)", description: "Bulk export products to CSV", status: "done" },
+      { name: "Import Field Mapping", description: "Map CSV columns to product fields", status: "done" },
+      { name: "Import Templates (Saved Mappings)", description: "Save and reuse import configurations", status: "done" },
+      { name: "Import Validation & Error Reporting", description: "Validate data and report row-level errors", status: "done" },
+      { name: "Import Log / History", description: "View past import operations and their results", status: "done" },
+      { name: "Customer Import (CSV)", description: "Bulk import customers from CSV", status: "not_started" },
+      { name: "Customer Export (CSV)", description: "Bulk export customers to CSV", status: "not_started" },
+      { name: "Order Export (CSV/XML)", description: "Export orders for accounting/analytics", status: "partial" },
+      { name: "Category Import / Export", description: "Bulk manage categories via CSV", status: "not_started" },
+      { name: "Image Bulk Upload (ZIP)", description: "Upload multiple product images via ZIP file", status: "not_started" },
+      { name: "Scheduled Auto-Exports", description: "Automated exports on schedule (e.g., nightly order export)", status: "not_started" },
+      { name: "Data Transformations on Import", description: "Transform data during import (case, math, concatenate)", status: "partial" },
     ],
   },
+
+  // ═══════ 34. TEMPLATE ENGINE (B@SE) ═══════
   {
-    category: "Drop Shipping",
-    icon: <Truck className="h-5 w-5" />,
+    category: "Template Engine (B@SE)",
+    icon: <FileCode className="h-5 w-5" />,
     features: [
-      { name: "Dropship Supplier Management", description: "Register and manage dropship supplier partners", status: "not_started", notes: "Core Maropost feature" },
-      { name: "Auto-Send Supplier Notifications", description: "Automatically email suppliers when order is placed", status: "not_started" },
-      { name: "Supplier Order Portal", description: "Secure login portal for suppliers to process orders", status: "not_started" },
-      { name: "Supplier Order Upload (FTP/CSV)", description: "Suppliers bulk upload tracking/status updates", status: "not_started" },
-      { name: "Supplier Inventory Feeds", description: "Real-time inventory feeds from suppliers", status: "not_started" },
-      { name: "Supplier Branding on Packing Slips", description: "Display supplier's logo on packing slips/labels", status: "not_started" },
-      { name: "Dropship as Supplier Setup", description: "Configure your store as a dropship supplier for other sellers", status: "not_started" },
+      { name: "Value Tags ([@field@])", description: "Dynamic value substitution in templates", status: "done" },
+      { name: "Iterator Tags ([%block%]...[%end block%])", description: "Loop over collections (products, categories, etc.)", status: "done" },
+      { name: "Conditional Tags ([?condition?]...[/?condition?])", description: "Conditional rendering based on field values", status: "done" },
+      { name: "Format Pipes (|rw_upper, |rw_money, etc.)", description: "18+ format filters for output transformation", status: "done" },
+      { name: "Nested Iterators", description: "Iterators within iterators", status: "done" },
+      { name: "Template Includes", description: "Include sub-templates within templates", status: "partial" },
+      { name: "Thumblist Tags", description: "Product/content listing thumbnails", status: "not_started" },
+      { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "not_started" },
+      { name: "AJAX Partial Rendering", description: "Reload template includes without full page refresh", status: "not_started" },
+      { name: "Custom CSS per Template", description: "Template-specific CSS injection", status: "not_started" },
+      { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "not_started" },
+      { name: "Theme Info File (netothemeinfo.txt)", description: "Theme metadata: name, version, description", status: "not_started" },
     ],
   },
+
+  // ═══════ 35. STOREFRONT — DESIGN & THEMES ═══════
   {
-    category: "User Management & Security",
+    category: "Storefront — Design & Themes",
+    icon: <Palette className="h-5 w-5" />,
+    features: [
+      { name: "Store Theme Configuration", description: "Primary/secondary/accent colors, fonts, button radius", status: "done" },
+      { name: "Header Template", description: "Customizable header (headers/template.html)", status: "partial" },
+      { name: "Footer Template", description: "Customizable footer (footers/template.html)", status: "partial" },
+      { name: "Custom CSS", description: "Custom CSS injection field per store", status: "done" },
+      { name: "Hero Style Selection", description: "Hero section layout choice", status: "done" },
+      { name: "Product Card Style Selection", description: "Product card layout variant", status: "done" },
+      { name: "Layout Style (Wide/Boxed)", description: "Overall layout width setting", status: "done" },
+      { name: "Heading Font / Body Font", description: "Font family selection", status: "done" },
+      { name: "Responsive / Mobile Design", description: "Mobile-responsive storefront", status: "done" },
+      { name: "Favicon Upload", description: "Custom favicon per store", status: "not_started" },
+      { name: "Logo Upload", description: "Store logo upload and display", status: "done" },
+      { name: "Mega Menu Navigation", description: "Category-based mega dropdown menu", status: "not_started" },
+      { name: "Breadcrumb Navigation", description: "Breadcrumb trail on product/category pages", status: "not_started" },
+    ],
+  },
+
+  // ═══════ 36. USER MANAGEMENT & ROLES ═══════
+  {
+    category: "User Management & Roles",
     icon: <Shield className="h-5 w-5" />,
     features: [
-      { name: "User Authentication (Email/Password)", description: "Email/password login and registration", status: "done" },
-      { name: "Role-Based Access (Owner/Admin/Staff)", description: "Granular roles per store", status: "done" },
-      { name: "Store-Level Permissions", description: "Roles scoped to individual stores", status: "done" },
-      { name: "Platform Admin (Super Admin)", description: "Super admin for platform-level management", status: "done" },
-      { name: "Row Level Security (RLS)", description: "Database-level tenant isolation via Postgres RLS", status: "done" },
-      { name: "User Profiles (Name/Avatar)", description: "Display name and avatar per user", status: "done" },
-      { name: "Password Reset Flow", description: "Forgot password and reset via email link", status: "done" },
-      { name: "Activity / Audit Log", description: "Audit trail of all admin actions", status: "done" },
-      { name: "Two-Factor Authentication (2FA)", description: "2FA for admin accounts", status: "not_started" },
-      { name: "SSO / Social Login (Google, Facebook)", description: "Login with social providers", status: "not_started" },
-      { name: "IP Whitelisting", description: "Restrict admin access by IP address", status: "not_started" },
+      { name: "User Authentication (Login/Signup)", description: "Email/password authentication", status: "done" },
+      { name: "Forgot / Reset Password", description: "Password recovery flow", status: "done" },
+      { name: "User Roles (Owner/Admin/Staff)", description: "Role-based access control per store", status: "done" },
+      { name: "Platform Admin Role", description: "Super-admin platform-wide role", status: "done" },
+      { name: "Role-Based Permissions", description: "Granular permissions per role (view/edit/delete)", status: "partial" },
+      { name: "Multi-Store Staff Access", description: "Staff can access multiple stores", status: "partial" },
+      { name: "Activity Log / Audit Trail", description: "Track who did what and when", status: "done" },
+      { name: "Two-Factor Authentication (2FA)", description: "TOTP/SMS 2FA for admin accounts", status: "not_started" },
       { name: "API Key Management", description: "Generate and manage API keys per store", status: "not_started" },
-      { name: "Staff Permissions (Granular)", description: "Fine-grained permissions per feature area per staff member", status: "not_started" },
       { name: "Session Management", description: "View and revoke active sessions", status: "not_started" },
+      { name: "Staff Activity Dashboard", description: "See staff login times, actions taken", status: "not_started" },
     ],
   },
+
+  // ═══════ 37. MULTI-TENANT / MULTI-STORE ═══════
   {
-    category: "Tax Configuration",
-    icon: <Receipt className="h-5 w-5" />,
+    category: "Multi-Tenant / Multi-Store",
+    icon: <Store className="h-5 w-5" />,
     features: [
-      { name: "Tax Rates per Region", description: "Define tax rates per region/country", status: "done" },
-      { name: "Tax-Free Products", description: "Flag individual products as tax exempt", status: "done" },
-      { name: "Tax-Inclusive Pricing", description: "Toggle prices include or exclude tax", status: "done" },
-      { name: "Automatic Tax Calculation", description: "Calculate tax based on customer location and product rules", status: "not_started" },
-      { name: "GST Configuration (Australia)", description: "Australian GST (10%) with BAS reporting", status: "not_started" },
-      { name: "VAT Support (International)", description: "International VAT with multiple rates", status: "not_started" },
-      { name: "Tax Reports", description: "Tax collected reports for compliance/BAS", status: "not_started" },
-      { name: "Tax-Exempt Customer Groups", description: "Automatically exempt wholesale customers from tax", status: "not_started" },
+      { name: "Multi-Store SaaS Architecture", description: "Each merchant gets isolated store with own data", status: "done" },
+      { name: "Store CRUD", description: "Create, configure stores per merchant", status: "done" },
+      { name: "Store Onboarding Wizard", description: "Guided setup for new merchants", status: "done" },
+      { name: "Custom Subdomain per Store", description: "storename.domain.com routing", status: "done" },
+      { name: "Path-Based Storefront (/store/slug)", description: "Storefront accessible via URL path", status: "done" },
+      { name: "Custom Domain per Store", description: "Map custom domains (www.mybrand.com)", status: "not_started" },
+      { name: "Store Settings (Name, Description, Contact)", description: "Basic store configuration", status: "done" },
+      { name: "Store Logo / Branding", description: "Per-store logo and primary color", status: "done" },
+      { name: "Store Banner Text", description: "Announcement banner per store", status: "done" },
+      { name: "Platform Merchant Directory", description: "Admin view of all merchants on platform", status: "done" },
+      { name: "Platform-Level Analytics", description: "Cross-store metrics for platform admin", status: "not_started" },
+      { name: "Store Suspension / Deactivation", description: "Admin can suspend a merchant store", status: "not_started" },
+      { name: "Store Plan / Subscription Management", description: "SaaS plan tiers and billing", status: "not_started" },
     ],
   },
+
+  // ═══════ 38. SETTINGS & CONFIGURATION ═══════
   {
-    category: "Store Settings & Configuration",
+    category: "Settings & Configuration",
     icon: <Settings className="h-5 w-5" />,
     features: [
-      { name: "General Store Settings", description: "Store name, email, currency, timezone", status: "done" },
-      { name: "Store Logo Upload", description: "Upload and display store logo", status: "done" },
-      { name: "Store Currency", description: "Set default currency per store", status: "done" },
-      { name: "Store Timezone", description: "Set timezone for date/time display", status: "done" },
-      { name: "Contact Email", description: "Store contact email configuration", status: "done" },
-      { name: "Store Description", description: "Store description for SEO and about page", status: "done" },
-      { name: "Primary Color / Branding", description: "Primary brand color configuration", status: "done" },
-      { name: "Notification Preferences", description: "Configure which admin notifications to receive", status: "not_started" },
-      { name: "Webhook Configuration", description: "Set up webhooks for external system notifications", status: "not_started" },
-      { name: "Custom Domain", description: "Use custom domain for storefront", status: "not_started" },
-      { name: "SSL Certificate", description: "Automatic SSL for custom domains", status: "not_started" },
-      { name: "Checkout Settings", description: "Configure checkout fields, guest checkout, PO capture", status: "not_started" },
-      { name: "Email Sender Settings", description: "Configure from name and email for transactional emails", status: "not_started" },
-      { name: "Order Settings", description: "Auto order numbering, prefix, default statuses", status: "not_started" },
-      { name: "Inventory Settings", description: "Global inventory behavior settings", status: "not_started" },
+      { name: "General Settings", description: "Store name, description, contact email", status: "done" },
+      { name: "Currency Settings", description: "Default currency configuration", status: "done" },
+      { name: "Timezone Settings", description: "Store timezone", status: "done" },
+      { name: "Tax Settings", description: "Tax rates and rules configuration", status: "done" },
+      { name: "Shipping Settings", description: "Shipping zones and rates configuration", status: "done" },
+      { name: "Payment Gateway Configuration", description: "Configure and enable payment providers", status: "not_started" },
+      { name: "Email / SMTP Configuration", description: "Configure outgoing email settings", status: "not_started" },
+      { name: "Notification Preferences", description: "Configure which notifications to receive", status: "not_started" },
+      { name: "Checkout Settings", description: "Guest checkout, minimum order, checkout fields", status: "not_started" },
+      { name: "Inventory Settings", description: "Default low stock threshold, backorder rules", status: "partial" },
+      { name: "SEO Settings (Global)", description: "Site-wide meta tags, sitemap settings", status: "not_started" },
+      { name: "Social Media Links", description: "Store social media profile links", status: "not_started" },
+      { name: "Cookie/Privacy Consent Banner", description: "GDPR/Privacy cookie consent management", status: "not_started" },
+      { name: "Terms & Conditions / Privacy Policy", description: "Store-level legal pages", status: "not_started" },
     ],
   },
+
+  // ═══════ 39. API & DEVELOPER ═══════
   {
-    category: "Platform & Infrastructure",
-    icon: <Layers className="h-5 w-5" />,
+    category: "API & Developer Tools",
+    icon: <Code className="h-5 w-5" />,
     features: [
-      { name: "Multi-Tenant Architecture", description: "Full tenant isolation with store-scoped data", status: "done" },
-      { name: "Onboarding Flow (Store Setup Wizard)", description: "Guided store setup wizard", status: "done" },
-      { name: "Landing Page / Marketing Site", description: "Platform marketing landing page", status: "done" },
-      { name: "Merchant Management (Admin)", description: "Platform admin view of all merchants/stores", status: "done" },
-      { name: "Responsive Admin UI", description: "Mobile-friendly admin dashboard", status: "done" },
-      { name: "Collapsible Sidebar Navigation", description: "Collapsible sidebar with grouped sections", status: "done" },
-      { name: "In-App Notification Bell", description: "Notification system in admin header", status: "done" },
-      { name: "Toast Notifications", description: "Success/error feedback toasts", status: "done" },
-      { name: "Global Admin Search", description: "Search across all admin sections (products, orders, customers)", status: "not_started" },
-      { name: "Keyboard Shortcuts", description: "Power-user keyboard shortcuts for common actions", status: "not_started" },
-      { name: "Dark Mode", description: "Dark mode theme support for admin", status: "not_started" },
-      { name: "Localization / Multi-Language (i18n)", description: "Multi-language admin and storefront", status: "not_started" },
-      { name: "Audit Log Export", description: "Export activity logs for compliance", status: "not_started" },
-      { name: "Add-On Store / Marketplace", description: "Install add-ons to extend functionality", status: "not_started", notes: "Maropost has an add-on store for modules" },
-      { name: "Franchise Connect", description: "Multi-franchise management with global product IDs", status: "not_started", notes: "Maropost Retail Express feature" },
+      { name: "RESTful API (Products, Orders, Customers)", description: "CRUD API for core entities", status: "partial", notes: "Internal Supabase SDK, not public REST API" },
+      { name: "API Authentication (API Keys)", description: "Authenticate API requests with store keys", status: "not_started" },
+      { name: "API Rate Limiting", description: "Throttle API requests per key", status: "not_started" },
+      { name: "Webhook API", description: "Register and manage webhooks", status: "not_started" },
+      { name: "Add-On / Plugin System", description: "Install third-party add-ons to extend functionality", status: "not_started", notes: "Neto has full add-on framework" },
+      { name: "Add-On Types (Custom Panel / Shipping / Payment)", description: "Different add-on types for different integration points", status: "not_started" },
+      { name: "Developer Sandbox / Test Mode", description: "Test environment for development", status: "not_started" },
+      { name: "API Documentation (Auto-Generated)", description: "Public API docs for developers", status: "not_started" },
+      { name: "Batch API Requests", description: "Execute multiple API calls in single request", status: "not_started" },
     ],
   },
+
+  // ═══════ 40. THIRD-PARTY INTEGRATIONS ═══════
   {
-    category: "Point of Sale (POS)",
-    icon: <Smartphone className="h-5 w-5" />,
+    category: "Third-Party Integrations",
+    icon: <Link className="h-5 w-5" />,
     features: [
-      { name: "POS Terminal", description: "In-store point of sale register interface", status: "not_started", notes: "Maropost Neto POS (AU/NZ only)" },
-      { name: "POS Product Search / Scan", description: "Search or barcode scan products at POS", status: "not_started" },
-      { name: "POS Sales Processing", description: "Process sales, apply discounts, take payment in-store", status: "not_started" },
-      { name: "POS Receipts", description: "Print/email receipts at POS", status: "not_started" },
-      { name: "POS Cash Management", description: "Open/close register, float, cash counts", status: "not_started" },
-      { name: "POS Returns / Refunds", description: "Process returns and refunds at POS", status: "not_started" },
-      { name: "POS Layby", description: "Process layby/deposit payments at POS", status: "not_started" },
-      { name: "POS Customer Lookup", description: "Look up customer accounts and order history at POS", status: "not_started" },
-      { name: "POS Loyalty Points", description: "Earn and redeem loyalty points at POS", status: "not_started" },
-      { name: "POS Gift Card Redemption", description: "Redeem gift vouchers at POS", status: "not_started" },
-      { name: "POS Multi-Outlet", description: "Multiple POS outlets synced to one backend", status: "not_started" },
-      { name: "POS Hardware Integration", description: "Receipt printers, cash drawers, barcode scanners", status: "not_started" },
-    ],
-  },
-  {
-    category: "Integrations & API",
-    icon: <Zap className="h-5 w-5" />,
-    features: [
-      { name: "REST API (Products)", description: "Full CRUD API for products", status: "not_started", notes: "Maropost provides comprehensive API" },
-      { name: "REST API (Orders)", description: "Full CRUD API for orders", status: "not_started" },
-      { name: "REST API (Customers)", description: "Full CRUD API for customers", status: "not_started" },
-      { name: "REST API (Inventory/Stock)", description: "API for stock levels and adjustments", status: "not_started" },
-      { name: "REST API (Content/CMS)", description: "API for content pages and CMS", status: "not_started" },
-      { name: "REST API (Payments)", description: "API for payment processing", status: "not_started" },
-      { name: "REST API (RMA/Returns)", description: "API for returns and credit management", status: "not_started" },
-      { name: "Webhooks (Event Notifications)", description: "Event-based webhooks for order/product/stock changes", status: "not_started" },
-      { name: "Xero Accounting Integration", description: "Auto-sync orders, invoices, credits to Xero", status: "not_started" },
-      { name: "MYOB Integration", description: "Sync with MYOB accounting software", status: "not_started" },
-      { name: "Zapier / Make (Ibexa Connect)", description: "Connect to 1000s of apps via Zapier/Make", status: "not_started" },
-      { name: "Mailchimp Integration", description: "Sync customers and segments to Mailchimp", status: "not_started" },
-      { name: "Klaviyo Integration", description: "Advanced email marketing integration", status: "not_started" },
-      { name: "Google Analytics (GA4)", description: "GA4 enhanced ecommerce tracking events", status: "not_started" },
-      { name: "Facebook Pixel", description: "Conversion tracking for Meta ads", status: "not_started" },
-      { name: "Google Tag Manager", description: "GTM container for tracking scripts", status: "not_started" },
-    ],
-  },
-  {
-    category: "Email & Notifications",
-    icon: <Mail className="h-5 w-5" />,
-    features: [
-      { name: "Password Reset Email", description: "Password reset link via email", status: "done" },
-      { name: "Order Confirmation Email", description: "Automated email when order is placed", status: "not_started" },
-      { name: "Shipping Confirmation Email", description: "Email with tracking number when order ships", status: "not_started" },
-      { name: "Delivery Confirmation Email", description: "Email when order is delivered", status: "not_started" },
-      { name: "Welcome Email (New Customer)", description: "Email sent on new customer registration", status: "not_started" },
-      { name: "Abandoned Cart Recovery Email", description: "Automated reminder for abandoned carts", status: "not_started" },
-      { name: "Review Request Email", description: "Email asking for product review after delivery", status: "not_started" },
-      { name: "Low Stock Alert Email (Admin)", description: "Notify admin when product stock is low", status: "not_started" },
-      { name: "Return Initiated Email", description: "Email when return is initiated", status: "not_started" },
-      { name: "Return Approved/Completed Email", description: "Email when return is approved or completed", status: "not_started" },
-      { name: "Payment Reminder Emails (B2B)", description: "Automated payment reminders for outstanding invoices", status: "not_started", notes: "Maropost supports up to 3 automatic reminders" },
-      { name: "Supplier Order Notification Email", description: "Auto-email to dropship suppliers with order details", status: "not_started" },
-      { name: "Custom Transactional Email Templates", description: "Fully customizable HTML email templates per event", status: "not_started" },
-      { name: "Email Queue / Delivery Tracking", description: "Track sent emails, delivery status, bounces", status: "not_started" },
-    ],
-  },
-  {
-    category: "Service & Support",
-    icon: <Headphones className="h-5 w-5" />,
-    features: [
-      { name: "Helpdesk / Ticketing System", description: "Customer support ticket management", status: "not_started", notes: "Maropost Service Cloud" },
-      { name: "Live Chat Widget", description: "Real-time chat support on storefront", status: "not_started" },
-      { name: "Customer 360 View (Unified)", description: "Unified customer view across sales, marketing, service", status: "not_started", notes: "Key Maropost unified platform feature" },
-      { name: "Knowledge Base / FAQ", description: "Self-service knowledge base for customers", status: "not_started" },
-      { name: "Contact Form", description: "Built-in contact form on storefront", status: "not_started" },
+      { name: "Xero Accounting", description: "Auto-sync invoices and payments to Xero", status: "not_started" },
+      { name: "MYOB Accounting", description: "Sync to MYOB AccountRight", status: "not_started" },
+      { name: "QuickBooks Online", description: "Sync to QuickBooks", status: "not_started" },
+      { name: "Unleashed Inventory", description: "Advanced inventory management via Unleashed", status: "not_started", notes: "Maropost has Unleashed integration" },
+      { name: "ShipStation", description: "Shipping label and order management", status: "not_started" },
+      { name: "Starshipit", description: "AU/NZ shipping automation", status: "not_started" },
+      { name: "Mailchimp", description: "Email marketing list sync", status: "not_started" },
+      { name: "Klaviyo", description: "Advanced email marketing sync", status: "not_started" },
+      { name: "Google Analytics 4", description: "GA4 tracking and ecommerce events", status: "not_started" },
+      { name: "Google Tag Manager", description: "GTM container integration", status: "not_started" },
+      { name: "Facebook / Meta Pixel", description: "Conversion tracking and audiences", status: "not_started" },
+      { name: "Zapier Integration", description: "Connect to 5000+ apps via Zapier", status: "not_started" },
+      { name: "Make (Integromat)", description: "Workflow automation via Make", status: "not_started" },
+      { name: "Maropost Marketing Cloud", description: "Native integration with Maropost Marketing", status: "not_started" },
+      { name: "Maropost Service Cloud", description: "Customer service/helpdesk integration", status: "not_started" },
+      { name: "Retail Express POS", description: "Maropost's own POS system integration", status: "not_started" },
+      { name: "LiveChat / Zendesk / Tidio", description: "Customer support chat widget", status: "not_started" },
     ],
   },
 ];
 
-const statusConfig: Record<Status, { label: string; color: string; icon: React.ReactNode }> = {
-  done: { label: "Done", color: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30", icon: <CheckCircle className="h-4 w-4 text-emerald-600" /> },
-  partial: { label: "Partial", color: "bg-amber-500/15 text-amber-700 border-amber-500/30", icon: <Clock className="h-4 w-4 text-amber-600" /> },
-  not_started: { label: "Not Started", color: "bg-muted text-muted-foreground border-border", icon: <Circle className="h-4 w-4 text-muted-foreground" /> },
+// ─── STATUS RENDERING HELPERS ───
+const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
+  done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
+  partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
+  not_started: { label: "Not Started", variant: "outline", icon: <Circle className="h-3.5 w-3.5" /> },
 };
 
 export default function FeatureAudit() {
   const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState<"all" | Status>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | Status>("all");
 
-  const filtered = useMemo(() => {
-    return featureData.map((cat) => ({
-      ...cat,
-      features: cat.features.filter((f) => {
-        const matchesSearch =
-          !search ||
-          f.name.toLowerCase().includes(search.toLowerCase()) ||
-          f.description.toLowerCase().includes(search.toLowerCase()) ||
-          cat.category.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus = filterStatus === "all" || f.status === filterStatus;
-        return matchesSearch && matchesStatus;
-      }),
-    })).filter((cat) => cat.features.length > 0);
-  }, [search, filterStatus]);
-
-  const totals = useMemo(() => {
-    const all = featureData.flatMap((c) => c.features);
-    return {
-      total: all.length,
-      done: all.filter((f) => f.status === "done").length,
-      partial: all.filter((f) => f.status === "partial").length,
-      not_started: all.filter((f) => f.status === "not_started").length,
-    };
+  const stats = useMemo(() => {
+    let done = 0, partial = 0, not_started = 0;
+    featureData.forEach(c => c.features.forEach(f => {
+      if (f.status === "done") done++;
+      else if (f.status === "partial") partial++;
+      else not_started++;
+    }));
+    const total = done + partial + not_started;
+    return { done, partial, not_started, total, pct: total ? Math.round(((done + partial * 0.5) / total) * 100) : 0 };
   }, []);
 
-  const pct = Math.round(((totals.done + totals.partial * 0.5) / totals.total) * 100);
+  const filteredCategories = useMemo(() => {
+    const q = search.toLowerCase();
+    return featureData.map(cat => {
+      const features = cat.features.filter(f => {
+        if (statusFilter !== "all" && f.status !== statusFilter) return false;
+        if (q && !f.name.toLowerCase().includes(q) && !f.description.toLowerCase().includes(q) && !(f.notes || "").toLowerCase().includes(q) && !cat.category.toLowerCase().includes(q)) return false;
+        return true;
+      });
+      return { ...cat, features };
+    }).filter(c => c.features.length > 0);
+  }, [search, statusFilter]);
+
+  const totalFiltered = filteredCategories.reduce((s, c) => s + c.features.length, 0);
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Maropost Feature Audit</h1>
-          <p className="text-muted-foreground mt-1">
-            Comprehensive feature parity audit against Maropost Commerce Cloud (Neto), Marketing Cloud, Merchandising Cloud, Retail Express & Service Cloud
-          </p>
+          <p className="text-muted-foreground">Comprehensive parity tracker — {stats.total} features across {featureData.length} modules</p>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold">{totals.total}</div>
-              <div className="text-xs text-muted-foreground mt-1">Total Features</div>
+            <CardContent className="pt-4 pb-4 text-center">
+              <p className="text-sm text-muted-foreground">Total Features</p>
+              <p className="text-2xl font-bold">{stats.total}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold text-emerald-600">{totals.done}</div>
-              <div className="text-xs text-muted-foreground mt-1">Implemented</div>
+            <CardContent className="pt-4 pb-4 text-center">
+              <p className="text-sm text-muted-foreground">Done</p>
+              <p className="text-2xl font-bold text-primary">{stats.done}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold text-amber-600">{totals.partial}</div>
-              <div className="text-xs text-muted-foreground mt-1">Partial</div>
+            <CardContent className="pt-4 pb-4 text-center">
+              <p className="text-sm text-muted-foreground">Partial</p>
+              <p className="text-2xl font-bold text-accent-foreground">{stats.partial}</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold text-muted-foreground">{totals.not_started}</div>
-              <div className="text-xs text-muted-foreground mt-1">Not Started</div>
+            <CardContent className="pt-4 pb-4 text-center">
+              <p className="text-sm text-muted-foreground">Not Started</p>
+              <p className="text-2xl font-bold text-muted-foreground">{stats.not_started}</p>
             </CardContent>
           </Card>
-          <Card className="col-span-2 md:col-span-1">
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl font-bold">{pct}%</div>
-              <Progress value={pct} className="mt-2 h-2" />
-              <div className="text-xs text-muted-foreground mt-1">Overall Progress</div>
+          <Card>
+            <CardContent className="pt-4 pb-4 text-center">
+              <p className="text-sm text-muted-foreground">Progress</p>
+              <p className="text-2xl font-bold">{stats.pct}%</p>
+              <Progress value={stats.pct} className="mt-2 h-2" />
             </CardContent>
           </Card>
         </div>
 
-        {/* Category breakdown */}
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Progress by Category ({featureData.length} categories)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-              {featureData.map((cat) => {
-                const done = cat.features.filter((f) => f.status === "done").length;
-                const partial = cat.features.filter((f) => f.status === "partial").length;
-                const total = cat.features.length;
-                const catPct = Math.round(((done + partial * 0.5) / total) * 100);
-                return (
-                  <div key={cat.category} className="flex items-center gap-3 p-3 rounded-lg border">
-                    <div className="shrink-0 text-muted-foreground">{cat.icon}</div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium truncate">{cat.category}</div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Progress value={catPct} className="h-1.5 flex-1" />
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">{done}/{total}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Filters */}
+        {/* Search & Filter */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search features..."
+              placeholder="Search features, modules, or notes..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
+              onChange={e => setSearch(e.target.value)}
+              className="pl-10"
             />
           </div>
-          <Tabs value={filterStatus} onValueChange={(v) => setFilterStatus(v as any)}>
+          <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)} className="w-auto">
             <TabsList>
-              <TabsTrigger value="all">All ({totals.total})</TabsTrigger>
-              <TabsTrigger value="done">Done ({totals.done})</TabsTrigger>
-              <TabsTrigger value="partial">Partial ({totals.partial})</TabsTrigger>
-              <TabsTrigger value="not_started">Not Started ({totals.not_started})</TabsTrigger>
+              <TabsTrigger value="all">All ({stats.total})</TabsTrigger>
+              <TabsTrigger value="done">Done ({stats.done})</TabsTrigger>
+              <TabsTrigger value="partial">Partial ({stats.partial})</TabsTrigger>
+              <TabsTrigger value="not_started">Not Started ({stats.not_started})</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
 
-        {/* Feature Tables */}
-        {filtered.map((cat) => (
-          <Card key={cat.category}>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                {cat.icon}
-                {cat.category}
-                <Badge variant="secondary" className="ml-auto font-normal">
-                  {cat.features.filter((f) => f.status === "done").length}/{cat.features.length}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-8"></TableHead>
-                    <TableHead>Feature</TableHead>
-                    <TableHead className="hidden md:table-cell">Description</TableHead>
-                    <TableHead className="w-28">Status</TableHead>
-                    <TableHead className="hidden lg:table-cell">Notes</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {cat.features.map((feature) => {
-                    const st = statusConfig[feature.status];
-                    return (
-                      <TableRow key={feature.name}>
-                        <TableCell className="pr-0">{st.icon}</TableCell>
-                        <TableCell className="font-medium">
-                          {feature.name}
-                          <span className="block md:hidden text-xs text-muted-foreground mt-0.5">
-                            {feature.description}
-                          </span>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell text-muted-foreground text-sm">
-                          {feature.description}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className={st.color}>
-                            {st.label}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">
-                          {feature.notes || "—"}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        ))}
+        <p className="text-sm text-muted-foreground">Showing {totalFiltered} features in {filteredCategories.length} modules</p>
+
+        {/* Category Collapsibles */}
+        <div className="space-y-3">
+          {filteredCategories.map(cat => {
+            const catDone = cat.features.filter(f => f.status === "done").length;
+            const catPartial = cat.features.filter(f => f.status === "partial").length;
+            const catPct = cat.features.length ? Math.round(((catDone + catPartial * 0.5) / cat.features.length) * 100) : 0;
+
+            return (
+              <Collapsible key={cat.category} defaultOpen={false}>
+                <Card>
+                  <CollapsibleTrigger className="w-full">
+                    <CardHeader className="py-3 px-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-primary">{cat.icon}</span>
+                          <CardTitle className="text-base">{cat.category}</CardTitle>
+                          <span className="text-xs text-muted-foreground">({cat.features.length})</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="hidden sm:flex items-center gap-1.5 text-xs">
+                            <span className="text-primary">{catDone}✓</span>
+                            <span className="text-accent-foreground">{catPartial}◐</span>
+                            <span className="text-muted-foreground">{cat.features.length - catDone - catPartial}○</span>
+                          </div>
+                          <div className="w-20">
+                            <Progress value={catPct} className="h-1.5" />
+                          </div>
+                          <span className="text-xs font-medium w-8 text-right">{catPct}%</span>
+                          <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" />
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0 px-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-8"></TableHead>
+                            <TableHead>Feature</TableHead>
+                            <TableHead className="hidden md:table-cell">Description</TableHead>
+                            <TableHead className="w-28">Status</TableHead>
+                            <TableHead className="hidden lg:table-cell">Notes</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {cat.features.map((f, i) => {
+                            const sc = statusConfig[f.status];
+                            return (
+                              <TableRow key={i}>
+                                <TableCell className="text-center">{sc.icon}</TableCell>
+                                <TableCell className="font-medium text-sm">{f.name}</TableCell>
+                                <TableCell className="hidden md:table-cell text-sm text-muted-foreground">{f.description}</TableCell>
+                                <TableCell>
+                                  <Badge variant={sc.variant} className="text-xs">{sc.label}</Badge>
+                                </TableCell>
+                                <TableCell className="hidden lg:table-cell text-xs text-muted-foreground">{f.notes || "—"}</TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </CardContent>
+                  </CollapsibleContent>
+                </Card>
+              </Collapsible>
+            );
+          })}
+        </div>
       </div>
     </AdminLayout>
   );
