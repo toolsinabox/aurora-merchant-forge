@@ -206,6 +206,7 @@ export default function Suppliers() {
           <TabsList>
             <TabsTrigger value="list">Suppliers</TabsTrigger>
             <TabsTrigger value="products">Product Assignments</TabsTrigger>
+            <TabsTrigger value="performance">Performance</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list">
