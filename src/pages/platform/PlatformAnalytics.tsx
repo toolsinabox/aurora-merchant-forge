@@ -339,6 +339,54 @@ export default function PlatformAnalytics() {
               )}
             </CardContent>
           </Card>
+
+          {/* Top Stores by Revenue */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Top Stores by Revenue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-48 w-full" />
+              ) : data?.topStoresByRevenue && data.topStoresByRevenue.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={data.topStoresByRevenue} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={120} />
+                    <Tooltip contentStyle={{ fontSize: 12 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                    <Bar dataKey="revenue" fill="hsl(142, 71%, 45%)" radius={[0, 2, 2, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-sm text-muted-foreground py-8 text-center">No data yet</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Customer Spend Distribution */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Customer Spend Distribution</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              {isLoading ? (
+                <Skeleton className="h-48 w-48 rounded-full" />
+              ) : data?.spendBuckets ? (
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={data.spendBuckets}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ fontSize: 12 }} />
+                    <Bar dataKey="value" fill="hsl(38, 92%, 50%)" radius={[2, 2, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-sm text-muted-foreground py-8">No data</p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </PlatformLayout>
