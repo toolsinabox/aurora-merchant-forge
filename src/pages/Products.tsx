@@ -310,6 +310,8 @@ export default function Products() {
           products={products}
           onComplete={() => setSelected([])}
         />
+
+        {currentStore && <ZipImageUpload storeId={currentStore.id} />}
       </div>
     </AdminLayout>
   );
