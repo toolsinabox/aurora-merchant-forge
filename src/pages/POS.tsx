@@ -560,6 +560,86 @@ export default function POS() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Layby Dialog */}
+      <Dialog open={showLayby} onOpenChange={setShowLayby}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Create Layby — ${total.toFixed(2)}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-muted p-3 rounded-lg text-sm">
+              <p className="font-medium">Customer: {selectedCustomer?.name}</p>
+              <p className="text-muted-foreground">{cart.length} item{cart.length !== 1 ? "s" : ""} — ${total.toFixed(2)}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Deposit (%)</Label>
+                <Select value={laybyDeposit} onValueChange={setLaybyDeposit}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10%</SelectItem>
+                    <SelectItem value="20">20%</SelectItem>
+                    <SelectItem value="25">25%</SelectItem>
+                    <SelectItem value="30">30%</SelectItem>
+                    <SelectItem value="50">50%</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Installments</Label>
+                <Select value={laybyInstallments} onValueChange={setLaybyInstallments}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="6">6</SelectItem>
+                    <SelectItem value="8">8</SelectItem>
+                    <SelectItem value="12">12</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Frequency</Label>
+              <Select value={laybyFrequency} onValueChange={setLaybyFrequency}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="fortnightly">Fortnightly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Separator />
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Deposit ({laybyDeposit}%)</span><span className="font-medium">${((Number(laybyDeposit) / 100) * total).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Remaining</span><span>${(total - (Number(laybyDeposit) / 100) * total).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Per installment ({laybyInstallments}x {laybyFrequency})</span><span>${((total - (Number(laybyDeposit) / 100) * total) / Number(laybyInstallments)).toFixed(2)}</span></div>
+            </div>
+            <div>
+              <Label className="text-xs">Payment Method (Deposit)</Label>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {[
+                  { value: "card", label: "Card", icon: CreditCard },
+                  { value: "cash", label: "Cash", icon: Banknote },
+                  { value: "other", label: "Other", icon: Receipt },
+                ].map(m => (
+                  <Button key={m.value} variant={paymentMethod === m.value ? "default" : "outline"} className="h-10 flex-col gap-0.5" onClick={() => setPaymentMethod(m.value)}>
+                    <m.icon className="h-4 w-4" />
+                    <span className="text-[10px]">{m.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowLayby(false)}>Cancel</Button>
+            <Button onClick={createLayby} disabled={laybyProcessing} className="gap-2">
+              <CheckCircle className="h-4 w-4" /> {laybyProcessing ? "Processing..." : `Take Deposit $${((Number(laybyDeposit) / 100) * total).toFixed(2)}`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
