@@ -30,7 +30,7 @@ export default function CustomerDetail() {
   const { data: customerGroups = [] } = useCustomerGroups();
 
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "" });
+  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "" });
   const [addrOpen, setAddrOpen] = useState(false);
   const [addrForm, setAddrForm] = useState({
     label: "Home", first_name: "", last_name: "", company: "",
