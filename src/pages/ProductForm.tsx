@@ -852,7 +852,7 @@ export default function ProductForm() {
                       <p className="text-2xs text-muted-foreground">{form.seo_title.length}/60 characters</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Meta Description</Label>
+                      <FieldLabel label="Meta Description" field="seo_description" />
                       <Textarea className="text-xs min-h-[60px]" value={form.seo_description} onChange={(e) => update("seo_description", e.target.value)} placeholder="SEO description" />
                       <p className="text-2xs text-muted-foreground">{form.seo_description.length}/160 characters</p>
                     </div>
