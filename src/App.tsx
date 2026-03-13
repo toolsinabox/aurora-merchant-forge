@@ -36,6 +36,7 @@ import ActivityLog from "./pages/ActivityLog.tsx";
 import ImportWizard from "./pages/ImportWizard.tsx";
 import ExportWizard from "./pages/ExportWizard.tsx";
 import Templates from "./pages/Templates.tsx";
+import FeatureAudit from "./pages/FeatureAudit.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
@@ -104,6 +105,7 @@ const App = () => (
                   <Route path="/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
