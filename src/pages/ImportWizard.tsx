@@ -70,6 +70,15 @@ const PRODUCT_FIELDS = [
   { key: "misc5", label: "Misc 5", group: "Custom" },
 ];
 
+const REVIEW_FIELDS = [
+  { key: "product_sku", label: "Product SKU (lookup) *", group: "Product" },
+  { key: "rating", label: "Rating (1-5) *", group: "Review" },
+  { key: "title", label: "Review Title", group: "Review" },
+  { key: "body", label: "Review Body", group: "Review" },
+  { key: "author_name", label: "Author Name", group: "Review" },
+  { key: "is_approved", label: "Approved", group: "Status" },
+];
+
 const ORDER_FIELDS = [
   { key: "order_number", label: "Order Number *", group: "Basic" },
   { key: "status", label: "Status", group: "Basic" },
