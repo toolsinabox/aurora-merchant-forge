@@ -132,6 +132,9 @@ export default function Marketing() {
                           <TableCell><Badge variant="outline" className="text-[10px]">{c.campaign_type}</Badge></TableCell>
                           <TableCell><StatusBadge status={c.status} /></TableCell>
                           <TableCell className="text-xs capitalize">{c.audience_segment}</TableCell>
+                          <TableCell className="text-xs text-right">{(c.stats as any)?.opens ?? "—"}</TableCell>
+                          <TableCell className="text-xs text-right">{(c.stats as any)?.clicks ?? "—"}</TableCell>
+                          <TableCell className="text-xs text-right">{(c.stats as any)?.revenue != null ? `$${Number((c.stats as any).revenue).toFixed(2)}` : "—"}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{format(new Date(c.created_at), "MMM d, yyyy")}</TableCell>
                           <TableCell>
                             <DropdownMenu>
