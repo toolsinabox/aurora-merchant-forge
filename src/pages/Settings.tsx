@@ -496,6 +496,8 @@ export default function SettingsPage() {
     logo_url: "",
     favicon_url: "",
     ga_tracking_id: "",
+    gtm_container_id: "",
+    fb_pixel_id: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
