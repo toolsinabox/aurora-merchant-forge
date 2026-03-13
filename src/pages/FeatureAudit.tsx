@@ -836,7 +836,7 @@ const featureData: FeatureCategory[] = [
       { name: "Two-Factor Authentication (2FA)", description: "TOTP/SMS 2FA for admin accounts", status: "not_started" },
       { name: "API Key Management", description: "Generate and manage API keys per store", status: "not_started" },
       { name: "Session Management", description: "View and revoke active sessions", status: "not_started" },
-      { name: "Staff Activity Dashboard", description: "See staff login times, actions taken", status: "not_started" },
+      { name: "Staff Activity Dashboard", description: "See staff login times, actions taken", status: "done", notes: "Admin Staff Activity page with KPI cards (team size, actions 30d, active today, avg/user), per-member breakdown table with action counts, top actions, last active, and recent activity feed from activity_log" },
     ],
   },
 
