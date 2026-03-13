@@ -19,6 +19,7 @@ export interface TemplateContext {
   cross_sells?: Record<string, any>[];
   upsells?: Record<string, any>[];
   free_gifts?: Record<string, any>[];
+  adverts?: Record<string, any>[];
   shipping?: Record<string, any>;
   store?: Record<string, any>;
   order?: Record<string, any>;
@@ -243,6 +244,10 @@ function processBlocks(template: string, ctx: TemplateContext): string {
         break;
       case "tags":
         items = (ctx.product?.tags || []).map((tag: string) => ({ name: tag }));
+        break;
+      case "advert":
+      case "adverts":
+        items = ctx.adverts || [];
         break;
       default:
         return "";

@@ -3619,6 +3619,8 @@ export type Database = {
           favicon_url: string | null
           fb_pixel_id: string | null
           ga_tracking_id: string | null
+          google_ads_conversion_label: string | null
+          google_ads_id: string | null
           gtm_container_id: string | null
           guest_checkout_enabled: boolean
           id: string
@@ -3634,6 +3636,7 @@ export type Database = {
           seo_description_global: string | null
           seo_title_global: string | null
           slug: string | null
+          smtp_config: Json | null
           social_links: Json | null
           subscription_tier: string
           suspended_reason: string | null
@@ -3655,6 +3658,8 @@ export type Database = {
           favicon_url?: string | null
           fb_pixel_id?: string | null
           ga_tracking_id?: string | null
+          google_ads_conversion_label?: string | null
+          google_ads_id?: string | null
           gtm_container_id?: string | null
           guest_checkout_enabled?: boolean
           id?: string
@@ -3670,6 +3675,7 @@ export type Database = {
           seo_description_global?: string | null
           seo_title_global?: string | null
           slug?: string | null
+          smtp_config?: Json | null
           social_links?: Json | null
           subscription_tier?: string
           suspended_reason?: string | null
@@ -3691,6 +3697,8 @@ export type Database = {
           favicon_url?: string | null
           fb_pixel_id?: string | null
           ga_tracking_id?: string | null
+          google_ads_conversion_label?: string | null
+          google_ads_id?: string | null
           gtm_container_id?: string | null
           guest_checkout_enabled?: boolean
           id?: string
@@ -3706,6 +3714,7 @@ export type Database = {
           seo_description_global?: string | null
           seo_title_global?: string | null
           slug?: string | null
+          smtp_config?: Json | null
           social_links?: Json | null
           subscription_tier?: string
           suspended_reason?: string | null

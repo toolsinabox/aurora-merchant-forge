@@ -498,6 +498,8 @@ export default function SettingsPage() {
     ga_tracking_id: "",
     gtm_container_id: "",
     fb_pixel_id: "",
+    google_ads_id: "",
+    google_ads_conversion_label: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
@@ -525,7 +527,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id")
+      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id, google_ads_id, google_ads_conversion_label, smtp_config")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
@@ -541,7 +543,12 @@ export default function SettingsPage() {
             ga_tracking_id: (data as any).ga_tracking_id || "",
             gtm_container_id: (data as any).gtm_container_id || "",
             fb_pixel_id: (data as any).fb_pixel_id || "",
+            google_ads_id: (data as any).google_ads_id || "",
+            google_ads_conversion_label: (data as any).google_ads_conversion_label || "",
           });
+          if ((data as any).smtp_config) {
+            setSmtpForm({ ...(data as any).smtp_config });
+          }
         }
       });
 
@@ -587,11 +594,31 @@ export default function SettingsPage() {
         ga_tracking_id: brandForm.ga_tracking_id || null,
         gtm_container_id: brandForm.gtm_container_id || null,
         fb_pixel_id: brandForm.fb_pixel_id || null,
+        google_ads_id: brandForm.google_ads_id || null,
+        google_ads_conversion_label: brandForm.google_ads_conversion_label || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
     if (error) toast.error(error.message);
     else toast.success("Branding saved");
+  };
+
+  // SMTP / Email configuration
+  const [smtpForm, setSmtpForm] = useState<any>({
+    host: "", port: "587", username: "", password: "", from_name: "", from_email: "", encryption: "tls",
+  });
+  const [smtpSaving, setSmtpSaving] = useState(false);
+
+  const handleSaveSmtp = async () => {
+    if (!currentStore) return;
+    setSmtpSaving(true);
+    const { error } = await supabase
+      .from("stores")
+      .update({ smtp_config: smtpForm } as any)
+      .eq("id", currentStore.id);
+    setSmtpSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Email settings saved");
   };
 
   const [taxOpen, setTaxOpen] = useState(false);
@@ -648,6 +675,7 @@ export default function SettingsPage() {
             <TabsTrigger value="wholesale" className="text-xs h-7">Wholesale</TabsTrigger>
             <TabsTrigger value="inventory" className="text-xs h-7">Inventory</TabsTrigger>
             <TabsTrigger value="payments" className="text-xs h-7">Payments</TabsTrigger>
+            <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
@@ -747,6 +775,14 @@ export default function SettingsPage() {
                   <div className="space-y-1">
                     <Label className="text-xs">Facebook / Meta Pixel ID</Label>
                     <Input className="h-8 text-xs" value={brandForm.fb_pixel_id} onChange={(e) => setBrandForm({ ...brandForm, fb_pixel_id: e.target.value })} placeholder="1234567890" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Ads Conversion ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.google_ads_id} onChange={(e) => setBrandForm({ ...brandForm, google_ads_id: e.target.value })} placeholder="AW-XXXXXXXXX" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Ads Conversion Label</Label>
+                    <Input className="h-8 text-xs" value={brandForm.google_ads_conversion_label} onChange={(e) => setBrandForm({ ...brandForm, google_ads_conversion_label: e.target.value })} placeholder="AbCdEfGhIjK" />
                   </div>
                 </div>
                 <div className="space-y-1">
@@ -1199,6 +1235,69 @@ export default function SettingsPage() {
 
           <TabsContent value="payments" className="space-y-3">
             <PaymentGatewaysTab />
+          </TabsContent>
+
+          <TabsContent value="email" className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Email / SMTP Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-2 space-y-3">
+                <p className="text-xs text-muted-foreground">Configure outgoing email settings for order confirmations, notifications, and marketing emails.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">SMTP Host</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.host} onChange={(e) => setSmtpForm({ ...smtpForm, host: e.target.value })} placeholder="smtp.gmail.com" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Port</Label>
+                    <Select value={smtpForm.port} onValueChange={(v) => setSmtpForm({ ...smtpForm, port: v })}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="25" className="text-xs">25 (SMTP)</SelectItem>
+                        <SelectItem value="465" className="text-xs">465 (SSL)</SelectItem>
+                        <SelectItem value="587" className="text-xs">587 (TLS)</SelectItem>
+                        <SelectItem value="2525" className="text-xs">2525 (Alt)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Username</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.username} onChange={(e) => setSmtpForm({ ...smtpForm, username: e.target.value })} placeholder="your@email.com" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Password</Label>
+                    <Input type="password" className="h-8 text-xs" value={smtpForm.password} onChange={(e) => setSmtpForm({ ...smtpForm, password: e.target.value })} placeholder="••••••••" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">From Name</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.from_name} onChange={(e) => setSmtpForm({ ...smtpForm, from_name: e.target.value })} placeholder="My Store" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">From Email</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.from_email} onChange={(e) => setSmtpForm({ ...smtpForm, from_email: e.target.value })} placeholder="noreply@mystore.com" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Encryption</Label>
+                  <Select value={smtpForm.encryption} onValueChange={(v) => setSmtpForm({ ...smtpForm, encryption: v })}>
+                    <SelectTrigger className="h-8 text-xs w-48"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none" className="text-xs">None</SelectItem>
+                      <SelectItem value="ssl" className="text-xs">SSL</SelectItem>
+                      <SelectItem value="tls" className="text-xs">TLS (Recommended)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSaveSmtp} disabled={smtpSaving}>
+                  <Save className="h-3.5 w-3.5" /> {smtpSaving ? "Saving..." : "Save Email Settings"}
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
