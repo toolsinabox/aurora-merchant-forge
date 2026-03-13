@@ -88,16 +88,52 @@ function usePlatformAnalytics() {
         stores: count,
       }));
 
+      // Revenue by store (top stores by revenue)
+      const revenueByStore: Record<string, number> = {};
+      orders.forEach((o: any) => {
+        revenueByStore[o.store_id] = (revenueByStore[o.store_id] || 0) + (o.total || 0);
+      });
+      const topStoresByRevenue = stores
+        .map((s: any) => ({ name: s.name, revenue: Math.round((revenueByStore[s.id] || 0) * 100) / 100 }))
+        .sort((a: any, b: any) => b.revenue - a.revenue)
+        .slice(0, 10);
+
+      // AOV
+      const aov = orders.length > 0
+        ? Math.round(orders.reduce((s: number, o: any) => s + (o.total || 0), 0) / orders.length * 100) / 100
+        : 0;
+
+      // Customer spend distribution
+      const spendBuckets = [
+        { name: "$0", value: 0 },
+        { name: "$1-50", value: 0 },
+        { name: "$51-200", value: 0 },
+        { name: "$201-500", value: 0 },
+        { name: "$500+", value: 0 },
+      ];
+      customers.forEach((c: any) => {
+        const spent = Number(c.total_spent) || 0;
+        if (spent === 0) spendBuckets[0].value++;
+        else if (spent <= 50) spendBuckets[1].value++;
+        else if (spent <= 200) spendBuckets[2].value++;
+        else if (spent <= 500) spendBuckets[3].value++;
+        else spendBuckets[4].value++;
+      });
+
       return {
         totalRevenue: orders.reduce((s: number, o: any) => s + (o.total || 0), 0),
         totalOrders: orders.length,
         totalStores: stores.length,
         totalCustomers: customers.length,
+        totalProducts: products.length,
+        aov,
         revenueTimeline,
         ordersByStatus,
         tierDistribution,
         topStores,
+        topStoresByRevenue,
         storeGrowth,
+        spendBuckets,
       };
     },
   });
