@@ -236,7 +236,7 @@ const featureData: FeatureCategory[] = [
       { name: "eWAY Payment Gateway", description: "eWAY (Australia) payment gateway", status: "not_started" },
       { name: "Braintree Integration", description: "Braintree (PayPal) payment processing", status: "not_started" },
       { name: "Manual / Offline Payments", description: "Record manual payments (bank transfer, check, cash)", status: "done", notes: "order_payments table with record dialog on order detail, payment history display" },
-      { name: "Payment Refunds", description: "Process full or partial refunds", status: "not_started" },
+      { name: "Payment Refunds", description: "Process full or partial refunds", status: "done", notes: "Refund dialog on order detail page with amount, reason, and auto-updates payment status to refunded" },
       { name: "Payment Receipts / Confirmation", description: "Generate payment receipts", status: "not_started" },
       { name: "Saved Payment Methods", description: "Store card details for repeat purchases (tokenized)", status: "not_started" },
       { name: "Pay Order from Account", description: "Customer can pay outstanding orders from their account page", status: "not_started", notes: "Neto has pay_order templates" },
