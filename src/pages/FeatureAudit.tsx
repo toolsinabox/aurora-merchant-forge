@@ -305,7 +305,7 @@ const featureData: FeatureCategory[] = [
       { name: "Search Results Page", description: "Search results template (search_results.template.html)", status: "partial", notes: "Basic search exists" },
       { name: "Shopping Cart Page", description: "View cart page (shopping_cart.template.html)", status: "done" },
       { name: "One-Page Checkout", description: "Single-page checkout flow (onepage.template.html)", status: "done" },
-      { name: "Checkout — Shipping Options", description: "Shipping method selection (shipping_options.template.html)", status: "not_started" },
+      { name: "Checkout — Shipping Options", description: "Shipping method selection (shipping_options.template.html)", status: "done", notes: "Shipping zone radio selection with free-above threshold display" },
       { name: "Checkout — Address Form", description: "Multi-address checkout support (address.template.html)", status: "partial" },
       { name: "Checkout — Cart Items Summary", description: "Order summary sidebar in checkout (cart_items.template.html)", status: "done" },
       { name: "Checkout — Voucher/Coupon Redemption", description: "Coupon code entry (redeem_vouchers.template.html)", status: "done", notes: "Coupon apply/remove at checkout" },
