@@ -369,7 +369,7 @@ const featureData: FeatureCategory[] = [
       { name: "Child Products Display", description: "Non-variant child product listing (child_products.template.html)", status: "not_started" },
       { name: "Editable Kit Components UI", description: "Kit component configuration (components.template.html)", status: "not_started" },
       { name: "Product Thumbnails (Grid/List/Box)", description: "Product card layouts (thumbs/product/)", status: "done" },
-      { name: "Content Thumbnails", description: "Content page card layout (thumbs/content/)", status: "not_started" },
+      { name: "Content Thumbnails", description: "Content page card layout (thumbs/content/)", status: "done", notes: "Blog page uses content thumbnail cards with featured image, title, description, date, and read more arrow" },
       { name: "Advert Thumbnails (Banner/Carousel/Scroll/Text)", description: "Promotional ad placements (thumbs/advert/)", status: "not_started" },
       { name: "Product Reviews Display", description: "Star ratings and review text on product page", status: "done" },
       { name: "Product Compare", description: "Side-by-side product comparison", status: "done" },
