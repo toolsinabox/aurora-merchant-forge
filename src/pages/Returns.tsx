@@ -151,6 +151,7 @@ export default function Returns() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="list">Returns List</TabsTrigger>
+            <TabsTrigger value="disputes">Warranty Disputes</TabsTrigger>
             <TabsTrigger value="report">RMA Report</TabsTrigger>
           </TabsList>
 
