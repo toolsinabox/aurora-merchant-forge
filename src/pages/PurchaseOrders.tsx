@@ -310,6 +310,65 @@ export default function PurchaseOrders() {
             </Table>
           </CardContent>
         </Card>
+        {/* Receive Items Dialog */}
+        <Dialog open={receiveOpen} onOpenChange={setReceiveOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Receive Items — {receivePO?.po_number}</DialogTitle>
+            </DialogHeader>
+            {loadingItems ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">Loading items...</p>
+            ) : poItems.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">No line items on this PO. Add items first.</p>
+            ) : (
+              <div className="space-y-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Item</TableHead>
+                      <TableHead className="text-xs w-20">Ordered</TableHead>
+                      <TableHead className="text-xs w-20">Received</TableHead>
+                      <TableHead className="text-xs w-24">Receive Now</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {poItems.map((item: any) => {
+                      const remaining = item.quantity_ordered - item.quantity_received;
+                      return (
+                        <TableRow key={item.id}>
+                          <TableCell className="text-sm">
+                            <div>{item.title}</div>
+                            {item.sku && <span className="text-xs text-muted-foreground font-mono">{item.sku}</span>}
+                          </TableCell>
+                          <TableCell className="text-sm">{item.quantity_ordered}</TableCell>
+                          <TableCell className="text-sm">{item.quantity_received}</TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={remaining}
+                              className="h-7 w-20 text-xs"
+                              value={receiveQtys[item.id] || 0}
+                              onChange={(e) => setReceiveQtys(prev => ({ ...prev, [item.id]: Math.min(Number(e.target.value), remaining) }))}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+                <div className="flex justify-between">
+                  <Button variant="outline" size="sm" className="text-xs" onClick={() => {
+                    const all: Record<string, number> = {};
+                    poItems.forEach((item: any) => { all[item.id] = item.quantity_ordered - item.quantity_received; });
+                    setReceiveQtys(all);
+                  }}>Receive All</Button>
+                  <Button size="sm" className="text-xs" onClick={handleReceiveItems}>Confirm Receipt</Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

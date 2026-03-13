@@ -296,6 +296,15 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
                 </div>
                 {review.title && <p className="font-medium text-sm">{review.title}</p>}
                 {review.body && <p className="text-sm text-muted-foreground">{review.body}</p>}
+                {review.review_photos && review.review_photos.length > 0 && (
+                  <div className="flex gap-2 mt-2 flex-wrap">
+                    {review.review_photos.map((photo: string, i: number) => (
+                      <a key={i} href={getReviewImageUrl(photo)} target="_blank" rel="noopener noreferrer">
+                        <img src={getReviewImageUrl(photo)} alt={`Review photo ${i + 1}`} className="w-20 h-20 rounded object-cover border hover:opacity-80 transition-opacity" />
+                      </a>
+                    ))}
+                  </div>
+                )}
                 {review.admin_reply && (
                   <div className="ml-6 mt-2 border-l-2 border-primary/30 pl-3 py-1">
                     <p className="text-xs font-medium text-primary">Store Response</p>

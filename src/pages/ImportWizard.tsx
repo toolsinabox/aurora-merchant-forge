@@ -624,7 +624,9 @@ export default function ImportWizard() {
                 )}
 
                 <div className="flex gap-2">
-                  <Button size="sm" className="text-xs" onClick={() => navigate("/products")}>View Products</Button>
+                  <Button size="sm" className="text-xs" onClick={() => navigate(entityType === "orders" ? "/orders" : "/products")}>
+                    View {entityType === "orders" ? "Orders" : "Products"}
+                  </Button>
                   <Button size="sm" variant="outline" className="text-xs" onClick={() => { setStep(0); setResults(null); setCsvData({ headers: [], rows: [] }); }}>Import More</Button>
                 </div>
               </CardContent>
