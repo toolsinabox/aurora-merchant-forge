@@ -703,7 +703,7 @@ const featureData: FeatureCategory[] = [
       { name: "Credit Terms (Net 7/14/30/60/90)", description: "Allow B2B customers to order on credit", status: "not_started" },
       { name: "Credit Limit per Customer", description: "Set maximum credit balance per customer", status: "not_started" },
       { name: "Order Minimum for Wholesale", description: "Minimum order value/quantity for wholesale customers", status: "not_started" },
-      { name: "Tax-Exempt B2B Customers", description: "Exclude tax for registered wholesale customers", status: "not_started" },
+      { name: "Tax-Exempt B2B Customers", description: "Exclude tax for registered wholesale customers", status: "done", notes: "is_tax_exempt flag on customer_groups, checkout skips tax calculation" },
       { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number or Tax ID", status: "not_started" },
       { name: "Quote / RFQ Workflow", description: "Request for quote → Admin pricing → Customer approval → Order", status: "not_started" },
       { name: "Bulk/Quick Order Form", description: "Enter multiple SKUs and quantities on single form", status: "not_started" },
