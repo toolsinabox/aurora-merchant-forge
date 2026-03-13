@@ -219,7 +219,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Import", description: "Bulk import orders from CSV/XML", status: "not_started" },
       { name: "Order Tags / Flags", description: "Tag or flag orders for internal workflows", status: "done", notes: "Tags array on orders with add/remove UI on order detail page" },
       { name: "Batch Order Processing", description: "Bulk update status, print labels for multiple orders", status: "done", notes: "Bulk status update, batch print packing slips, shipping labels, and invoices from orders list" },
-      { name: "Order Fraud Detection Flags", description: "Automated fraud scoring and risk flags on orders", status: "not_started" },
+      { name: "Order Fraud Detection Flags", description: "Automated fraud scoring and risk flags on orders", status: "done", notes: "Fraud Risk card on order detail with heuristic scoring: high value, address mismatch, no account, high qty, first order" },
     ],
   },
 
