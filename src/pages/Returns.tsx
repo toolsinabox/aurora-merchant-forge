@@ -372,6 +372,11 @@ export default function Returns() {
                     Save Notes
                   </Button>
                 )}
+                {["approved", "refunded", "completed"].includes(selected.status) && (
+                  <Button size="sm" variant="secondary" className="text-xs gap-1" onClick={handleCreateReplacement} disabled={creatingReplacement}>
+                    <RefreshCw className="h-3 w-3" /> {creatingReplacement ? "Creating..." : "Replacement Order"}
+                  </Button>
+                )}
               </div>
             </div>
           )}

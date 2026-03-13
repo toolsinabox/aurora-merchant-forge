@@ -199,6 +199,27 @@ export default function Orders() {
                 {bulkProcessing ? "Updating..." : "Apply"}
               </Button>
               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>Clear</Button>
+              <div className="ml-auto flex gap-1">
+                <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
+                  const ids = Array.from(selected);
+                  const idsParam = ids.join(",");
+                  window.open(`/pick-pack?orders=${idsParam}`, "_blank");
+                }}>
+                  <Printer className="h-3 w-3" /> Print Packing Slips
+                </Button>
+                <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
+                  const ids = Array.from(selected);
+                  ids.forEach(id => window.open(`/orders/${id}/shipping-label`, "_blank"));
+                }}>
+                  <Printer className="h-3 w-3" /> Print Labels
+                </Button>
+                <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
+                  const ids = Array.from(selected);
+                  ids.forEach(id => window.open(`/orders/${id}/invoice`, "_blank"));
+                }}>
+                  <Printer className="h-3 w-3" /> Print Invoices
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
