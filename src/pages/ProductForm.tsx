@@ -641,7 +641,7 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Selling Unit</Label>
+                        <FieldLabel label="Selling Unit" field="selling_unit" />
                         <Input className="h-8 text-xs" value={shipping.selling_unit} onChange={(e) => setShipping(p => ({ ...p, selling_unit: e.target.value }))} placeholder="e.g. Each, Pack" />
                       </div>
                       <div className="space-y-1">
