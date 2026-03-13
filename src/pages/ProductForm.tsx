@@ -344,7 +344,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" value={form.custom_label} onChange={(e) => update("custom_label", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Supplier Code</Label>
+                        <FieldLabel label="Supplier Code" field="supplier_item_code" />
                         <Input className="h-8 text-xs" value={form.supplier_item_code} onChange={(e) => update("supplier_item_code", e.target.value)} />
                       </div>
                     </div>
