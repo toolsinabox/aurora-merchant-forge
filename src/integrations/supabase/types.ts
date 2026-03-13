@@ -1989,6 +1989,7 @@ export type Database = {
           track_inventory: boolean
           updated_at: string
           virtual_product: boolean | null
+          visibility_groups: string[] | null
           warranty: string | null
         }
         Insert: {
@@ -2050,6 +2051,7 @@ export type Database = {
           track_inventory?: boolean
           updated_at?: string
           virtual_product?: boolean | null
+          visibility_groups?: string[] | null
           warranty?: string | null
         }
         Update: {
@@ -2111,6 +2113,7 @@ export type Database = {
           track_inventory?: boolean
           updated_at?: string
           virtual_product?: boolean | null
+          visibility_groups?: string[] | null
           warranty?: string | null
         }
         Relationships: [
@@ -2639,6 +2642,64 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "stocktakes_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          description: string | null
+          id: string
+          order_id: string | null
+          store_id: string
+          type: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          store_id: string
+          type?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          store_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_credit_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_credit_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_credit_transactions_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"

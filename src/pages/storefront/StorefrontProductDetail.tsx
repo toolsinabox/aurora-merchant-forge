@@ -39,6 +39,7 @@ export default function StorefrontProductDetail() {
   const [shipping, setShipping] = useState<any>(null);
   const [pricingTiers, setPricingTiers] = useState<any[]>([]);
   const [crossSells, setCrossSells] = useState<any[]>([]);
+  const [childProducts, setChildProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
@@ -82,10 +83,12 @@ export default function StorefrontProductDetail() {
         
         if (varsRes.data && varsRes.data.length > 0) setSelectedVariant(varsRes.data[0].id);
 
-        // Separate cross-sells and upsells
+        // Separate cross-sells, upsells, and child products
         const rels = relsRes.data || [];
         const crossSellProducts = rels.filter((r: any) => r.relation_type === "cross_sell" || r.relation_type === "upsell").map((r: any) => r.related).filter(Boolean);
         setCrossSells(crossSellProducts);
+        const children = rels.filter((r: any) => r.relation_type === "child" || r.relation_type === "accessory").map((r: any) => r.related).filter(Boolean);
+        setChildProducts(children);
 
         // Fallback related products if no relations
         if (prodRes.data && found && crossSellProducts.length === 0) {
@@ -595,6 +598,29 @@ export default function StorefrontProductDetail() {
               } as TemplateContext}
               className="prose prose-sm max-w-none"
             />
+          </div>
+        )}
+
+        {/* Child Products (non-variant children via product_relations) */}
+        {childProducts.length > 0 && (
+          <div className="mt-10">
+            <Separator className="mb-8" />
+            <h2 className="text-xl font-bold mb-5">Included Components</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {childProducts.map((p: any) => (
+                <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-2.5">
+                    {p.images?.[0] ? (
+                      <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
+                  <span className="text-sm font-bold">${Number(p.price).toFixed(2)}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 

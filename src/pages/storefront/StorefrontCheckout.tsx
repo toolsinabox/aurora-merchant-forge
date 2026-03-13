@@ -67,6 +67,9 @@ export default function StorefrontCheckout() {
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
+  const [storeCreditBalance, setStoreCreditBalance] = useState(0);
+  const [useStoreCredit, setUseStoreCredit] = useState(false);
+  const [customerId, setCustomerId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -82,12 +85,19 @@ export default function StorefrontCheckout() {
       const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
       const c = custs?.[0];
       if (c) {
+        setCustomerId(c.id);
         setForm((prev) => ({
           ...prev,
           name: c.name || prev.name,
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
+        // Load store credit balance
+        const { data: credits } = await supabase.from("store_credit_transactions" as any).select("amount, type").eq("customer_id", c.id);
+        if (credits) {
+          const bal = (credits as any[]).reduce((s: number, t: any) => s + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)), 0);
+          setStoreCreditBalance(Math.max(0, bal));
+        }
         // Check if customer group is tax exempt
         if ((c as any).customer_group_id) {
           const { data: grp } = await supabase
@@ -133,7 +143,8 @@ export default function StorefrontCheckout() {
   const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
   const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
   const voucherAmount = appliedVoucher?.amountUsed ?? 0;
-  const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount);
+  const storeCreditAmount = useStoreCredit ? Math.min(storeCreditBalance, totalBeforeVoucher - voucherAmount) : 0;
+  const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount - storeCreditAmount);
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
@@ -428,6 +439,18 @@ export default function StorefrontCheckout() {
           balance: newBalance,
           redeemed_at: newBalance === 0 ? new Date().toISOString() : null,
         } as any).eq("id", appliedVoucher.id);
+      }
+
+      // Deduct store credit
+      if (storeCreditAmount > 0 && customerId) {
+        await supabase.from("store_credit_transactions" as any).insert({
+          customer_id: customerId,
+          store_id: storeId,
+          amount: storeCreditAmount,
+          type: "debit",
+          description: `Order ${orderNum}`,
+          order_id: order.id,
+        });
       }
 
       setOrderNumber(orderNum);
@@ -777,6 +800,23 @@ export default function StorefrontCheckout() {
                   </div>
                 )}
 
+                {/* Store Credit */}
+                {storeCreditBalance > 0 && (
+                  <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        id="use_credit"
+                        checked={useStoreCredit}
+                        onCheckedChange={(checked) => setUseStoreCredit(!!checked)}
+                      />
+                      <label htmlFor="use_credit" className="text-xs cursor-pointer">
+                        Use store credit (${storeCreditBalance.toFixed(2)})
+                      </label>
+                    </div>
+                    {useStoreCredit && <span className="text-xs font-medium text-primary">-${storeCreditAmount.toFixed(2)}</span>}
+                  </div>
+                )}
+
                 <Separator />
 
                 <div className="space-y-1.5 text-sm">
@@ -810,6 +850,12 @@ export default function StorefrontCheckout() {
                     <div className="flex justify-between text-primary">
                       <span>Gift Voucher</span>
                       <span>-${voucherAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {storeCreditAmount > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span>Store Credit</span>
+                      <span>-${storeCreditAmount.toFixed(2)}</span>
                     </div>
                   )}
                 </div>
