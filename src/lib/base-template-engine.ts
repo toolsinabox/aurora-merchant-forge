@@ -379,7 +379,7 @@ export const SUPPORTED_FORMATS = [
 ];
 
 export const SUPPORTED_BLOCKS = [
-  "crosssell", "upsell", "free_gift", "variants", "specifics", "pricing_tiers", "images", "tags",
+  "crosssell", "upsell", "free_gift", "variants", "specifics", "pricing_tiers", "images", "tags", "adverts", "thumblist",
 ];
 
 export const SUPPORTED_CONDITIONALS = [
