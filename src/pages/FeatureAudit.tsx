@@ -509,7 +509,7 @@ const featureData: FeatureCategory[] = [
       { name: "Blog / News Articles", description: "Blog listing and post pages", status: "done", notes: "Via CMS page type: blog" },
       { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "done", notes: "Banner text with start/end datetime scheduling in Settings branding, displayed conditionally on storefront header based on current date" },
       { name: "Static Blocks / Widgets", description: "Reusable content blocks embeddable on any page", status: "done", notes: "content_blocks table with CRUD, admin Content Blocks page with name, identifier, type (html/text/markdown/banner), placement zones, active toggle, edit/copy/delete" },
-      { name: "WYSIWYG Content Editor", description: "Rich text editor for content pages", status: "not_started" },
+      { name: "WYSIWYG Content Editor", description: "Rich text editor for content pages", status: "done", notes: "TipTap rich text editor with bold, italic, strike, code, H1-H3, bullet/ordered lists, blockquote, horizontal rule, text alignment, links, images, undo/redo toolbar; integrated into Content Pages editor dialog" },
       { name: "Content Reviews", description: "Reviews on content pages (not just products)", status: "done", notes: "content_reviews table, review form and display on storefront content pages with star ratings, moderation approval, average rating badge" },
       { name: "Media Library / Asset Management", description: "Central repository for images, files, and media", status: "done", notes: "media_assets table with CRUD, admin Media Library page with grid view, folder filtering, file upload, copy URL, and delete" },
     ],
