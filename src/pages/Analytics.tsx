@@ -89,12 +89,16 @@ export default function Analytics() {
 
   // Top selling products from order_items
   const [topSellingProducts, setTopSellingProducts] = useState<any[]>([]);
+  const [salesByCategory, setSalesByCategory] = useState<any[]>([]);
+  const [couponStats, setCouponStats] = useState<any[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
     if (!currentStore) return;
-    const fetchTopSelling = async () => {
+    const fetchData = async () => {
       setLoadingTopProducts(true);
+
+      // Fetch order items with product info
       const { data: items } = await supabase
         .from("order_items")
         .select("product_id, title, quantity, total")
@@ -108,13 +112,45 @@ export default function Analytics() {
         productMap[key].revenue += Number(item.total);
       });
       
-      const sorted = Object.values(productMap)
-        .sort((a, b) => b.revenue - a.revenue)
-        .slice(0, 10);
-      setTopSellingProducts(sorted);
+      setTopSellingProducts(
+        Object.values(productMap).sort((a, b) => b.revenue - a.revenue).slice(0, 10)
+      );
+
+      // Sales by category
+      const { data: cats } = await supabase
+        .from("categories")
+        .select("id, name")
+        .eq("store_id", currentStore.id);
+      const { data: prods } = await supabase
+        .from("products")
+        .select("id, category_id")
+        .eq("store_id", currentStore.id);
+      
+      const catMap: Record<string, string> = {};
+      (cats || []).forEach((c: any) => { catMap[c.id] = c.name; });
+      const prodCatMap: Record<string, string> = {};
+      (prods || []).forEach((p: any) => { if (p.category_id) prodCatMap[p.id] = catMap[p.category_id] || "Other"; });
+      
+      const catRevenue: Record<string, number> = {};
+      (items || []).forEach((item: any) => {
+        const cat = prodCatMap[item.product_id] || "Uncategorized";
+        catRevenue[cat] = (catRevenue[cat] || 0) + Number(item.total);
+      });
+      setSalesByCategory(
+        Object.entries(catRevenue).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
+      );
+
+      // Coupon usage stats
+      const { data: coupons } = await supabase
+        .from("coupons")
+        .select("code, discount_type, discount_value, used_count, max_uses, is_active")
+        .eq("store_id", currentStore.id)
+        .order("used_count", { ascending: false });
+      setCouponStats((coupons || []).filter((c: any) => c.used_count > 0));
+
       setLoadingTopProducts(false);
     };
-    fetchTopSelling();
+    fetchData();
   }, [currentStore]);
 
   // Top customers
