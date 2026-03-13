@@ -164,7 +164,6 @@ export default function PlatformMerchants() {
                               <Settings2 className="h-3 w-3" />
                             </Button>
                           </div>
-                          </Select>
                         </TableCell>
                         <TableCell>
                           {s.is_suspended ? (
