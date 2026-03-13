@@ -456,7 +456,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax Rates by Region", description: "Configure tax rates per region/state", status: "done" },
       { name: "Tax-Free Products", description: "Mark individual products as tax exempt", status: "done" },
       { name: "Tax-Inclusive Pricing", description: "Display prices inclusive of tax", status: "done" },
-      { name: "Tax-Exclusive Pricing", description: "Display prices exclusive of tax, add at checkout", status: "partial" },
+      { name: "Tax-Exclusive Pricing", description: "Display prices exclusive of tax, add at checkout", status: "done", notes: "Product detail shows 'ex. tax' or 'inc. tax' label based on product tax_inclusive flag, checkout adds tax to subtotal for non-exempt customers" },
       { name: "GST / VAT Handling", description: "Australian GST or European VAT calculation", status: "not_started" },
       { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "done", notes: "is_tax_exempt on customer_groups, applied at checkout to skip tax" },
       { name: "Tax Reporting / BAS Report", description: "Tax summary reports for accounting", status: "not_started" },
