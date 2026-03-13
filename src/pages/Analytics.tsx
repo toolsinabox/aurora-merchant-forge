@@ -93,6 +93,7 @@ export default function Analytics() {
   const [couponStats, setCouponStats] = useState<any[]>([]);
   const [profitData, setProfitData] = useState<any[]>([]);
   const [taxSummary, setTaxSummary] = useState<{ totalTax: number; orderCount: number; byMonth: any[] }>({ totalTax: 0, orderCount: 0, byMonth: [] });
+  const [acquisitionData, setAcquisitionData] = useState<{ newCustomers: number; returning: number; byMonth: any[] }>({ newCustomers: 0, returning: 0, byMonth: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -194,6 +195,26 @@ export default function Analytics() {
         totalTax,
         orderCount: taxOrderCount,
         byMonth: Object.entries(taxByMonth).map(([month, amount]) => ({ month, amount: Math.round(amount * 100) / 100 })),
+      });
+
+      // Customer acquisition: new vs returning
+      const custByMonth: Record<string, { newC: number; returning: number }> = {};
+      let totalNew = 0, totalReturning = 0;
+      (customers as any[]).forEach((c: any) => {
+        const month = new Date(c.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+        if (!custByMonth[month]) custByMonth[month] = { newC: 0, returning: 0 };
+        if (Number(c.total_orders) <= 1) {
+          custByMonth[month].newC++;
+          totalNew++;
+        } else {
+          custByMonth[month].returning++;
+          totalReturning++;
+        }
+      });
+      setAcquisitionData({
+        newCustomers: totalNew,
+        returning: totalReturning,
+        byMonth: Object.entries(custByMonth).map(([month, d]) => ({ month, new: d.newC, returning: d.returning })),
       });
 
       setLoadingTopProducts(false);
@@ -536,6 +557,38 @@ export default function Analytics() {
                         <YAxis tick={{ fontSize: 10 }} />
                         <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Tax"]} />
                         <Bar dataKey="amount" fill="hsl(38, 92%, 50%)" radius={[2, 2, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+           {/* Customer Acquisition Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Customer Acquisition</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">New Customers</p>
+                      <p className="text-lg font-bold">{acquisitionData.newCustomers}</p>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Returning</p>
+                      <p className="text-lg font-bold">{acquisitionData.returning}</p>
+                    </div>
+                  </div>
+                  {acquisitionData.byMonth.length > 0 && (
+                    <ResponsiveContainer width="100%" height={140}>
+                      <BarChart data={acquisitionData.byMonth}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+                        <Bar dataKey="new" name="New" fill="hsl(217, 91%, 50%)" radius={[2, 2, 0, 0]} stackId="a" />
+                        <Bar dataKey="returning" name="Returning" fill="hsl(142, 71%, 45%)" radius={[2, 2, 0, 0]} stackId="a" />
                       </BarChart>
                     </ResponsiveContainer>
                   )}

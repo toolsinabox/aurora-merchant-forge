@@ -48,6 +48,7 @@ import PurchaseOrders from "./pages/PurchaseOrders.tsx";
 import ShippingZones from "./pages/ShippingZones.tsx";
 import TaxRates from "./pages/TaxRates.tsx";
 import StockAdjustments from "./pages/StockAdjustments.tsx";
+import Stocktake from "./pages/Stocktake.tsx";
 import AbandonedCarts from "./pages/AbandonedCarts.tsx";
 import StorefrontWishlist from "./pages/storefront/StorefrontWishlist.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
@@ -139,6 +140,7 @@ const App = () => (
                   <Route path="/_cpanel/shipping-zones" element={<RequireAuth><ShippingZones /></RequireAuth>} />
                   <Route path="/_cpanel/tax-rates" element={<RequireAuth><TaxRates /></RequireAuth>} />
                   <Route path="/_cpanel/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
+                  <Route path="/_cpanel/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -194,6 +196,7 @@ const App = () => (
                   <Route path="/shipping-zones" element={<RequireAuth><ShippingZones /></RequireAuth>} />
                   <Route path="/tax-rates" element={<RequireAuth><TaxRates /></RequireAuth>} />
                   <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
+                  <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
