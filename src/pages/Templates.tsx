@@ -451,7 +451,7 @@ export default function Templates() {
                 <p className="text-muted-foreground mb-2">Syntax: <code className="bg-muted px-1 rounded">[?condition?]...show if true...[?/condition?]</code></p>
                 <div className="flex flex-wrap gap-1">
                   {SUPPORTED_CONDITIONALS.map((cond) => (
-                    <Badge key={cond} variant="outline" className="font-mono text-[10px] text-amber-600">{cond}</Badge>
+                    <Badge key={cond} variant="outline" className="font-mono text-[10px] text-accent-foreground">{cond}</Badge>
                   ))}
                 </div>
               </div>
