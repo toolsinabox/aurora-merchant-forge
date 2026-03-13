@@ -139,7 +139,9 @@ export default function AbandonedCarts() {
                 <SelectContent>
                   <SelectItem value="all" className="text-xs">All</SelectItem>
                   <SelectItem value="pending" className="text-xs">Pending</SelectItem>
-                  <SelectItem value="email_sent" className="text-xs">Email Sent</SelectItem>
+                  <SelectItem value="email_sent" className="text-xs">1st Email</SelectItem>
+                  <SelectItem value="email_sent_2" className="text-xs">2nd Email</SelectItem>
+                  <SelectItem value="email_sent_3" className="text-xs">3rd Email</SelectItem>
                   <SelectItem value="recovered" className="text-xs">Recovered</SelectItem>
                 </SelectContent>
               </Select>
