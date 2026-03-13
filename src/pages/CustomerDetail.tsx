@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useCustomer, useOrders, useCustomerAddresses, useCreateCustomerAddress, useDeleteCustomerAddress, useCustomerGroups } from "@/hooks/use-data";
-import { ArrowLeft, Mail, Phone, Calendar, MapPin, Plus, Trash2, Save, Tag } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, MapPin, Plus, Trash2, Save, Tag, FileText } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -101,7 +101,12 @@ export default function CustomerDetail() {
           </div>
           <StatusBadge status={customer.segment} />
           {!editing && (
-            <Button size="sm" variant="outline" className="text-xs" onClick={startEdit}>Edit</Button>
+            <div className="flex gap-1.5">
+              <Button size="sm" variant="outline" className="text-xs" onClick={() => navigate(`/customers/${id}/statement`)}>
+                <FileText className="h-3 w-3 mr-1" />Statement
+              </Button>
+              <Button size="sm" variant="outline" className="text-xs" onClick={startEdit}>Edit</Button>
+            </div>
           )}
         </div>
 

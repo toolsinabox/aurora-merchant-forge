@@ -66,6 +66,9 @@ import StorefrontBlog from "./pages/storefront/StorefrontBlog.tsx";
 import StorefrontGiftVouchers from "./pages/storefront/StorefrontGiftVouchers.tsx";
 import PrintGiftVoucher from "./pages/PrintGiftVoucher.tsx";
 import WarehouseDashboard from "./pages/WarehouseDashboard.tsx";
+import PrintCustomerStatement from "./pages/PrintCustomerStatement.tsx";
+import Redirects from "./pages/Redirects.tsx";
+import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -128,6 +131,8 @@ const App = () => (
                   <Route path="/_cpanel/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
                   <Route path="/_cpanel/customers" element={<RequireAuth><Customers /></RequireAuth>} />
                   <Route path="/_cpanel/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
+                  <Route path="/_cpanel/customers/:id/statement" element={<RequireAuth><PrintCustomerStatement /></RequireAuth>} />
+                  <Route path="/_cpanel/barcode-labels" element={<RequireAuth><PrintBarcodeLabels /></RequireAuth>} />
                   <Route path="/_cpanel/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
                   <Route path="/_cpanel/coupons" element={<RequireAuth><Coupons /></RequireAuth>} />
                   <Route path="/_cpanel/returns" element={<RequireAuth><Returns /></RequireAuth>} />
@@ -148,6 +153,7 @@ const App = () => (
                   <Route path="/_cpanel/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                  <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -185,6 +191,8 @@ const App = () => (
                   <Route path="/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
                   <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
                   <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
+                  <Route path="/customers/:id/statement" element={<RequireAuth><PrintCustomerStatement /></RequireAuth>} />
+                  <Route path="/barcode-labels" element={<RequireAuth><PrintBarcodeLabels /></RequireAuth>} />
                   <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
                   <Route path="/coupons" element={<RequireAuth><Coupons /></RequireAuth>} />
                   <Route path="/returns" element={<RequireAuth><Returns /></RequireAuth>} />
@@ -205,6 +213,7 @@ const App = () => (
                   <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                  <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

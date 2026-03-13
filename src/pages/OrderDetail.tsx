@@ -69,6 +69,8 @@ export default function OrderDetail() {
   const [paymentForm, setPaymentForm] = useState({ amount: "", method: "manual", reference: "", notes: "" });
   const [creditNoteOpen, setCreditNoteOpen] = useState(false);
   const [creditForm, setCreditForm] = useState({ amount: "", reason: "", notes: "" });
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundForm, setRefundForm] = useState({ amount: "", reason: "" });
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -623,10 +625,15 @@ export default function OrderDetail() {
             <Card>
               <CardHeader className="py-3 px-4">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" /> Credit Notes
-                  <Button size="sm" variant="outline" className="ml-auto h-6 text-xs px-2" onClick={() => setCreditNoteOpen(true)}>
-                    <Plus className="h-3 w-3 mr-1" /> Issue
-                  </Button>
+                  <DollarSign className="h-4 w-4" /> Credit Notes & Refunds
+                  <div className="ml-auto flex gap-1">
+                    <Button size="sm" variant="outline" className="h-6 text-xs px-2" onClick={() => setRefundOpen(true)}>
+                      Refund
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-6 text-xs px-2" onClick={() => setCreditNoteOpen(true)}>
+                      <Plus className="h-3 w-3 mr-1" /> Credit Note
+                    </Button>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-4 pb-4 pt-0 space-y-2">
@@ -720,6 +727,50 @@ export default function OrderDetail() {
                 setCreditForm({ amount: "", reason: "", notes: "" });
               }}
             >Issue Credit Note</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refund Dialog */}
+      <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Process Refund</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Refund Amount</Label>
+              <Input type="number" step="0.01" placeholder="0.00" value={refundForm.amount}
+                onChange={(e) => setRefundForm({ ...refundForm, amount: e.target.value })} />
+              <p className="text-xs text-muted-foreground">Order total: ${Number(order.total).toFixed(2)}</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Reason</Label>
+              <Textarea value={refundForm.reason}
+                onChange={(e) => setRefundForm({ ...refundForm, reason: e.target.value })} className="min-h-[50px] text-sm" placeholder="Reason for refund..." />
+            </div>
+            <Button className="w-full" size="sm" disabled={!refundForm.amount || Number(refundForm.amount) <= 0}
+              onClick={async () => {
+                if (!order) return;
+                const amount = Number(refundForm.amount);
+                await supabase.from("order_refunds" as any).insert({
+                  store_id: order.store_id,
+                  order_id: order.id,
+                  amount,
+                  reason: refundForm.reason || null,
+                  refunded_by: user?.id || null,
+                  status: "completed",
+                });
+                await createTimelineEvent.mutateAsync({
+                  order_id: order.id,
+                  event_type: "payment",
+                  title: "Refund processed",
+                  description: `$${amount.toFixed(2)} refunded${refundForm.reason ? ` — ${refundForm.reason}` : ""}`,
+                });
+                await updateOrder.mutateAsync({ id: order.id, payment_status: "refunded" } as any);
+                toast.success(`Refund of $${amount.toFixed(2)} processed`);
+                setRefundOpen(false);
+                setRefundForm({ amount: "", reason: "" });
+              }}
+            >Process Refund</Button>
           </div>
         </DialogContent>
       </Dialog>

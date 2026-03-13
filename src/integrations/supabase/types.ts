@@ -1025,6 +1025,54 @@ export type Database = {
           },
         ]
       }
+      order_refunds: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          order_id: string
+          reason: string | null
+          refunded_by: string | null
+          status: string
+          store_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          order_id: string
+          reason?: string | null
+          refunded_by?: string | null
+          status?: string
+          store_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          reason?: string | null
+          refunded_by?: string | null
+          status?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_refunds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_refunds_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_shipments: {
         Row: {
           carrier: string | null
@@ -1986,6 +2034,47 @@ export type Database = {
             columns: ["supplier_id"]
             isOneToOne: false
             referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      redirects: {
+        Row: {
+          created_at: string
+          from_path: string
+          hit_count: number
+          id: string
+          is_active: boolean
+          store_id: string
+          to_path: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_path: string
+          hit_count?: number
+          id?: string
+          is_active?: boolean
+          store_id: string
+          to_path: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_path?: string
+          hit_count?: number
+          id?: string
+          is_active?: boolean
+          store_id?: string
+          to_path?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redirects_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
             referencedColumns: ["id"]
           },
         ]
