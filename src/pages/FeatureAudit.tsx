@@ -871,7 +871,7 @@ const featureData: FeatureCategory[] = [
       { name: "Timezone Settings", description: "Store timezone", status: "done" },
       { name: "Tax Settings", description: "Tax rates and rules configuration", status: "done" },
       { name: "Shipping Settings", description: "Shipping zones and rates configuration", status: "done" },
-      { name: "Payment Gateway Configuration", description: "Configure and enable payment providers", status: "not_started" },
+      { name: "Payment Gateway Configuration", description: "Configure and enable payment providers", status: "done", notes: "payment_gateways table with per-store config, Payments tab in Settings with 7 gateway types (Stripe, PayPal, Square, eWAY, Braintree, Bank Transfer, Afterpay), enable/disable, test mode toggle, per-gateway credential fields" },
       { name: "Email / SMTP Configuration", description: "Configure outgoing email settings", status: "not_started" },
       { name: "Notification Preferences", description: "Configure which notifications to receive", status: "done", notes: "Notifications tab in Settings with toggles for new order, low stock, new customer, return request, contact form, review submitted" },
       { name: "Checkout Settings", description: "Guest checkout, minimum order, checkout fields", status: "done", notes: "Checkout tab in Settings with guest checkout toggle and min order amount, enforced at checkout" },
