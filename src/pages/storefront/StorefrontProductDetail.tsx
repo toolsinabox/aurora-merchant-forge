@@ -602,11 +602,27 @@ export default function StorefrontProductDetail() {
         )}
 
         {/* Child Products (non-variant children via product_relations) */}
-        {(() => {
-          const rels = (crossSells.length > 0 ? [] : []).length; // placeholder
-          const childProducts = (relatedProducts.length >= 0 ? [] : []) as any[]; // will be populated
-          return null; // Rendered via separate section below
-        })()}
+        {childProducts.length > 0 && (
+          <div className="mt-10">
+            <Separator className="mb-8" />
+            <h2 className="text-xl font-bold mb-5">Included Components</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {childProducts.map((p: any) => (
+                <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
+                  <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-2.5">
+                    {p.images?.[0] ? (
+                      <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
+                    )}
+                  </div>
+                  <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
+                  <span className="text-sm font-bold">${Number(p.price).toFixed(2)}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Cross-sells / Related Products */}
         {allRelated.length > 0 && (
