@@ -331,7 +331,7 @@ export default function ImportWizard() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">Import Products</h1>
+              <h1 className="text-lg font-semibold">Import {entityType === "orders" ? "Orders" : "Products"}</h1>
               <p className="text-xs text-muted-foreground">Bulk import via CSV with field mapping</p>
             </div>
           </div>
