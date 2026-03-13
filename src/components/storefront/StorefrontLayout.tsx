@@ -146,7 +146,9 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
               <nav className="flex flex-col gap-2">
                 <Link to={basePath || "/"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
                 <Link to={`${basePath}/products`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">All Products</Link>
+                <Link to={`${basePath}/blog`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
                 <Link to={`${basePath}/cart`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cart</Link>
+                <Link to={`${basePath}/track-order`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Track Order</Link>
               </nav>
             </div>
             <div>
