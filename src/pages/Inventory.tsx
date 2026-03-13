@@ -323,7 +323,6 @@ export default function Inventory() {
               </DialogContent>
             </Dialog>
           </div>
-        </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           <Card><CardContent className="p-4 flex items-center gap-3">
