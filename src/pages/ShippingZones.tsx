@@ -37,9 +37,9 @@ export default function ShippingZones() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editZone, setEditZone] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "" });
+  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
 
-  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "" });
+  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
 
   const filtered = (zones as any[]).filter((z) =>
     z.name.toLowerCase().includes(search.toLowerCase()) ||
