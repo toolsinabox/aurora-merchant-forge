@@ -861,7 +861,7 @@ export default function ProductForm() {
                       <Input className="h-8 text-xs" value={form.seo_keywords} onChange={(e) => update("seo_keywords", e.target.value)} placeholder="Comma-separated keywords" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">URL Slug</Label>
+                      <FieldLabel label="URL Slug" field="slug" />
                       <Input className="h-8 text-xs font-mono" value={form.slug} onChange={(e) => update("slug", e.target.value)} />
                     </div>
                     <div className="flex items-center justify-between">
