@@ -208,6 +208,40 @@ export default function AbandonedCarts() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Coupon Input Dialog */}
+        <Dialog open={!!couponCartId} onOpenChange={(o) => { if (!o) { setCouponCartId(null); setCouponInput(null); } }}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle className="text-sm">Send Recovery Email with Coupon</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium">Coupon Code (optional)</label>
+                <Input
+                  placeholder="e.g. COMEBACK10"
+                  value={couponInput || ""}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  className="text-xs"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Enter an active coupon code to include a discount incentive in the email.</p>
+              </div>
+              <Button
+                className="w-full"
+                size="sm"
+                disabled={markEmailSent.isPending}
+                onClick={() => {
+                  if (couponCartId) {
+                    markEmailSent.mutate({ id: couponCartId, couponCode: couponInput || undefined });
+                    setCouponCartId(null);
+                    setCouponInput(null);
+                  }
+                }}
+              >
+                <Mail className="h-3.5 w-3.5 mr-1" />
+                {couponInput ? "Send with Coupon" : "Send Without Coupon"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
