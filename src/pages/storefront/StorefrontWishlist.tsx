@@ -85,12 +85,11 @@ export default function StorefrontWishlist() {
                     <Button
                       size="sm"
                       onClick={() => addItem({
-                        id: product.id,
+                        product_id: product.id,
                         title: product.title,
                         price: Number(product.price),
                         image: product.images?.[0],
                         quantity: 1,
-                        store_id: product.store_id,
                       })}
                     >
                       <ShoppingCart className="h-4 w-4 mr-1" /> Add to Cart
