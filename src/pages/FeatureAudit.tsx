@@ -872,7 +872,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax Settings", description: "Tax rates and rules configuration", status: "done" },
       { name: "Shipping Settings", description: "Shipping zones and rates configuration", status: "done" },
       { name: "Payment Gateway Configuration", description: "Configure and enable payment providers", status: "done", notes: "payment_gateways table with per-store config, Payments tab in Settings with 7 gateway types (Stripe, PayPal, Square, eWAY, Braintree, Bank Transfer, Afterpay), enable/disable, test mode toggle, per-gateway credential fields" },
-      { name: "Email / SMTP Configuration", description: "Configure outgoing email settings", status: "not_started" },
+      { name: "Email / SMTP Configuration", description: "Configure outgoing email settings", status: "done", notes: "smtp_config JSONB on stores table, Email tab in Settings with host, port, username, password, from name/email, encryption (none/SSL/TLS)" },
       { name: "Notification Preferences", description: "Configure which notifications to receive", status: "done", notes: "Notifications tab in Settings with toggles for new order, low stock, new customer, return request, contact form, review submitted" },
       { name: "Checkout Settings", description: "Guest checkout, minimum order, checkout fields", status: "done", notes: "Checkout tab in Settings with guest checkout toggle and min order amount, enforced at checkout" },
       { name: "Inventory Settings", description: "Default low stock threshold, backorder rules", status: "done", notes: "Inventory tab in Settings with default_low_stock_threshold stored on stores table" },
