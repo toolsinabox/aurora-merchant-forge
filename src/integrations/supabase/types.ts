@@ -2549,9 +2549,11 @@ export type Database = {
           description: string | null
           favicon_url: string | null
           ga_tracking_id: string | null
+          guest_checkout_enabled: boolean
           id: string
           is_suspended: boolean
           logo_url: string | null
+          min_order_amount: number
           name: string
           owner_id: string
           primary_color: string | null
@@ -2570,9 +2572,11 @@ export type Database = {
           description?: string | null
           favicon_url?: string | null
           ga_tracking_id?: string | null
+          guest_checkout_enabled?: boolean
           id?: string
           is_suspended?: boolean
           logo_url?: string | null
+          min_order_amount?: number
           name: string
           owner_id: string
           primary_color?: string | null
@@ -2591,9 +2595,11 @@ export type Database = {
           description?: string | null
           favicon_url?: string | null
           ga_tracking_id?: string | null
+          guest_checkout_enabled?: boolean
           id?: string
           is_suspended?: boolean
           logo_url?: string | null
+          min_order_amount?: number
           name?: string
           owner_id?: string
           primary_color?: string | null

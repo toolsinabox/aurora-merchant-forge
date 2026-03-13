@@ -21,6 +21,63 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+
+function CheckoutSettings() {
+  const { currentStore } = useAuth();
+  const [guestCheckout, setGuestCheckout] = useState(true);
+  const [minOrder, setMinOrder] = useState("0");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase
+      .from("stores")
+      .select("guest_checkout_enabled, min_order_amount")
+      .eq("id", currentStore.id)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setGuestCheckout((data as any).guest_checkout_enabled ?? true);
+          setMinOrder(String((data as any).min_order_amount ?? 0));
+        }
+      });
+  }, [currentStore]);
+
+  const handleSave = async () => {
+    if (!currentStore) return;
+    setSaving(true);
+    await supabase.from("stores").update({
+      guest_checkout_enabled: guestCheckout,
+      min_order_amount: Number(minOrder) || 0,
+    } as any).eq("id", currentStore.id);
+    setSaving(false);
+    toast.success("Checkout settings saved");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Checkout Settings</CardTitle></CardHeader>
+      <CardContent className="p-4 pt-2 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <Label className="text-xs font-medium">Allow Guest Checkout</Label>
+            <p className="text-2xs text-muted-foreground">Let customers checkout without creating an account</p>
+          </div>
+          <Switch checked={guestCheckout} onCheckedChange={setGuestCheckout} />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Minimum Order Amount</Label>
+          <Input className="h-8 text-xs w-40" type="number" step="0.01" min="0" value={minOrder} onChange={(e) => setMinOrder(e.target.value)} placeholder="0.00" />
+          <p className="text-2xs text-muted-foreground">Set to 0 for no minimum</p>
+        </div>
+        <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+          <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save Checkout Settings"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
@@ -179,10 +236,11 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="store">
-          <TabsList className="h-8">
+          <TabsList className="h-8 flex-wrap">
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
             <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
+            <TabsTrigger value="checkout" className="text-xs h-7">Checkout</TabsTrigger>
             <TabsTrigger value="team" className="text-xs h-7">Team</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
             <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
@@ -300,6 +358,10 @@ export default function SettingsPage() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="checkout" className="space-y-3">
+            <CheckoutSettings />
           </TabsContent>
 
           <TabsContent value="theme" className="space-y-3">

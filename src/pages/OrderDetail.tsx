@@ -564,7 +564,16 @@ export default function OrderDetail() {
                             <span className="text-muted-foreground ml-1.5 capitalize">{p.payment_method.replace("_", " ")}</span>
                             {p.reference && <span className="text-muted-foreground ml-1">({p.reference})</span>}
                           </div>
-                          <span className="text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</span>
+                            <button
+                              onClick={() => window.open(`${window.location.pathname}/receipt/${p.id}`, "_blank")}
+                              className="text-primary hover:underline"
+                              title="Print Receipt"
+                            >
+                              <Printer className="h-3 w-3" />
+                            </button>
+                          </div>
                         </div>
                       ))}
                       <div className="flex justify-between text-xs font-medium pt-1 border-t">

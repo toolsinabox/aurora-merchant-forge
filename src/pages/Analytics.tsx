@@ -95,6 +95,7 @@ export default function Analytics() {
   const [taxSummary, setTaxSummary] = useState<{ totalTax: number; orderCount: number; byMonth: any[] }>({ totalTax: 0, orderCount: 0, byMonth: [] });
   const [acquisitionData, setAcquisitionData] = useState<{ newCustomers: number; returning: number; byMonth: any[] }>({ newCustomers: 0, returning: 0, byMonth: [] });
   const [slowMovingProducts, setSlowMovingProducts] = useState<any[]>([]);
+  const [stockTurnoverData, setStockTurnoverData] = useState<any[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -242,6 +243,34 @@ export default function Analytics() {
         .sort((a: any, b: any) => a.unitsSold - b.unitsSold)
         .slice(0, 10);
       setSlowMovingProducts(slowMoving);
+
+      // Stock turnover report: (units sold / average stock) for each product
+      const { data: stockData } = await supabase
+        .from("inventory_stock")
+        .select("product_id, quantity")
+        .eq("store_id", currentStore.id);
+      const stockByProduct: Record<string, number> = {};
+      (stockData || []).forEach((s: any) => {
+        stockByProduct[s.product_id] = (stockByProduct[s.product_id] || 0) + Number(s.quantity);
+      });
+      const turnover = (allProducts || [])
+        .map((p: any) => {
+          const stock = stockByProduct[p.id] || 0;
+          const sold = unitsSoldMap[p.id] || 0;
+          const avgStock = stock > 0 ? stock : 1;
+          const rate = sold / avgStock;
+          return {
+            title: productMap[p.id]?.title || p.id.slice(0, 8),
+            stock,
+            unitsSold: sold,
+            costPrice: Number(p.cost_price) || Number(p.price),
+            turnoverRate: Math.round(rate * 100) / 100,
+          };
+        })
+        .filter((p: any) => p.stock > 0 || p.unitsSold > 0)
+        .sort((a: any, b: any) => b.turnoverRate - a.turnoverRate)
+        .slice(0, 15);
+      setStockTurnoverData(turnover);
 
       setLoadingTopProducts(false);
     };
@@ -644,6 +673,37 @@ export default function Analytics() {
                         <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
                         <TableCell className="py-1.5 text-right">${p.price.toFixed(2)}</TableCell>
                         <TableCell className="py-1.5 text-right font-mono">{p.unitsSold}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Stock Turnover Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Stock Turnover</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : stockTurnoverData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No turnover data available</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Stock</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units Sold</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Turnover Rate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stockTurnoverData.map((p: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.stock}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.unitsSold}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.turnoverRate}×</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

@@ -71,6 +71,8 @@ import Redirects from "./pages/Redirects.tsx";
 import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
+import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
+import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -113,6 +115,7 @@ const App = () => (
                   <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/contact" element={<StorefrontContact />} />
+                  <Route path="/quick-order" element={<StorefrontQuickOrder />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
@@ -129,6 +132,7 @@ const App = () => (
                   <Route path="/_cpanel/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id/print" element={<RequireAuth><PrintInvoice /></RequireAuth>} />
+                  <Route path="/_cpanel/orders/:id/receipt/:paymentId" element={<RequireAuth><PrintPaymentReceipt /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id/packing-slip" element={<RequireAuth><PrintPackingSlip /></RequireAuth>} />
                   <Route path="/_cpanel/pick-list" element={<RequireAuth><PrintPickList /></RequireAuth>} />
                   <Route path="/_cpanel/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
@@ -190,6 +194,7 @@ const App = () => (
                   <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
                   <Route path="/orders/:id/print" element={<RequireAuth><PrintInvoice /></RequireAuth>} />
+                  <Route path="/orders/:id/receipt/:paymentId" element={<RequireAuth><PrintPaymentReceipt /></RequireAuth>} />
                   <Route path="/orders/:id/packing-slip" element={<RequireAuth><PrintPackingSlip /></RequireAuth>} />
                   <Route path="/pick-list" element={<RequireAuth><PrintPickList /></RequireAuth>} />
                   <Route path="/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
@@ -238,6 +243,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/store/:storeSlug/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
+                  <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}

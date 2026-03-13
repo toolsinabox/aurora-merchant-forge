@@ -303,6 +303,23 @@ export default function StorefrontCheckout() {
     if (!form.address || !form.city) { toast.error("Shipping address is required"); return; }
     if (!form.billing_same && (!form.billing_address || !form.billing_city)) { toast.error("Billing address is required"); return; }
 
+    // Check guest checkout allowed
+    if (!user) {
+      const { data: storeSettings } = await supabase.from("stores").select("guest_checkout_enabled").limit(1).maybeSingle();
+      if (storeSettings && !(storeSettings as any).guest_checkout_enabled) {
+        toast.error("Please log in to complete your order");
+        return;
+      }
+    }
+
+    // Check minimum order amount
+    const { data: storeMin } = await supabase.from("stores").select("min_order_amount").limit(1).maybeSingle();
+    const minOrder = Number((storeMin as any)?.min_order_amount) || 0;
+    if (minOrder > 0 && totalPrice < minOrder) {
+      toast.error(`Minimum order amount is $${minOrder.toFixed(2)}`);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const { data: stores } = await supabase.from("stores").select("id").limit(100);
