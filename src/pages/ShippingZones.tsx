@@ -68,7 +68,9 @@ export default function ShippingZones() {
       regions: form.regions,
       flat_rate: Number(form.flat_rate) || 0,
       free_above: form.free_above ? Number(form.free_above) : null,
-    });
+      rate_type: form.rate_type,
+      per_kg_rate: Number(form.per_kg_rate) || 0,
+    } as any);
     setEditZone(null);
     resetForm();
   };
