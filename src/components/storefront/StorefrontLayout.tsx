@@ -88,6 +88,45 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 <Link to={`${basePath}/products`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   All Products
                 </Link>
+                {/* Mega Menu */}
+                {parentCategories.length > 0 && (
+                  <div className="relative" onMouseEnter={() => setMegaMenuOpen(true)} onMouseLeave={() => setMegaMenuOpen(false)}>
+                    <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                      Categories <ChevronDown className="h-3 w-3" />
+                    </button>
+                    {megaMenuOpen && (
+                      <div className="absolute top-full left-0 pt-2 z-50">
+                        <div className="bg-background border rounded-lg shadow-lg p-4 min-w-[400px] grid grid-cols-2 gap-4">
+                          {parentCategories.slice(0, 8).map(cat => (
+                            <div key={cat.id}>
+                              <Link
+                                to={`${basePath}/products?category=${cat.slug}`}
+                                className="text-sm font-semibold hover:text-primary transition-colors"
+                                onClick={() => setMegaMenuOpen(false)}
+                              >
+                                {cat.name}
+                              </Link>
+                              {getChildren(cat.id).length > 0 && (
+                                <div className="mt-1 space-y-0.5">
+                                  {getChildren(cat.id).slice(0, 5).map(child => (
+                                    <Link
+                                      key={child.id}
+                                      to={`${basePath}/products?category=${child.slug}`}
+                                      className="block text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                      onClick={() => setMegaMenuOpen(false)}
+                                    >
+                                      {child.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </nav>
             </div>
 
