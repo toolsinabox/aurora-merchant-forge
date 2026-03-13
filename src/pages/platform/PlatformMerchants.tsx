@@ -63,6 +63,20 @@ export default function PlatformMerchants() {
     (s.slug || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const [planStore, setPlanStore] = useState<any>(null);
+  const [planLimits, setPlanLimits] = useState<any>({});
+
+  const openPlanEditor = (store: any) => {
+    setPlanStore(store);
+    setPlanLimits(store.plan_limits || PLAN_DEFAULTS[store.plan || "free"] || PLAN_DEFAULTS.free);
+  };
+
+  const savePlanLimits = () => {
+    if (!planStore) return;
+    updateStore.mutate({ id: planStore.id, updates: { plan_limits: planLimits } });
+    setPlanStore(null);
+  };
+
   return (
     <PlatformLayout>
       <div className="space-y-3">
