@@ -11,11 +11,11 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
-  { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
-  { title: "Merchants", url: "/admin/merchants", icon: Store },
-  { title: "All Customers", url: "/admin/customers", icon: Users },
-  { title: "Platform Analytics", url: "/admin/analytics", icon: BarChart3 },
-  { title: "Settings", url: "/admin/settings", icon: Settings },
+  { title: "Dashboard", url: "/platform/dashboard", icon: LayoutDashboard },
+  { title: "Merchants", url: "/platform/merchants", icon: Store },
+  { title: "All Customers", url: "/platform/customers", icon: Users },
+  { title: "Platform Analytics", url: "/platform/analytics", icon: BarChart3 },
+  { title: "Settings", url: "/platform/settings", icon: Settings },
 ];
 
 export function PlatformSidebar() {
