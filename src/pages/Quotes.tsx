@@ -19,6 +19,7 @@ import { format } from "date-fns";
 
 export default function Quotes() {
   const { currentStore, user } = useAuth();
+  const navigate = useNavigate();
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
