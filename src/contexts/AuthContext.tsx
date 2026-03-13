@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (session?.user && !currentStore) {
       supabase
         .from("stores")
-        .select("id, name, currency, timezone")
+        .select("id, name, slug, currency, timezone")
         .limit(1)
         .single()
         .then(({ data }) => {
