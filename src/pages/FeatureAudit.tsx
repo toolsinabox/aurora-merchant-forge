@@ -338,7 +338,7 @@ const featureData: FeatureCategory[] = [
       { name: "View Quote Detail", description: "View quote details (quote.template.html)", status: "done", notes: "Quotes tab in storefront account showing quote number, status, total, valid until, and items" },
       { name: "Print Order / Invoice", description: "Print-friendly order view (customer/print/)", status: "done", notes: "Print Invoice button on order detail opens printable invoice page" },
       { name: "Track Order", description: "Order tracking page (track_order/)", status: "done", notes: "Public /track-order page with order number search and shipment details" },
-      { name: "Pay Outstanding Order", description: "Pay unpaid orders from account (pay_order/)", status: "not_started" },
+      { name: "Pay Outstanding Order", description: "Pay unpaid orders from account (pay_order/)", status: "done", notes: "Pay button on storefront account order detail records payment via order_payments and updates payment_status" },
       { name: "Edit Account Details", description: "Edit billing/contact info (edit_account/)", status: "done", notes: "Inline edit name/phone on account profile card" },
       { name: "Edit Shipping Addresses", description: "Manage multiple addresses (edit_address/)", status: "done", notes: "CRUD on storefront account" },
       { name: "Change Password", description: "Password change form (edit_pwd/)", status: "done" },
