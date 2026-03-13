@@ -92,6 +92,7 @@ import Sessions from "./pages/Sessions.tsx";
 import EmailTemplates from "./pages/EmailTemplates.tsx";
 import LoyaltyProgram from "./pages/LoyaltyProgram.tsx";
 import ReportBuilder from "./pages/ReportBuilder.tsx";
+import POS from "./pages/POS.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
