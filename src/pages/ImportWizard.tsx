@@ -446,7 +446,7 @@ export default function ImportWizard() {
                   ACTIVE_FIELDS.reduce((acc, f) => {
                     (acc[f.group] = acc[f.group] || []).push(f);
                     return acc;
-                  }, {} as Record<string, typeof PRODUCT_FIELDS>)
+                  }, {} as Record<string, typeof ACTIVE_FIELDS>)
                 ).map(([group, fields]) => (
                   <div key={group} className="mb-3">
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">{group}</h3>
