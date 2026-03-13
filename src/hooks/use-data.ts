@@ -424,6 +424,63 @@ export function useDeleteCategory() {
   });
 }
 
+// ===================== CUSTOMER GROUPS =====================
+
+export function useCustomerGroups() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["customer_groups", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("customer_groups" as any)
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("name");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateCustomerGroup() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (group: { name: string; discount_percent?: number; is_tax_exempt?: boolean; description?: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("customer_groups" as any)
+        .insert({ ...group, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["customer_groups"] });
+      toast.success("Customer group created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteCustomerGroup() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("customer_groups" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["customer_groups"] });
+      toast.success("Customer group deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
 // ===================== CUSTOMERS =====================
 
 export function useCustomers() {
