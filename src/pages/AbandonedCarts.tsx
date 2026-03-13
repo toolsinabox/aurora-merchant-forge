@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Search, ShoppingCart, Mail, MailCheck, CheckCircle2, Clock, DollarSign, AlertTriangle, Trash2 } from "lucide-react";
+import { Search, ShoppingCart, Mail, MailCheck, CheckCircle2, Clock, DollarSign, AlertTriangle, Trash2, Gift } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -50,10 +51,10 @@ export default function AbandonedCarts() {
   });
 
   const markEmailSent = useMutation({
-    mutationFn: async (id: string) => {
-      // Trigger recovery email via edge function
+    mutationFn: async ({ id, couponCode }: { id: string; couponCode?: string }) => {
+      // Trigger recovery email via edge function (with optional coupon)
       const { error: fnErr } = await supabase.functions.invoke("abandoned-cart-email", {
-        body: { cart_id: id, store_id: currentStore?.id },
+        body: { cart_id: id, store_id: currentStore?.id, coupon_code: couponCode || undefined },
       });
       if (fnErr) throw fnErr;
     },
@@ -87,10 +88,15 @@ export default function AbandonedCarts() {
   const recoveredCount = carts.filter((c: any) => c.recovery_status === "recovered").length;
   const recoveryRate = carts.length > 0 ? ((recoveredCount / carts.length) * 100).toFixed(1) : "0";
 
+  const [couponInput, setCouponInput] = useState<string | null>(null);
+  const [couponCartId, setCouponCartId] = useState<string | null>(null);
+
   const statusBadge = (status: string) => {
     switch (status) {
       case "recovered": return <Badge variant="default" className="text-[10px]"><CheckCircle2 className="h-3 w-3 mr-1" />Recovered</Badge>;
       case "email_sent": return <Badge variant="secondary" className="text-[10px]"><MailCheck className="h-3 w-3 mr-1" />Email Sent</Badge>;
+      case "email_sent_2": return <Badge variant="secondary" className="text-[10px]"><MailCheck className="h-3 w-3 mr-1" />2nd Email</Badge>;
+      case "email_sent_3": return <Badge variant="secondary" className="text-[10px]"><MailCheck className="h-3 w-3 mr-1" />3rd Email</Badge>;
       default: return <Badge variant="outline" className="text-[10px]"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
     }
   };
@@ -134,7 +140,9 @@ export default function AbandonedCarts() {
                 <SelectContent>
                   <SelectItem value="all" className="text-xs">All</SelectItem>
                   <SelectItem value="pending" className="text-xs">Pending</SelectItem>
-                  <SelectItem value="email_sent" className="text-xs">Email Sent</SelectItem>
+                  <SelectItem value="email_sent" className="text-xs">1st Email</SelectItem>
+                  <SelectItem value="email_sent_2" className="text-xs">2nd Email</SelectItem>
+                  <SelectItem value="email_sent_3" className="text-xs">3rd Email</SelectItem>
                   <SelectItem value="recovered" className="text-xs">Recovered</SelectItem>
                 </SelectContent>
               </Select>
@@ -172,10 +180,15 @@ export default function AbandonedCarts() {
                         <TableCell className="py-2 text-muted-foreground">{format(new Date(c.abandoned_at), "MMM d, HH:mm")}</TableCell>
                         <TableCell className="py-2">
                           <div className="flex gap-1">
-                            {c.recovery_status === "pending" && (
-                              <Button variant="ghost" size="icon" className="h-6 w-6" title="Mark email sent" onClick={() => markEmailSent.mutate(c.id)}>
-                                <Mail className="h-3 w-3" />
-                              </Button>
+                            {c.recovery_status !== "recovered" && c.recovery_status !== "email_sent_3" && (
+                              <>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" title="Send recovery email" onClick={() => markEmailSent.mutate({ id: c.id })}>
+                                  <Mail className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" title="Send with coupon" onClick={() => { setCouponCartId(c.id); setCouponInput(""); }}>
+                                  <Gift className="h-3 w-3" />
+                                </Button>
+                              </>
                             )}
                             {c.recovery_status !== "recovered" && (
                               <Button variant="ghost" size="icon" className="h-6 w-6" title="Mark recovered" onClick={() => markRecovered.mutate(c.id)}>
@@ -195,6 +208,40 @@ export default function AbandonedCarts() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Coupon Input Dialog */}
+        <Dialog open={!!couponCartId} onOpenChange={(o) => { if (!o) { setCouponCartId(null); setCouponInput(null); } }}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle className="text-sm">Send Recovery Email with Coupon</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-medium">Coupon Code (optional)</label>
+                <Input
+                  placeholder="e.g. COMEBACK10"
+                  value={couponInput || ""}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  className="text-xs"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">Enter an active coupon code to include a discount incentive in the email.</p>
+              </div>
+              <Button
+                className="w-full"
+                size="sm"
+                disabled={markEmailSent.isPending}
+                onClick={() => {
+                  if (couponCartId) {
+                    markEmailSent.mutate({ id: couponCartId, couponCode: couponInput || undefined });
+                    setCouponCartId(null);
+                    setCouponInput(null);
+                  }
+                }}
+              >
+                <Mail className="h-3.5 w-3.5 mr-1" />
+                {couponInput ? "Send with Coupon" : "Send Without Coupon"}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
