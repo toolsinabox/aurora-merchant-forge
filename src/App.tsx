@@ -72,6 +72,7 @@ import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
+import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 // Platform admin pages
