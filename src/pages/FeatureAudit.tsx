@@ -117,8 +117,8 @@ const featureData: FeatureCategory[] = [
       { name: "Selling Unit / Base Unit / Base Unit Qty", description: "Selling unit vs base unit (e.g., sell by box, base is each)", status: "done" },
       { name: "Cartons", description: "Number of cartons the product ships in", status: "done" },
       { name: "Requires Packaging", description: "Flag for items needing special packaging", status: "done" },
-      { name: "Free Shipping Override", description: "Per-product free shipping flag", status: "not_started" },
-      { name: "Dangerous Goods Flag", description: "Hazmat/dangerous goods shipping restrictions", status: "not_started" },
+      { name: "Free Shipping Override", description: "Per-product free shipping flag", status: "done", notes: "free_shipping boolean on product_shipping table" },
+      { name: "Dangerous Goods Flag", description: "Hazmat/dangerous goods shipping restrictions", status: "done", notes: "dangerous_goods boolean on product_shipping table" },
     ],
   },
 
