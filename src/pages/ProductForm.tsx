@@ -856,7 +856,6 @@ export default function ProductForm() {
                   <KitComponentsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
                 </TabsContent>
               )}
-              </TabsContent>
 
               {/* SEO TAB */}
               <TabsContent value="seo" className="mt-0 space-y-3">
