@@ -541,7 +541,7 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Marketing Campaign CRUD", description: "Create and manage marketing campaigns", status: "done" },
       { name: "Email Campaigns", description: "Email campaign type with subject/content", status: "done" },
-      { name: "SMS Campaigns", description: "SMS campaign type", status: "partial", notes: "Campaign type exists, no SMS gateway" },
+      { name: "SMS Campaigns", description: "SMS campaign type", status: "done", notes: "sms-gateway edge function with send_campaign (batch SMS to segmented customers with personalization), send_sms (direct), order_notification (order confirmed/shipped/delivered templates); supports Twilio, MessageBird, SMS Broadcast AU" },
       { name: "Audience Segmentation", description: "Target campaigns by customer segment/tags", status: "done" },
       { name: "Campaign Scheduling", description: "Schedule campaigns for future send", status: "done" },
       { name: "Campaign Statistics (Open/Click/Revenue)", description: "Track campaign performance metrics", status: "done", notes: "Opens, clicks, and revenue columns displayed on campaigns table from stats JSONB field on marketing_campaigns table" },
