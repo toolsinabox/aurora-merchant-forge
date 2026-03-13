@@ -762,6 +762,21 @@ export default function StorefrontCheckout() {
                   </div>
                 )}
 
+                {/* Gift Voucher Message */}
+                {appliedVoucher && (
+                  <div className="space-y-1">
+                    <Label className="text-xs flex items-center gap-1"><Gift className="h-3 w-3" /> Gift Message (optional)</Label>
+                    <Textarea
+                      value={giftMessage}
+                      onChange={(e) => setGiftMessage(e.target.value)}
+                      placeholder="Add a personal message to include with the gift voucher..."
+                      className="min-h-[60px] text-xs"
+                      maxLength={500}
+                    />
+                    <p className="text-2xs text-muted-foreground">{giftMessage.length}/500 characters</p>
+                  </div>
+                )}
+
                 <Separator />
 
                 <div className="space-y-1.5 text-sm">

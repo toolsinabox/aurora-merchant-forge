@@ -286,6 +286,7 @@ export default function ProductForm() {
             <TabsTrigger value="media" className="text-xs h-7">Media</TabsTrigger>
             <TabsTrigger value="variants" className="text-xs h-7">Variants ({variants.length})</TabsTrigger>
             <TabsTrigger value="specifics" className="text-xs h-7">Specifics</TabsTrigger>
+            <TabsTrigger value="addons" className="text-xs h-7">Addons</TabsTrigger>
             <TabsTrigger value="merchandising" className="text-xs h-7">Merchandising</TabsTrigger>
             <TabsTrigger value="seo" className="text-xs h-7">SEO</TabsTrigger>
             <TabsTrigger value="advanced" className="text-xs h-7">Advanced</TabsTrigger>
