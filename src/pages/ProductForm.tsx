@@ -635,7 +635,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" value={shipping.shipping_category} onChange={(e) => setShipping(p => ({ ...p, shipping_category: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Flat Rate Charge</Label>
+                        <FieldLabel label="Flat Rate Charge" field="flat_rate_charge" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.flat_rate_charge} onChange={(e) => setShipping(p => ({ ...p, flat_rate_charge: e.target.value }))} />
                       </div>
                     </div>
