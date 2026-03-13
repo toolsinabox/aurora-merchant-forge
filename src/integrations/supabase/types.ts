@@ -4395,6 +4395,33 @@ export type Database = {
           },
         ]
       }
+      theme_presets: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_system: boolean
+          name: string
+          theme_config: Json
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_system?: boolean
+          name: string
+          theme_config?: Json
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_system?: boolean
+          name?: string
+          theme_config?: Json
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

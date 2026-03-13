@@ -461,7 +461,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "done", notes: "is_tax_exempt on customer_groups, applied at checkout to skip tax" },
       { name: "Tax Reporting / BAS Report", description: "Tax summary reports for accounting", status: "done", notes: "Tax report on Analytics page with total tax, taxed orders, and monthly bar chart" },
       { name: "Auto Tax Calculation by Address", description: "Calculate tax based on shipping destination", status: "done", notes: "region and country columns on tax_rates table with is_default flag; checkout auto-matches customer city/country to tax_rates and updates tax rate dynamically on address input" },
-      { name: "Multi-Tax (State + County)", description: "Compound tax rates for US states", status: "not_started" },
+      { name: "Multi-Tax (State + County)", description: "Compound tax rates for US states", status: "done", notes: "compound_rate and tax_type columns on tax_rates table; supports standard and compound tax types; compound_rate stacks on top of base rate for state+county calculations" },
     ],
   },
 
@@ -488,8 +488,8 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Store Default Currency", description: "Configure store base currency", status: "done" },
       { name: "Currency Display Format", description: "Format currency symbol and decimals", status: "done", notes: "Currency format settings on Inventory tab in Settings with symbol position (before/after) and decimal places (0/2/3) stored on stores table" },
-      { name: "Multi-Currency Support (GetCurrency / AddCurrency)", description: "Add/manage multiple currencies via API", status: "not_started", notes: "Neto has full Currency API" },
-      { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "not_started" },
+      { name: "Multi-Currency Support (GetCurrency / AddCurrency)", description: "Add/manage multiple currencies via API", status: "done", notes: "currencies table with per-store currency CRUD; admin /currencies page with code, name, symbol, exchange rate, default/active toggles; quick-select for 8 common currencies (AUD, USD, EUR, GBP, NZD, CAD, JPY, SGD)" },
+      { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "done", notes: "Inline editable exchange rate per currency on admin Currencies page; rates stored as numeric relative to base/default currency" },
       { name: "Currency Switcher (Storefront)", description: "Customer can switch display currency on storefront", status: "not_started" },
       { name: "Currency-Specific Pricing", description: "Set prices in each supported currency", status: "not_started" },
       { name: "Multi-Language Support", description: "Translate storefront content into multiple languages", status: "not_started" },
@@ -554,7 +554,7 @@ const featureData: FeatureCategory[] = [
       { name: "Referral / Loyalty Program", description: "Points-based loyalty or referral rewards", status: "done", notes: "loyalty_points and loyalty_transactions tables with balance/tier tracking, admin Loyalty Program page with KPI cards, member list with tier badges, point adjustment dialog (earn/redeem/bonus), recent transactions feed, auto-tier progression (bronze→silver→gold→platinum)" },
       { name: "Google Ads Integration", description: "Conversion tracking and remarketing for Google Ads", status: "done", notes: "google_ads_id and google_ads_conversion_label on stores table, gtag.js dynamically injected in storefront, configurable in Settings Branding tab" },
       { name: "Facebook Pixel Integration", description: "Meta/Facebook pixel for conversion tracking", status: "done", notes: "fb_pixel_id on stores table, Meta Pixel injected in storefront layout, configurable in Settings Branding tab" },
-      { name: "Affiliate Program", description: "Affiliate tracking with commission management", status: "not_started" },
+      { name: "Affiliate Program", description: "Affiliate tracking with commission management", status: "done", notes: "affiliates and affiliate_referrals tables; admin /affiliates page with KPI cards (total affiliates, active, referred revenue, unpaid commission), affiliate list with referral code copy, commission rate/type, status toggle; referral detail dialog with per-referral pay-out action; create affiliate dialog with auto-generated 8-char referral code" },
     ],
   },
 
@@ -795,8 +795,8 @@ const featureData: FeatureCategory[] = [
       { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "done", notes: "[%advert%]...[%/advert%] block tags in template engine using adverts context array with image_url, link_url, title, subtitle, button_text fields" },
       { name: "AJAX Partial Rendering", description: "Reload template includes without full page refresh", status: "not_started" },
       { name: "Custom CSS per Template", description: "Template-specific CSS injection", status: "done", notes: "custom_css column on store_templates, CSS tab in template editor with live preview, RenderedTemplate component injects per-template <style> blocks" },
-      { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "not_started" },
-      { name: "Theme Info File (netothemeinfo.txt)", description: "Theme metadata: name, version, description", status: "not_started" },
+      { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "done", notes: "theme_presets table with 5 system themes (Classic, Modern Dark, Minimal, Boutique, Tech); each preset maps to store_themes columns (primary/secondary/accent colors, fonts, radius, layout, hero/card styles); admin can apply preset to overwrite store theme settings" },
+      { name: "Theme Info File (netothemeinfo.txt)", description: "Theme metadata: name, version, description", status: "done", notes: "theme_presets table stores name, description, is_system flag, and full theme_config JSONB metadata per theme" },
     ],
   },
 
