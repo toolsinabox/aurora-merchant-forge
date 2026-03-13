@@ -107,9 +107,9 @@ export default function Merchants() {
                     <TableHead>Owner</TableHead>
                     <TableHead className="text-center">Products</TableHead>
                     <TableHead className="text-center">Orders</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Joined</TableHead>
-                  </TableRow>
+                     <TableHead>Slug</TableHead>
+                     <TableHead>Joined</TableHead>
+                     <TableHead className="w-10"></TableHead>
                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
