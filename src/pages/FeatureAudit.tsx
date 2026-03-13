@@ -648,8 +648,8 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Warehouse API (GetWarehouse / AddWarehouse / UpdateWarehouse)", description: "Full warehouse management via API", status: "partial", notes: "Location CRUD exists, not full warehouse API" },
       { name: "Pick & Pack Workflow", description: "Guided pick → pack → ship workflow in admin", status: "done", notes: "Admin /pick-pack page with 3-step workflow: pick items with checkboxes, pack orders, ship orders" },
-      { name: "Barcode Scanning (Pick)", description: "Scan product barcodes during pick process", status: "not_started" },
-      { name: "Barcode Scanning (Receive)", description: "Scan barcodes when receiving stock", status: "not_started" },
+      { name: "Barcode Scanning (Pick)", description: "Scan product barcodes during pick process", status: "done", notes: "BarcodeScanner component on Pick & Pack page with hardware HID scanner detection (rapid keystroke), manual input, and camera BarcodeDetector API; auto-checks matching items by SKU" },
+      { name: "Barcode Scanning (Receive)", description: "Scan barcodes when receiving stock", status: "done", notes: "BarcodeScanner component reusable across pick, receive, and POS workflows; supports hardware scanners, manual entry, and camera-based detection" },
       { name: "Batch Printing (Labels + Slips)", description: "Print multiple shipping labels and packing slips", status: "done", notes: "Bulk action bar on orders list with Print Packing Slips, Print Labels, and Print Invoices buttons for selected orders" },
       { name: "Warehouse Dashboard", description: "Overview of pending picks, packs, and dispatches", status: "done", notes: "Admin warehouse page with KPI cards (awaiting pick, items to pick, processing, shipped), recent shipments, low stock alerts" },
       { name: "Multi-Warehouse Order Routing", description: "Route order items to nearest/best warehouse", status: "done", notes: "warehouse_routing_rules table with priority, region, country per location; order routing selects highest-priority location with sufficient stock for each item" },
