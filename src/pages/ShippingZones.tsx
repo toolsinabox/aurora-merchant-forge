@@ -142,7 +142,10 @@ export default function ShippingZones() {
                     <TableRow key={z.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => openEdit(z)}>
                       <TableCell className="py-2 font-medium">{z.name}</TableCell>
                       <TableCell className="py-2 max-w-[200px] truncate text-muted-foreground">{z.regions}</TableCell>
-                      <TableCell className="py-2 text-right font-medium">${Number(z.flat_rate).toFixed(2)}</TableCell>
+                      <TableCell className="py-2 capitalize">{z.rate_type || "flat"}</TableCell>
+                      <TableCell className="py-2 text-right font-medium">
+                        {(z.rate_type === "weight") ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : `$${Number(z.flat_rate).toFixed(2)}`}
+                      </TableCell>
                       <TableCell className="py-2 text-right">{z.free_above ? `$${Number(z.free_above).toFixed(2)}` : "—"}</TableCell>
                       <TableCell className="py-2">
                         <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); deleteZone.mutate(z.id); }}>
