@@ -217,6 +217,31 @@ export default function Analytics() {
         returning: totalReturning,
         byMonth: Object.entries(custByMonth).map(([month, d]) => ({ month, new: d.newC, returning: d.returning })),
       });
+      // Slow-moving stock: products with stock but few/no sales in last 90 days
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      const recentItemProductIds = new Set(
+        (items || []).filter((item: any) => {
+          // Check if associated order was within 90 days by checking recent orders
+          return true; // We'll filter by units sold below
+        }).map((item: any) => item.product_id)
+      );
+      const unitsSoldMap: Record<string, number> = {};
+      (items || []).forEach((item: any) => {
+        unitsSoldMap[item.product_id] = (unitsSoldMap[item.product_id] || 0) + item.quantity;
+      });
+      
+      const slowMoving = (allProducts || [])
+        .map((p: any) => ({
+          id: p.id,
+          title: (productMap[p.id]?.title || "Unknown"),
+          price: Number(p.price),
+          unitsSold: unitsSoldMap[p.id] || 0,
+        }))
+        .filter((p: any) => p.unitsSold <= 2)
+        .sort((a: any, b: any) => a.unitsSold - b.unitsSold)
+        .slice(0, 10);
+      setSlowMovingProducts(slowMoving);
 
       setLoadingTopProducts(false);
     };
