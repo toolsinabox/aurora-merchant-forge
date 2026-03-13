@@ -460,7 +460,7 @@ const featureData: FeatureCategory[] = [
       { name: "GST / VAT Handling", description: "Australian GST or European VAT calculation", status: "done", notes: "tax_mode column on stores (standard/gst/vat), selectable in Settings Tax tab, checkout displays correct tax label (Tax/GST/VAT) and exempt label" },
       { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "done", notes: "is_tax_exempt on customer_groups, applied at checkout to skip tax" },
       { name: "Tax Reporting / BAS Report", description: "Tax summary reports for accounting", status: "done", notes: "Tax report on Analytics page with total tax, taxed orders, and monthly bar chart" },
-      { name: "Auto Tax Calculation by Address", description: "Calculate tax based on shipping destination", status: "not_started" },
+      { name: "Auto Tax Calculation by Address", description: "Calculate tax based on shipping destination", status: "done", notes: "region and country columns on tax_rates table with is_default flag; checkout auto-matches customer city/country to tax_rates and updates tax rate dynamically on address input" },
       { name: "Multi-Tax (State + County)", description: "Compound tax rates for US states", status: "not_started" },
     ],
   },
