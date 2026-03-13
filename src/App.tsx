@@ -85,6 +85,7 @@ const App = () => (
                   <Route path="/signup" element={<StorefrontSignup />} />
                   <Route path="/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/account" element={<StorefrontAccount />} />
+                  <Route path="/page/:pageSlug" element={<StorefrontContentPage />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               ) : (
