@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
@@ -41,6 +42,8 @@ export default function StorefrontCheckout() {
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
     address: "", city: "", zip: "", country: "",
+    billing_same: true,
+    billing_address: "", billing_city: "", billing_zip: "", billing_country: "",
     notes: "",
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -161,6 +164,8 @@ export default function StorefrontCheckout() {
     e.preventDefault();
     if (items.length === 0) return;
     if (!form.name || !form.email) { toast.error("Name and email are required"); return; }
+    if (!form.address || !form.city) { toast.error("Shipping address is required"); return; }
+    if (!form.billing_same && (!form.billing_address || !form.billing_city)) { toast.error("Billing address is required"); return; }
 
     setSubmitting(true);
     try {
@@ -199,6 +204,7 @@ export default function StorefrontCheckout() {
           payment_status: "pending",
           notes: form.notes || null,
           shipping_address: shippingAddr,
+          billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
         } as any)
         .select()
@@ -339,6 +345,41 @@ export default function StorefrontCheckout() {
                     <Input value={form.country} onChange={(e) => update("country", e.target.value)} className="h-10" />
                   </div>
                 </div>
+              </div>
+
+              {/* Billing Address */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold">Billing Address</h2>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="billing_same"
+                    checked={form.billing_same}
+                    onCheckedChange={(checked) => setForm(prev => ({ ...prev, billing_same: !!checked }))}
+                  />
+                  <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
+                </div>
+                {!form.billing_same && (
+                  <>
+                    <div className="space-y-1.5">
+                      <Label>Address</Label>
+                      <Input value={form.billing_address} onChange={(e) => update("billing_address", e.target.value)} className="h-10" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>City</Label>
+                        <Input value={form.billing_city} onChange={(e) => update("billing_city", e.target.value)} className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>ZIP Code</Label>
+                        <Input value={form.billing_zip} onChange={(e) => update("billing_zip", e.target.value)} className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Country</Label>
+                        <Input value={form.billing_country} onChange={(e) => update("billing_country", e.target.value)} className="h-10" />
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Shipping Method */}

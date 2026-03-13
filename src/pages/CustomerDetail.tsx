@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { useCustomer, useOrders, useCustomerAddresses, useCreateCustomerAddress, useDeleteCustomerAddress } from "@/hooks/use-data";
+import { useCustomer, useOrders, useCustomerAddresses, useCreateCustomerAddress, useDeleteCustomerAddress, useCustomerGroups } from "@/hooks/use-data";
 import { ArrowLeft, Mail, Phone, Calendar, MapPin, Plus, Trash2, Save, Tag } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,9 +27,10 @@ export default function CustomerDetail() {
   const { data: addresses = [], isLoading: loadingAddresses } = useCustomerAddresses(id);
   const createAddress = useCreateCustomerAddress();
   const deleteAddress = useDeleteCustomerAddress();
+  const { data: customerGroups = [] } = useCustomerGroups();
 
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "" });
+  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "" });
   const [addrOpen, setAddrOpen] = useState(false);
   const [addrForm, setAddrForm] = useState({
     label: "Home", first_name: "", last_name: "", company: "",
@@ -50,6 +51,7 @@ export default function CustomerDetail() {
       notes: customer.notes || "",
       segment: customer.segment,
       tags: (customer.tags || []).join(", "),
+      customer_group_id: (customer as any).customer_group_id || "",
     });
     setEditing(true);
   };
@@ -65,6 +67,7 @@ export default function CustomerDetail() {
         notes: editForm.notes || null,
         segment: editForm.segment,
         tags,
+        customer_group_id: editForm.customer_group_id || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
@@ -125,6 +128,20 @@ export default function CustomerDetail() {
                         </SelectContent>
                       </Select>
                     </div>
+                    {(customerGroups as any[]).length > 0 && (
+                      <div>
+                        <Label className="text-xs">Customer Group</Label>
+                        <Select value={editForm.customer_group_id} onValueChange={(v) => setEditForm({ ...editForm, customer_group_id: v })}>
+                          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="No group" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="" className="text-xs">No Group</SelectItem>
+                            {(customerGroups as any[]).map((g: any) => (
+                              <SelectItem key={g.id} value={g.id} className="text-xs">{g.name}{g.discount_percent > 0 ? ` (${g.discount_percent}% off)` : ""}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div><Label className="text-xs">Tags (comma separated)</Label><Input className="h-8 text-xs" value={editForm.tags} onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })} placeholder="vip, wholesale" /></div>
                     <div><Label className="text-xs">Notes</Label><Textarea className="text-xs min-h-[60px]" value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} /></div>
                     <div className="flex gap-2">
@@ -137,6 +154,13 @@ export default function CustomerDetail() {
                     <div className="flex items-center gap-2 text-xs"><Mail className="h-3.5 w-3.5 text-muted-foreground" /> {customer.email || "—"}</div>
                     <div className="flex items-center gap-2 text-xs"><Phone className="h-3.5 w-3.5 text-muted-foreground" /> {customer.phone || "—"}</div>
                     <div className="flex items-center gap-2 text-xs"><Calendar className="h-3.5 w-3.5 text-muted-foreground" /> Joined {new Date(customer.created_at).toLocaleDateString()}</div>
+                    {(customer as any).customer_group_id && (customerGroups as any[]).length > 0 && (
+                      <div className="flex items-center gap-2 text-xs mt-1">
+                        <Badge variant="outline" className="text-[10px]">
+                          {(customerGroups as any[]).find((g: any) => g.id === (customer as any).customer_group_id)?.name || "Group"}
+                        </Badge>
+                      </div>
+                    )}
                     {customer.tags && customer.tags.length > 0 && (
                       <div className="flex items-center gap-1 flex-wrap mt-1">
                         <Tag className="h-3 w-3 text-muted-foreground" />
@@ -157,6 +181,24 @@ export default function CustomerDetail() {
                 <div className="flex justify-between"><span className="text-muted-foreground">Total Spent</span><span className="font-medium">${Number(customer.total_spent).toLocaleString()}</span></div>
                 {customer.total_orders > 0 && (
                   <div className="flex justify-between"><span className="text-muted-foreground">Avg. Order</span><span className="font-medium">${(Number(customer.total_spent) / customer.total_orders).toFixed(2)}</span></div>
+                )}
+                {customer.total_orders > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Customer Lifetime Value</span>
+                    <span className="font-medium text-primary">${Number(customer.total_spent).toLocaleString()}</span>
+                  </div>
+                )}
+                {customerOrders.length >= 2 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Avg. Days Between Orders</span>
+                    <span className="font-medium">
+                      {(() => {
+                        const dates = customerOrders.map((o: any) => new Date(o.created_at).getTime()).sort();
+                        const gaps = dates.slice(1).map((d: number, i: number) => (d - dates[i]) / (1000 * 60 * 60 * 24));
+                        return Math.round(gaps.reduce((s: number, g: number) => s + g, 0) / gaps.length);
+                      })()}
+                    </span>
+                  </div>
                 )}
               </CardContent>
             </Card>
