@@ -143,7 +143,8 @@ export default function StorefrontCheckout() {
   const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
   const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
   const voucherAmount = appliedVoucher?.amountUsed ?? 0;
-  const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount);
+  const storeCreditAmount = useStoreCredit ? Math.min(storeCreditBalance, totalBeforeVoucher - voucherAmount) : 0;
+  const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount - storeCreditAmount);
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
