@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
+  Building, Gift, FileText, ClipboardCopy,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -23,6 +24,8 @@ const catalogNav = [
   { title: "Products", url: "/products", icon: Package },
   { title: "Categories", url: "/categories", icon: Layers },
   { title: "Inventory", url: "/inventory", icon: Warehouse },
+  { title: "Suppliers", url: "/suppliers", icon: Building },
+  { title: "Purchase Orders", url: "/purchase-orders", icon: ClipboardCopy },
 ];
 
 const salesNav = [
@@ -34,12 +37,17 @@ const salesNav = [
 const marketingNav = [
   { title: "Campaigns", url: "/marketing", icon: Megaphone },
   { title: "Discounts", url: "/coupons", icon: Ticket },
+  { title: "Gift Vouchers", url: "/gift-vouchers", icon: Gift },
   { title: "Reviews", url: "/reviews", icon: Star },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
-const systemNav = [
+const contentNav = [
+  { title: "Content Pages", url: "/content-pages", icon: FileText },
   { title: "Templates", url: "/templates", icon: Code2 },
+];
+
+const systemNav = [
   { title: "Activity Log", url: "/activity-log", icon: ClipboardList },
   { title: "Feature Audit", url: "/feature-audit", icon: ClipboardCheck },
   { title: "Settings", url: "/settings", icon: Settings },
@@ -120,6 +128,7 @@ export function AppSidebar() {
         <NavGroup label="Catalog" items={catalogNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="Sales" items={salesNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="Marketing" items={marketingNav} collapsed={collapsed} currentPath={currentPath} />
+        <NavGroup label="Content" items={contentNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="System" items={systemNav} collapsed={collapsed} currentPath={currentPath} />
       </SidebarContent>
 

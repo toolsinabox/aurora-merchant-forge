@@ -1,0 +1,231 @@
+import { useState } from "react";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Plus, Trash2, Search, ClipboardList } from "lucide-react";
+import { format } from "date-fns";
+
+interface POForm {
+  po_number: string;
+  supplier_id: string;
+  status: string;
+  notes: string;
+  expected_date: string;
+  subtotal: number;
+  tax: number;
+  shipping: number;
+}
+
+const genPO = () => `PO-${Date.now().toString(36).toUpperCase()}`;
+
+const emptyForm: POForm = {
+  po_number: genPO(), supplier_id: "", status: "draft", notes: "",
+  expected_date: "", subtotal: 0, tax: 0, shipping: 0,
+};
+
+const statusColors: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+  draft: "outline", sent: "secondary", partial: "secondary", received: "default", closed: "default", cancelled: "destructive",
+};
+
+export default function PurchaseOrders() {
+  const { currentStore } = useAuth();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState<POForm>({ ...emptyForm });
+  const [search, setSearch] = useState("");
+
+  const { data: pos = [], isLoading } = useQuery({
+    queryKey: ["purchase_orders", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("purchase_orders")
+        .select("*, suppliers(name)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+
+  const { data: suppliers = [] } = useQuery({
+    queryKey: ["suppliers_list", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase
+        .from("suppliers")
+        .select("id, name")
+        .eq("store_id", currentStore.id)
+        .eq("is_active", true)
+        .order("name");
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentStore) throw new Error("No store");
+      const total = form.subtotal + form.tax + form.shipping;
+      const { error } = await supabase.from("purchase_orders").insert({
+        store_id: currentStore.id,
+        po_number: form.po_number,
+        supplier_id: form.supplier_id || null,
+        status: form.status,
+        notes: form.notes || null,
+        expected_date: form.expected_date || null,
+        subtotal: form.subtotal,
+        tax: form.tax,
+        shipping: form.shipping,
+        total,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["purchase_orders"] });
+      toast.success("Purchase order created");
+      setOpen(false);
+      setForm({ ...emptyForm, po_number: genPO() });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const updateStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const update: any = { status };
+      if (status === "received") update.received_date = new Date().toISOString();
+      const { error } = await supabase.from("purchase_orders").update(update).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["purchase_orders"] });
+      toast.success("Status updated");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("purchase_orders").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["purchase_orders"] });
+      toast.success("PO deleted");
+    },
+  });
+
+  const filtered = pos.filter((p: any) =>
+    p.po_number.toLowerCase().includes(search.toLowerCase()) ||
+    (p.suppliers?.name || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Purchase Orders</h1>
+            <p className="text-sm text-muted-foreground">{pos.length} purchase orders</p>
+          </div>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setForm({ ...emptyForm, po_number: genPO() }); }}>
+            <DialogTrigger asChild>
+              <Button size="sm"><Plus className="h-4 w-4 mr-1" />New PO</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>New Purchase Order</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <div><Label>PO Number</Label><Input value={form.po_number} onChange={e => setForm({ ...form, po_number: e.target.value })} className="font-mono" /></div>
+                <div>
+                  <Label>Supplier</Label>
+                  <Select value={form.supplier_id} onValueChange={v => setForm({ ...form, supplier_id: v })}>
+                    <SelectTrigger><SelectValue placeholder="Select supplier" /></SelectTrigger>
+                    <SelectContent>
+                      {suppliers.map((s: any) => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label>Expected Delivery</Label><Input type="date" value={form.expected_date} onChange={e => setForm({ ...form, expected_date: e.target.value })} /></div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div><Label>Subtotal</Label><Input type="number" value={form.subtotal} onChange={e => setForm({ ...form, subtotal: Number(e.target.value) })} /></div>
+                  <div><Label>Tax</Label><Input type="number" value={form.tax} onChange={e => setForm({ ...form, tax: Number(e.target.value) })} /></div>
+                  <div><Label>Shipping</Label><Input type="number" value={form.shipping} onChange={e => setForm({ ...form, shipping: Number(e.target.value) })} /></div>
+                </div>
+                <div><Label>Notes</Label><Textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} /></div>
+                <Button onClick={() => createMutation.mutate()} disabled={!form.po_number || createMutation.isPending}>
+                  {createMutation.isPending ? "Creating..." : "Create PO"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search POs..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        </div>
+
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>PO Number</TableHead>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Expected</TableHead>
+                  <TableHead>Total</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead className="w-28"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                ) : filtered.length === 0 ? (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No purchase orders found</TableCell></TableRow>
+                ) : filtered.map((p: any) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-mono font-medium text-sm">{p.po_number}</TableCell>
+                    <TableCell className="text-sm">{p.suppliers?.name || "—"}</TableCell>
+                    <TableCell>
+                      <Select value={p.status} onValueChange={status => updateStatus.mutate({ id: p.id, status })}>
+                        <SelectTrigger className="h-7 w-28 text-xs">
+                          <Badge variant={statusColors[p.status] || "outline"} className="text-xs">{p.status}</Badge>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["draft", "sent", "partial", "received", "closed", "cancelled"].map(s => (
+                            <SelectItem key={s} value={s}>{s}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{p.expected_date ? format(new Date(p.expected_date), "dd MMM yyyy") : "—"}</TableCell>
+                    <TableCell className="font-medium">${Number(p.total).toFixed(2)}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
+  );
+}

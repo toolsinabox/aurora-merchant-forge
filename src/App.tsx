@@ -37,6 +37,10 @@ import ImportWizard from "./pages/ImportWizard.tsx";
 import ExportWizard from "./pages/ExportWizard.tsx";
 import Templates from "./pages/Templates.tsx";
 import FeatureAudit from "./pages/FeatureAudit.tsx";
+import Suppliers from "./pages/Suppliers.tsx";
+import GiftVouchers from "./pages/GiftVouchers.tsx";
+import ContentPages from "./pages/ContentPages.tsx";
+import PurchaseOrders from "./pages/PurchaseOrders.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
@@ -106,6 +110,10 @@ const App = () => (
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/templates" element={<RequireAuth><Templates /></RequireAuth>} />
                   <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
+                  <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
+                  <Route path="/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
+                  <Route path="/content-pages" element={<RequireAuth><ContentPages /></RequireAuth>} />
+                  <Route path="/purchase-orders" element={<RequireAuth><PurchaseOrders /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
