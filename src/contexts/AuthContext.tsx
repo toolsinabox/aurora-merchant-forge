@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface StoreContext {
   id: string;
   name: string;
+  slug: string | null;
   currency: string;
   timezone: string;
 }
