@@ -126,6 +126,7 @@ export default function Orders() {
                       <TableCell className="py-2">{o.items_count}</TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.status} /></TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.payment_status} /></TableCell>
+                      <TableCell className="py-2"><StatusBadge status={o.fulfillment_status || "unfulfilled"} /></TableCell>
                       <TableCell className="py-2 text-right font-medium">${Number(o.total).toFixed(2)}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
