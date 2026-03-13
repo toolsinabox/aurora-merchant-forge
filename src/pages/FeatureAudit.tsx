@@ -502,9 +502,9 @@ const featureData: FeatureCategory[] = [
     category: "Content / CMS",
     icon: <FileText className="h-5 w-5" />,
     features: [
-      { name: "Content Pages CRUD (GetContent / AddContent / UpdateContent)", description: "Manage CMS pages via API", status: "not_started" },
-      { name: "About Page", description: "About us content page", status: "not_started" },
-      { name: "Contact Page with Form", description: "Contact form page with email notification", status: "not_started", notes: "Neto has contact_form_email" },
+      { name: "Content Pages CRUD (GetContent / AddContent / UpdateContent)", description: "Manage CMS pages via API", status: "done" },
+      { name: "About Page", description: "About us content page", status: "done", notes: "Via CMS page type" },
+      { name: "Contact Page with Form", description: "Contact form page with email notification", status: "partial", notes: "CMS page exists, contact form email not implemented" },
       { name: "FAQ Page", description: "Frequently asked questions page", status: "not_started" },
       { name: "Blog / News Articles", description: "Blog listing and post pages", status: "not_started" },
       { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "partial", notes: "Banner text field exists" },
