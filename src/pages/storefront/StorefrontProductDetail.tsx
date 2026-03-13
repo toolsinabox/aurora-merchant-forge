@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home, Package, Shield, Truck, Clock } from "lucide-react";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { ImageLightbox } from "@/components/storefront/ImageLightbox";
 import { toast } from "sonner";
@@ -26,6 +28,10 @@ export default function StorefrontProductDetail() {
   const [product, setProduct] = useState<any>(null);
   const [variants, setVariants] = useState<any[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const [specifics, setSpecifics] = useState<any[]>([]);
+  const [shipping, setShipping] = useState<any>(null);
+  const [pricingTiers, setPricingTiers] = useState<any[]>([]);
+  const [crossSells, setCrossSells] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
@@ -42,14 +48,30 @@ export default function StorefrontProductDetail() {
       if (found) setStore(found);
 
       if (productId) {
-        const { data: prod } = await supabase.from("products").select("*").eq("id", productId).single();
-        setProduct(prod);
-        const { data: vars } = await supabase.from("product_variants").select("*").eq("product_id", productId);
-        setVariants(vars || []);
-        if (vars && vars.length > 0) setSelectedVariant(vars[0].id);
+        const [prodRes, varsRes, specsRes, shipRes, tiersRes, relsRes] = await Promise.all([
+          supabase.from("products").select("*").eq("id", productId).single(),
+          supabase.from("product_variants").select("*").eq("product_id", productId),
+          supabase.from("product_specifics").select("*").eq("product_id", productId).order("sort_order"),
+          supabase.from("product_shipping").select("*").eq("product_id", productId).maybeSingle(),
+          supabase.from("product_pricing_tiers").select("*").eq("product_id", productId).order("min_quantity"),
+          supabase.from("product_relations").select("*, related:related_product_id(id, title, price, images, compare_at_price)").eq("product_id", productId),
+        ]);
 
-        // Fetch related products (same category or random from same store)
-        if (prod && found) {
+        setProduct(prodRes.data);
+        setVariants(varsRes.data || []);
+        setSpecifics(specsRes.data || []);
+        setShipping(shipRes.data);
+        setPricingTiers(tiersRes.data || []);
+        
+        if (varsRes.data && varsRes.data.length > 0) setSelectedVariant(varsRes.data[0].id);
+
+        // Separate cross-sells and upsells
+        const rels = relsRes.data || [];
+        const crossSellProducts = rels.filter((r: any) => r.relation_type === "cross_sell" || r.relation_type === "upsell").map((r: any) => r.related).filter(Boolean);
+        setCrossSells(crossSellProducts);
+
+        // Fallback related products if no relations
+        if (prodRes.data && found && crossSellProducts.length === 0) {
           const query = supabase
             .from("products")
             .select("id, title, price, images, compare_at_price")
@@ -57,11 +79,7 @@ export default function StorefrontProductDetail() {
             .eq("status", "active")
             .neq("id", productId)
             .limit(4);
-
-          if (prod.category_id) {
-            query.eq("category_id", prod.category_id);
-          }
-
+          if (prodRes.data.category_id) query.eq("category_id", prodRes.data.category_id);
           const { data: related } = await query;
           setRelatedProducts(related || []);
         }
@@ -78,6 +96,17 @@ export default function StorefrontProductDetail() {
   const images = product?.images || [];
   const wishlisted = product ? isWishlisted(product.id) : false;
 
+  // Check if promo is active
+  const now = new Date();
+  const promoActive = product?.promo_price && 
+    (!product.promo_start || new Date(product.promo_start) <= now) &&
+    (!product.promo_end || new Date(product.promo_end) >= now);
+  const displayPrice = promoActive ? product.promo_price : price;
+
+  // Find applicable tier price
+  const applicableTier = pricingTiers.filter(t => quantity >= t.min_quantity).sort((a, b) => b.min_quantity - a.min_quantity)[0];
+  const finalPrice = applicableTier ? applicableTier.price : displayPrice;
+
   const handleAddToCart = () => {
     if (!product) return;
     addItem({
@@ -85,7 +114,7 @@ export default function StorefrontProductDetail() {
       variant_id: currentVariant?.id || null,
       title: product.title,
       variant_name: currentVariant?.name,
-      price: Number(price),
+      price: Number(finalPrice),
       image: images[0],
       sku: currentVariant?.sku || product.sku,
       quantity,
@@ -125,6 +154,8 @@ export default function StorefrontProductDetail() {
     );
   }
 
+  const allRelated = crossSells.length > 0 ? crossSells : relatedProducts;
+
   return (
     <StorefrontLayout storeName={store?.name}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -162,6 +193,9 @@ export default function StorefrontProductDetail() {
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">No image</div>
               )}
+              {promoActive && product.promo_tag && (
+                <Badge className="absolute top-3 left-3 bg-destructive text-destructive-foreground">{product.promo_tag}</Badge>
+              )}
             </div>
             {images.length > 1 && (
               <div className="flex gap-2 overflow-x-auto">
@@ -181,24 +215,58 @@ export default function StorefrontProductDetail() {
           {/* Details */}
           <div className="space-y-5">
             <div>
+              {product.brand && <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide mb-1">{product.brand}</p>}
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{product.title}</h1>
-              <div className="flex items-baseline gap-3 mt-2">
-                <span className="text-2xl font-bold">${Number(price).toFixed(2)}</span>
-                {product.compare_at_price && product.compare_at_price > price && (
+              {product.subtitle && <p className="text-muted-foreground mt-1">{product.subtitle}</p>}
+              
+              <div className="flex items-baseline gap-3 mt-3">
+                <span className="text-2xl font-bold">${Number(finalPrice).toFixed(2)}</span>
+                {promoActive && (
+                  <>
+                    <span className="text-lg text-muted-foreground line-through">${Number(price).toFixed(2)}</span>
+                    <Badge variant="destructive" className="text-xs">
+                      {Math.round((1 - Number(product.promo_price) / Number(price)) * 100)}% OFF
+                    </Badge>
+                  </>
+                )}
+                {!promoActive && product.compare_at_price && product.compare_at_price > finalPrice && (
                   <>
                     <span className="text-lg text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                     <span className="text-sm font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
-                      {Math.round((1 - price / product.compare_at_price) * 100)}% OFF
+                      {Math.round((1 - Number(finalPrice) / Number(product.compare_at_price)) * 100)}% OFF
                     </span>
                   </>
                 )}
               </div>
+              {promoActive && product.promo_end && (
+                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> Sale ends {new Date(product.promo_end).toLocaleDateString()}
+                </p>
+              )}
+              {applicableTier && (
+                <p className="text-xs text-primary mt-1">Bulk price applied: {applicableTier.tier_name} (min {applicableTier.min_quantity} units)</p>
+              )}
             </div>
 
             <Separator />
 
-            {product.description && (
-              <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+            {product.short_description && (
+              <p className="text-muted-foreground leading-relaxed">{product.short_description}</p>
+            )}
+            {!product.short_description && product.description && (
+              <p className="text-muted-foreground leading-relaxed line-clamp-4">{product.description}</p>
+            )}
+
+            {/* Specifics as inline badges */}
+            {specifics.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {specifics.map((s: any) => (
+                  <div key={s.id} className="text-xs">
+                    <span className="text-muted-foreground">{s.name}:</span>{" "}
+                    <Badge variant="secondary" className="font-normal">{s.value}</Badge>
+                  </div>
+                ))}
+              </div>
             )}
 
             {variants.length > 0 && (
@@ -215,6 +283,22 @@ export default function StorefrontProductDetail() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            )}
+
+            {/* Quantity pricing tiers */}
+            {pricingTiers.length > 0 && (
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium">Bulk Pricing</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {pricingTiers.map((t: any) => (
+                    <div key={t.id} className={`text-center p-2 rounded-lg border text-sm ${quantity >= t.min_quantity ? "border-primary bg-primary/5" : "border-border"}`}>
+                      <div className="font-semibold">${Number(t.price).toFixed(2)}</div>
+                      <div className="text-xs text-muted-foreground">{t.min_quantity}+ units</div>
+                      {t.tier_name && t.tier_name !== "default" && <div className="text-xs text-muted-foreground">{t.tier_name}</div>}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -237,7 +321,7 @@ export default function StorefrontProductDetail() {
                 onClick={handleAddToCart}
                 disabled={currentVariant && currentVariant.stock <= 0}
               >
-                {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(price) * quantity).toFixed(2)}</>}
+                {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
               </Button>
               {store && (
                 <Button
@@ -251,19 +335,84 @@ export default function StorefrontProductDetail() {
               )}
             </div>
 
+            {/* Trust badges */}
+            <div className="grid grid-cols-3 gap-2 pt-2">
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-muted/50">
+                <Truck className="h-4 w-4 text-muted-foreground mb-1" />
+                <span className="text-xs text-muted-foreground">Fast Shipping</span>
+              </div>
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-muted/50">
+                <Shield className="h-4 w-4 text-muted-foreground mb-1" />
+                <span className="text-xs text-muted-foreground">Secure Checkout</span>
+              </div>
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-muted/50">
+                <Package className="h-4 w-4 text-muted-foreground mb-1" />
+                <span className="text-xs text-muted-foreground">Easy Returns</span>
+              </div>
+            </div>
+
             {(product.sku || currentVariant?.sku) && (
               <p className="text-xs text-muted-foreground">SKU: {currentVariant?.sku || product.sku}</p>
+            )}
+            {product.availability_description && (
+              <p className="text-sm text-muted-foreground">{product.availability_description}</p>
             )}
           </div>
         </div>
 
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
+        {/* Tabbed content: Description, Features, Specs, Shipping, Warranty */}
+        <div className="mt-10">
+          <Tabs defaultValue="description">
+            <TabsList className="w-full justify-start overflow-x-auto">
+              {product.description && <TabsTrigger value="description">Description</TabsTrigger>}
+              {product.features && <TabsTrigger value="features">Features</TabsTrigger>}
+              {product.specifications && <TabsTrigger value="specifications">Specifications</TabsTrigger>}
+              {shipping && <TabsTrigger value="shipping">Shipping</TabsTrigger>}
+              {product.warranty && <TabsTrigger value="warranty">Warranty</TabsTrigger>}
+            </TabsList>
+            {product.description && (
+              <TabsContent value="description" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
+                <div className="whitespace-pre-wrap">{product.description}</div>
+              </TabsContent>
+            )}
+            {product.features && (
+              <TabsContent value="features" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
+                <div className="whitespace-pre-wrap">{product.features}</div>
+              </TabsContent>
+            )}
+            {product.specifications && (
+              <TabsContent value="specifications" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
+                <div className="whitespace-pre-wrap">{product.specifications}</div>
+              </TabsContent>
+            )}
+            {shipping && (
+              <TabsContent value="shipping" className="mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+                  {shipping.shipping_weight > 0 && <div><span className="text-muted-foreground">Weight:</span> {shipping.shipping_weight} kg</div>}
+                  {shipping.shipping_length > 0 && <div><span className="text-muted-foreground">Length:</span> {shipping.shipping_length} m</div>}
+                  {shipping.shipping_width > 0 && <div><span className="text-muted-foreground">Width:</span> {shipping.shipping_width} m</div>}
+                  {shipping.shipping_height > 0 && <div><span className="text-muted-foreground">Height:</span> {shipping.shipping_height} m</div>}
+                  {shipping.shipping_cubic > 0 && <div><span className="text-muted-foreground">Cubic:</span> {shipping.shipping_cubic} m³</div>}
+                  {shipping.selling_unit && <div><span className="text-muted-foreground">Unit:</span> {shipping.selling_unit}</div>}
+                  {shipping.flat_rate_charge && <div><span className="text-muted-foreground">Flat Rate:</span> ${Number(shipping.flat_rate_charge).toFixed(2)}</div>}
+                </div>
+              </TabsContent>
+            )}
+            {product.warranty && (
+              <TabsContent value="warranty" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
+                <div className="whitespace-pre-wrap">{product.warranty}</div>
+              </TabsContent>
+            )}
+          </Tabs>
+        </div>
+
+        {/* Cross-sells / Related Products */}
+        {allRelated.length > 0 && (
           <div className="mt-12">
             <Separator className="mb-8" />
-            <h2 className="text-xl font-bold mb-5">You May Also Like</h2>
+            <h2 className="text-xl font-bold mb-5">{crossSells.length > 0 ? "Frequently Bought Together" : "You May Also Like"}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {relatedProducts.map((p) => (
+              {allRelated.map((p: any) => (
                 <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
                   <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-2.5">
                     {p.images?.[0] ? (
