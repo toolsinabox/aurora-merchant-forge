@@ -441,7 +441,7 @@ const featureData: FeatureCategory[] = [
       { name: "Shipping Label Printing", description: "Print carrier-specific shipping labels", status: "not_started" },
       { name: "Shipping Tracking Emails", description: "Automated tracking notification emails to customers", status: "done", notes: "shipment-email edge function sends tracking email with carrier, tracking number, and URL on shipment creation" },
       { name: "Click & Collect / Pickup in Store", description: "In-store pickup option at checkout", status: "done", notes: "Delivery method toggle: Ship vs Click & Collect with free shipping for pickup" },
-      { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "partial", notes: "Dropship supplier management exists, auto-routing not implemented" },
+      { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "done", notes: "Auto-routes order items to preferred dropship suppliers on order creation, groups by supplier, fires dropship-notification edge function per supplier" },
       { name: "Dropship Notifications", description: "Automated dropship supplier email notifications", status: "done", notes: "dropship-notification edge function sends supplier email with order items, SKUs, quantities, and shipping address for dropship fulfillment" },
       { name: "Delivery Date Estimation", description: "Estimated delivery date on checkout", status: "done", notes: "3-7 business day estimate shown after selecting shipping zone at checkout" },
       { name: "Shipping Rules / Restrictions", description: "Restrict shipping methods by product, location, weight", status: "not_started" },
