@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Search, Plus, Minus, Trash2, User, CreditCard, Banknote,
-  Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle,
+  Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle, WifiOff, Wifi,
 } from "lucide-react";
 import { toast } from "sonner";
 
