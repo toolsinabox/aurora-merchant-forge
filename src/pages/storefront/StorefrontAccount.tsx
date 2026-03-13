@@ -91,9 +91,16 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
+  const [disputes, setDisputes] = useState<any[]>([]);
+
+  // Dispute form state
+  const [disputeOpen, setDisputeOpen] = useState(false);
+  const [disputeForm, setDisputeForm] = useState({ order_id: "", product_id: "", dispute_type: "refund", reason: "", description: "" });
+  const [submittingDispute, setSubmittingDispute] = useState(false);
+  const [disputeProducts, setDisputeProducts] = useState<any[]>([]);
 
   // Edit profile state
   const [editingProfile, setEditingProfile] = useState(false);
