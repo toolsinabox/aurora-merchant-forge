@@ -257,7 +257,7 @@ const featureData: FeatureCategory[] = [
       { name: "Admin Notes on Returns", description: "Internal staff notes per return", status: "done" },
       { name: "Customer-Initiated Returns (Storefront)", description: "Customers can submit returns from their account", status: "done", notes: "Return request dialog on account page with order selection and reason" },
       { name: "Return Shipping Labels", description: "Generate prepaid return shipping labels", status: "not_started" },
-      { name: "Exchange / Replacement Orders", description: "Create replacement orders linked to returns", status: "not_started" },
+      { name: "Exchange / Replacement Orders", description: "Create replacement orders linked to returns", status: "done", notes: "Replacement Order button on return detail dialog creates new order with original items and links to return" },
       { name: "Warranty Claims (Disputes)", description: "Customer warranty dispute system with status workflow", status: "not_started", notes: "Neto has full warranty/dispute templates" },
       { name: "Dispute Types (Refund/Repair/Replace)", description: "Different dispute resolution types", status: "not_started" },
       { name: "Dispute Reason Selection", description: "Pre-defined dispute reasons for customers to choose from", status: "not_started" },
