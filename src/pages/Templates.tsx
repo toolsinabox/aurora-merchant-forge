@@ -372,6 +372,7 @@ export default function Templates() {
                     <div className="flex items-center justify-between border-b px-4 py-2">
                       <TabsList className="h-8">
                         <TabsTrigger value="edit" className="text-xs gap-1 h-7 px-3"><Code2 className="h-3 w-3" /> Editor</TabsTrigger>
+                        <TabsTrigger value="css" className="text-xs gap-1 h-7 px-3"><FileCode2 className="h-3 w-3" /> CSS</TabsTrigger>
                         <TabsTrigger value="preview" className="text-xs gap-1 h-7 px-3"><Eye className="h-3 w-3" /> Preview</TabsTrigger>
                         <TabsTrigger value="output" className="text-xs gap-1 h-7 px-3"><Braces className="h-3 w-3" /> HTML Output</TabsTrigger>
                       </TabsList>
