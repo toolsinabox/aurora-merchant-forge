@@ -69,6 +69,8 @@ import WarehouseDashboard from "./pages/WarehouseDashboard.tsx";
 import PrintCustomerStatement from "./pages/PrintCustomerStatement.tsx";
 import Redirects from "./pages/Redirects.tsx";
 import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
+import PickPack from "./pages/PickPack.tsx";
+import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
