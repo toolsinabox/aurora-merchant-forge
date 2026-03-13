@@ -308,7 +308,7 @@ const featureData: FeatureCategory[] = [
       { name: "Checkout — Shipping Options", description: "Shipping method selection (shipping_options.template.html)", status: "not_started" },
       { name: "Checkout — Address Form", description: "Multi-address checkout support (address.template.html)", status: "partial" },
       { name: "Checkout — Cart Items Summary", description: "Order summary sidebar in checkout (cart_items.template.html)", status: "done" },
-      { name: "Checkout — Voucher/Coupon Redemption", description: "Coupon code entry (redeem_vouchers.template.html)", status: "not_started" },
+      { name: "Checkout — Voucher/Coupon Redemption", description: "Coupon code entry (redeem_vouchers.template.html)", status: "done", notes: "Coupon apply/remove at checkout" },
       { name: "Checkout — Gift Voucher Message", description: "Gift voucher message entry (voucher_msg.template.html)", status: "not_started" },
       { name: "Checkout — Upsell Page", description: "Pre-checkout upsells (upsell.template.html)", status: "not_started" },
       { name: "Checkout — Error Handling", description: "Cart error display (cart.error.html)", status: "not_started" },
