@@ -2400,6 +2400,77 @@ export type Database = {
         }
         Relationships: []
       }
+      pos_register_sessions: {
+        Row: {
+          actual_cash: number | null
+          card_total: number | null
+          cash_difference: number | null
+          cash_total: number | null
+          closed_at: string | null
+          created_at: string
+          expected_cash: number | null
+          id: string
+          notes: string | null
+          opened_at: string
+          opened_by: string
+          opening_float: number
+          other_total: number | null
+          status: string
+          store_id: string
+          total_orders: number | null
+          total_sales: number | null
+          voucher_total: number | null
+        }
+        Insert: {
+          actual_cash?: number | null
+          card_total?: number | null
+          cash_difference?: number | null
+          cash_total?: number | null
+          closed_at?: string | null
+          created_at?: string
+          expected_cash?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opened_by: string
+          opening_float?: number
+          other_total?: number | null
+          status?: string
+          store_id: string
+          total_orders?: number | null
+          total_sales?: number | null
+          voucher_total?: number | null
+        }
+        Update: {
+          actual_cash?: number | null
+          card_total?: number | null
+          cash_difference?: number | null
+          cash_total?: number | null
+          closed_at?: string | null
+          created_at?: string
+          expected_cash?: number | null
+          id?: string
+          notes?: string | null
+          opened_at?: string
+          opened_by?: string
+          opening_float?: number
+          other_total?: number | null
+          status?: string
+          store_id?: string
+          total_orders?: number | null
+          total_sales?: number | null
+          voucher_total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_register_sessions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_addons: {
         Row: {
           created_at: string
@@ -4285,24 +4356,30 @@ export type Database = {
       }
       tax_rates: {
         Row: {
+          country: string | null
           created_at: string
           id: string
+          is_default: boolean | null
           name: string
           rate: number
           region: string
           store_id: string
         }
         Insert: {
+          country?: string | null
           created_at?: string
           id?: string
+          is_default?: boolean | null
           name: string
           rate?: number
           region: string
           store_id: string
         }
         Update: {
+          country?: string | null
           created_at?: string
           id?: string
+          is_default?: boolean | null
           name?: string
           rate?: number
           region?: string

@@ -74,6 +74,7 @@ export default function StorefrontCheckout() {
   const [canPayOnAccount, setCanPayOnAccount] = useState(false);
   const [payOnAccount, setPayOnAccount] = useState(false);
   const [creditTerms, setCreditTerms] = useState("");
+  const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadData() {
@@ -82,8 +83,13 @@ export default function StorefrontCheckout() {
       if (zones && zones.length > 0) setShippingZones(zones);
 
       // Load default tax rate and tax mode
-      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate").limit(1);
-      if (taxRates && taxRates.length > 0) setTaxRate(Number((taxRates[0] as any).rate) / 100);
+      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default").order("is_default", { ascending: false });
+      if (taxRates && taxRates.length > 0) {
+        // Store all rates for address-based lookup later, use default for now
+        setAllTaxRates(taxRates as any[]);
+        const defaultRate = (taxRates as any[]).find((r: any) => r.is_default) || taxRates[0];
+        setTaxRate(Number((defaultRate as any).rate) / 100);
+      }
       const { data: storeData } = await supabase.from("stores").select("tax_mode").limit(1).maybeSingle();
       if (storeData && (storeData as any).tax_mode) setTaxMode((storeData as any).tax_mode);
 
@@ -145,7 +151,20 @@ export default function StorefrontCheckout() {
     }));
   };
 
-  const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
+  const update = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    // Auto-calculate tax by address region/country
+    if ((field === "city" || field === "country" || field === "zip") && allTaxRates.length > 1) {
+      const newForm = { ...form, [field]: value };
+      const regionMatch = allTaxRates.find((r: any) =>
+        (r.region && newForm.city && newForm.city.toLowerCase().includes(r.region.toLowerCase())) ||
+        (r.country && newForm.country && newForm.country.toLowerCase() === r.country.toLowerCase())
+      );
+      if (regionMatch) {
+        setTaxRate(Number(regionMatch.rate) / 100);
+      }
+    }
+  };
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
