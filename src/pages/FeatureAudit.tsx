@@ -241,7 +241,7 @@ const featureData: FeatureCategory[] = [
       { name: "Saved Payment Methods", description: "Store card details for repeat purchases (tokenized)", status: "not_started" },
       { name: "Pay Order from Account", description: "Customer can pay outstanding orders from their account page", status: "done", notes: "Pay button on storefront account order detail for unpaid orders, records payment and updates status" },
       { name: "Layby / Lay-Away", description: "Installment payment plans managed in-platform", status: "not_started" },
-      { name: "Account Credit / Store Credit", description: "Customer account credit balance for future purchases", status: "not_started" },
+      { name: "Account Credit / Store Credit", description: "Customer account credit balance for future purchases", status: "done", notes: "store_credit_transactions table with credit/debit types, Store Credit card on customer detail with balance display, transaction history, manual add; checkout integration with checkbox to apply credit balance" },
     ],
   },
 
