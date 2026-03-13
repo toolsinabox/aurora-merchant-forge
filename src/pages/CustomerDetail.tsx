@@ -51,6 +51,7 @@ export default function CustomerDetail() {
       notes: customer.notes || "",
       segment: customer.segment,
       tags: (customer.tags || []).join(", "),
+      customer_group_id: (customer as any).customer_group_id || "",
     });
     setEditing(true);
   };
