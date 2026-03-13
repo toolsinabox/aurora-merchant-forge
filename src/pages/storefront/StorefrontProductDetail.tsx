@@ -149,6 +149,34 @@ export default function StorefrontProductDetail() {
     setZoomPos({ x, y });
   };
 
+  const handleEstimateShipping = useCallback(async () => {
+    if (!estimateZip.trim() || !store) return;
+    if (shippingZones.length === 0) {
+      const { data: zones } = await supabase.from("shipping_zones").select("*").eq("store_id", store.id);
+      if (zones) setShippingZones(zones);
+      if (!zones || zones.length === 0) {
+        setShippingEstimate({ zone: "Shipping", cost: "Contact us" });
+        return;
+      }
+      // Find matching zone or first
+      const match = zones.find((z: any) => z.regions.toLowerCase().includes(estimateZip.toLowerCase())) || zones[0];
+      const productPrice = Number(finalPrice) * quantity;
+      const isFree = (shipping?.free_shipping) || (match.free_above && productPrice >= Number(match.free_above));
+      setShippingEstimate({
+        zone: match.name,
+        cost: isFree ? "Free" : `$${Number(match.flat_rate).toFixed(2)}`,
+      });
+    } else {
+      const match = shippingZones.find((z: any) => z.regions.toLowerCase().includes(estimateZip.toLowerCase())) || shippingZones[0];
+      const productPrice = Number(finalPrice) * quantity;
+      const isFree = (shipping?.free_shipping) || (match.free_above && productPrice >= Number(match.free_above));
+      setShippingEstimate({
+        zone: match.name,
+        cost: isFree ? "Free" : `$${Number(match.flat_rate).toFixed(2)}`,
+      });
+    }
+  }, [estimateZip, store, shippingZones, finalPrice, quantity, shipping]);
+
   if (loading) {
     return (
       <StorefrontLayout storeName={store?.name}>
