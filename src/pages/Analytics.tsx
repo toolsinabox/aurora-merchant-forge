@@ -731,6 +731,57 @@ export default function Analytics() {
               )}
             </CardContent>
           </Card>
+
+          {/* Inventory Valuation Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Inventory Valuation</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                <>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <div className="text-center p-2 bg-muted/50 rounded-md">
+                      <p className="text-2xs text-muted-foreground">Total Units</p>
+                      <p className="text-sm font-bold">{inventoryValuation.totalUnits.toLocaleString()}</p>
+                    </div>
+                    <div className="text-center p-2 bg-muted/50 rounded-md">
+                      <p className="text-2xs text-muted-foreground">Cost Value</p>
+                      <p className="text-sm font-bold">${inventoryValuation.totalCost.toFixed(2)}</p>
+                    </div>
+                    <div className="text-center p-2 bg-muted/50 rounded-md">
+                      <p className="text-2xs text-muted-foreground">Retail Value</p>
+                      <p className="text-sm font-bold">${inventoryValuation.totalRetail.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  {inventoryValuation.items.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-4">No inventory data</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs h-8">Product</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Stock</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Cost/Unit</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Cost Value</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Retail Value</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {inventoryValuation.items.map((p: any, i: number) => (
+                          <TableRow key={i} className="text-xs">
+                            <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                            <TableCell className="py-1.5 text-right font-mono">{p.stock}</TableCell>
+                            <TableCell className="py-1.5 text-right">${p.costPrice.toFixed(2)}</TableCell>
+                            <TableCell className="py-1.5 text-right font-semibold">${p.costValue.toFixed(2)}</TableCell>
+                            <TableCell className="py-1.5 text-right">${p.retailValue.toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AdminLayout>

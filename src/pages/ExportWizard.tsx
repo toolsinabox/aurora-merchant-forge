@@ -4,14 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Download, ArrowLeft, FileSpreadsheet, Check } from "lucide-react";
+import { Download, ArrowLeft, Check, Package, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-// Maropost-aligned export field groups
-const EXPORT_GROUPS = [
+// ── PRODUCT EXPORT FIELD GROUPS ──
+const PRODUCT_EXPORT_GROUPS = [
   {
     group: "Identity",
     fields: [
@@ -142,7 +146,27 @@ const EXPORT_GROUPS = [
   },
 ];
 
-const ALL_FIELDS = EXPORT_GROUPS.flatMap(g => g.fields);
+// ── ORDER EXPORT FIELDS ──
+const ORDER_FIELDS = [
+  { key: "order_number", label: "Order Number" },
+  { key: "status", label: "Status" },
+  { key: "payment_status", label: "Payment Status" },
+  { key: "fulfillment_status", label: "Fulfillment Status" },
+  { key: "subtotal", label: "Subtotal" },
+  { key: "discount", label: "Discount" },
+  { key: "shipping", label: "Shipping" },
+  { key: "tax", label: "Tax" },
+  { key: "total", label: "Total" },
+  { key: "items_count", label: "Items Count" },
+  { key: "shipping_address", label: "Shipping Address" },
+  { key: "billing_address", label: "Billing Address" },
+  { key: "notes", label: "Notes" },
+  { key: "tags", label: "Tags" },
+  { key: "created_at", label: "Date Created" },
+  { key: "updated_at", label: "Date Updated" },
+];
+
+const ALL_PRODUCT_FIELDS = PRODUCT_EXPORT_GROUPS.flatMap(g => g.fields);
 
 function escapeCSV(val: any): string {
   if (val === null || val === undefined) return "";
@@ -153,14 +177,12 @@ function escapeCSV(val: any): string {
   return str;
 }
 
-export default function ExportWizard() {
-  const navigate = useNavigate();
+function ProductExportTab() {
   const { currentStore } = useAuth();
   const [selectedFields, setSelectedFields] = useState<Set<string>>(
-    new Set(EXPORT_GROUPS.slice(0, 4).flatMap(g => g.fields.map(f => f.key)))
+    new Set(PRODUCT_EXPORT_GROUPS.slice(0, 4).flatMap(g => g.fields.map(f => f.key)))
   );
   const [useMaropostHeaders, setUseMaropostHeaders] = useState(true);
-  const [includeShipping, setIncludeShipping] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -181,51 +203,27 @@ export default function ExportWizard() {
     });
   };
 
-  const selectAll = () => setSelectedFields(new Set(ALL_FIELDS.map(f => f.key)));
-  const selectNone = () => setSelectedFields(new Set());
-
-  // Check if any shipping fields are selected
-  const hasShippingFields = ALL_FIELDS.filter(f => (f as any).source === "shipping").some(f => selectedFields.has(f.key));
+  const hasShippingFields = ALL_PRODUCT_FIELDS.filter(f => (f as any).source === "shipping").some(f => selectedFields.has(f.key));
 
   const handleExport = async () => {
     if (!currentStore) return;
     setExporting(true);
-
     try {
-      // Fetch products
-      const { data: products, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("store_id", currentStore.id)
-        .order("created_at", { ascending: false });
+      const { data: products, error } = await supabase.from("products").select("*").eq("store_id", currentStore.id).order("created_at", { ascending: false });
       if (error) throw error;
-      if (!products || products.length === 0) {
-        toast.error("No products to export");
-        setExporting(false);
-        return;
-      }
+      if (!products || products.length === 0) { toast.error("No products to export"); setExporting(false); return; }
 
-      // Fetch shipping data if needed
       let shippingMap: Record<string, any> = {};
       if (hasShippingFields) {
-        const { data: shipData } = await supabase
-          .from("product_shipping")
-          .select("*")
-          .eq("store_id", currentStore.id);
+        const { data: shipData } = await supabase.from("product_shipping").select("*").eq("store_id", currentStore.id);
         (shipData || []).forEach((s: any) => { shippingMap[s.product_id] = s; });
       }
 
-      // Build selected field list
-      const fields = ALL_FIELDS.filter(f => selectedFields.has(f.key));
-
-      // Build CSV
+      const fields = ALL_PRODUCT_FIELDS.filter(f => selectedFields.has(f.key));
       const headers = fields.map(f => useMaropostHeaders ? f.maropost : f.label);
       const rows = products.map((p: any) => {
         return fields.map(f => {
-          if ((f as any).source === "shipping") {
-            const ship = shippingMap[p.id];
-            return escapeCSV(ship ? ship[f.key] : "");
-          }
+          if ((f as any).source === "shipping") { const ship = shippingMap[p.id]; return escapeCSV(ship ? ship[f.key] : ""); }
           const val = p[f.key];
           if (Array.isArray(val)) return escapeCSV(val.join(", "));
           if (typeof val === "boolean") return val ? "Yes" : "No";
@@ -234,8 +232,6 @@ export default function ExportWizard() {
       });
 
       const csv = [headers.map(escapeCSV).join(","), ...rows.map(r => r.join(","))].join("\n");
-
-      // Download
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -243,129 +239,265 @@ export default function ExportWizard() {
       link.download = `products-export-${new Date().toISOString().slice(0, 10)}.csv`;
       link.click();
       URL.revokeObjectURL(url);
-
       setDone(true);
       toast.success(`Exported ${products.length} products`);
-    } catch (err: any) {
-      toast.error(err.message || "Export failed");
-    } finally {
-      setExporting(false);
-    }
+    } catch (err: any) { toast.error(err.message || "Export failed"); }
+    finally { setExporting(false); }
   };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 space-y-4">
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Select Fields</CardTitle>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => setSelectedFields(new Set(ALL_PRODUCT_FIELDS.map(f => f.key)))}>All</Button>
+                <Button variant="outline" size="sm" onClick={() => setSelectedFields(new Set())}>None</Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {PRODUCT_EXPORT_GROUPS.map(g => {
+              const allSelected = g.fields.every(f => selectedFields.has(f.key));
+              const someSelected = g.fields.some(f => selectedFields.has(f.key));
+              return (
+                <div key={g.group}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Checkbox checked={allSelected} className={someSelected && !allSelected ? "opacity-50" : ""} onCheckedChange={() => toggleGroup(g.fields)} />
+                    <h3 className="text-sm font-semibold">{g.group}</h3>
+                    <Badge variant="secondary" className="text-2xs">{g.fields.filter(f => selectedFields.has(f.key)).length}/{g.fields.length}</Badge>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pl-6">
+                    {g.fields.map(f => (
+                      <label key={f.key} className="flex items-center gap-2 text-sm cursor-pointer py-0.5">
+                        <Checkbox checked={selectedFields.has(f.key)} onCheckedChange={() => toggleField(f.key)} />
+                        <span className="truncate">{f.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </div>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader className="pb-3"><CardTitle className="text-lg">Options</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <Checkbox checked={useMaropostHeaders} onCheckedChange={(v) => setUseMaropostHeaders(!!v)} />
+              <div>
+                <p className="text-sm font-medium">Maropost-compatible headers</p>
+                <p className="text-xs text-muted-foreground">Use official Maropost field names</p>
+              </div>
+            </label>
+            <p className="text-sm text-muted-foreground"><strong>{selectedFields.size}</strong> fields selected</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            {done ? (
+              <div className="text-center space-y-3">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto"><Check className="h-6 w-6 text-primary" /></div>
+                <p className="text-sm font-medium">Export complete!</p>
+                <Button variant="outline" onClick={() => setDone(false)} className="w-full">Export Again</Button>
+              </div>
+            ) : (
+              <Button onClick={handleExport} disabled={exporting || selectedFields.size === 0} className="w-full gap-2">
+                {exporting ? "Exporting..." : <><Download className="h-4 w-4" /> Export to CSV</>}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+function OrderExportTab() {
+  const { currentStore } = useAuth();
+  const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set(ORDER_FIELDS.map(f => f.key)));
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [includeItems, setIncludeItems] = useState(false);
+  const [includeCustomer, setIncludeCustomer] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleExport = async () => {
+    if (!currentStore) return;
+    setExporting(true);
+    try {
+      let query = supabase.from("orders").select("*, customers(name, email, phone)").eq("store_id", currentStore.id).order("created_at", { ascending: false });
+      if (statusFilter !== "all") query = query.eq("status", statusFilter);
+      if (dateFrom) query = query.gte("created_at", dateFrom);
+      if (dateTo) query = query.lte("created_at", dateTo + "T23:59:59");
+
+      const { data: orders, error } = await query;
+      if (error) throw error;
+      if (!orders || orders.length === 0) { toast.error("No orders to export"); setExporting(false); return; }
+
+      // Build headers
+      const fields = ORDER_FIELDS.filter(f => selectedFields.has(f.key));
+      const headers = [...fields.map(f => f.label)];
+      if (includeCustomer) headers.push("Customer Name", "Customer Email", "Customer Phone");
+
+      // Optionally fetch line items
+      let orderItemsMap: Record<string, any[]> = {};
+      if (includeItems) {
+        const orderIds = orders.map(o => o.id);
+        const { data: items } = await supabase.from("order_items").select("order_id, title, sku, quantity, unit_price, total").in("order_id", orderIds);
+        (items || []).forEach((item: any) => {
+          if (!orderItemsMap[item.order_id]) orderItemsMap[item.order_id] = [];
+          orderItemsMap[item.order_id].push(item);
+        });
+        headers.push("Line Items");
+      }
+
+      const rows = orders.map((o: any) => {
+        const row = fields.map(f => {
+          const val = o[f.key];
+          if (Array.isArray(val)) return escapeCSV(val.join(", "));
+          return escapeCSV(val);
+        });
+        if (includeCustomer) {
+          row.push(escapeCSV(o.customers?.name), escapeCSV(o.customers?.email), escapeCSV(o.customers?.phone));
+        }
+        if (includeItems) {
+          const items = orderItemsMap[o.id] || [];
+          const summary = items.map((i: any) => `${i.title} x${i.quantity} @${i.unit_price}`).join(" | ");
+          row.push(escapeCSV(summary));
+        }
+        return row;
+      });
+
+      const csv = [headers.map(escapeCSV).join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `orders-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+      toast.success(`Exported ${orders.length} orders`);
+    } catch (err: any) { toast.error(err.message || "Export failed"); }
+    finally { setExporting(false); }
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 space-y-4">
+        <Card>
+          <CardHeader className="pb-3"><CardTitle className="text-lg">Order Fields</CardTitle></CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+              {ORDER_FIELDS.map(f => (
+                <label key={f.key} className="flex items-center gap-2 text-sm cursor-pointer py-0.5">
+                  <Checkbox checked={selectedFields.has(f.key)} onCheckedChange={() => {
+                    setSelectedFields(prev => {
+                      const next = new Set(prev);
+                      if (next.has(f.key)) next.delete(f.key); else next.add(f.key);
+                      return next;
+                    });
+                  }} />
+                  <span className="truncate">{f.label}</span>
+                </label>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="space-y-4">
+        <Card>
+          <CardHeader className="pb-3"><CardTitle className="text-lg">Filters & Options</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-1">
+              <Label className="text-xs">Status Filter</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="text-xs">All Statuses</SelectItem>
+                  <SelectItem value="pending" className="text-xs">Pending</SelectItem>
+                  <SelectItem value="processing" className="text-xs">Processing</SelectItem>
+                  <SelectItem value="shipped" className="text-xs">Shipped</SelectItem>
+                  <SelectItem value="delivered" className="text-xs">Delivered</SelectItem>
+                  <SelectItem value="cancelled" className="text-xs">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">From</Label>
+                <Input type="date" className="h-8 text-xs" value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">To</Label>
+                <Input type="date" className="h-8 text-xs" value={dateTo} onChange={e => setDateTo(e.target.value)} />
+              </div>
+            </div>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <Checkbox checked={includeCustomer} onCheckedChange={(v) => setIncludeCustomer(!!v)} />
+              <span className="text-sm">Include customer details</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <Checkbox checked={includeItems} onCheckedChange={(v) => setIncludeItems(!!v)} />
+              <span className="text-sm">Include line items</span>
+            </label>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            {done ? (
+              <div className="text-center space-y-3">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto"><Check className="h-6 w-6 text-primary" /></div>
+                <p className="text-sm font-medium">Export complete!</p>
+                <Button variant="outline" onClick={() => setDone(false)} className="w-full">Export Again</Button>
+              </div>
+            ) : (
+              <Button onClick={handleExport} disabled={exporting || selectedFields.size === 0} className="w-full gap-2">
+                {exporting ? "Exporting..." : <><Download className="h-4 w-4" /> Export Orders</>}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export default function ExportWizard() {
+  const navigate = useNavigate();
 
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/products")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Export Products</h1>
-            <p className="text-muted-foreground text-sm">Download your product catalog as CSV with Maropost-compatible field names</p>
+            <h1 className="text-2xl font-bold tracking-tight">Export Data</h1>
+            <p className="text-muted-foreground text-sm">Export products or orders as CSV</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Field selection */}
-          <div className="lg:col-span-2 space-y-4">
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Select Fields</CardTitle>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={selectAll}>All</Button>
-                    <Button variant="outline" size="sm" onClick={selectNone}>None</Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {EXPORT_GROUPS.map(g => {
-                  const allSelected = g.fields.every(f => selectedFields.has(f.key));
-                  const someSelected = g.fields.some(f => selectedFields.has(f.key));
-                  return (
-                    <div key={g.group}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Checkbox
-                          checked={allSelected}
-                          className={someSelected && !allSelected ? "opacity-50" : ""}
-                          onCheckedChange={() => toggleGroup(g.fields)}
-                        />
-                        <h3 className="text-sm font-semibold">{g.group}</h3>
-                        <Badge variant="secondary" className="text-2xs">{g.fields.filter(f => selectedFields.has(f.key)).length}/{g.fields.length}</Badge>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pl-6">
-                        {g.fields.map(f => (
-                          <label key={f.key} className="flex items-center gap-2 text-sm cursor-pointer py-0.5">
-                            <Checkbox
-                              checked={selectedFields.has(f.key)}
-                              onCheckedChange={() => toggleField(f.key)}
-                            />
-                            <span className="truncate">{f.label}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Options & Export */}
-          <div className="space-y-4">
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Options</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <Checkbox
-                    checked={useMaropostHeaders}
-                    onCheckedChange={(v) => setUseMaropostHeaders(!!v)}
-                  />
-                  <div>
-                    <p className="text-sm font-medium">Maropost-compatible headers</p>
-                    <p className="text-xs text-muted-foreground">Use official Maropost field names as CSV headers</p>
-                  </div>
-                </label>
-
-                <div className="pt-2">
-                  <p className="text-sm text-muted-foreground">
-                    <strong>{selectedFields.size}</strong> fields selected
-                    {hasShippingFields && " (includes shipping data)"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                {done ? (
-                  <div className="text-center space-y-3">
-                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-                      <Check className="h-6 w-6 text-primary" />
-                    </div>
-                    <p className="text-sm font-medium">Export complete!</p>
-                    <Button variant="outline" onClick={() => setDone(false)} className="w-full">Export Again</Button>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={handleExport}
-                    disabled={exporting || selectedFields.size === 0}
-                    className="w-full gap-2"
-                  >
-                    {exporting ? (
-                      <>Exporting...</>
-                    ) : (
-                      <><Download className="h-4 w-4" /> Export to CSV</>
-                    )}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        <Tabs defaultValue="products">
+          <TabsList>
+            <TabsTrigger value="products" className="gap-1.5"><Package className="h-4 w-4" /> Products</TabsTrigger>
+            <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="h-4 w-4" /> Orders</TabsTrigger>
+          </TabsList>
+          <TabsContent value="products">
+            <ProductExportTab />
+          </TabsContent>
+          <TabsContent value="orders">
+            <OrderExportTab />
+          </TabsContent>
+        </Tabs>
       </div>
     </AdminLayout>
   );
