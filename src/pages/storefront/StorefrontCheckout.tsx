@@ -85,12 +85,19 @@ export default function StorefrontCheckout() {
       const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
       const c = custs?.[0];
       if (c) {
+        setCustomerId(c.id);
         setForm((prev) => ({
           ...prev,
           name: c.name || prev.name,
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
+        // Load store credit balance
+        const { data: credits } = await supabase.from("store_credit_transactions" as any).select("amount, type").eq("customer_id", c.id);
+        if (credits) {
+          const bal = (credits as any[]).reduce((s: number, t: any) => s + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)), 0);
+          setStoreCreditBalance(Math.max(0, bal));
+        }
         // Check if customer group is tax exempt
         if ((c as any).customer_group_id) {
           const { data: grp } = await supabase
