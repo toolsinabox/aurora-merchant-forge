@@ -148,7 +148,7 @@ const featureData: FeatureCategory[] = [
       { name: "SEO Keywords", description: "Meta keywords per product", status: "done" },
       { name: "Search Keywords", description: "Internal search keywords (separate from SEO)", status: "done" },
       { name: "Canonical URL", description: "Set canonical URL to prevent duplicate content", status: "not_started" },
-      { name: "Open Graph Tags", description: "OG title/description/image for social sharing", status: "not_started" },
+      { name: "Open Graph Tags", description: "OG title/description/image for social sharing", status: "done", notes: "SEOHead component sets OG meta tags dynamically on product detail pages" },
       { name: "Structured Data (JSON-LD Product)", description: "Schema.org Product markup for rich results", status: "not_started" },
       { name: "XML Sitemap Generation", description: "Auto-generated sitemap.xml for products/categories", status: "not_started" },
       { name: "301 Redirect Manager", description: "Manage URL redirects when slugs change", status: "not_started" },
