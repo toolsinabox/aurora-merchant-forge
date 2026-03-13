@@ -62,6 +62,17 @@ export default function POS() {
   const [eodNotes, setEodNotes] = useState("");
   const [currentSession, setCurrentSession] = useState<any>(null);
 
+  // Load registers
+  const { data: registers = [] } = useQuery({
+    queryKey: ["pos_registers", storeId],
+    queryFn: async () => {
+      if (!storeId) return [];
+      const { data } = await supabase.from("pos_registers" as any).select("id, name, location_id, is_active").eq("store_id", storeId).eq("is_active", true).order("name");
+      return (data || []) as any[];
+    },
+    enabled: !!storeId,
+  });
+
   const { data: products = [] } = useQuery({
     queryKey: ["pos_products", storeId, search],
     queryFn: async () => {
