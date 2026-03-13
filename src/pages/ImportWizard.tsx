@@ -443,7 +443,7 @@ export default function ImportWizard() {
             <Card>
               <CardContent className="p-4 space-y-1">
                 {Object.entries(
-                  PRODUCT_FIELDS.reduce((acc, f) => {
+                  ACTIVE_FIELDS.reduce((acc, f) => {
                     (acc[f.group] = acc[f.group] || []).push(f);
                     return acc;
                   }, {} as Record<string, typeof PRODUCT_FIELDS>)
