@@ -2750,6 +2750,59 @@ export type Database = {
           },
         ]
       }
+      wholesale_applications: {
+        Row: {
+          abn_tax_id: string | null
+          business_name: string
+          contact_name: string
+          created_at: string
+          email: string
+          id: string
+          message: string | null
+          phone: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          store_id: string
+        }
+        Insert: {
+          abn_tax_id?: string | null
+          business_name: string
+          contact_name: string
+          created_at?: string
+          email: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          store_id: string
+        }
+        Update: {
+          abn_tax_id?: string | null
+          business_name?: string
+          contact_name?: string
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wholesale_applications_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wishlists: {
         Row: {
           created_at: string

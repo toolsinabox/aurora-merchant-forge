@@ -798,6 +798,8 @@ export default function SettingsPage() {
                     }} className="space-y-3">
                       <div><Label className="text-xs">Name</Label><Input name="name" required className="h-8 text-xs" placeholder="e.g. Wholesale" /></div>
                       <div><Label className="text-xs">Discount %</Label><Input name="discount" type="number" step="0.01" className="h-8 text-xs" placeholder="0" /></div>
+                      <div><Label className="text-xs">Credit Terms</Label><Input name="credit_terms" className="h-8 text-xs" placeholder="e.g. Net 30" /></div>
+                      <div><Label className="text-xs">Credit Limit ($)</Label><Input name="credit_limit" type="number" step="0.01" className="h-8 text-xs" placeholder="0" /></div>
                       <div><Label className="text-xs">Description</Label><Input name="description" className="h-8 text-xs" /></div>
                       <Button type="submit" size="sm" className="w-full text-xs" disabled={createCustomerGroup.isPending}>Create Group</Button>
                     </form>
@@ -811,18 +813,22 @@ export default function SettingsPage() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="text-xs h-8">Name</TableHead>
-                        <TableHead className="text-xs h-8">Discount</TableHead>
-                        <TableHead className="text-xs h-8">Tax Exempt</TableHead>
-                        <TableHead className="text-xs h-8 w-8"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(customerGroups as any[]).map((g: any) => (
-                        <TableRow key={g.id} className="text-xs">
-                          <TableCell className="py-2 font-medium">{g.name}</TableCell>
-                          <TableCell className="py-2">{g.discount_percent > 0 ? `${g.discount_percent}%` : "—"}</TableCell>
-                          <TableCell className="py-2">{g.is_tax_exempt ? <Badge variant="secondary" className="text-[10px]">Yes</Badge> : "No"}</TableCell>
+                         <TableHead className="text-xs h-8">Name</TableHead>
+                         <TableHead className="text-xs h-8">Discount</TableHead>
+                         <TableHead className="text-xs h-8">Credit Terms</TableHead>
+                         <TableHead className="text-xs h-8">Credit Limit</TableHead>
+                         <TableHead className="text-xs h-8">Tax Exempt</TableHead>
+                         <TableHead className="text-xs h-8 w-8"></TableHead>
+                       </TableRow>
+                     </TableHeader>
+                     <TableBody>
+                       {(customerGroups as any[]).map((g: any) => (
+                         <TableRow key={g.id} className="text-xs">
+                           <TableCell className="py-2 font-medium">{g.name}</TableCell>
+                           <TableCell className="py-2">{g.discount_percent > 0 ? `${g.discount_percent}%` : "—"}</TableCell>
+                           <TableCell className="py-2">{g.credit_terms || "—"}</TableCell>
+                           <TableCell className="py-2">{g.credit_limit > 0 ? `$${Number(g.credit_limit).toFixed(2)}` : "—"}</TableCell>
+                           <TableCell className="py-2">{g.is_tax_exempt ? <Badge variant="secondary" className="text-[10px]">Yes</Badge> : "No"}</TableCell>
                           <TableCell className="py-2">
                             <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteCustomerGroup.mutate(g.id)}>
                               <Trash2 className="h-3 w-3" />

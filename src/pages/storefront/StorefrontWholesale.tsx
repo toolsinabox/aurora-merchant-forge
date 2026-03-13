@@ -1,0 +1,153 @@
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { toast } from "sonner";
+import { Building, CheckCircle } from "lucide-react";
+
+export default function StorefrontWholesale() {
+  const { storeSlug: paramSlug } = useParams();
+  const { storeSlug } = useStoreSlug(paramSlug);
+  const [store, setStore] = useState<any>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [form, setForm] = useState({
+    business_name: "",
+    contact_name: "",
+    email: "",
+    phone: "",
+    abn_tax_id: "",
+    message: "",
+  });
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => s && setStore(s));
+  }, [storeSlug]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!store || !form.business_name || !form.contact_name || !form.email) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("wholesale_applications" as any).insert({
+      store_id: store.id,
+      ...form,
+    });
+    setSubmitting(false);
+    if (error) {
+      toast.error("Failed to submit application");
+      return;
+    }
+    setSubmitted(true);
+    toast.success("Application submitted successfully!");
+  };
+
+  if (submitted) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div className="max-w-lg mx-auto px-4 py-24 text-center space-y-4">
+          <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+            <CheckCircle className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold">Application Received</h1>
+          <p className="text-muted-foreground">
+            Thank you for your wholesale application. We'll review your details and get back to you shortly.
+          </p>
+        </div>
+      </StorefrontLayout>
+    );
+  }
+
+  return (
+    <StorefrontLayout storeName={store?.name}>
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="text-center mb-8">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <Building className="h-6 w-6 text-primary" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight">Wholesale Application</h1>
+          <p className="text-muted-foreground mt-2">
+            Apply for a wholesale account to access trade pricing and bulk ordering.
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Business Details</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Business Name *</Label>
+                  <Input
+                    required
+                    value={form.business_name}
+                    onChange={(e) => setForm({ ...form, business_name: e.target.value })}
+                    placeholder="Your Company Pty Ltd"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Contact Name *</Label>
+                  <Input
+                    required
+                    value={form.contact_name}
+                    onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
+                    placeholder="John Smith"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Email *</Label>
+                  <Input
+                    type="email"
+                    required
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    placeholder="wholesale@company.com"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label>Phone</Label>
+                  <Input
+                    value={form.phone}
+                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    placeholder="+61 400 000 000"
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label>ABN / Tax ID</Label>
+                <Input
+                  value={form.abn_tax_id}
+                  onChange={(e) => setForm({ ...form, abn_tax_id: e.target.value })}
+                  placeholder="12 345 678 901"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label>Tell us about your business</Label>
+                <Textarea
+                  value={form.message}
+                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  placeholder="What products are you interested in? Expected order volume?"
+                  rows={4}
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={submitting}>
+                {submitting ? "Submitting..." : "Submit Application"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </StorefrontLayout>
+  );
+}

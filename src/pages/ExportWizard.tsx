@@ -470,6 +470,63 @@ function OrderExportTab() {
   );
 }
 
+function CategoryExportTab() {
+  const { currentStore } = useAuth();
+  const [exporting, setExporting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleExport = async () => {
+    if (!currentStore) return;
+    setExporting(true);
+    try {
+      const { data: categories, error } = await supabase.from("categories").select("*").eq("store_id", currentStore.id).order("sort_order");
+      if (error) throw error;
+      if (!categories || categories.length === 0) { toast.error("No categories to export"); setExporting(false); return; }
+
+      const headers = ["Name", "Slug", "Description", "Parent ID", "Sort Order", "Image URL", "SEO Title", "SEO Description"];
+      const rows = categories.map((c: any) => [
+        escapeCSV(c.name), escapeCSV(c.slug), escapeCSV(c.description),
+        escapeCSV(c.parent_id), String(c.sort_order), escapeCSV(c.image_url),
+        escapeCSV(c.seo_title), escapeCSV(c.seo_description),
+      ]);
+
+      const csv = [headers.map(escapeCSV).join(","), ...rows.map(r => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `categories-export-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+      toast.success(`Exported ${categories.length} categories`);
+    } catch (err: any) { toast.error(err.message || "Export failed"); }
+    finally { setExporting(false); }
+  };
+
+  return (
+    <Card className="max-w-md">
+      <CardHeader><CardTitle className="text-lg">Export Categories</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Export all categories with names, slugs, descriptions, hierarchy, and SEO fields.
+        </p>
+        {done ? (
+          <div className="text-center space-y-3">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto"><Check className="h-6 w-6 text-primary" /></div>
+            <p className="text-sm font-medium">Export complete!</p>
+            <Button variant="outline" onClick={() => setDone(false)} className="w-full">Export Again</Button>
+          </div>
+        ) : (
+          <Button onClick={handleExport} disabled={exporting} className="w-full gap-2">
+            {exporting ? "Exporting..." : <><Download className="h-4 w-4" /> Export Categories</>}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function ExportWizard() {
   const navigate = useNavigate();
 
@@ -482,7 +539,7 @@ export default function ExportWizard() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Export Data</h1>
-            <p className="text-muted-foreground text-sm">Export products or orders as CSV</p>
+            <p className="text-muted-foreground text-sm">Export products, orders, or categories as CSV</p>
           </div>
         </div>
 
@@ -490,12 +547,16 @@ export default function ExportWizard() {
           <TabsList>
             <TabsTrigger value="products" className="gap-1.5"><Package className="h-4 w-4" /> Products</TabsTrigger>
             <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="h-4 w-4" /> Orders</TabsTrigger>
+            <TabsTrigger value="categories" className="gap-1.5"><Package className="h-4 w-4" /> Categories</TabsTrigger>
           </TabsList>
           <TabsContent value="products">
             <ProductExportTab />
           </TabsContent>
           <TabsContent value="orders">
             <OrderExportTab />
+          </TabsContent>
+          <TabsContent value="categories">
+            <CategoryExportTab />
           </TabsContent>
         </Tabs>
       </div>

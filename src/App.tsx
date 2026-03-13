@@ -72,6 +72,7 @@ import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
+import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 // Platform admin pages
@@ -117,6 +118,7 @@ const App = () => (
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/contact" element={<StorefrontContact />} />
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
+                  <Route path="/wholesale" element={<StorefrontWholesale />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
@@ -249,6 +251,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
                   <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
+                  <Route path="/store/:storeSlug/wholesale" element={<StorefrontWholesale />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}
