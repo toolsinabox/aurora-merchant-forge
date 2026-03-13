@@ -589,7 +589,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_length} onChange={(e) => setShipping(p => ({ ...p, shipping_length: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Width (m)</Label>
+                        <FieldLabel label="Width (m)" field="shipping_width" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_width} onChange={(e) => setShipping(p => ({ ...p, shipping_width: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
