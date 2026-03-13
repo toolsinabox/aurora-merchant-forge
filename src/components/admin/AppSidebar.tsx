@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
-  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail, Puzzle,
+  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail, Puzzle, Book,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -67,6 +67,7 @@ const systemNav = [
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "API Keys", url: `${prefix}/api-keys`, icon: Key },
+  { title: "API Docs", url: `${prefix}/api-docs`, icon: Book },
   { title: "Permissions", url: `${prefix}/permissions`, icon: Shield },
   { title: "Redirects", url: `${prefix}/redirects`, icon: ExternalLink },
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },

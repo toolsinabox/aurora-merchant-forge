@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Search, Plus, Minus, Trash2, User, CreditCard, Banknote,
-  Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle,
+  Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle, WifiOff, Wifi,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -61,6 +61,34 @@ export default function POS() {
   const [actualCash, setActualCash] = useState("");
   const [eodNotes, setEodNotes] = useState("");
   const [currentSession, setCurrentSession] = useState<any>(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [offlineQueue, setOfflineQueue] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("pos_offline_queue") || "[]"); } catch { return []; }
+  });
+
+  // Offline detection
+  useState(() => {
+    const goOffline = () => { setIsOffline(true); toast.warning("Offline mode active — sales will be queued"); };
+    const goOnline = () => { setIsOffline(false); toast.success("Back online — syncing queued sales..."); };
+    window.addEventListener("offline", goOffline);
+    window.addEventListener("online", goOnline);
+    return () => { window.removeEventListener("offline", goOffline); window.removeEventListener("online", goOnline); };
+  });
+
+  // Cash drawer command via print
+  const openCashDrawer = () => {
+    const win = window.open("", "_blank", "width=1,height=1");
+    if (win) {
+      // ESC/POS command to open cash drawer (pin 2): 0x1B 0x70 0x00 0x19 0xFA
+      win.document.write("<pre style='font-size:0'>\x1Bp\x00\x19\xFA</pre>");
+      win.document.close();
+      win.print();
+      setTimeout(() => win.close(), 500);
+      toast.success("Cash drawer opened");
+    } else {
+      toast.error("Unable to open cash drawer — allow popups");
+    }
+  };
 
   // Load registers
   const { data: registers = [] } = useQuery({
@@ -345,9 +373,24 @@ export default function POS() {
               </Select>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={() => setShowEOD(true)} className="gap-2">
-            <Clock className="h-4 w-4" /> End of Day
-          </Button>
+          <div className="flex items-center gap-2">
+            {isOffline && (
+              <Badge variant="destructive" className="gap-1 animate-pulse">
+                <WifiOff className="h-3 w-3" /> Offline ({offlineQueue.length} queued)
+              </Badge>
+            )}
+            {!isOffline && offlineQueue.length > 0 && (
+              <Badge variant="secondary" className="gap-1">
+                <Wifi className="h-3 w-3" /> Syncing {offlineQueue.length}...
+              </Badge>
+            )}
+            <Button variant="outline" size="sm" onClick={openCashDrawer} className="gap-2">
+              <DollarSign className="h-4 w-4" /> Open Drawer
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowEOD(true)} className="gap-2">
+              <Clock className="h-4 w-4" /> End of Day
+            </Button>
+          </div>
         </div>
 
         <TabsContent value="sale">
