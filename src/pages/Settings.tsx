@@ -78,7 +78,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, description, logo_url")
+      .select("primary_color, banner_text, description, logo_url, favicon_url, ga_tracking_id")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
@@ -88,6 +88,8 @@ export default function SettingsPage() {
             banner_text: (data as any).banner_text || "",
             description: (data as any).description || "",
             logo_url: (data as any).logo_url || "",
+            favicon_url: (data as any).favicon_url || "",
+            ga_tracking_id: (data as any).ga_tracking_id || "",
           });
         }
       });
