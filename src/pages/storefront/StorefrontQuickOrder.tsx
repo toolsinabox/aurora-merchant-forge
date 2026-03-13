@@ -83,11 +83,12 @@ export default function StorefrontQuickOrder() {
     }
     validLines.forEach(line => {
       addItem({
-        id: line.productId,
+        product_id: line.productId,
         title: line.title,
         price: line.price,
         image: "",
-      }, line.quantity);
+        quantity: line.quantity,
+      });
     });
     toast.success(`Added ${validLines.length} product(s) to cart`);
     // Reset form
