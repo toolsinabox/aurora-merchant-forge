@@ -599,7 +599,7 @@ const featureData: FeatureCategory[] = [
       { name: "Quote Document PDF", description: "Printable quote/estimate document", status: "not_started" },
       { name: "Credit Note PDF", description: "Printable credit note document", status: "done", notes: "Credit notes issued and displayed on order detail" },
       { name: "Purchase Order PDF", description: "Printable PO for suppliers", status: "done", notes: "Print-friendly PO page with supplier, items, and totals" },
-      { name: "Customer Statement PDF", description: "Printable account statement", status: "not_started" },
+      { name: "Customer Statement PDF", description: "Printable account statement", status: "done", notes: "Print-friendly statement page with order/payment history and balance due" },
       { name: "Gift Voucher Print", description: "Printable gift voucher/card", status: "done", notes: "Print-friendly gift voucher page with code, value, recipient, message, and store name" },
       { name: "Barcode Labels", description: "Print barcode/SKU labels for products", status: "not_started" },
     ],
