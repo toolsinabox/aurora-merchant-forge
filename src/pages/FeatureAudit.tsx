@@ -430,7 +430,7 @@ const featureData: FeatureCategory[] = [
       { name: "Shipping Zones", description: "Define zones by region with flat rates", status: "done" },
       { name: "Free Shipping Above Threshold", description: "Free shipping over X amount per zone", status: "done" },
       { name: "Flat Rate Shipping", description: "Flat rate per zone", status: "done" },
-      { name: "Shipping Methods (GetShippingMethods / AddShippingQuote)", description: "Dynamic shipping method management via API", status: "not_started" },
+      { name: "Shipping Methods (GetShippingMethods / AddShippingQuote)", description: "Dynamic shipping method management via API", status: "done", notes: "shipping_methods table with name, carrier, method_type, base_rate, estimated days, active toggle, sort order; per-store CRUD" },
       { name: "Weight-Based Shipping Rates", description: "Calculate shipping based on order weight", status: "done", notes: "rate_type and per_kg_rate columns on shipping_zones, admin UI for flat vs weight-based selection, per-kg rate with optional base flat rate" },
       { name: "Volumetric/Cubic Shipping Rates", description: "Calculate using dimensional weight", status: "done", notes: "cubic_divisor column on shipping_zones (default 5000), volumetric weight = (L×W×H) / divisor, checkout uses max of actual vs volumetric weight for rate calculation" },
       { name: "Real-Time Carrier Rates (Australia Post)", description: "Live rates from Australia Post API", status: "not_started" },
