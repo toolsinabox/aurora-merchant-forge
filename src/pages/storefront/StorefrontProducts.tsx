@@ -198,6 +198,7 @@ export default function StorefrontProducts() {
   const [brandFilter, setBrandFilter] = useState<string[]>([]);
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
   const [showFilters, setShowFilters] = useState(false);
+  const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
 
