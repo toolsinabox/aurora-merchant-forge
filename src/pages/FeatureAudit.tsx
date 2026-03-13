@@ -891,7 +891,7 @@ const featureData: FeatureCategory[] = [
       { name: "RESTful API (Products, Orders, Customers)", description: "CRUD API for core entities", status: "partial", notes: "Internal Supabase SDK, not public REST API" },
       { name: "API Authentication (API Keys)", description: "Authenticate API requests with store keys", status: "not_started" },
       { name: "API Rate Limiting", description: "Throttle API requests per key", status: "not_started" },
-      { name: "Webhook API", description: "Register and manage webhooks", status: "not_started" },
+      { name: "Webhook API", description: "Register and manage webhooks", status: "done", notes: "webhooks table with full CRUD, admin Webhooks page with 12 event types, signing secret, active toggle" },
       { name: "Add-On / Plugin System", description: "Install third-party add-ons to extend functionality", status: "not_started", notes: "Neto has full add-on framework" },
       { name: "Add-On Types (Custom Panel / Shipping / Payment)", description: "Different add-on types for different integration points", status: "not_started" },
       { name: "Developer Sandbox / Test Mode", description: "Test environment for development", status: "not_started" },
