@@ -646,7 +646,7 @@ const featureData: FeatureCategory[] = [
     category: "Warehouse / Pick-Pack-Ship",
     icon: <Warehouse className="h-5 w-5" />,
     features: [
-      { name: "Warehouse API (GetWarehouse / AddWarehouse / UpdateWarehouse)", description: "Full warehouse management via API", status: "partial", notes: "Location CRUD exists, not full warehouse API" },
+      { name: "Warehouse API (GetWarehouse / AddWarehouse / UpdateWarehouse)", description: "Full warehouse management via API", status: "done", notes: "REST API edge function supports inventory CRUD via /rest-api/v1/inventory with API key auth, pagination, and scope-based access" },
       { name: "Pick & Pack Workflow", description: "Guided pick → pack → ship workflow in admin", status: "done", notes: "Admin /pick-pack page with 3-step workflow: pick items with checkboxes, pack orders, ship orders" },
       { name: "Barcode Scanning (Pick)", description: "Scan product barcodes during pick process", status: "done", notes: "BarcodeScanner component on Pick & Pack page with hardware HID scanner detection (rapid keystroke), manual input, and camera BarcodeDetector API; auto-checks matching items by SKU" },
       { name: "Barcode Scanning (Receive)", description: "Scan barcodes when receiving stock", status: "done", notes: "BarcodeScanner component reusable across pick, receive, and POS workflows; supports hardware scanners, manual entry, and camera-based detection" },
