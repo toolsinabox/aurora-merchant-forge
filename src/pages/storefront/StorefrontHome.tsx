@@ -4,7 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Star, Truck, ShieldCheck, RotateCcw } from "lucide-react";
+import { ArrowRight, Star, Truck, ShieldCheck, RotateCcw, ShoppingCart, Heart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
