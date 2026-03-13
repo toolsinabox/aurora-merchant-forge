@@ -180,7 +180,7 @@ const featureData: FeatureCategory[] = [
       { name: "Serial Number Tracking", description: "Track individual units by serial number", status: "not_started" },
       { name: "Expiry Date Tracking", description: "Track expiry dates for perishable goods", status: "not_started" },
       { name: "Bin Location Management", description: "Assign bin/shelf locations within warehouses", status: "done", notes: "bin_location column on inventory_stock, displayed in inventory table" },
-      { name: "Inventory Valuation Reports", description: "FIFO/LIFO/Average cost valuation", status: "not_started" },
+      { name: "Inventory Valuation Reports", description: "FIFO/LIFO/Average cost valuation", status: "done", notes: "Inventory valuation report on Analytics page showing total units, cost value, retail value with per-product breakdown" },
     ],
   },
 
