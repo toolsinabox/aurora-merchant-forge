@@ -41,6 +41,8 @@ export default function StorefrontCheckout() {
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
     address: "", city: "", zip: "", country: "",
+    billing_same: true,
+    billing_address: "", billing_city: "", billing_zip: "", billing_country: "",
     notes: "",
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
