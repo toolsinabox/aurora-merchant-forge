@@ -93,6 +93,8 @@ import EmailTemplates from "./pages/EmailTemplates.tsx";
 import LoyaltyProgram from "./pages/LoyaltyProgram.tsx";
 import ReportBuilder from "./pages/ReportBuilder.tsx";
 import POS from "./pages/POS.tsx";
+import Affiliates from "./pages/Affiliates.tsx";
+import Currencies from "./pages/Currencies.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
