@@ -43,6 +43,7 @@ export default function StorefrontProductDetail() {
   const [zooming, setZooming] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const { addProduct: trackView, getRecent } = useRecentlyViewed();
 
   useEffect(() => {
     async function load() {
