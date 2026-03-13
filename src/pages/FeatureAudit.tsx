@@ -343,7 +343,7 @@ const featureData: FeatureCategory[] = [
       { name: "Edit Shipping Addresses", description: "Manage multiple addresses (edit_address/)", status: "done", notes: "CRUD on storefront account" },
       { name: "Change Password", description: "Password change form (edit_pwd/)", status: "done" },
       { name: "Forgot Password", description: "Password reset flow (forgotpwd/)", status: "done" },
-      { name: "Forgot Username", description: "Username recovery flow (forgotusr/)", status: "not_started" },
+      { name: "Forgot Username", description: "Username recovery flow (forgotusr/)", status: "done", notes: "Storefront /forgot-username page with name/phone lookup returning masked email" },
       { name: "Reset Password (Post-Purchase)", description: "Set password after auto-registration (resetpwd/)", status: "done" },
       { name: "Wishlist (Favourites)", description: "Save/view/reorder wishlist items (favourites/ & wishlist/)", status: "done" },
       { name: "View Customer Vouchers", description: "View gift vouchers on account (vouchers/)", status: "done", notes: "Vouchers tab in storefront account showing purchased and received gift vouchers with code, value, balance, and expiry" },
