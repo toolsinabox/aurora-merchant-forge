@@ -1065,6 +1065,10 @@ export default function SettingsPage() {
             <InventorySettingsTab />
             <CurrencyFormatTab />
           </TabsContent>
+
+          <TabsContent value="payments" className="space-y-3">
+            <PaymentGatewaysTab />
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
