@@ -1,4 +1,4 @@
-import { Search, ChevronDown, User, LogOut } from "lucide-react";
+import { Search, ChevronDown, User, LogOut, ExternalLink } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,38 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { NotificationBell } from "./NotificationBell";
+import { getSubdomainSlug } from "@/lib/subdomain";
+
+const PLATFORM_DOMAINS = ["localhost", "lovable.app", "lovable.dev", "lovableproject.com", "127.0.0.1"];
+
+function getStorefrontUrl(slug: string | undefined): string | null {
+  if (!slug) return null;
+  const hostname = window.location.hostname;
+
+  // Subdomain mode — storefront is at root
+  if (getSubdomainSlug()) return "/";
+
+  // Preview/dev — use path-based route
+  const isPreview = PLATFORM_DOMAINS.some((d) => hostname.includes(d));
+  if (isPreview) return `/store/${slug}`;
+
+  // Production — subdomain URL
+  const parts = hostname.split(".");
+  const baseDomain = parts.length >= 2 ? parts.slice(-2).join(".") : hostname;
+  return `https://${slug}.${baseDomain}`;
+}
 
 export function TopBar() {
   const { user, currentStore, signOut } = useAuth();
   const navigate = useNavigate();
+  const isSubdomain = !!getSubdomainSlug();
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/login");
+    navigate(isSubdomain ? "/_cpanel" : "/login");
   };
+
+  const storefrontUrl = getStorefrontUrl(currentStore?.slug ?? currentStore?.name?.toLowerCase().replace(/\s+/g, "-"));
 
   return (
     <header className="h-12 flex items-center gap-2 border-b border-border bg-card px-3 shrink-0">
@@ -32,6 +55,20 @@ export function TopBar() {
       </div>
 
       <div className="flex items-center gap-1 ml-auto">
+        {storefrontUrl && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 text-xs"
+            asChild
+          >
+            <a href={storefrontUrl} target="_blank" rel="noopener noreferrer">
+              <ExternalLink className="h-3.5 w-3.5" />
+              View Storefront
+            </a>
+          </Button>
+        )}
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs">
@@ -43,7 +80,7 @@ export function TopBar() {
             <DropdownMenuLabel className="text-xs">Switch Store</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {currentStore && <DropdownMenuItem className="text-xs">{currentStore.name}</DropdownMenuItem>}
-            <DropdownMenuItem className="text-xs" onClick={() => navigate("/onboarding")}>+ Create New Store</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs" onClick={() => navigate(isSubdomain ? "/_cpanel/onboarding" : "/onboarding")}>+ Create New Store</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -58,7 +95,7 @@ export function TopBar() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel className="text-xs">{user?.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-xs" onClick={() => navigate("/settings")}>Settings</DropdownMenuItem>
+            <DropdownMenuItem className="text-xs" onClick={() => navigate(isSubdomain ? "/_cpanel/settings" : "/settings")}>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="text-xs" onClick={handleSignOut}>
               <LogOut className="h-3.5 w-3.5 mr-1.5" /> Sign Out
