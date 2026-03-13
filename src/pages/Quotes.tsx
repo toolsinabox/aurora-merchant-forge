@@ -270,6 +270,9 @@ export default function Quotes() {
                           {q.converted_order_id && (
                             <span className="text-[10px] text-muted-foreground">Converted</span>
                           )}
+                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => navigate(`quotes/${q.id}/print`)}>
+                            <Printer className="h-3 w-3" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
