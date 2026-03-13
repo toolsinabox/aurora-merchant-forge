@@ -299,7 +299,7 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Basic Information</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Title *</Label>
+                      <FieldLabel label="Title *" field="title" />
                       <Input className="h-8 text-xs" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Product title" />
                     </div>
                     <div className="space-y-1">
