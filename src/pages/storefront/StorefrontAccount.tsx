@@ -978,6 +978,50 @@ export default function StorefrontAccount() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Files Tab */}
+            {activeTab === "files" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">My Files & Documents</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {customerFiles.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
+                      <p className="text-sm text-muted-foreground">No files available</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">File Name</TableHead>
+                          <TableHead className="text-xs">Description</TableHead>
+                          <TableHead className="text-xs">Size</TableHead>
+                          <TableHead className="text-xs">Uploaded</TableHead>
+                          <TableHead className="text-xs w-16"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {customerFiles.map((f: any) => (
+                          <TableRow key={f.id} className="text-sm">
+                            <TableCell className="font-medium">{f.file_name}</TableCell>
+                            <TableCell className="text-muted-foreground text-xs max-w-[200px] truncate">{f.description || "—"}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{f.file_size ? `${(f.file_size / 1024).toFixed(1)} KB` : "—"}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{new Date(f.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell>
+                              <a href={f.file_url} target="_blank" rel="noopener noreferrer">
+                                <Button variant="ghost" size="icon" className="h-7 w-7"><Download className="h-3.5 w-3.5" /></Button>
+                              </a>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
