@@ -228,6 +228,7 @@ const INTEGRATIONS: Integration[] = [
       { key: "store_code", label: "Store Code", type: "text", placeholder: "STORE01" },
     ],
   },
+];
 
 const CATEGORY_META = {
   email_marketing: { label: "Email Marketing", icon: Mail, color: "text-primary" },
