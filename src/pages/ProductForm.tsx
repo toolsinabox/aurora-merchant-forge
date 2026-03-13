@@ -598,7 +598,7 @@ export default function ProductForm() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Cubic (m³)</Label>
+                      <FieldLabel label="Cubic (m³)" field="shipping_cubic" />
                       <Input className="h-8 text-xs" type="number" step="0.001" value={shipping.shipping_cubic} onChange={(e) => setShipping(p => ({ ...p, shipping_cubic: e.target.value }))} />
                     </div>
                   </CardContent>
