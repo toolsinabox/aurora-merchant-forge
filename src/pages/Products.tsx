@@ -217,6 +217,9 @@ export default function Products() {
                         </DropdownMenuSubContent>
                       </DropdownMenuSub>
                       <DropdownMenuItem className="text-xs" onClick={handleExport}>Export Selected</DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs gap-1" onClick={() => setBulkEditOpen(true)}>
+                        <Pencil className="h-3 w-3" /> Bulk Edit
+                      </DropdownMenuItem>
                       <DropdownMenuItem className="text-xs text-destructive" onClick={handleBulkDelete}>
                         <Trash2 className="h-3 w-3 mr-1" /> Delete Selected
                       </DropdownMenuItem>
