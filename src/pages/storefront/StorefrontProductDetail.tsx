@@ -54,6 +54,9 @@ export default function StorefrontProductDetail() {
   const [shippingEstimate, setShippingEstimate] = useState<{ zone: string; cost: string } | null>(null);
   const [shippingZones, setShippingZones] = useState<any[]>([]);
   const [estimateZip, setEstimateZip] = useState("");
+  const [cartPopupOpen, setCartPopupOpen] = useState(false);
+  const [cartPopupItem, setCartPopupItem] = useState<any>(null);
+  const { items: cartItems, totalItems: cartItemCount, totalPrice: cartTotal } = useCart();
 
   useEffect(() => {
     async function load() {
