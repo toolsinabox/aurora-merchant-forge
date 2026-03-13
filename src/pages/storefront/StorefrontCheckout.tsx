@@ -450,6 +450,27 @@ export default function StorefrontCheckout() {
                 )}
               </div>
 
+              {/* Delivery Method Toggle */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold">Delivery Method</h2>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryMethod === "shipping" ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <input type="radio" name="delivery" value="shipping" checked={deliveryMethod === "shipping"} onChange={() => setDeliveryMethod("shipping")} className="accent-primary" />
+                    <div>
+                      <p className="text-sm font-medium flex items-center gap-1.5"><Truck className="h-3.5 w-3.5" /> Delivery</p>
+                      <p className="text-xs text-muted-foreground">Ship to your address</p>
+                    </div>
+                  </label>
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryMethod === "pickup" ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <input type="radio" name="delivery" value="pickup" checked={deliveryMethod === "pickup"} onChange={() => setDeliveryMethod("pickup")} className="accent-primary" />
+                    <div>
+                      <p className="text-sm font-medium flex items-center gap-1.5"><Store className="h-3.5 w-3.5" /> Click & Collect</p>
+                      <p className="text-xs text-muted-foreground">Pick up in store — Free</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
               {/* Shipping Method */}
               {shippingZones.length > 0 && (
                 <div className="border rounded-lg p-5 space-y-4">
