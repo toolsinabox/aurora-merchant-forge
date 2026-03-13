@@ -408,6 +408,27 @@ export default function StorefrontProductDetail() {
           </Tabs>
         </div>
 
+        {/* B@SE Template Content Blocks */}
+        {store && product && (
+          <div className="mt-8">
+            <RenderedTemplate
+              storeId={store.id}
+              templateType="content_block"
+              contextType="product"
+              context={{
+                product,
+                variants,
+                specifics,
+                pricing_tiers: pricingTiers,
+                cross_sells: crossSells,
+                shipping: shipping || undefined,
+                store,
+              } as TemplateContext}
+              className="prose prose-sm max-w-none"
+            />
+          </div>
+        )}
+
         {/* Cross-sells / Related Products */}
         {allRelated.length > 0 && (
           <div className="mt-12">
