@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Search, ShoppingCart, Mail, MailCheck, CheckCircle2, Clock, DollarSign, AlertTriangle, Trash2 } from "lucide-react";
+import { Search, ShoppingCart, Mail, MailCheck, CheckCircle2, Clock, DollarSign, AlertTriangle, Trash2, Gift } from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
