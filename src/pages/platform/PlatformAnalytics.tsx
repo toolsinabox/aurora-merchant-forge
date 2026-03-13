@@ -164,8 +164,10 @@ export default function PlatformAnalytics() {
           {[
             { label: "Total Revenue", value: data ? `$${data.totalRevenue.toLocaleString()}` : "—" },
             { label: "Total Orders", value: data?.totalOrders ?? "—" },
+            { label: "Avg Order Value", value: data ? `$${data.aov}` : "—" },
             { label: "Total Stores", value: data?.totalStores ?? "—" },
             { label: "Total Customers", value: data?.totalCustomers ?? "—" },
+            { label: "Total Products", value: data?.totalProducts ?? "—" },
           ].map((stat) => (
             <Card key={stat.label}>
               <CardContent className="p-4">
