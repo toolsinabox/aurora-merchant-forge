@@ -530,7 +530,7 @@ const featureData: FeatureCategory[] = [
       { name: "Verified Purchase Badge", description: "Mark reviews from verified buyers", status: "done", notes: "Checks order_items for reviewer's user_id, shows ShieldCheck badge" },
       { name: "Review Aggregation / Average Rating", description: "Calculate and display average rating per product", status: "done", notes: "Average rating display plus star breakdown bar chart with counts" },
       { name: "Review Reminders (Post-Purchase)", description: "Automated email asking for review after delivery", status: "not_started", notes: "Neto has order_follow_up email" },
-      { name: "Review Import/Export", description: "Bulk import reviews from CSV/other platforms", status: "partial", notes: "Review export tab in Export Wizard with product, rating, title, body, author, approval status, and admin reply" },
+      { name: "Review Import/Export", description: "Bulk import reviews from CSV/other platforms", status: "done", notes: "Review export tab in Export Wizard and review import in Import Wizard with product SKU lookup, rating, title, body, author name, approval status" },
     ],
   },
 
