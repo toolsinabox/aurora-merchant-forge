@@ -63,6 +63,18 @@ export default function Inventory() {
   const lowStock = products.filter((p) => { const s = getVariantStock(p); return s > 0 && s <= 10; }).length;
   const outOfStock = products.filter((p) => getVariantStock(p) === 0).length;
 
+  // Inventory value calculation
+  const inventoryValue = useMemo(() => {
+    let totalRetail = 0;
+    let totalCost = 0;
+    products.forEach((p: any) => {
+      const stock = getVariantStock(p);
+      totalRetail += stock * Number(p.price || 0);
+      totalCost += stock * Number(p.cost_price || 0);
+    });
+    return { totalRetail, totalCost, totalProfit: totalRetail - totalCost };
+  }, [products]);
+
   const handleCreateLocation = () => {
     createLocation.mutate(
       { name: newLoc.name, type: newLoc.type, address: newLoc.address || undefined },
