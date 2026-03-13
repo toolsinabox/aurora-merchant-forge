@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
-  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
+  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail, Puzzle, Book,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
