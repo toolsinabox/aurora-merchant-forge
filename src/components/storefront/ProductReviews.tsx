@@ -237,6 +237,25 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
               className="min-h-[80px]"
             />
           </div>
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground">Photos (optional, up to 5)</label>
+            <input ref={photoInputRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePhotoSelect} />
+            <div className="flex gap-2 flex-wrap">
+              {photoPreviewUrls.map((url, i) => (
+                <div key={i} className="relative w-16 h-16 rounded border overflow-hidden">
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                  <button type="button" onClick={() => removePhoto(i)} className="absolute top-0 right-0 bg-background/80 rounded-bl p-0.5">
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+              {reviewPhotos.length < 5 && (
+                <button type="button" onClick={() => photoInputRef.current?.click()} className="w-16 h-16 rounded border border-dashed flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors">
+                  <ImagePlus className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={submitting}>
               {submitting ? "Submitting..." : "Submit Review"}
