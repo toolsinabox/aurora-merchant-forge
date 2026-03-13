@@ -440,7 +440,7 @@ const featureData: FeatureCategory[] = [
       { name: "Real-Time Carrier Rates (UPS/FedEx/DHL)", description: "International carrier rate integration", status: "not_started" },
       { name: "Shipping Label Printing", description: "Print carrier-specific shipping labels", status: "not_started" },
       { name: "Shipping Tracking Emails", description: "Automated tracking notification emails to customers", status: "not_started" },
-      { name: "Click & Collect / Pickup in Store", description: "In-store pickup option at checkout", status: "not_started" },
+      { name: "Click & Collect / Pickup in Store", description: "In-store pickup option at checkout", status: "done", notes: "Delivery method toggle: Ship vs Click & Collect with free shipping for pickup" },
       { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "not_started", notes: "Neto has dropship system with emails" },
       { name: "Dropship Notifications", description: "Automated dropship supplier email notifications", status: "not_started" },
       { name: "Delivery Date Estimation", description: "Estimated delivery date on checkout", status: "not_started" },
