@@ -87,10 +87,15 @@ export default function AbandonedCarts() {
   const recoveredCount = carts.filter((c: any) => c.recovery_status === "recovered").length;
   const recoveryRate = carts.length > 0 ? ((recoveredCount / carts.length) * 100).toFixed(1) : "0";
 
+  const [couponInput, setCouponInput] = useState<string | null>(null);
+  const [couponCartId, setCouponCartId] = useState<string | null>(null);
+
   const statusBadge = (status: string) => {
     switch (status) {
       case "recovered": return <Badge variant="default" className="text-[10px]"><CheckCircle2 className="h-3 w-3 mr-1" />Recovered</Badge>;
       case "email_sent": return <Badge variant="secondary" className="text-[10px]"><MailCheck className="h-3 w-3 mr-1" />Email Sent</Badge>;
+      case "email_sent_2": return <Badge variant="secondary" className="text-[10px]"><MailCheck className="h-3 w-3 mr-1" />2nd Email</Badge>;
+      case "email_sent_3": return <Badge variant="secondary" className="text-[10px]"><MailCheck className="h-3 w-3 mr-1" />3rd Email</Badge>;
       default: return <Badge variant="outline" className="text-[10px]"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
     }
   };
