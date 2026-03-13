@@ -755,7 +755,7 @@ const featureData: FeatureCategory[] = [
       { name: "Coupon Usage Report", description: "Coupon redemption and revenue impact", status: "done", notes: "Coupon usage table on Analytics page showing code, discount, uses" },
       { name: "Google Analytics Integration", description: "GA4 tracking code integration", status: "done", notes: "GA tracking ID field in store settings, gtag.js dynamically injected into storefront" },
       { name: "Custom Report Builder", description: "Build custom reports with filters and date ranges", status: "not_started" },
-      { name: "Scheduled Report Emails", description: "Auto-send reports by email on schedule", status: "not_started" },
+      { name: "Scheduled Report Emails", description: "Auto-send reports by email on schedule", status: "done", notes: "scheduled-report-email edge function generates weekly/monthly performance reports with revenue, orders, AOV, new customers, low stock alerts, and emails to store contact" },
     ],
   },
 
