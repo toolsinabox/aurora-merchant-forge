@@ -132,6 +132,75 @@ export default function PurchaseOrders() {
     },
   });
 
+  const openReceiveDialog = async (po: any) => {
+    setReceivePO(po);
+    setReceiveOpen(true);
+    setLoadingItems(true);
+    const { data } = await supabase
+      .from("purchase_order_items")
+      .select("*")
+      .eq("purchase_order_id", po.id)
+      .order("title");
+    const items = data || [];
+    setPOItems(items);
+    const qtys: Record<string, number> = {};
+    items.forEach((item: any) => {
+      qtys[item.id] = 0;
+    });
+    setReceiveQtys(qtys);
+    setLoadingItems(false);
+  };
+
+  const handleReceiveItems = async () => {
+    if (!receivePO || !currentStore) return;
+    let anyReceived = false;
+    for (const item of poItems) {
+      const qty = receiveQtys[item.id] || 0;
+      if (qty <= 0) continue;
+      anyReceived = true;
+      const newReceived = Math.min(item.quantity_received + qty, item.quantity_ordered);
+      await supabase
+        .from("purchase_order_items")
+        .update({ quantity_received: newReceived })
+        .eq("id", item.id);
+      
+      // Update inventory stock if product is tracked
+      if (item.product_id) {
+        const { data: stockRows } = await supabase
+          .from("inventory_stock")
+          .select("id, quantity")
+          .eq("product_id", item.product_id)
+          .eq("store_id", currentStore.id)
+          .limit(1);
+        if (stockRows && stockRows.length > 0) {
+          await supabase
+            .from("inventory_stock")
+            .update({ quantity: stockRows[0].quantity + qty })
+            .eq("id", stockRows[0].id);
+        }
+      }
+    }
+    if (!anyReceived) {
+      toast.error("Enter quantities to receive");
+      return;
+    }
+    // Check if all items fully received
+    const { data: updatedItems } = await supabase
+      .from("purchase_order_items")
+      .select("quantity_ordered, quantity_received")
+      .eq("purchase_order_id", receivePO.id);
+    const allReceived = (updatedItems || []).every((i: any) => i.quantity_received >= i.quantity_ordered);
+    const someReceived = (updatedItems || []).some((i: any) => i.quantity_received > 0);
+    const newStatus = allReceived ? "received" : someReceived ? "partial" : receivePO.status;
+    const update: any = { status: newStatus };
+    if (allReceived) update.received_date = new Date().toISOString();
+    await supabase.from("purchase_orders").update(update).eq("id", receivePO.id);
+    
+    queryClient.invalidateQueries({ queryKey: ["purchase_orders"] });
+    toast.success(allReceived ? "All items received — PO marked as received" : "Items received — PO partially fulfilled");
+    setReceiveOpen(false);
+  };
+
   const filtered = pos.filter((p: any) =>
     p.po_number.toLowerCase().includes(search.toLowerCase()) ||
     (p.suppliers?.name || "").toLowerCase().includes(search.toLowerCase())
