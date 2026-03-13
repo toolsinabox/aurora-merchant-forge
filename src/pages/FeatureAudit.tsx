@@ -431,7 +431,7 @@ const featureData: FeatureCategory[] = [
       { name: "Free Shipping Above Threshold", description: "Free shipping over X amount per zone", status: "done" },
       { name: "Flat Rate Shipping", description: "Flat rate per zone", status: "done" },
       { name: "Shipping Methods (GetShippingMethods / AddShippingQuote)", description: "Dynamic shipping method management via API", status: "not_started" },
-      { name: "Weight-Based Shipping Rates", description: "Calculate shipping based on order weight", status: "not_started" },
+      { name: "Weight-Based Shipping Rates", description: "Calculate shipping based on order weight", status: "done", notes: "rate_type and per_kg_rate columns on shipping_zones, admin UI for flat vs weight-based selection, per-kg rate with optional base flat rate" },
       { name: "Volumetric/Cubic Shipping Rates", description: "Calculate using dimensional weight", status: "not_started" },
       { name: "Real-Time Carrier Rates (Australia Post)", description: "Live rates from Australia Post API", status: "not_started" },
       { name: "Real-Time Carrier Rates (Sendle)", description: "Live rates from Sendle courier API", status: "not_started" },
