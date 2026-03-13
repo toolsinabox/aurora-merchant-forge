@@ -91,6 +91,8 @@ export default function Analytics() {
   const [topSellingProducts, setTopSellingProducts] = useState<any[]>([]);
   const [salesByCategory, setSalesByCategory] = useState<any[]>([]);
   const [couponStats, setCouponStats] = useState<any[]>([]);
+  const [profitData, setProfitData] = useState<any[]>([]);
+  const [taxSummary, setTaxSummary] = useState<{ totalTax: number; orderCount: number; byMonth: any[] }>({ totalTax: 0, orderCount: 0, byMonth: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
