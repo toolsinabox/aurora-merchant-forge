@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Download, ArrowLeft, Check, Package, ShoppingCart } from "lucide-react";
+import { Download, ArrowLeft, Check, Package, ShoppingCart, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -527,6 +527,64 @@ function CategoryExportTab() {
   );
 }
 
+function ReviewExportTab() {
+  const { currentStore } = useAuth();
+  const [exporting, setExporting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const handleExport = async () => {
+    if (!currentStore) return;
+    setExporting(true);
+    try {
+      const { data: reviews } = await supabase
+        .from("product_reviews" as any)
+        .select("*, products(title, sku)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+
+      if (!reviews || reviews.length === 0) { toast.error("No reviews to export"); setExporting(false); return; }
+
+      const headers = ["Product", "SKU", "Rating", "Title", "Body", "Author", "Approved", "Date", "Admin Reply"];
+      const rows = reviews.map((r: any) => [
+        escapeCSV(r.products?.title), escapeCSV(r.products?.sku), r.rating,
+        escapeCSV(r.title), escapeCSV(r.body), escapeCSV(r.author_name),
+        r.is_approved ? "Yes" : "No", r.created_at?.slice(0, 10), escapeCSV(r.admin_reply),
+      ]);
+
+      const csv = [headers.join(","), ...rows.map((r: any) => r.join(","))].join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = `reviews-${currentStore.id.slice(0, 8)}.csv`; a.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+      toast.success(`Exported ${reviews.length} reviews`);
+    } catch (err: any) { toast.error(err.message); }
+    finally { setExporting(false); }
+  };
+
+  return (
+    <Card className="max-w-md">
+      <CardHeader><CardTitle className="text-lg">Export Reviews</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Export all product reviews with ratings, text, author, and admin replies.
+        </p>
+        {done ? (
+          <div className="text-center space-y-3">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto"><Check className="h-6 w-6 text-primary" /></div>
+            <p className="text-sm font-medium">Export complete!</p>
+            <Button variant="outline" onClick={() => setDone(false)} className="w-full">Export Again</Button>
+          </div>
+        ) : (
+          <Button onClick={handleExport} disabled={exporting} className="w-full gap-2">
+            {exporting ? "Exporting..." : <><Download className="h-4 w-4" /> Export Reviews</>}
+          </Button>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function ExportWizard() {
   const navigate = useNavigate();
 
@@ -539,7 +597,7 @@ export default function ExportWizard() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Export Data</h1>
-            <p className="text-muted-foreground text-sm">Export products, orders, or categories as CSV</p>
+            <p className="text-muted-foreground text-sm">Export products, orders, categories, or reviews as CSV</p>
           </div>
         </div>
 
@@ -548,6 +606,7 @@ export default function ExportWizard() {
             <TabsTrigger value="products" className="gap-1.5"><Package className="h-4 w-4" /> Products</TabsTrigger>
             <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="h-4 w-4" /> Orders</TabsTrigger>
             <TabsTrigger value="categories" className="gap-1.5"><Package className="h-4 w-4" /> Categories</TabsTrigger>
+            <TabsTrigger value="reviews" className="gap-1.5"><Star className="h-4 w-4" /> Reviews</TabsTrigger>
           </TabsList>
           <TabsContent value="products">
             <ProductExportTab />
@@ -557,6 +616,9 @@ export default function ExportWizard() {
           </TabsContent>
           <TabsContent value="categories">
             <CategoryExportTab />
+          </TabsContent>
+          <TabsContent value="reviews">
+            <ReviewExportTab />
           </TabsContent>
         </Tabs>
       </div>

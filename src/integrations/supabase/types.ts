@@ -2695,6 +2695,7 @@ export type Database = {
           contact_email: string | null
           created_at: string
           currency: string
+          default_low_stock_threshold: number | null
           description: string | null
           favicon_url: string | null
           ga_tracking_id: string | null
@@ -2721,6 +2722,7 @@ export type Database = {
           contact_email?: string | null
           created_at?: string
           currency?: string
+          default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
           ga_tracking_id?: string | null
@@ -2747,6 +2749,7 @@ export type Database = {
           contact_email?: string | null
           created_at?: string
           currency?: string
+          default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
           ga_tracking_id?: string | null
@@ -2947,6 +2950,86 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "user_roles_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      warranty_disputes: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          customer_id: string | null
+          description: string | null
+          dispute_type: string
+          id: string
+          order_id: string | null
+          product_id: string | null
+          reason: string
+          resolution: string | null
+          resolved_at: string | null
+          status: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          dispute_type?: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          reason?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          customer_id?: string | null
+          description?: string | null
+          dispute_type?: string
+          id?: string
+          order_id?: string | null
+          product_id?: string | null
+          reason?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          status?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warranty_disputes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranty_disputes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranty_disputes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warranty_disputes_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
