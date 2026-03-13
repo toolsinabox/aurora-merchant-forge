@@ -280,7 +280,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Detail Page", description: "Comprehensive customer profile view", status: "done" },
       { name: "Customer Groups (Retail / Wholesale / VIP)", description: "Assign customers to groups for pricing/access control", status: "done", notes: "customer_groups table with CRUD in Settings, group assignment on customer detail" },
       { name: "Customer Credit Terms / Limits", description: "B2B credit limits, payment terms (Net 30, etc.)", status: "not_started" },
-      { name: "Customer Statements", description: "Generate and email customer account statements", status: "not_started", notes: "Neto has customer_statement_email" },
+      { name: "Customer Statements", description: "Generate and email customer account statements", status: "done", notes: "Printable customer statement with order history, payment history, and balance summary accessible from customer detail" },
       { name: "Multiple Shipping Addresses", description: "Customers save multiple delivery addresses", status: "done", notes: "Customer addresses CRUD with default billing/shipping" },
       { name: "Customer Files / Documents", description: "Upload contracts/documents to customer records", status: "not_started", notes: "Neto has customer/files templates" },
       { name: "Customer Logo Upload (Dropship)", description: "B2B customers upload their logo for dropship labels", status: "not_started", notes: "Neto has logos templates" },
