@@ -193,6 +193,7 @@ export default function StorefrontCheckout() {
           items_count: items.reduce((s, i) => s + i.quantity, 0),
           subtotal: totalPrice,
           discount: discountAmount,
+          shipping: shippingCost,
           total: finalTotal,
           status: "pending",
           payment_status: "pending",
