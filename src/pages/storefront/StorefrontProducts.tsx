@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
@@ -8,19 +8,172 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, GitCompareArrows, SlidersHorizontal, X } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { useCompare } from "@/contexts/CompareContext";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { toast } from "sonner";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
-type SpecFilter = Record<string, string[]>; // { "Colour": ["Red", "Blue"], "Size": ["M"] }
+type SpecFilter = Record<string, string[]>;
+
+const PAGE_SIZES = [12, 24, 48];
+
+function ProductCard({ p, basePath, store }: { p: any; basePath: string; store: any }) {
+  const { items: compareItems, addItem: addCompare, removeItem: removeCompare, isComparing } = useCompare();
+  const { addItem } = useCart();
+  const { toggleItem, isWishlisted } = useWishlist();
+  const comparing = isComparing(p.id);
+  const wishlisted = isWishlisted(p.id);
+  const now = new Date();
+  const promoActive = p.promo_price && (!p.promo_start || new Date(p.promo_start) <= now) && (!p.promo_end || new Date(p.promo_end) >= now);
+  const displayPrice = promoActive ? p.promo_price : p.price;
+
+  return (
+    <div key={p.id} className="group relative">
+      <Link to={`${basePath}/product/${p.id}`}>
+        <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5 relative">
+          {p.images?.[0] ? (
+            <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
+          )}
+          {promoActive && p.promo_tag && (
+            <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-2xs">{p.promo_tag}</Badge>
+          )}
+        </div>
+        {p.brand && <p className="text-2xs text-muted-foreground uppercase tracking-wide">{p.brand}</p>}
+        <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
+        <div className="flex items-baseline gap-1.5 mt-0.5">
+          <p className="text-sm font-semibold">${Number(displayPrice).toFixed(2)}</p>
+          {promoActive && <p className="text-xs text-muted-foreground line-through">${Number(p.price).toFixed(2)}</p>}
+          {!promoActive && p.compare_at_price && p.compare_at_price > p.price && (
+            <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
+          )}
+        </div>
+      </Link>
+
+      {/* Action buttons overlay */}
+      <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 rounded-full shadow-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            toggleItem(p.id, store?.id);
+          }}
+        >
+          <Heart className={`h-3.5 w-3.5 ${wishlisted ? "fill-destructive text-destructive" : ""}`} />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 rounded-full shadow-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            addItem({
+              product_id: p.id,
+              title: p.title,
+              price: Number(displayPrice),
+              image: p.images?.[0] ? getImageUrl(p.images[0]) : undefined,
+              sku: p.sku,
+            });
+            toast.success("Added to cart");
+          }}
+        >
+          <ShoppingCart className="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          variant={comparing ? "default" : "secondary"}
+          size="icon"
+          className="h-8 w-8 rounded-full shadow-sm"
+          onClick={(e) => {
+            e.preventDefault();
+            comparing ? removeCompare(p.id) : addCompare({
+              id: p.id, title: p.title, price: p.price,
+              compare_at_price: p.compare_at_price, images: p.images,
+              description: p.description, sku: p.sku,
+            });
+          }}
+        >
+          <GitCompareArrows className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function FilterSidebar({ brands, brandFilter, setBrandFilter, specOptions, specFilters, toggleSpecFilter, priceRange, setPriceRange, maxPrice }: any) {
+  return (
+    <div className="space-y-6">
+      {/* Price Range */}
+      {maxPrice > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold mb-3">Price Range</h3>
+          <Slider
+            min={0}
+            max={maxPrice}
+            step={1}
+            value={priceRange}
+            onValueChange={setPriceRange}
+            className="mb-2"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>${priceRange[0]}</span>
+            <span>${priceRange[1]}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Brand filter */}
+      {brands.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold mb-2">Brand</h3>
+          <div className="space-y-1.5">
+            {brands.map((b: string) => (
+              <label key={b} className="flex items-center gap-2 text-sm cursor-pointer">
+                <Checkbox
+                  checked={brandFilter.includes(b)}
+                  onCheckedChange={() => setBrandFilter((prev: string[]) => prev.includes(b) ? prev.filter((x: string) => x !== b) : [...prev, b])}
+                />
+                {b}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Specifics filters */}
+      {Object.entries(specOptions).sort().map(([name, values]: [string, any]) => (
+        <div key={name}>
+          <h3 className="text-sm font-semibold mb-2">{name}</h3>
+          <div className="space-y-1.5">
+            {values.sort().map((v: string) => (
+              <label key={v} className="flex items-center gap-2 text-sm cursor-pointer">
+                <Checkbox
+                  checked={(specFilters[name] || []).includes(v)}
+                  onCheckedChange={() => toggleSpecFilter(name, v)}
+                />
+                {v}
+              </label>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function StorefrontProducts() {
   const { storeSlug: paramSlug } = useParams();
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
-  const { items: compareItems, addItem: addCompare, removeItem: removeCompare, isComparing } = useCompare();
+  const { items: compareItems } = useCompare();
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -32,6 +185,16 @@ export default function StorefrontProducts() {
   const [brandFilter, setBrandFilter] = useState<string[]>([]);
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
+
+  // Price range
+  const maxPrice = useMemo(() => Math.ceil(Math.max(...products.map(p => Number(p.price)), 0)), [products]);
+  const [priceRange, setPriceRange] = useState<number[]>([0, 0]);
+
+  useEffect(() => {
+    if (maxPrice > 0 && priceRange[1] === 0) setPriceRange([0, maxPrice]);
+  }, [maxPrice]);
 
   useEffect(() => {
     async function load() {
@@ -53,17 +216,14 @@ export default function StorefrontProducts() {
     load();
   }, [storeSlug]);
 
-  // Build filter options from specifics
   const specOptions: Record<string, string[]> = {};
   allSpecifics.forEach((s: any) => {
     if (!specOptions[s.name]) specOptions[s.name] = [];
     if (!specOptions[s.name].includes(s.value)) specOptions[s.name].push(s.value);
   });
 
-  // Get unique brands
   const brands = [...new Set(products.map(p => p.brand).filter(Boolean))].sort();
 
-  // Build product ID sets that match each spec filter
   const specProductIds = new Map<string, Set<string>>();
   Object.entries(specFilters).forEach(([name, values]) => {
     if (values.length === 0) return;
@@ -72,27 +232,36 @@ export default function StorefrontProducts() {
     specProductIds.set(name, ids);
   });
 
-  const filtered = products
-    .filter((p) => {
-      const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || 
-        (p.search_keywords && p.search_keywords.toLowerCase().includes(search.toLowerCase()));
-      const matchCat = category === "all" || p.category_id === category;
-      const matchBrand = brandFilter.length === 0 || brandFilter.includes(p.brand);
-      // Check all spec filters
-      let matchSpecs = true;
-      specProductIds.forEach((ids) => {
-        if (!ids.has(p.id)) matchSpecs = false;
+  const filtered = useMemo(() => {
+    return products
+      .filter((p) => {
+        const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
+          (p.search_keywords && p.search_keywords.toLowerCase().includes(search.toLowerCase()));
+        const matchCat = category === "all" || p.category_id === category;
+        const matchBrand = brandFilter.length === 0 || brandFilter.includes(p.brand);
+        const matchPrice = Number(p.price) >= priceRange[0] && Number(p.price) <= priceRange[1];
+        let matchSpecs = true;
+        specProductIds.forEach((ids) => {
+          if (!ids.has(p.id)) matchSpecs = false;
+        });
+        return matchSearch && matchCat && matchBrand && matchSpecs && matchPrice;
+      })
+      .sort((a, b) => {
+        if (sort === "price-asc") return a.price - b.price;
+        if (sort === "price-desc") return b.price - a.price;
+        if (sort === "name") return a.title.localeCompare(b.title);
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-      return matchSearch && matchCat && matchBrand && matchSpecs;
-    })
-    .sort((a, b) => {
-      if (sort === "price-asc") return a.price - b.price;
-      if (sort === "price-desc") return b.price - a.price;
-      if (sort === "name") return a.title.localeCompare(b.title);
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
+  }, [products, search, category, brandFilter, specFilters, sort, priceRange, allSpecifics]);
 
-  const activeFilterCount = brandFilter.length + Object.values(specFilters).reduce((sum, v) => sum + v.length, 0);
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [search, category, brandFilter, specFilters, sort, priceRange, pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+
+  const activeFilterCount = brandFilter.length + Object.values(specFilters).reduce((sum, v) => sum + v.length, 0) +
+    (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
 
   const toggleSpecFilter = (name: string, value: string) => {
     setSpecFilters(prev => {
@@ -107,6 +276,7 @@ export default function StorefrontProducts() {
     setSpecFilters({});
     setCategory("all");
     setSearch("");
+    setPriceRange([0, maxPrice]);
   };
 
   if (loading) {
@@ -121,14 +291,28 @@ export default function StorefrontProducts() {
     );
   }
 
-  const hasFilters = brands.length > 0 || Object.keys(specOptions).length > 0;
+  const hasFilters = brands.length > 0 || Object.keys(specOptions).length > 0 || maxPrice > 0;
+
+  const filterContent = (
+    <FilterSidebar
+      brands={brands}
+      brandFilter={brandFilter}
+      setBrandFilter={setBrandFilter}
+      specOptions={specOptions}
+      specFilters={specFilters}
+      toggleSpecFilter={toggleSpecFilter}
+      priceRange={priceRange}
+      setPriceRange={setPriceRange}
+      maxPrice={maxPrice}
+    />
+  );
 
   return (
     <StorefrontLayout storeName={store?.name}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-bold mb-6">All Products</h1>
 
-        {/* Top bar: search, category, sort, filter toggle */}
+        {/* Top bar */}
         <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -152,33 +336,68 @@ export default function StorefrontProducts() {
               <SelectItem value="name">Name</SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Desktop filter toggle */}
           {hasFilters && (
-            <Button variant="outline" size="sm" className="h-10 gap-1.5" onClick={() => setShowFilters(!showFilters)}>
+            <Button variant="outline" size="sm" className="h-10 gap-1.5 hidden sm:flex" onClick={() => setShowFilters(!showFilters)}>
               <SlidersHorizontal className="h-4 w-4" />
               Filters
               {activeFilterCount > 0 && <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5">{activeFilterCount}</Badge>}
             </Button>
           )}
+
+          {/* Mobile filter sheet */}
+          {hasFilters && (
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="sm" className="h-10 gap-1.5 sm:hidden">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  Filters
+                  {activeFilterCount > 0 && <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1.5">{activeFilterCount}</Badge>}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] overflow-y-auto">
+                <SheetHeader>
+                  <SheetTitle>Filters</SheetTitle>
+                </SheetHeader>
+                <div className="mt-4">
+                  {filterContent}
+                  {activeFilterCount > 0 && (
+                    <Button variant="outline" size="sm" className="w-full mt-4" onClick={clearAllFilters}>Clear all filters</Button>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+          )}
         </div>
 
-        {/* Active filter badges */}
-        {activeFilterCount > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4">
-            {brandFilter.map(b => (
-              <Badge key={b} variant="secondary" className="gap-1 cursor-pointer" onClick={() => setBrandFilter(prev => prev.filter(x => x !== b))}>
-                Brand: {b} <X className="h-3 w-3" />
-              </Badge>
-            ))}
-            {Object.entries(specFilters).flatMap(([name, values]) =>
-              values.map(v => (
-                <Badge key={`${name}-${v}`} variant="secondary" className="gap-1 cursor-pointer" onClick={() => toggleSpecFilter(name, v)}>
-                  {name}: {v} <X className="h-3 w-3" />
+        {/* Active filter badges + result count */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <span className="text-sm text-muted-foreground">{filtered.length} product{filtered.length !== 1 ? "s" : ""}</span>
+          {activeFilterCount > 0 && (
+            <>
+              <span className="text-muted-foreground">·</span>
+              {brandFilter.map(b => (
+                <Badge key={b} variant="secondary" className="gap-1 cursor-pointer" onClick={() => setBrandFilter(prev => prev.filter(x => x !== b))}>
+                  Brand: {b} <X className="h-3 w-3" />
                 </Badge>
-              ))
-            )}
-            <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={clearAllFilters}>Clear all</Button>
-          </div>
-        )}
+              ))}
+              {priceRange[0] > 0 || priceRange[1] < maxPrice ? (
+                <Badge variant="secondary" className="gap-1 cursor-pointer" onClick={() => setPriceRange([0, maxPrice])}>
+                  ${priceRange[0]}–${priceRange[1]} <X className="h-3 w-3" />
+                </Badge>
+              ) : null}
+              {Object.entries(specFilters).flatMap(([name, values]) =>
+                values.map(v => (
+                  <Badge key={`${name}-${v}`} variant="secondary" className="gap-1 cursor-pointer" onClick={() => toggleSpecFilter(name, v)}>
+                    {name}: {v} <X className="h-3 w-3" />
+                  </Badge>
+                ))
+              )}
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={clearAllFilters}>Clear all</Button>
+            </>
+          )}
+        </div>
 
         {/* Compare bar */}
         {compareItems.length > 0 && (
@@ -191,95 +410,74 @@ export default function StorefrontProducts() {
         )}
 
         <div className="flex gap-6">
-          {/* Filter sidebar */}
+          {/* Desktop filter sidebar */}
           {showFilters && hasFilters && (
-            <div className="w-56 flex-shrink-0 space-y-6 hidden sm:block">
-              {/* Brand filter */}
-              {brands.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold mb-2">Brand</h3>
-                  <div className="space-y-1.5">
-                    {brands.map(b => (
-                      <label key={b} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <Checkbox
-                          checked={brandFilter.includes(b)}
-                          onCheckedChange={() => setBrandFilter(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b])}
-                        />
-                        {b}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Specifics filters */}
-              {Object.entries(specOptions).sort().map(([name, values]) => (
-                <div key={name}>
-                  <h3 className="text-sm font-semibold mb-2">{name}</h3>
-                  <div className="space-y-1.5">
-                    {values.sort().map(v => (
-                      <label key={v} className="flex items-center gap-2 text-sm cursor-pointer">
-                        <Checkbox
-                          checked={(specFilters[name] || []).includes(v)}
-                          onCheckedChange={() => toggleSpecFilter(name, v)}
-                        />
-                        {v}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
+            <div className="w-56 flex-shrink-0 hidden sm:block">
+              {filterContent}
             </div>
           )}
 
           {/* Grid */}
           <div className="flex-1">
-            {filtered.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filtered.map((p) => {
-                  const comparing = isComparing(p.id);
-                  const now = new Date();
-                  const promoActive = p.promo_price && (!p.promo_start || new Date(p.promo_start) <= now) && (!p.promo_end || new Date(p.promo_end) >= now);
-                  return (
-                    <div key={p.id} className="group relative">
-                      <Link to={`${basePath}/product/${p.id}`}>
-                        <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5 relative">
-                          {p.images?.[0] ? (
-                            <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
-                          )}
-                          {promoActive && p.promo_tag && (
-                            <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-2xs">{p.promo_tag}</Badge>
-                          )}
-                        </div>
-                        {p.brand && <p className="text-2xs text-muted-foreground uppercase tracking-wide">{p.brand}</p>}
-                        <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
-                        <div className="flex items-baseline gap-1.5 mt-0.5">
-                          <p className="text-sm font-semibold">${Number(promoActive ? p.promo_price : p.price).toFixed(2)}</p>
-                          {promoActive && <p className="text-xs text-muted-foreground line-through">${Number(p.price).toFixed(2)}</p>}
-                          {!promoActive && p.compare_at_price && p.compare_at_price > p.price && (
-                            <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
-                          )}
-                        </div>
-                      </Link>
-                      <Button
-                        variant={comparing ? "default" : "outline"}
-                        size="sm"
-                        className="absolute top-2 right-2 h-7 text-2xs gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => comparing ? removeCompare(p.id) : addCompare({
-                          id: p.id, title: p.title, price: p.price,
-                          compare_at_price: p.compare_at_price, images: p.images,
-                          description: p.description, sku: p.sku,
-                        })}
-                      >
-                        <GitCompareArrows className="h-3 w-3" />
-                        {comparing ? "Remove" : "Compare"}
+            {paginated.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {paginated.map((p) => (
+                    <ProductCard key={p.id} p={p} basePath={basePath} store={store} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-8 gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">Show</span>
+                      <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
+                        <SelectTrigger className="w-20 h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {PAGE_SIZES.map(s => <SelectItem key={s} value={s.toString()} className="text-xs">{s}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                        let pageNum: number;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (page <= 3) {
+                          pageNum = i + 1;
+                        } else if (page >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = page - 2 + i;
+                        }
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={page === pageNum ? "default" : "outline"}
+                            size="icon"
+                            className="h-8 w-8 text-xs"
+                            onClick={() => setPage(pageNum)}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
+                        <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
-                  );
-                })}
-              </div>
+
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      Page {page} of {totalPages}
+                    </span>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="text-center py-16 text-muted-foreground">
                 <p>No products found.</p>
