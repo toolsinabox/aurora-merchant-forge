@@ -88,16 +88,52 @@ function usePlatformAnalytics() {
         stores: count,
       }));
 
+      // Revenue by store (top stores by revenue)
+      const revenueByStore: Record<string, number> = {};
+      orders.forEach((o: any) => {
+        revenueByStore[o.store_id] = (revenueByStore[o.store_id] || 0) + (o.total || 0);
+      });
+      const topStoresByRevenue = stores
+        .map((s: any) => ({ name: s.name, revenue: Math.round((revenueByStore[s.id] || 0) * 100) / 100 }))
+        .sort((a: any, b: any) => b.revenue - a.revenue)
+        .slice(0, 10);
+
+      // AOV
+      const aov = orders.length > 0
+        ? Math.round(orders.reduce((s: number, o: any) => s + (o.total || 0), 0) / orders.length * 100) / 100
+        : 0;
+
+      // Customer spend distribution
+      const spendBuckets = [
+        { name: "$0", value: 0 },
+        { name: "$1-50", value: 0 },
+        { name: "$51-200", value: 0 },
+        { name: "$201-500", value: 0 },
+        { name: "$500+", value: 0 },
+      ];
+      customers.forEach((c: any) => {
+        const spent = Number(c.total_spent) || 0;
+        if (spent === 0) spendBuckets[0].value++;
+        else if (spent <= 50) spendBuckets[1].value++;
+        else if (spent <= 200) spendBuckets[2].value++;
+        else if (spent <= 500) spendBuckets[3].value++;
+        else spendBuckets[4].value++;
+      });
+
       return {
         totalRevenue: orders.reduce((s: number, o: any) => s + (o.total || 0), 0),
         totalOrders: orders.length,
         totalStores: stores.length,
         totalCustomers: customers.length,
+        totalProducts: products.length,
+        aov,
         revenueTimeline,
         ordersByStatus,
         tierDistribution,
         topStores,
+        topStoresByRevenue,
         storeGrowth,
+        spendBuckets,
       };
     },
   });
@@ -128,8 +164,10 @@ export default function PlatformAnalytics() {
           {[
             { label: "Total Revenue", value: data ? `$${data.totalRevenue.toLocaleString()}` : "—" },
             { label: "Total Orders", value: data?.totalOrders ?? "—" },
+            { label: "Avg Order Value", value: data ? `$${data.aov}` : "—" },
             { label: "Total Stores", value: data?.totalStores ?? "—" },
             { label: "Total Customers", value: data?.totalCustomers ?? "—" },
+            { label: "Total Products", value: data?.totalProducts ?? "—" },
           ].map((stat) => (
             <Card key={stat.label}>
               <CardContent className="p-4">
@@ -298,6 +336,54 @@ export default function PlatformAnalytics() {
                 </ResponsiveContainer>
               ) : (
                 <p className="text-sm text-muted-foreground py-8 text-center">No data yet</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Top Stores by Revenue */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Top Stores by Revenue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className="h-48 w-full" />
+              ) : data?.topStoresByRevenue && data.topStoresByRevenue.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={data.topStoresByRevenue} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis type="number" tick={{ fontSize: 10 }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={120} />
+                    <Tooltip contentStyle={{ fontSize: 12 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                    <Bar dataKey="revenue" fill="hsl(142, 71%, 45%)" radius={[0, 2, 2, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-sm text-muted-foreground py-8 text-center">No data yet</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Customer Spend Distribution */}
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Customer Spend Distribution</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              {isLoading ? (
+                <Skeleton className="h-48 w-48 rounded-full" />
+              ) : data?.spendBuckets ? (
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={data.spendBuckets}>
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                    <Tooltip contentStyle={{ fontSize: 12 }} />
+                    <Bar dataKey="value" fill="hsl(38, 92%, 50%)" radius={[2, 2, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <p className="text-sm text-muted-foreground py-8">No data</p>
               )}
             </CardContent>
           </Card>

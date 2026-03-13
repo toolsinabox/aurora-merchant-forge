@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
@@ -10,7 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home, Package, Shield, Truck, Clock } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home, Package, Shield, Truck, Clock, Bell, MapPin } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
 import { ImageLightbox } from "@/components/storefront/ImageLightbox";
 import { toast } from "sonner";
@@ -45,6 +47,12 @@ export default function StorefrontProductDetail() {
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { addProduct: trackView, getRecent } = useRecentlyViewed();
+  const { user } = useAuth();
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifySubmitted, setNotifySubmitted] = useState(false);
+  const [shippingEstimate, setShippingEstimate] = useState<{ zone: string; cost: string } | null>(null);
+  const [shippingZones, setShippingZones] = useState<any[]>([]);
+  const [estimateZip, setEstimateZip] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -140,6 +148,34 @@ export default function StorefrontProductDetail() {
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setZoomPos({ x, y });
   };
+
+  const handleEstimateShipping = useCallback(async () => {
+    if (!estimateZip.trim() || !store) return;
+    if (shippingZones.length === 0) {
+      const { data: zones } = await supabase.from("shipping_zones").select("*").eq("store_id", store.id);
+      if (zones) setShippingZones(zones);
+      if (!zones || zones.length === 0) {
+        setShippingEstimate({ zone: "Shipping", cost: "Contact us" });
+        return;
+      }
+      // Find matching zone or first
+      const match = zones.find((z: any) => z.regions.toLowerCase().includes(estimateZip.toLowerCase())) || zones[0];
+      const productPrice = Number(finalPrice) * quantity;
+      const isFree = (shipping?.free_shipping) || (match.free_above && productPrice >= Number(match.free_above));
+      setShippingEstimate({
+        zone: match.name,
+        cost: isFree ? "Free" : `$${Number(match.flat_rate).toFixed(2)}`,
+      });
+    } else {
+      const match = shippingZones.find((z: any) => z.regions.toLowerCase().includes(estimateZip.toLowerCase())) || shippingZones[0];
+      const productPrice = Number(finalPrice) * quantity;
+      const isFree = (shipping?.free_shipping) || (match.free_above && productPrice >= Number(match.free_above));
+      setShippingEstimate({
+        zone: match.name,
+        cost: isFree ? "Free" : `$${Number(match.flat_rate).toFixed(2)}`,
+      });
+    }
+  }, [estimateZip, store, shippingZones, finalPrice, quantity, shipping]);
 
   if (loading) {
     return (
@@ -376,6 +412,40 @@ export default function StorefrontProductDetail() {
                 )}
               </div>
             )}
+
+            {/* Back in Stock Notification - show when out of stock */}
+            {!product.poa && (currentVariant ? currentVariant.stock <= 0 : (product.track_inventory && product.status === "active")) && !notifySubmitted && (
+              <div className="border rounded-lg p-4 bg-muted/30 space-y-2">
+                <p className="text-sm font-medium flex items-center gap-1.5"><Bell className="h-4 w-4" /> Notify me when back in stock</p>
+                <div className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder="Your email"
+                    value={notifyEmail}
+                    onChange={(e) => setNotifyEmail(e.target.value)}
+                    className="h-9 text-sm"
+                  />
+                  <Button size="sm" className="h-9 shrink-0" onClick={async () => {
+                    if (!notifyEmail || !store) return;
+                    await supabase.from("back_in_stock_requests" as any).insert({
+                      store_id: store.id,
+                      product_id: product.id,
+                      variant_id: currentVariant?.id || null,
+                      email: notifyEmail,
+                      user_id: user?.id || null,
+                    });
+                    setNotifySubmitted(true);
+                    toast.success("You'll be notified when this item is back in stock!");
+                  }}>Notify Me</Button>
+                </div>
+              </div>
+            )}
+            {notifySubmitted && (
+              <div className="border rounded-lg p-3 bg-primary/5 text-sm flex items-center gap-2 text-primary">
+                <Check className="h-4 w-4" /> We'll email you when this product is available
+              </div>
+            )}
+
             {product.poa && (
               <Button variant="outline" className="w-full h-12" onClick={() => window.location.href = `mailto:${store?.contact_email || ''}`}>
                 Contact Us for Pricing
@@ -405,7 +475,35 @@ export default function StorefrontProductDetail() {
               <p className="text-sm text-muted-foreground">{product.availability_description}</p>
             )}
           </div>
-        </div>
+            </div>
+
+            {/* Shipping Calculator */}
+            <div className="border rounded-lg p-4 space-y-2">
+              <p className="text-sm font-medium flex items-center gap-1.5"><MapPin className="h-4 w-4" /> Estimate Shipping</p>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter postcode / ZIP"
+                  value={estimateZip}
+                  onChange={(e) => setEstimateZip(e.target.value)}
+                  className="h-9 text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleEstimateShipping();
+                    }
+                  }}
+                />
+                <Button variant="outline" size="sm" className="h-9 shrink-0" onClick={handleEstimateShipping}>
+                  Calculate
+                </Button>
+              </div>
+              {shippingEstimate && (
+                <p className="text-sm">
+                  <span className="text-muted-foreground">{shippingEstimate.zone}:</span>{" "}
+                  <span className="font-medium">{shippingEstimate.cost}</span>
+                </p>
+              )}
+            </div>
 
         {/* Tabbed content: Description, Features, Specs, Shipping, Warranty */}
         <div className="mt-10">
