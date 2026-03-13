@@ -95,6 +95,7 @@ import ReportBuilder from "./pages/ReportBuilder.tsx";
 import POS from "./pages/POS.tsx";
 import Affiliates from "./pages/Affiliates.tsx";
 import Currencies from "./pages/Currencies.tsx";
+import Addons from "./pages/Addons.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -284,6 +285,7 @@ const App = () => (
                   <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
                   <Route path="/affiliates" element={<RequireAuth><Affiliates /></RequireAuth>} />
                   <Route path="/currencies" element={<RequireAuth><Currencies /></RequireAuth>} />
+                  <Route path="/addons" element={<RequireAuth><Addons /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
-  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail,
+  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail, Puzzle,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -74,6 +74,7 @@ const systemNav = [
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
   { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
+  { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
 ];
 
