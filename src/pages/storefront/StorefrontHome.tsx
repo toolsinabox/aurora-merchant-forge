@@ -9,6 +9,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { AdvertBanner } from "@/components/storefront/AdvertBanner";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -79,6 +80,9 @@ export default function StorefrontHome() {
   return (
     <StorefrontLayout storeName={store.name}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Advert Banner */}
+        <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
+
         {/* Hero Section */}
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-primary-foreground my-6 sm:my-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_60%)]" />
@@ -137,6 +141,9 @@ export default function StorefrontHome() {
             </div>
           </section>
         )}
+
+        {/* Mid-Page Advert */}
+        <AdvertBanner storeId={store.id} placement="homepage_mid" basePath={basePath} />
 
         {/* Featured Products */}
         {products.length > 0 && (

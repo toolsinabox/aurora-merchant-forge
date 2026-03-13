@@ -112,6 +112,74 @@ export type Database = {
           },
         ]
       }
+      adverts: {
+        Row: {
+          advert_type: string
+          button_text: string | null
+          created_at: string
+          ends_at: string | null
+          html_content: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          link_url: string | null
+          name: string
+          placement: string
+          sort_order: number
+          starts_at: string | null
+          store_id: string
+          subtitle: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          advert_type?: string
+          button_text?: string | null
+          created_at?: string
+          ends_at?: string | null
+          html_content?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          name: string
+          placement?: string
+          sort_order?: number
+          starts_at?: string | null
+          store_id: string
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          advert_type?: string
+          button_text?: string | null
+          created_at?: string
+          ends_at?: string | null
+          html_content?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          link_url?: string | null
+          name?: string
+          placement?: string
+          sort_order?: number
+          starts_at?: string | null
+          store_id?: string
+          subtitle?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "adverts_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       api_keys: {
         Row: {
           created_at: string

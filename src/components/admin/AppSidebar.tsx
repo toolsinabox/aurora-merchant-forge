@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
-  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield,
+  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -48,6 +48,7 @@ const salesNav = [
 
 const marketingNav = [
   { title: "Campaigns", url: `${prefix}/marketing`, icon: Megaphone },
+  { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
   { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
@@ -70,6 +71,7 @@ const systemNav = [
   { title: "Redirects", url: `${prefix}/redirects`, icon: ExternalLink },
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
+  { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
 ];
