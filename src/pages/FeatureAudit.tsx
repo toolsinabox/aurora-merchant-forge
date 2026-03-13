@@ -208,7 +208,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Quotes", description: "Create and send quotes that customers can approve/reject", status: "not_started", notes: "Neto has full quote workflow (approve_quote templates)" },
       { name: "Quote to Order Conversion", description: "Convert approved quote into a live order", status: "not_started" },
       { name: "Invoice Generation (PDF)", description: "Generate printable PDF invoices", status: "done", notes: "Print-friendly invoice page with browser print, accessible from order detail" },
-      { name: "Packing Slip Generation (PDF)", description: "Generate printable packing slips", status: "partial", notes: "Same print layout can serve as packing slip" },
+      { name: "Packing Slip Generation (PDF)", description: "Generate printable packing slips", status: "done", notes: "Dedicated packing slip page without pricing, with checkboxes for warehouse picking" },
       { name: "Pick List Generation", description: "Generate warehouse pick lists from orders", status: "done", notes: "Printable pick list page with aggregated items across multiple orders" },
       { name: "Credit Notes", description: "Issue credit notes against orders", status: "done", notes: "credit_notes table with issue dialog on order detail page" },
       { name: "Order Splitting", description: "Split single order into multiple orders", status: "not_started" },
