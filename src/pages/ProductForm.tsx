@@ -358,7 +358,7 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Descriptions & Content</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Description</Label>
+                      <FieldLabel label="Description" field="description" />
                       <Textarea className="text-xs min-h-[100px]" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Full product description" />
                     </div>
                     <div className="space-y-1">
