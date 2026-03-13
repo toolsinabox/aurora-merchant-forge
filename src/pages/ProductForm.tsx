@@ -429,7 +429,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.promo_price} onChange={(e) => update("promo_price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo Tag</Label>
+                        <FieldLabel label="Promo Tag" field="promo_tag" />
                         <Input className="h-8 text-xs" value={form.promo_tag} onChange={(e) => update("promo_tag", e.target.value)} placeholder="e.g. SALE, CLEARANCE" />
                       </div>
                     </div>
