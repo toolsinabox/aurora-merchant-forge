@@ -131,6 +131,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/checkout" element={<StorefrontCheckout />} />
                   <Route path="/store/:storeSlug/login" element={<StorefrontLogin />} />
                   <Route path="/store/:storeSlug/signup" element={<StorefrontSignup />} />
+                  <Route path="/store/:storeSlug/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/store/:storeSlug/account" element={<StorefrontAccount />} />
                   <Route path="*" element={<NotFound />} />
                 </>
