@@ -95,6 +95,11 @@ export default function StorefrontProductDetail() {
     setQuantity(1);
   }, [storeSlug, productId]);
 
+  // Track recently viewed
+  useEffect(() => {
+    if (product) trackView(product);
+  }, [product?.id]);
+
   const currentVariant = variants.find((v) => v.id === selectedVariant);
   const price = currentVariant ? currentVariant.price : product?.price || 0;
   const images = product?.images || [];
