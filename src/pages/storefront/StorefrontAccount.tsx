@@ -185,6 +185,14 @@ export default function StorefrontAccount() {
           .eq("customer_id", cust.id)
           .order("created_at", { ascending: false });
         setDisputes(disputesData || []);
+
+        // Load customer files
+        const { data: filesData } = await supabase
+          .from("customer_files")
+          .select("*")
+          .eq("customer_id", cust.id)
+          .order("created_at", { ascending: false });
+        setCustomerFiles(filesData || []);
       }
 
       // Load wishlist products
