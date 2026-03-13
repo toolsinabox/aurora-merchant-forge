@@ -2593,6 +2593,84 @@ export type Database = {
           },
         ]
       }
+      serial_numbers: {
+        Row: {
+          created_at: string
+          id: string
+          location_id: string | null
+          notes: string | null
+          order_id: string | null
+          product_id: string
+          serial_number: string
+          status: string
+          store_id: string
+          updated_at: string
+          variant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          location_id?: string | null
+          notes?: string | null
+          order_id?: string | null
+          product_id: string
+          serial_number: string
+          status?: string
+          store_id: string
+          updated_at?: string
+          variant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          location_id?: string | null
+          notes?: string | null
+          order_id?: string | null
+          product_id?: string
+          serial_number?: string
+          status?: string
+          store_id?: string
+          updated_at?: string
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "serial_numbers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "serial_numbers_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "serial_numbers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "serial_numbers_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "serial_numbers_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipment_items: {
         Row: {
           id: string
@@ -3039,6 +3117,7 @@ export type Database = {
           social_links: Json | null
           subscription_tier: string
           suspended_reason: string | null
+          tax_mode: string
           timezone: string
           updated_at: string
         }
@@ -3070,6 +3149,7 @@ export type Database = {
           social_links?: Json | null
           subscription_tier?: string
           suspended_reason?: string | null
+          tax_mode?: string
           timezone?: string
           updated_at?: string
         }
@@ -3101,6 +3181,7 @@ export type Database = {
           social_links?: Json | null
           subscription_tier?: string
           suspended_reason?: string | null
+          tax_mode?: string
           timezone?: string
           updated_at?: string
         }
