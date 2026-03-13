@@ -2007,6 +2007,7 @@ export type Database = {
           id: string
           items_count: number
           notes: string | null
+          order_channel: string
           order_number: string
           payment_status: string
           shipping: number
@@ -2029,6 +2030,7 @@ export type Database = {
           id?: string
           items_count?: number
           notes?: string | null
+          order_channel?: string
           order_number: string
           payment_status?: string
           shipping?: number
@@ -2051,6 +2053,7 @@ export type Database = {
           id?: string
           items_count?: number
           notes?: string | null
+          order_channel?: string
           order_number?: string
           payment_status?: string
           shipping?: number
