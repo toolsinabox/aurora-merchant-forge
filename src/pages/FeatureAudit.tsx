@@ -565,8 +565,8 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Order Confirmation Email", description: "Automated email on order placement", status: "done", notes: "order-email-trigger edge function sends order confirmation with items table to customer email on checkout, queued in email_queue table" },
       { name: "Order Shipped / Tracking Email", description: "Email with tracking info when order ships", status: "done", notes: "shipment-email edge function sends tracking email with carrier, tracking number, and track button to customer on shipment creation" },
-      { name: "Order Delivered Email", description: "Email when order is marked delivered", status: "not_started" },
-      { name: "Order Follow-Up Email", description: "Post-delivery follow-up / review request", status: "not_started" },
+      { name: "Order Delivered Email", description: "Email when order is marked delivered", status: "done", notes: "order-delivered-email edge function sends delivery confirmation with shipment details when shipment status set to delivered" },
+      { name: "Order Follow-Up Email", description: "Post-delivery follow-up / review request", status: "done", notes: "order-follow-up edge function sends review request email with order items and CTA" },
       { name: "Payment Confirmation Email", description: "Receipt email on successful payment", status: "done", notes: "payment-email edge function sends styled payment receipt with amount, method, order details on admin payment recording" },
       { name: "Customer Registration Email", description: "Welcome email on customer signup", status: "done", notes: "welcome-email edge function sends branded welcome email with account benefits list on storefront signup" },
       { name: "Customer Auto-Registration Email", description: "Auto-created account credentials email", status: "not_started" },
