@@ -261,7 +261,7 @@ const featureData: FeatureCategory[] = [
       { name: "Warranty Claims (Disputes)", description: "Customer warranty dispute system with status workflow", status: "done", notes: "warranty_disputes table with open→in_review→resolved/closed workflow, admin Disputes tab on Returns page, storefront account submission form with order/product/type/reason selection" },
       { name: "Dispute Types (Refund/Repair/Replace)", description: "Different dispute resolution types", status: "done", notes: "dispute_type field with refund/repair/replace options on warranty_disputes table" },
       { name: "Dispute Reason Selection", description: "Pre-defined dispute reasons for customers to choose from", status: "done", notes: "7 pre-defined reasons in storefront dispute form: defective, broke within warranty, not as described, missing parts, performance, safety, other" },
-      { name: "Dispute Email Notifications", description: "Automated emails when disputes are raised, updated, closed", status: "not_started" },
+      { name: "Dispute Email Notifications", description: "Automated emails when disputes are raised, updated, closed", status: "done", notes: "dispute-email edge function sends customer notification with dispute details/status and admin alert for new disputes" },
       { name: "RMA Report", description: "Reporting on return rates, reasons, costs", status: "done", notes: "KPI cards + status breakdown + top reasons on Returns page Report tab" },
     ],
   },
