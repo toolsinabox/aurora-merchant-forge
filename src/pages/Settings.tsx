@@ -23,6 +23,72 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 
+function WholesaleApplicationsTab() {
+  const { currentStore } = useAuth();
+  const [apps, setApps] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("wholesale_applications" as any).select("*").eq("store_id", currentStore.id).order("created_at", { ascending: false })
+      .then(({ data }) => { setApps(data || []); setLoading(false); });
+  }, [currentStore]);
+
+  const updateStatus = async (id: string, status: string) => {
+    await supabase.from("wholesale_applications" as any).update({ status }).eq("id", id);
+    setApps(apps.map(a => a.id === id ? { ...a, status } : a));
+    toast.success(`Application ${status}`);
+  };
+
+  if (loading) return <Skeleton className="h-32 w-full" />;
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        {apps.length === 0 ? (
+          <div className="p-6 text-center text-sm text-muted-foreground">No wholesale applications yet.</div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-xs">Business</TableHead>
+                <TableHead className="text-xs">Contact</TableHead>
+                <TableHead className="text-xs">Email</TableHead>
+                <TableHead className="text-xs">ABN</TableHead>
+                <TableHead className="text-xs">Status</TableHead>
+                <TableHead className="text-xs">Date</TableHead>
+                <TableHead className="text-xs">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {apps.map((a: any) => (
+                <TableRow key={a.id} className="text-xs">
+                  <TableCell className="font-medium">{a.business_name}</TableCell>
+                  <TableCell>{a.contact_name}</TableCell>
+                  <TableCell>{a.email}</TableCell>
+                  <TableCell className="font-mono">{a.abn_tax_id || "—"}</TableCell>
+                  <TableCell>
+                    <Badge variant={a.status === "approved" ? "default" : a.status === "rejected" ? "destructive" : "secondary"} className="text-[10px] capitalize">{a.status}</Badge>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">{new Date(a.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {a.status === "pending" && (
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => updateStatus(a.id, "approved")}>Approve</Button>
+                        <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => updateStatus(a.id, "rejected")}>Reject</Button>
+                      </div>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function SEOSettings() {
   const { currentStore } = useAuth();
   const [seoTitle, setSeoTitle] = useState("");
@@ -347,6 +413,7 @@ export default function SettingsPage() {
             <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
             <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
             <TabsTrigger value="groups" className="text-xs h-7">Customer Groups</TabsTrigger>
+            <TabsTrigger value="wholesale" className="text-xs h-7">Wholesale</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
@@ -841,6 +908,10 @@ export default function SettingsPage() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="wholesale" className="space-y-3">
+            <WholesaleApplicationsTab />
           </TabsContent>
         </Tabs>
       </div>

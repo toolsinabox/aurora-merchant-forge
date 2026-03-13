@@ -20,6 +20,7 @@ import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { RenderedTemplate } from "@/components/storefront/RenderedTemplate";
 import { SEOHead } from "@/components/storefront/SEOHead";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
+import { AddToCartPopup } from "@/components/storefront/AddToCartPopup";
 import type { TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -53,6 +54,9 @@ export default function StorefrontProductDetail() {
   const [shippingEstimate, setShippingEstimate] = useState<{ zone: string; cost: string } | null>(null);
   const [shippingZones, setShippingZones] = useState<any[]>([]);
   const [estimateZip, setEstimateZip] = useState("");
+  const [cartPopupOpen, setCartPopupOpen] = useState(false);
+  const [cartPopupItem, setCartPopupItem] = useState<any>(null);
+  const { items: cartItems, totalItems: cartItemCount, totalPrice: cartTotal } = useCart();
 
   useEffect(() => {
     async function load() {
@@ -127,7 +131,7 @@ export default function StorefrontProductDetail() {
 
   const handleAddToCart = () => {
     if (!product) return;
-    addItem({
+    const itemData = {
       product_id: product.id,
       variant_id: currentVariant?.id || null,
       title: product.title,
@@ -136,9 +140,17 @@ export default function StorefrontProductDetail() {
       image: images[0],
       sku: currentVariant?.sku || product.sku,
       quantity,
+    };
+    addItem(itemData);
+    setCartPopupItem({
+      title: product.title,
+      price: Number(finalPrice),
+      quantity,
+      image: images[0],
+      variant_name: currentVariant?.name,
     });
+    setCartPopupOpen(true);
     setAdded(true);
-    toast.success("Added to cart");
     setTimeout(() => setAdded(false), 2000);
   };
 
@@ -652,6 +664,14 @@ export default function StorefrontProductDetail() {
           getImageUrl={getImageUrl}
         />
       )}
+      <AddToCartPopup
+        open={cartPopupOpen}
+        onOpenChange={setCartPopupOpen}
+        item={cartPopupItem}
+        cartTotal={cartTotal}
+        cartItemCount={cartItemCount}
+        basePath={basePath}
+      />
     </StorefrontLayout>
   );
 }

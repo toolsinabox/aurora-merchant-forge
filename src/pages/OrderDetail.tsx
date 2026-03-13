@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
   Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
+  Scissors, Merge,
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,7 +72,14 @@ export default function OrderDetail() {
   const [creditForm, setCreditForm] = useState({ amount: "", reason: "", notes: "" });
   const [refundOpen, setRefundOpen] = useState(false);
   const [refundForm, setRefundForm] = useState({ amount: "", reason: "" });
-  const { user } = useAuth();
+  const [splitOpen, setSplitOpen] = useState(false);
+  const [splitItems, setSplitItems] = useState<Record<string, number>>({});
+  const [splitting, setSplitting] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
+  const [mergeOrderNumber, setMergeOrderNumber] = useState("");
+  const [mergeTarget, setMergeTarget] = useState<any>(null);
+  const [merging, setMerging] = useState(false);
+  const { user, currentStore } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: payments = [] } = useOrderPayments(id);
@@ -197,6 +205,131 @@ export default function OrderDetail() {
             <Button variant="outline" size="sm" className="text-xs gap-1" onClick={() => navigate(`/orders/${order.id}/print`)}>
               <Printer className="h-3.5 w-3.5" /> Print Invoice
             </Button>
+            {/* Split Order */}
+            <Dialog open={splitOpen} onOpenChange={(o) => { setSplitOpen(o); if (o) setSplitItems({}); }}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-xs gap-1"><Scissors className="h-3.5 w-3.5" /> Split</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader><DialogTitle className="text-base">Split Order</DialogTitle></DialogHeader>
+                <p className="text-xs text-muted-foreground">Select items to move to a new order:</p>
+                <div className="border rounded-md divide-y max-h-[300px] overflow-y-auto">
+                  {orderItems.map((item: any) => (
+                    <div key={item.id} className="flex items-center justify-between p-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={!!splitItems[item.id]} onCheckedChange={(c) => {
+                          setSplitItems(prev => c ? { ...prev, [item.id]: item.quantity } : (() => { const { [item.id]: _, ...rest } = prev; return rest; })());
+                        }} />
+                        <span>{item.title} × {item.quantity}</span>
+                      </div>
+                      {splitItems[item.id] && (
+                        <Input type="number" className="h-6 w-16 text-xs" min={1} max={item.quantity}
+                          value={splitItems[item.id]} onChange={(e) => setSplitItems(prev => ({ ...prev, [item.id]: Math.min(parseInt(e.target.value) || 1, item.quantity) }))} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button size="sm" disabled={Object.keys(splitItems).length === 0 || splitting} onClick={async () => {
+                  setSplitting(true);
+                  const newOrderNumber = `${order.order_number}-S${Date.now().toString(36).slice(-3).toUpperCase()}`;
+                  const selectedItems = orderItems.filter((i: any) => splitItems[i.id]);
+                  const newSubtotal = selectedItems.reduce((s: number, i: any) => s + i.unit_price * (splitItems[i.id] || 0), 0);
+                  
+                  const { data: newOrder, error } = await supabase.from("orders").insert({
+                    store_id: order.store_id,
+                    order_number: newOrderNumber,
+                    customer_id: (order as any).customer_id,
+                    subtotal: newSubtotal,
+                    total: newSubtotal,
+                    items_count: Object.keys(splitItems).length,
+                    notes: `Split from ${order.order_number}`,
+                  }).select().single();
+                  
+                  if (error || !newOrder) { toast.error("Failed to split order"); setSplitting(false); return; }
+                  
+                  await supabase.from("order_items").insert(
+                    selectedItems.map((i: any) => ({
+                      order_id: newOrder.id, store_id: order.store_id,
+                      product_id: i.product_id, variant_id: i.variant_id,
+                      title: i.title, sku: i.sku,
+                      quantity: splitItems[i.id], unit_price: i.unit_price,
+                      total: i.unit_price * splitItems[i.id],
+                    }))
+                  );
+                  
+                  // Update or remove items from original order
+                  for (const item of selectedItems) {
+                    const remaining = item.quantity - splitItems[item.id];
+                    if (remaining <= 0) {
+                      await supabase.from("order_items").delete().eq("id", item.id);
+                    } else {
+                      await supabase.from("order_items").update({ quantity: remaining, total: item.unit_price * remaining }).eq("id", item.id);
+                    }
+                  }
+                  
+                  // Update original order totals
+                  const remainingItems = orderItems.filter((i: any) => !splitItems[i.id] || i.quantity > splitItems[i.id]);
+                  const newOrigSubtotal = Number(order.subtotal) - newSubtotal;
+                  await supabase.from("orders").update({
+                    subtotal: newOrigSubtotal, total: newOrigSubtotal,
+                    items_count: remainingItems.length,
+                  }).eq("id", order.id);
+                  
+                  toast.success(`Order split. New order: ${newOrderNumber}`);
+                  queryClient.invalidateQueries({ queryKey: ["order", id] });
+                  queryClient.invalidateQueries({ queryKey: ["orders"] });
+                  setSplitOpen(false);
+                  setSplitting(false);
+                }}>{splitting ? "Splitting..." : "Split Selected Items"}</Button>
+              </DialogContent>
+            </Dialog>
+            {/* Merge Order */}
+            <Dialog open={mergeOpen} onOpenChange={(o) => { setMergeOpen(o); setMergeTarget(null); setMergeOrderNumber(""); }}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-xs gap-1"><Merge className="h-3.5 w-3.5" /> Merge</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-sm">
+                <DialogHeader><DialogTitle className="text-base">Merge Order</DialogTitle></DialogHeader>
+                <p className="text-xs text-muted-foreground">Find another order to merge into this one. All items from the other order will be moved here.</p>
+                <div className="flex gap-2">
+                  <Input className="h-8 text-xs" placeholder="Order number..." value={mergeOrderNumber} onChange={(e) => { setMergeOrderNumber(e.target.value); setMergeTarget(null); }} />
+                  <Button size="sm" className="text-xs shrink-0" onClick={async () => {
+                    if (!mergeOrderNumber) return;
+                    const { data } = await supabase.from("orders").select("id, order_number, total, items_count, status").eq("order_number", mergeOrderNumber).neq("id", order.id).limit(1).maybeSingle();
+                    if (data) setMergeTarget(data);
+                    else toast.error("Order not found");
+                  }}>Find</Button>
+                </div>
+                {mergeTarget && (
+                  <Card>
+                    <CardContent className="p-3 space-y-1">
+                      <p className="text-sm font-medium">{mergeTarget.order_number}</p>
+                      <p className="text-xs">{mergeTarget.items_count} items · ${Number(mergeTarget.total).toFixed(2)}</p>
+                      <StatusBadge status={mergeTarget.status} />
+                      <Button size="sm" variant="destructive" className="w-full text-xs mt-2" disabled={merging} onClick={async () => {
+                        setMerging(true);
+                        // Move items
+                        await supabase.from("order_items").update({ order_id: order.id }).eq("order_id", mergeTarget.id);
+                        // Update totals
+                        await supabase.from("orders").update({
+                          subtotal: Number(order.subtotal) + Number(mergeTarget.total),
+                          total: Number(order.total) + Number(mergeTarget.total),
+                          items_count: (order.items_count || 0) + (mergeTarget.items_count || 0),
+                          notes: `${(order as any).notes || ""}\nMerged from ${mergeTarget.order_number}`.trim(),
+                        }).eq("id", order.id);
+                        // Delete merged order
+                        await supabase.from("orders").delete().eq("id", mergeTarget.id);
+                        toast.success(`Merged ${mergeTarget.order_number} into ${order.order_number}`);
+                        queryClient.invalidateQueries({ queryKey: ["order", id] });
+                        queryClient.invalidateQueries({ queryKey: ["orders"] });
+                        setMergeOpen(false);
+                        setMerging(false);
+                      }}>{merging ? "Merging..." : "Merge & Delete Other Order"}</Button>
+                    </CardContent>
+                  </Card>
+                )}
+              </DialogContent>
+            </Dialog>
             <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="text-xs gap-1"><Truck className="h-3.5 w-3.5" /> Create Shipment</Button>
