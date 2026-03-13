@@ -816,7 +816,7 @@ const featureData: FeatureCategory[] = [
       { name: "Responsive / Mobile Design", description: "Mobile-responsive storefront", status: "done" },
       { name: "Favicon Upload", description: "Custom favicon per store", status: "not_started" },
       { name: "Logo Upload", description: "Store logo upload and display", status: "done" },
-      { name: "Mega Menu Navigation", description: "Category-based mega dropdown menu", status: "not_started" },
+      { name: "Mega Menu Navigation", description: "Category-based mega dropdown menu", status: "done", notes: "Hover-triggered mega menu in storefront header showing parent categories with children in grid layout" },
       { name: "Breadcrumb Navigation", description: "Breadcrumb trail on product/category pages", status: "done", notes: "Breadcrumbs on product detail page (Home > Products > Product)" },
     ],
   },
