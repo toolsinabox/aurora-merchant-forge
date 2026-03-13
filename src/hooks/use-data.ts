@@ -705,6 +705,10 @@ export function useCreateOrderPayment() {
         .select()
         .single();
       if (error) throw error;
+      // Trigger payment confirmation email
+      supabase.functions.invoke("payment-email", {
+        body: { order_id: payment.order_id, store_id: currentStore.id, amount: payment.amount, payment_method: payment.payment_method },
+      }).catch(() => {});
       return data;
     },
     onSuccess: (_, vars) => {
@@ -1115,6 +1119,10 @@ export function useCreateShipment() {
         title: "Shipment created",
         description: `${shipmentNumber}${shipment.carrier ? ` via ${shipment.carrier}` : ""}${shipment.tracking_number ? ` — ${shipment.tracking_number}` : ""}`,
       });
+      // Trigger shipped email to customer
+      supabase.functions.invoke("shipment-email", {
+        body: { order_id: shipment.order_id, store_id: currentStore.id, shipment_id: (newShipment as any).id },
+      }).catch(() => {});
       return newShipment;
     },
     onSuccess: (_, vars) => {
