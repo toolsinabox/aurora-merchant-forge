@@ -412,6 +412,9 @@ export default function Inventory() {
                       <TableRow key={p.id} className="text-xs">
                         <TableCell className="py-2 font-medium">{p.title}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
+                        <TableCell className="py-2 font-mono text-muted-foreground">
+                          {(inventoryStockData as any[]).find((s: any) => s.product_id === p.id)?.bin_location || "—"}
+                        </TableCell>
                         <TableCell className="py-2 text-right">{stock}</TableCell>
                         <TableCell className="py-2"><StatusBadge status={getStockStatus(stock)} /></TableCell>
                       </TableRow>
