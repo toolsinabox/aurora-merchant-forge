@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -62,6 +62,18 @@ export default function Inventory() {
   const totalStock = products.reduce((sum, p) => sum + getVariantStock(p), 0);
   const lowStock = products.filter((p) => { const s = getVariantStock(p); return s > 0 && s <= 10; }).length;
   const outOfStock = products.filter((p) => getVariantStock(p) === 0).length;
+
+  // Inventory value calculation
+  const inventoryValue = useMemo(() => {
+    let totalRetail = 0;
+    let totalCost = 0;
+    products.forEach((p: any) => {
+      const stock = getVariantStock(p);
+      totalRetail += stock * Number(p.price || 0);
+      totalCost += stock * Number(p.cost_price || 0);
+    });
+    return { totalRetail, totalCost, totalProfit: totalRetail - totalCost };
+  }, [products]);
 
   const handleCreateLocation = () => {
     createLocation.mutate(
@@ -250,7 +262,7 @@ export default function Inventory() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
           <Card><CardContent className="p-4 flex items-center gap-3">
             <Package className="h-8 w-8 text-primary" />
             <div><p className="text-2xs text-muted-foreground">Total Units</p><p className="text-lg font-bold">{totalStock.toLocaleString()}</p></div>
@@ -266,6 +278,18 @@ export default function Inventory() {
           <Card><CardContent className="p-4 flex items-center gap-3">
             <AlertTriangle className="h-8 w-8 text-destructive" />
             <div><p className="text-2xs text-muted-foreground">Out of Stock</p><p className="text-lg font-bold">{outOfStock}</p></div>
+          </CardContent></Card>
+          <Card><CardContent className="p-3">
+            <p className="text-2xs text-muted-foreground">Retail Value</p>
+            <p className="text-sm font-bold">${inventoryValue.totalRetail.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+          </CardContent></Card>
+          <Card><CardContent className="p-3">
+            <p className="text-2xs text-muted-foreground">Cost Value</p>
+            <p className="text-sm font-bold">${inventoryValue.totalCost.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
+          </CardContent></Card>
+          <Card><CardContent className="p-3">
+            <p className="text-2xs text-muted-foreground">Potential Profit</p>
+            <p className="text-sm font-bold text-primary">${inventoryValue.totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           </CardContent></Card>
         </div>
 

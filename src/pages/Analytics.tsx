@@ -91,6 +91,8 @@ export default function Analytics() {
   const [topSellingProducts, setTopSellingProducts] = useState<any[]>([]);
   const [salesByCategory, setSalesByCategory] = useState<any[]>([]);
   const [couponStats, setCouponStats] = useState<any[]>([]);
+  const [profitData, setProfitData] = useState<any[]>([]);
+  const [taxSummary, setTaxSummary] = useState<{ totalTax: number; orderCount: number; byMonth: any[] }>({ totalTax: 0, orderCount: 0, byMonth: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -147,6 +149,52 @@ export default function Analytics() {
         .eq("store_id", currentStore.id)
         .order("used_count", { ascending: false });
       setCouponStats((coupons || []).filter((c: any) => c.used_count > 0));
+
+      // Profit margin report: revenue vs cost from order_items joined with products
+      const { data: allProducts } = await supabase
+        .from("products")
+        .select("id, cost_price, price")
+        .eq("store_id", currentStore.id);
+      const costMap: Record<string, number> = {};
+      (allProducts || []).forEach((p: any) => { costMap[p.id] = Number(p.cost_price) || 0; });
+
+      const profitByProduct: Record<string, { title: string; revenue: number; cost: number; profit: number; units: number }> = {};
+      (items || []).forEach((item: any) => {
+        const key = item.product_id || item.title;
+        if (!profitByProduct[key]) profitByProduct[key] = { title: item.title, revenue: 0, cost: 0, profit: 0, units: 0 };
+        const rev = Number(item.total);
+        const cost = (costMap[item.product_id] || 0) * item.quantity;
+        profitByProduct[key].revenue += rev;
+        profitByProduct[key].cost += cost;
+        profitByProduct[key].profit += rev - cost;
+        profitByProduct[key].units += item.quantity;
+      });
+      setProfitData(
+        Object.values(profitByProduct)
+          .filter(p => p.revenue > 0)
+          .sort((a, b) => b.profit - a.profit)
+          .slice(0, 10)
+          .map(p => ({ ...p, margin: p.revenue > 0 ? Math.round(p.profit / p.revenue * 100) : 0 }))
+      );
+
+      // Tax summary from orders
+      const taxByMonth: Record<string, number> = {};
+      let totalTax = 0;
+      let taxOrderCount = 0;
+      (orders as any[]).forEach((o: any) => {
+        const tax = Number(o.tax) || 0;
+        if (tax > 0) {
+          totalTax += tax;
+          taxOrderCount++;
+          const month = new Date(o.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+          taxByMonth[month] = (taxByMonth[month] || 0) + tax;
+        }
+      });
+      setTaxSummary({
+        totalTax,
+        orderCount: taxOrderCount,
+        byMonth: Object.entries(taxByMonth).map(([month, amount]) => ({ month, amount: Math.round(amount * 100) / 100 })),
+      });
 
       setLoadingTopProducts(false);
     };
@@ -425,6 +473,73 @@ export default function Analytics() {
                     ))}
                   </TableBody>
                 </Table>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Profit Margin Report */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Profit Margin by Product</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : profitData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No profit data — set cost prices on products</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Cost</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Profit</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Margin</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {profitData.map((p: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right">${p.revenue.toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right">${p.cost.toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right font-medium" style={{ color: p.profit >= 0 ? 'hsl(142, 71%, 45%)' : 'hsl(0, 72%, 51%)' }}>
+                          ${p.profit.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="py-1.5 text-right">{p.margin}%</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Tax Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Tax Report</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Total Tax Collected</p>
+                      <p className="text-lg font-bold">${taxSummary.totalTax.toFixed(2)}</p>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Taxed Orders</p>
+                      <p className="text-lg font-bold">{taxSummary.orderCount}</p>
+                    </div>
+                  </div>
+                  {taxSummary.byMonth.length > 0 && (
+                    <ResponsiveContainer width="100%" height={140}>
+                      <BarChart data={taxSummary.byMonth}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Tax"]} />
+                        <Bar dataKey="amount" fill="hsl(38, 92%, 50%)" radius={[2, 2, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
