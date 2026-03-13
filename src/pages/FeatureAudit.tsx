@@ -792,7 +792,7 @@ const featureData: FeatureCategory[] = [
       { name: "Nested Iterators", description: "Iterators within iterators", status: "done" },
       { name: "Template Includes", description: "Include sub-templates within templates", status: "partial" },
       { name: "Thumblist Tags", description: "Product/content listing thumbnails", status: "not_started" },
-      { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "not_started" },
+      { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "done", notes: "[%advert%]...[%/advert%] block tags in template engine using adverts context array with image_url, link_url, title, subtitle, button_text fields" },
       { name: "AJAX Partial Rendering", description: "Reload template includes without full page refresh", status: "not_started" },
       { name: "Custom CSS per Template", description: "Template-specific CSS injection", status: "not_started" },
       { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "not_started" },
