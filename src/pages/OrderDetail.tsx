@@ -9,16 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   useOrder, useUpdateOrder, useDeleteOrder,
   useOrderShipments, useCreateShipment, useUpdateShipment,
   useOrderTimeline, useCreateTimelineEvent,
+  useOrderPayments, useCreateOrderPayment,
 } from "@/hooks/use-data";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
-  Clock, Plus, ExternalLink, MessageSquare, Send,
+  Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign,
 } from "lucide-react";
 import { useState } from "react";
 import {
