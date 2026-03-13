@@ -444,7 +444,7 @@ const featureData: FeatureCategory[] = [
       { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "done", notes: "Auto-routes order items to preferred dropship suppliers on order creation, groups by supplier, fires dropship-notification edge function per supplier" },
       { name: "Dropship Notifications", description: "Automated dropship supplier email notifications", status: "done", notes: "dropship-notification edge function sends supplier email with order items, SKUs, quantities, and shipping address for dropship fulfillment" },
       { name: "Delivery Date Estimation", description: "Estimated delivery date on checkout", status: "done", notes: "3-7 business day estimate shown after selecting shipping zone at checkout" },
-      { name: "Shipping Rules / Restrictions", description: "Restrict shipping methods by product, location, weight", status: "not_started" },
+      { name: "Shipping Rules / Restrictions", description: "Restrict shipping methods by product, location, weight", status: "done", notes: "shipping_rules table with zone-level restrictions by weight/price/location, rule types: restrict/surcharge, condition operators: greater_than/less_than/equals, active toggle, custom message" },
     ],
   },
 
