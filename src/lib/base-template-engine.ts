@@ -245,6 +245,10 @@ function processBlocks(template: string, ctx: TemplateContext): string {
       case "tags":
         items = (ctx.product?.tags || []).map((tag: string) => ({ name: tag }));
         break;
+      case "advert":
+      case "adverts":
+        items = ctx.adverts || [];
+        break;
       default:
         return "";
     }

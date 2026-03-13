@@ -79,6 +79,18 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
           fbScript.textContent = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${fbPixel}');fbq('track','PageView');`;
           document.head.appendChild(fbScript);
         }
+        // Inject Google Ads conversion tracking if configured
+        const gadsId = (s as any).google_ads_id;
+        if (gadsId && !document.querySelector(`script[data-gads]`)) {
+          const gadsScript = document.createElement("script");
+          gadsScript.src = `https://www.googletagmanager.com/gtag/js?id=${gadsId}`;
+          gadsScript.async = true;
+          gadsScript.setAttribute("data-gads", "true");
+          document.head.appendChild(gadsScript);
+          const gadsInline = document.createElement("script");
+          gadsInline.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gadsId}');`;
+          document.head.appendChild(gadsInline);
+        }
         // Inject favicon if configured
         const faviconUrl = (s as any).favicon_url;
         if (faviconUrl) {
