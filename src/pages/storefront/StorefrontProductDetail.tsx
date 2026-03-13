@@ -377,6 +377,31 @@ export default function StorefrontProductDetail() {
               </div>
             )}
 
+            {/* Editable Kit Components UI */}
+            {product.is_kit && kitComponents.length > 0 && (
+              <div className="space-y-2 border rounded-lg p-4">
+                <label className="text-sm font-medium">Kit Components</label>
+                <div className="space-y-2">
+                  {kitComponents.map((kc: any) => (
+                    <div key={kc.id} className="flex items-center gap-3 text-sm p-2 rounded bg-muted/30">
+                      {kc.component?.images?.[0] && (
+                        <img src={getImageUrl(kc.component.images[0])} alt="" className="w-10 h-10 rounded object-cover" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm line-clamp-1">{kc.component?.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Qty: {kc.quantity}
+                          {kc.is_optional && " · Optional"}
+                          {kc.is_swappable && ` · Swappable`}
+                        </p>
+                      </div>
+                      <span className="text-xs font-medium">${Number(kc.component?.price || 0).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {variants.length > 0 && (
               <div className="space-y-2">
                 <label className="text-sm font-medium">Variant</label>
