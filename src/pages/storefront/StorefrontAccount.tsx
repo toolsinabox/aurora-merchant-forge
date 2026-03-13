@@ -176,6 +176,14 @@ export default function StorefrontAccount() {
         setAddresses(addrsRes.data || []);
         setVouchers(vouchersRes.data || []);
         setQuotes(quotesRes.data || []);
+
+        // Load disputes
+        const { data: disputesData } = await supabase
+          .from("warranty_disputes" as any)
+          .select("*, orders(order_number), products(title)")
+          .eq("customer_id", cust.id)
+          .order("created_at", { ascending: false });
+        setDisputes(disputesData || []);
       }
 
       // Load wishlist products
