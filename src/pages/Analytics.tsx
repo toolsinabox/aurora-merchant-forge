@@ -197,6 +197,26 @@ export default function Analytics() {
         byMonth: Object.entries(taxByMonth).map(([month, amount]) => ({ month, amount: Math.round(amount * 100) / 100 })),
       });
 
+      // Customer acquisition: new vs returning
+      const custByMonth: Record<string, { newC: number; returning: number }> = {};
+      let totalNew = 0, totalReturning = 0;
+      (customers as any[]).forEach((c: any) => {
+        const month = new Date(c.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+        if (!custByMonth[month]) custByMonth[month] = { newC: 0, returning: 0 };
+        if (Number(c.total_orders) <= 1) {
+          custByMonth[month].newC++;
+          totalNew++;
+        } else {
+          custByMonth[month].returning++;
+          totalReturning++;
+        }
+      });
+      setAcquisitionData({
+        newCustomers: totalNew,
+        returning: totalReturning,
+        byMonth: Object.entries(custByMonth).map(([month, d]) => ({ month, new: d.newC, returning: d.returning })),
+      });
+
       setLoadingTopProducts(false);
     };
     fetchData();
