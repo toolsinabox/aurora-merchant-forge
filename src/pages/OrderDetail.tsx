@@ -625,10 +625,15 @@ export default function OrderDetail() {
             <Card>
               <CardHeader className="py-3 px-4">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" /> Credit Notes
-                  <Button size="sm" variant="outline" className="ml-auto h-6 text-xs px-2" onClick={() => setCreditNoteOpen(true)}>
-                    <Plus className="h-3 w-3 mr-1" /> Issue
-                  </Button>
+                  <DollarSign className="h-4 w-4" /> Credit Notes & Refunds
+                  <div className="ml-auto flex gap-1">
+                    <Button size="sm" variant="outline" className="h-6 text-xs px-2" onClick={() => setRefundOpen(true)}>
+                      Refund
+                    </Button>
+                    <Button size="sm" variant="outline" className="h-6 text-xs px-2" onClick={() => setCreditNoteOpen(true)}>
+                      <Plus className="h-3 w-3 mr-1" /> Credit Note
+                    </Button>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-4 pb-4 pt-0 space-y-2">

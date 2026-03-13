@@ -213,6 +213,7 @@ const App = () => (
                   <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                  <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
