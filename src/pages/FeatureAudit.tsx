@@ -282,7 +282,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Credit Terms / Limits", description: "B2B credit limits, payment terms (Net 30, etc.)", status: "done", notes: "credit_terms and credit_limit fields on customer_groups table" },
       { name: "Customer Statements", description: "Generate and email customer account statements", status: "done", notes: "Printable customer statement with order history, payment history, and balance summary accessible from customer detail" },
       { name: "Multiple Shipping Addresses", description: "Customers save multiple delivery addresses", status: "done", notes: "Customer addresses CRUD with default billing/shipping" },
-      { name: "Customer Files / Documents", description: "Upload contracts/documents to customer records", status: "not_started", notes: "Neto has customer/files templates" },
+      { name: "Customer Files / Documents", description: "Upload contracts/documents to customer records", status: "done", notes: "customer_files table with upload/delete, Files & Documents card on customer detail page with file upload, download links, and delete" },
       { name: "Customer Logo Upload (Dropship)", description: "B2B customers upload their logo for dropship labels", status: "not_started", notes: "Neto has logos templates" },
       { name: "Wholesale Registration", description: "Separate wholesale registration form with approval workflow", status: "done", notes: "Storefront /wholesale page and wholesale_applications table" },
       { name: "Customer Auto-Registration on Purchase", description: "Automatically create customer account on first purchase", status: "done", notes: "Checkout auto-creates customer record if no existing record found for email" },
