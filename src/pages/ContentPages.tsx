@@ -188,7 +188,7 @@ export default function ContentPages() {
                 </div>
                 <div>
                   <Label>Content</Label>
-                  <Textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={10} placeholder="Page content (HTML or Markdown)" />
+                  <RichTextEditor content={form.content} onChange={(html) => setForm({ ...form, content: html })} />
                 </div>
                 <div className="border-t pt-3 space-y-3">
                   <p className="text-sm font-medium text-muted-foreground">SEO</p>
