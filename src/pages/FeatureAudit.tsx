@@ -340,7 +340,7 @@ const featureData: FeatureCategory[] = [
       { name: "Track Order", description: "Order tracking page (track_order/)", status: "not_started" },
       { name: "Pay Outstanding Order", description: "Pay unpaid orders from account (pay_order/)", status: "not_started" },
       { name: "Edit Account Details", description: "Edit billing/contact info (edit_account/)", status: "not_started" },
-      { name: "Edit Shipping Addresses", description: "Manage multiple addresses (edit_address/)", status: "not_started" },
+      { name: "Edit Shipping Addresses", description: "Manage multiple addresses (edit_address/)", status: "done", notes: "CRUD on storefront account" },
       { name: "Change Password", description: "Password change form (edit_pwd/)", status: "done" },
       { name: "Forgot Password", description: "Password reset flow (forgotpwd/)", status: "done" },
       { name: "Forgot Username", description: "Username recovery flow (forgotusr/)", status: "not_started" },
