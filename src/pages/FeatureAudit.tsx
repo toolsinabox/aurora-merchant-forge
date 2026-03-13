@@ -350,7 +350,7 @@ const featureData: FeatureCategory[] = [
       { name: "View Customer Files", description: "View/download uploaded documents (files/)", status: "not_started" },
       { name: "Approve/Reject Quotes", description: "Customer approves or deletes quotes (approve_quote/)", status: "not_started" },
       { name: "My Store / Stockist Management", description: "Customers manage their stockist listing (mystore/)", status: "not_started" },
-      { name: "Write Product Review", description: "Submit product review from account (write_review/)", status: "not_started" },
+      { name: "Write Product Review", description: "Submit product review from account (write_review/)", status: "done", notes: "Review form with rating, title, body on product detail page for logged-in users" },
       { name: "Write Content Review", description: "Submit content/page review (write_contentreview/)", status: "not_started" },
       { name: "Submit Warranty Dispute", description: "Open/view warranty disputes (warranty/)", status: "not_started" },
       { name: "Logout Page", description: "Logout confirmation (logout.template.html)", status: "done" },
