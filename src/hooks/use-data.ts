@@ -388,7 +388,10 @@ export function useCreateCategory() {
   const qc = useQueryClient();
   const { currentStore } = useAuth();
   return useMutation({
-    mutationFn: async (cat: { name: string; slug: string; parent_id?: string | null; sort_order?: number }) => {
+    mutationFn: async (cat: {
+      name: string; slug: string; parent_id?: string | null; sort_order?: number;
+      description?: string | null; image_url?: string | null; seo_title?: string | null; seo_description?: string | null;
+    }) => {
       if (!currentStore) throw new Error("No store");
       const { data, error } = await supabase
         .from("categories")
