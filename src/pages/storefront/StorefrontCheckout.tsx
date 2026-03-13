@@ -575,6 +575,35 @@ export default function StorefrontCheckout() {
 
                 <Separator />
 
+                {/* Gift Voucher */}
+                {appliedVoucher ? (
+                  <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Gift className="h-3.5 w-3.5 text-primary" />
+                      <span className="font-mono font-medium text-xs">{appliedVoucher.code}</span>
+                      <span className="text-muted-foreground">(-${appliedVoucher.amountUsed.toFixed(2)})</span>
+                    </div>
+                    <button type="button" onClick={removeVoucher} className="text-muted-foreground hover:text-destructive">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Gift voucher code"
+                      value={voucherCode}
+                      onChange={(e) => setVoucherCode(e.target.value)}
+                      className="h-9 uppercase text-xs font-mono"
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), applyVoucher())}
+                    />
+                    <Button type="button" variant="outline" size="sm" onClick={applyVoucher} disabled={voucherLoading} className="h-9 px-3 shrink-0">
+                      {voucherLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Gift className="h-3 w-3" />}
+                    </Button>
+                  </div>
+                )}
+
+                <Separator />
+
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Subtotal</span>
