@@ -4,13 +4,42 @@ import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Star } from "lucide-react";
+import { toast } from "sonner";
+
+function StarRating({ value, onChange, readonly = false }: { value: number; onChange?: (v: number) => void; readonly?: boolean }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((s) => (
+        <Star
+          key={s}
+          className={`h-5 w-5 cursor-${readonly ? "default" : "pointer"} transition-colors ${
+            s <= (hover || value) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"
+          }`}
+          onMouseEnter={() => !readonly && setHover(s)}
+          onMouseLeave={() => !readonly && setHover(0)}
+          onClick={() => onChange?.(s)}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function StorefrontContentPage() {
   const { storeSlug: paramSlug, pageSlug } = useParams();
   const { storeSlug } = useStoreSlug(paramSlug);
+  const { user } = useAuth();
   const [store, setStore] = useState<any>(null);
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, title: "", body: "" });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -26,11 +55,50 @@ export default function StorefrontContentPage() {
           .eq("is_published", true)
           .maybeSingle();
         setPage(data);
+
+        if (data) {
+          const { data: revs } = await supabase
+            .from("content_reviews" as any)
+            .select("*")
+            .eq("content_page_id", data.id)
+            .eq("is_approved", true)
+            .order("created_at", { ascending: false });
+          setReviews(revs || []);
+        }
       }
       setLoading(false);
     }
     load();
   }, [storeSlug, pageSlug]);
+
+  const avgRating = reviews.length > 0
+    ? reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length
+    : 0;
+
+  const handleSubmitReview = async () => {
+    if (!user || !page || !store) return;
+    if (!reviewForm.body.trim()) { toast.error("Please write a review"); return; }
+    setSubmitting(true);
+
+    const profile = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+    const authorName = profile.data?.display_name || user.email?.split("@")[0] || "Anonymous";
+
+    const { error } = await supabase.from("content_reviews" as any).insert({
+      content_page_id: page.id,
+      store_id: store.id,
+      user_id: user.id,
+      rating: reviewForm.rating,
+      title: reviewForm.title || null,
+      body: reviewForm.body,
+      author_name: authorName,
+      is_approved: false,
+    });
+
+    setSubmitting(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Review submitted! It will appear after moderation.");
+    setReviewForm({ rating: 5, title: "", body: "" });
+  };
 
   if (loading) {
     return (
@@ -66,6 +134,65 @@ export default function StorefrontContentPage() {
           className="prose prose-neutral dark:prose-invert max-w-none"
           dangerouslySetInnerHTML={{ __html: page.content || "" }}
         />
+
+        {/* Reviews Section */}
+        <div className="mt-12 pt-8 border-t space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold">Reviews</h2>
+            {reviews.length > 0 && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <StarRating value={Math.round(avgRating)} readonly />
+                <span>{avgRating.toFixed(1)} ({reviews.length})</span>
+              </div>
+            )}
+          </div>
+
+          {/* Review Form */}
+          {user ? (
+            <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+              <p className="text-sm font-medium">Write a Review</p>
+              <StarRating value={reviewForm.rating} onChange={(v) => setReviewForm({ ...reviewForm, rating: v })} />
+              <Input
+                placeholder="Review title (optional)"
+                className="h-8 text-sm"
+                value={reviewForm.title}
+                onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Share your thoughts..."
+                className="text-sm min-h-[80px]"
+                value={reviewForm.body}
+                onChange={(e) => setReviewForm({ ...reviewForm, body: e.target.value })}
+              />
+              <Button size="sm" onClick={handleSubmitReview} disabled={submitting}>
+                {submitting ? "Submitting..." : "Submit Review"}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Sign in to leave a review.</p>
+          )}
+
+          {/* Review List */}
+          {reviews.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No reviews yet. Be the first!</p>
+          ) : (
+            <div className="space-y-4">
+              {reviews.map((r: any) => (
+                <div key={r.id} className="border rounded-lg p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{r.author_name}</span>
+                      <StarRating value={r.rating} readonly />
+                    </div>
+                    <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</span>
+                  </div>
+                  {r.title && <p className="text-sm font-medium">{r.title}</p>}
+                  {r.body && <p className="text-sm text-muted-foreground">{r.body}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </StorefrontLayout>
   );

@@ -585,6 +585,8 @@ export default function SettingsPage() {
         logo_url: brandForm.logo_url || null,
         favicon_url: brandForm.favicon_url || null,
         ga_tracking_id: brandForm.ga_tracking_id || null,
+        gtm_container_id: brandForm.gtm_container_id || null,
+        fb_pixel_id: brandForm.fb_pixel_id || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
