@@ -2,7 +2,7 @@ import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
-  CreditCard, Webhook, Image,
+  CreditCard, Webhook, Image, PackageX, Activity,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -32,6 +32,7 @@ const catalogNav = [
   { title: "Stocktake", url: `${prefix}/stocktake`, icon: ClipboardCheck },
   { title: "Suppliers", url: `${prefix}/suppliers`, icon: Building },
   { title: "Purchase Orders", url: `${prefix}/purchase-orders`, icon: ClipboardCopy },
+  { title: "Backorders", url: `${prefix}/backorders`, icon: PackageX },
 ];
 
 const salesNav = [
@@ -55,6 +56,7 @@ const marketingNav = [
 
 const contentNav = [
   { title: "Content Pages", url: `${prefix}/content-pages`, icon: FileText },
+  { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
   { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
 ];
@@ -65,6 +67,7 @@ const systemNav = [
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "Redirects", url: `${prefix}/redirects`, icon: ExternalLink },
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
+  { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
 ];

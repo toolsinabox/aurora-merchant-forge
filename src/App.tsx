@@ -82,6 +82,9 @@ import PrintQuote from "./pages/PrintQuote.tsx";
 import Layby from "./pages/Layby.tsx";
 import Webhooks from "./pages/Webhooks.tsx";
 import MediaLibrary from "./pages/MediaLibrary.tsx";
+import ContentBlocks from "./pages/ContentBlocks.tsx";
+import Backorders from "./pages/Backorders.tsx";
+import StaffActivity from "./pages/StaffActivity.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -180,6 +183,9 @@ const App = () => (
                   <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/_cpanel/webhooks" element={<RequireAuth><Webhooks /></RequireAuth>} />
                   <Route path="/_cpanel/media" element={<RequireAuth><MediaLibrary /></RequireAuth>} />
+                  <Route path="/_cpanel/content-blocks" element={<RequireAuth><ContentBlocks /></RequireAuth>} />
+                  <Route path="/_cpanel/backorders" element={<RequireAuth><Backorders /></RequireAuth>} />
+                  <Route path="/_cpanel/staff-activity" element={<RequireAuth><StaffActivity /></RequireAuth>} />
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -249,6 +255,9 @@ const App = () => (
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/webhooks" element={<RequireAuth><Webhooks /></RequireAuth>} />
                   <Route path="/media" element={<RequireAuth><MediaLibrary /></RequireAuth>} />
+                  <Route path="/content-blocks" element={<RequireAuth><ContentBlocks /></RequireAuth>} />
+                  <Route path="/backorders" element={<RequireAuth><Backorders /></RequireAuth>} />
+                  <Route path="/staff-activity" element={<RequireAuth><StaffActivity /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
