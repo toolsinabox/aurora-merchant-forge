@@ -56,6 +56,26 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
   const [body, setBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [userReview, setUserReview] = useState<any>(null);
+  const [reviewPhotos, setReviewPhotos] = useState<File[]>([]);
+  const [photoPreviewUrls, setPhotoPreviewUrls] = useState<string[]>([]);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (reviewPhotos.length + files.length > 5) {
+      toast.error("Maximum 5 photos per review");
+      return;
+    }
+    const newPhotos = [...reviewPhotos, ...files];
+    setReviewPhotos(newPhotos);
+    setPhotoPreviewUrls(newPhotos.map(f => URL.createObjectURL(f)));
+  };
+
+  const removePhoto = (index: number) => {
+    const next = reviewPhotos.filter((_, i) => i !== index);
+    setReviewPhotos(next);
+    setPhotoPreviewUrls(next.map(f => URL.createObjectURL(f)));
+  };
 
   const loadReviews = async () => {
     const { data } = await supabase
