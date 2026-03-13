@@ -562,7 +562,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" type="number" value={form.reorder_quantity} onChange={(e) => update("reorder_quantity", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Restock Qty</Label>
+                        <FieldLabel label="Restock Qty" field="restock_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.restock_quantity} onChange={(e) => update("restock_quantity", e.target.value)} />
                       </div>
                       <div className="space-y-1">
