@@ -115,6 +115,7 @@ const App = () => (
                   <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/contact" element={<StorefrontContact />} />
+                  <Route path="/quick-order" element={<StorefrontQuickOrder />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
