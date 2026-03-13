@@ -112,6 +112,54 @@ export type Database = {
           },
         ]
       }
+      addon_catalog: {
+        Row: {
+          addon_key: string
+          addon_type: string
+          author: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          icon_url: string | null
+          id: string
+          install_count: number
+          is_free: boolean
+          name: string
+          price: number | null
+          version: string
+        }
+        Insert: {
+          addon_key: string
+          addon_type?: string
+          author?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          install_count?: number
+          is_free?: boolean
+          name: string
+          price?: number | null
+          version?: string
+        }
+        Update: {
+          addon_key?: string
+          addon_type?: string
+          author?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          install_count?: number
+          is_free?: boolean
+          name?: string
+          price?: number | null
+          version?: string
+        }
+        Relationships: []
+      }
       adverts: {
         Row: {
           advert_type: string
@@ -3663,6 +3711,62 @@ export type Database = {
           },
         ]
       }
+      shipping_methods: {
+        Row: {
+          base_rate: number
+          carrier: string | null
+          created_at: string
+          description: string | null
+          estimated_days_max: number | null
+          estimated_days_min: number | null
+          id: string
+          is_active: boolean
+          method_type: string
+          name: string
+          sort_order: number
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          base_rate?: number
+          carrier?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_days_max?: number | null
+          estimated_days_min?: number | null
+          id?: string
+          is_active?: boolean
+          method_type?: string
+          name: string
+          sort_order?: number
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          base_rate?: number
+          carrier?: string | null
+          created_at?: string
+          description?: string | null
+          estimated_days_max?: number | null
+          estimated_days_min?: number | null
+          id?: string
+          is_active?: boolean
+          method_type?: string
+          name?: string
+          sort_order?: number
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_methods_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipping_rules: {
         Row: {
           condition_operator: string
@@ -3989,6 +4093,68 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "stocktakes_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_addons: {
+        Row: {
+          addon_key: string
+          addon_type: string
+          author: string | null
+          config: Json | null
+          created_at: string
+          description: string | null
+          icon_url: string | null
+          id: string
+          installed_at: string | null
+          is_active: boolean
+          is_installed: boolean
+          name: string
+          store_id: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          addon_key: string
+          addon_type?: string
+          author?: string | null
+          config?: Json | null
+          created_at?: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          installed_at?: string | null
+          is_active?: boolean
+          is_installed?: boolean
+          name: string
+          store_id: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          addon_key?: string
+          addon_type?: string
+          author?: string | null
+          config?: Json | null
+          created_at?: string
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          installed_at?: string | null
+          is_active?: boolean
+          is_installed?: boolean
+          name?: string
+          store_id?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_addons_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
