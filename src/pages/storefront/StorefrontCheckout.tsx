@@ -672,17 +672,18 @@ export default function StorefrontCheckout() {
                 {splitShipping && deliveryMethod === "shipping" && (
                   <div className="space-y-3 mt-3 pl-4 border-l-2 border-primary/20">
                     {items.map((item, idx) => {
-                      const addr = itemAddresses[item.id] || { address: "", city: "", zip: "", country: "" };
+                      const key = `${item.product_id}-${item.variant_id || ""}`;
+                      const addr = itemAddresses[key] || { address: "", city: "", zip: "", country: "" };
                       return (
-                        <div key={item.id} className="border rounded-lg p-3 space-y-2">
+                        <div key={key} className="border rounded-lg p-3 space-y-2">
                           <p className="text-xs font-medium">{item.title} × {item.quantity}</p>
                           <div className="space-y-1.5">
-                            <Input placeholder="Address" value={addr.address} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, address: e.target.value } }))} className="h-8 text-xs" />
+                            <Input placeholder="Address" value={addr.address} onChange={e => setItemAddresses(prev => ({ ...prev, [key]: { ...addr, address: e.target.value } }))} className="h-8 text-xs" />
                           </div>
                           <div className="grid grid-cols-3 gap-2">
-                            <Input placeholder="City" value={addr.city} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, city: e.target.value } }))} className="h-8 text-xs" />
-                            <Input placeholder="ZIP" value={addr.zip} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, zip: e.target.value } }))} className="h-8 text-xs" />
-                            <Input placeholder="Country" value={addr.country} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, country: e.target.value } }))} className="h-8 text-xs" />
+                            <Input placeholder="City" value={addr.city} onChange={e => setItemAddresses(prev => ({ ...prev, [key]: { ...addr, city: e.target.value } }))} className="h-8 text-xs" />
+                            <Input placeholder="ZIP" value={addr.zip} onChange={e => setItemAddresses(prev => ({ ...prev, [key]: { ...addr, zip: e.target.value } }))} className="h-8 text-xs" />
+                            <Input placeholder="Country" value={addr.country} onChange={e => setItemAddresses(prev => ({ ...prev, [key]: { ...addr, country: e.target.value } }))} className="h-8 text-xs" />
                           </div>
                         </div>
                       );
