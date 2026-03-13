@@ -287,7 +287,7 @@ const featureData: FeatureCategory[] = [
       { name: "Wholesale Registration", description: "Separate wholesale registration form with approval workflow", status: "not_started", notes: "Neto has wholesaleregister templates" },
       { name: "Customer Auto-Registration on Purchase", description: "Automatically create customer account on first purchase", status: "not_started" },
       { name: "Customer Merge", description: "Merge duplicate customer records", status: "not_started" },
-      { name: "Customer Export", description: "Export customers to CSV", status: "not_started" },
+      { name: "Customer Export", description: "Export customers to CSV", status: "done", notes: "CSV download on admin customers page" },
       { name: "Customer Import", description: "Bulk import customers from CSV", status: "not_started" },
       { name: "Customer Lifetime Value (CLV)", description: "Calculated CLV metric per customer", status: "not_started" },
     ],
