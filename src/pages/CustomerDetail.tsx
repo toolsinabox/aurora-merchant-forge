@@ -158,6 +158,24 @@ export default function CustomerDetail() {
                 {customer.total_orders > 0 && (
                   <div className="flex justify-between"><span className="text-muted-foreground">Avg. Order</span><span className="font-medium">${(Number(customer.total_spent) / customer.total_orders).toFixed(2)}</span></div>
                 )}
+                {customer.total_orders > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Customer Lifetime Value</span>
+                    <span className="font-medium text-primary">${Number(customer.total_spent).toLocaleString()}</span>
+                  </div>
+                )}
+                {customerOrders.length >= 2 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Avg. Days Between Orders</span>
+                    <span className="font-medium">
+                      {(() => {
+                        const dates = customerOrders.map((o: any) => new Date(o.created_at).getTime()).sort();
+                        const gaps = dates.slice(1).map((d: number, i: number) => (d - dates[i]) / (1000 * 60 * 60 * 24));
+                        return Math.round(gaps.reduce((s: number, g: number) => s + g, 0) / gaps.length);
+                      })()}
+                    </span>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

@@ -434,6 +434,15 @@ export default function OrderDetail() {
                     </div>
                   </>
                 )}
+                {(order as any).billing_address && (order as any).billing_address !== (order as any).shipping_address && (
+                  <>
+                    <Separator className="my-2" />
+                    <div>
+                      <p className="text-muted-foreground mb-1">Billing Address</p>
+                      <p className="whitespace-pre-line">{(order as any).billing_address}</p>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
