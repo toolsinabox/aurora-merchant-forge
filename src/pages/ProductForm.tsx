@@ -404,7 +404,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.price} onChange={(e) => update("price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">RRP / Compare At</Label>
+                        <FieldLabel label="RRP / Compare At" field="compare_at_price" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.compare_at_price} onChange={(e) => update("compare_at_price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
