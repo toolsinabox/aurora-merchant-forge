@@ -447,7 +447,35 @@ export default function StorefrontProductDetail() {
               <p className="text-sm text-muted-foreground">{product.availability_description}</p>
             )}
           </div>
-        </div>
+            </div>
+
+            {/* Shipping Calculator */}
+            <div className="border rounded-lg p-4 space-y-2">
+              <p className="text-sm font-medium flex items-center gap-1.5"><MapPin className="h-4 w-4" /> Estimate Shipping</p>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter postcode / ZIP"
+                  value={estimateZip}
+                  onChange={(e) => setEstimateZip(e.target.value)}
+                  className="h-9 text-sm"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleEstimateShipping();
+                    }
+                  }}
+                />
+                <Button variant="outline" size="sm" className="h-9 shrink-0" onClick={handleEstimateShipping}>
+                  Calculate
+                </Button>
+              </div>
+              {shippingEstimate && (
+                <p className="text-sm">
+                  <span className="text-muted-foreground">{shippingEstimate.zone}:</span>{" "}
+                  <span className="font-medium">{shippingEstimate.cost}</span>
+                </p>
+              )}
+            </div>
 
         {/* Tabbed content: Description, Features, Specs, Shipping, Warranty */}
         <div className="mt-10">
