@@ -14,46 +14,50 @@ import {
   Collapsible, CollapsibleContent, CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useAuth } from "@/contexts/AuthContext";
+import { getSubdomainSlug } from "@/lib/subdomain";
+
+// Determine route prefix based on subdomain mode
+const prefix = getSubdomainSlug() ? "/_cpanel" : "";
 
 const mainNav = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Dashboard", url: `${prefix}/dashboard`, icon: LayoutDashboard },
 ];
 
 const catalogNav = [
-  { title: "Products", url: "/products", icon: Package },
-  { title: "Categories", url: "/categories", icon: Layers },
-  { title: "Inventory", url: "/inventory", icon: Warehouse },
-  { title: "Stock Adjustments", url: "/stock-adjustments", icon: History },
-  { title: "Suppliers", url: "/suppliers", icon: Building },
-  { title: "Purchase Orders", url: "/purchase-orders", icon: ClipboardCopy },
+  { title: "Products", url: `${prefix}/products`, icon: Package },
+  { title: "Categories", url: `${prefix}/categories`, icon: Layers },
+  { title: "Inventory", url: `${prefix}/inventory`, icon: Warehouse },
+  { title: "Stock Adjustments", url: `${prefix}/stock-adjustments`, icon: History },
+  { title: "Suppliers", url: `${prefix}/suppliers`, icon: Building },
+  { title: "Purchase Orders", url: `${prefix}/purchase-orders`, icon: ClipboardCopy },
 ];
 
 const salesNav = [
-  { title: "Orders", url: "/orders", icon: Package },
-  { title: "Returns", url: "/returns", icon: RotateCcw },
-  { title: "Customers", url: "/customers", icon: Users },
-  { title: "Abandoned Carts", url: "/abandoned-carts", icon: ShoppingCart },
+  { title: "Orders", url: `${prefix}/orders`, icon: Package },
+  { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
+  { title: "Customers", url: `${prefix}/customers`, icon: Users },
+  { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
 ];
 
 const marketingNav = [
-  { title: "Campaigns", url: "/marketing", icon: Megaphone },
-  { title: "Discounts", url: "/coupons", icon: Ticket },
-  { title: "Gift Vouchers", url: "/gift-vouchers", icon: Gift },
-  { title: "Reviews", url: "/reviews", icon: Star },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "Campaigns", url: `${prefix}/marketing`, icon: Megaphone },
+  { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
+  { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
+  { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
+  { title: "Analytics", url: `${prefix}/analytics`, icon: BarChart3 },
 ];
 
 const contentNav = [
-  { title: "Content Pages", url: "/content-pages", icon: FileText },
-  { title: "Templates", url: "/templates", icon: Code2 },
+  { title: "Content Pages", url: `${prefix}/content-pages`, icon: FileText },
+  { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
 ];
 
 const systemNav = [
-  { title: "Shipping Zones", url: "/shipping-zones", icon: Truck },
-  { title: "Tax Rates", url: "/tax-rates", icon: Percent },
-  { title: "Activity Log", url: "/activity-log", icon: ClipboardList },
-  { title: "Feature Audit", url: "/feature-audit", icon: ClipboardCheck },
-  { title: "Settings", url: "/settings", icon: Settings },
+  { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
+  { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
+  { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
+  { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
+  { title: "Settings", url: `${prefix}/settings`, icon: Settings },
 ];
 
 interface NavGroupProps {
