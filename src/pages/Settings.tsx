@@ -216,10 +216,18 @@ export default function SettingsPage() {
                     <Select value={storeForm.timezone} onValueChange={(v) => setStoreForm({ ...storeForm, timezone: v })}>
                       <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="America/New_York" className="text-xs">Eastern</SelectItem>
-                        <SelectItem value="America/Chicago" className="text-xs">Central</SelectItem>
-                        <SelectItem value="America/Denver" className="text-xs">Mountain</SelectItem>
-                        <SelectItem value="America/Los_Angeles" className="text-xs">Pacific</SelectItem>
+                        <SelectItem value="America/New_York" className="text-xs">Eastern (US)</SelectItem>
+                        <SelectItem value="America/Chicago" className="text-xs">Central (US)</SelectItem>
+                        <SelectItem value="America/Denver" className="text-xs">Mountain (US)</SelectItem>
+                        <SelectItem value="America/Los_Angeles" className="text-xs">Pacific (US)</SelectItem>
+                        <SelectItem value="Europe/London" className="text-xs">London (GMT)</SelectItem>
+                        <SelectItem value="Europe/Berlin" className="text-xs">Berlin (CET)</SelectItem>
+                        <SelectItem value="Australia/Sydney" className="text-xs">Sydney (AEST)</SelectItem>
+                        <SelectItem value="Pacific/Auckland" className="text-xs">Auckland (NZST)</SelectItem>
+                        <SelectItem value="Africa/Johannesburg" className="text-xs">Johannesburg (SAST)</SelectItem>
+                        <SelectItem value="Asia/Singapore" className="text-xs">Singapore (SGT)</SelectItem>
+                        <SelectItem value="Asia/Tokyo" className="text-xs">Tokyo (JST)</SelectItem>
+                        <SelectItem value="Asia/Kolkata" className="text-xs">India (IST)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

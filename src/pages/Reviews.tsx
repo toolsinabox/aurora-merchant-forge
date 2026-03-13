@@ -8,7 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Star, Check, X, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
+import { Search, Star, Check, X, Trash2, CheckCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
@@ -17,6 +19,7 @@ export default function Reviews() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selected, setSelected] = useState<string[]>([]);
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["admin-reviews", currentStore?.id],
@@ -48,6 +51,22 @@ export default function Reviews() {
     onError: (e) => toast.error(e.message),
   });
 
+  const bulkUpdate = useMutation({
+    mutationFn: async ({ ids, is_approved }: { ids: string[]; is_approved: boolean }) => {
+      const { error } = await supabase
+        .from("product_reviews" as any)
+        .update({ is_approved })
+        .in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-reviews"] });
+      setSelected([]);
+      toast.success("Reviews updated");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   const deleteReview = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("product_reviews" as any).delete().eq("id", id);
@@ -56,6 +75,19 @@ export default function Reviews() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["admin-reviews"] });
       toast.success("Review deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
+  const bulkDelete = useMutation({
+    mutationFn: async (ids: string[]) => {
+      const { error } = await supabase.from("product_reviews" as any).delete().in("id", ids);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["admin-reviews"] });
+      setSelected([]);
+      toast.success("Reviews deleted");
     },
     onError: (e) => toast.error(e.message),
   });
@@ -71,6 +103,17 @@ export default function Reviews() {
     return matchSearch && matchStatus;
   });
 
+  const toggleSelect = (id: string) =>
+    setSelected((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  const toggleAll = () =>
+    setSelected((prev) => prev.length === filtered.length ? [] : filtered.map((r: any) => r.id));
+
+  const avgRating = reviews.length > 0
+    ? ((reviews as any[]).reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : "0";
+  const approvedCount = (reviews as any[]).filter((r) => r.is_approved).length;
+  const pendingCount = (reviews as any[]).filter((r) => !r.is_approved).length;
+
   const Stars = ({ count }: { count: number }) => (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((s) => (
@@ -84,8 +127,25 @@ export default function Reviews() {
       <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Product Reviews</h1>
-          <p className="text-xs text-muted-foreground">{reviews.length} total reviews</p>
+          <p className="text-xs text-muted-foreground">{reviews.length} total reviews · Avg {avgRating}★ · {approvedCount} approved · {pendingCount} pending</p>
         </div>
+
+        {selected.length > 0 && (
+          <Card>
+            <CardContent className="p-3 flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs">{selected.length} selected</Badge>
+              <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => bulkUpdate.mutate({ ids: selected, is_approved: true })}>
+                <Check className="h-3 w-3" /> Approve
+              </Button>
+              <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => bulkUpdate.mutate({ ids: selected, is_approved: false })}>
+                <X className="h-3 w-3" /> Reject
+              </Button>
+              <Button size="sm" variant="outline" className="h-7 text-xs gap-1 text-destructive" onClick={() => bulkDelete.mutate(selected)}>
+                <Trash2 className="h-3 w-3" /> Delete
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardContent className="p-0">
@@ -106,6 +166,9 @@ export default function Reviews() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8 h-8">
+                    <Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} />
+                  </TableHead>
                   <TableHead className="text-xs h-8">Product</TableHead>
                   <TableHead className="text-xs h-8">Author</TableHead>
                   <TableHead className="text-xs h-8">Rating</TableHead>
@@ -118,15 +181,18 @@ export default function Reviews() {
               <TableBody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+                    <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
                   ))
                 ) : filtered.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No reviews yet.</TableCell>
+                    <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">No reviews yet.</TableCell>
                   </TableRow>
                 ) : (
                   filtered.map((r: any) => (
                     <TableRow key={r.id} className="text-xs">
+                      <TableCell className="py-2">
+                        <Checkbox checked={selected.includes(r.id)} onCheckedChange={() => toggleSelect(r.id)} />
+                      </TableCell>
                       <TableCell className="py-2 font-medium max-w-[150px] truncate">{r.products?.title || "—"}</TableCell>
                       <TableCell className="py-2">{r.author_name}</TableCell>
                       <TableCell className="py-2"><Stars count={r.rating} /></TableCell>
