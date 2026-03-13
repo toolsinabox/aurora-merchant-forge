@@ -32,6 +32,9 @@ export default function SettingsPage() {
   const createShippingZone = useCreateShippingZone();
   const deleteShippingZone = useDeleteShippingZone();
   const { data: team = [], isLoading: loadingTeam } = useTeamMembers();
+  const { data: customerGroups = [], isLoading: loadingGroups } = useCustomerGroups();
+  const createCustomerGroup = useCreateCustomerGroup();
+  const deleteCustomerGroup = useDeleteCustomerGroup();
 
   const [storeForm, setStoreForm] = useState({
     name: currentStore?.name || "",
