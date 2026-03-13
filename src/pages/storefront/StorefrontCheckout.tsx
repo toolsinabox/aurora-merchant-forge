@@ -272,7 +272,27 @@ export default function StorefrontCheckout() {
 
               {/* Shipping */}
               <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Shipping Address</h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold">Shipping Address</h2>
+                  {savedAddresses.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Select onValueChange={(id) => {
+                        const addr = savedAddresses.find((a: any) => a.id === id);
+                        if (addr) applyAddress(addr);
+                      }}>
+                        <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Use saved address" /></SelectTrigger>
+                        <SelectContent>
+                          {savedAddresses.map((a: any) => (
+                            <SelectItem key={a.id} value={a.id} className="text-xs">
+                              {a.label || `${a.address_line1}, ${a.city}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-1.5">
                   <Label>Address</Label>
                   <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" />
