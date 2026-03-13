@@ -354,7 +354,7 @@ export default function StorefrontCheckout() {
                   <Checkbox
                     id="billing_same"
                     checked={form.billing_same}
-                    onCheckedChange={(checked) => update("billing_same", checked ? "true" : "false")}
+                    onCheckedChange={(checked) => setForm(prev => ({ ...prev, billing_same: !!checked }))}
                   />
                   <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
                 </div>
