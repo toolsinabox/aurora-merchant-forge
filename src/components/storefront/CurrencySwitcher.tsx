@@ -23,7 +23,7 @@ export function useCurrency(storeId: string) {
     supabase.from("currencies" as any).select("id, code, symbol, exchange_rate, is_default")
       .eq("store_id", storeId).eq("is_active", true).order("is_default", { ascending: false })
       .then(({ data }) => {
-        const list = (data || []) as Currency[];
+        const list = (data || []) as unknown as Currency[];
         setCurrencies(list);
         if (!selectedCode && list.length > 0) {
           const def = list.find(c => c.is_default) || list[0];
