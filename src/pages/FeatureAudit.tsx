@@ -508,7 +508,7 @@ const featureData: FeatureCategory[] = [
       { name: "FAQ Page", description: "Frequently asked questions page", status: "done", notes: "Via CMS page type: faq" },
       { name: "Blog / News Articles", description: "Blog listing and post pages", status: "done", notes: "Via CMS page type: blog" },
       { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "done", notes: "Banner text with start/end datetime scheduling in Settings branding, displayed conditionally on storefront header based on current date" },
-      { name: "Static Blocks / Widgets", description: "Reusable content blocks embeddable on any page", status: "not_started" },
+      { name: "Static Blocks / Widgets", description: "Reusable content blocks embeddable on any page", status: "done", notes: "content_blocks table with CRUD, admin Content Blocks page with name, identifier, type (html/text/markdown/banner), placement zones, active toggle, edit/copy/delete" },
       { name: "WYSIWYG Content Editor", description: "Rich text editor for content pages", status: "not_started" },
       { name: "Content Reviews", description: "Reviews on content pages (not just products)", status: "not_started" },
       { name: "Media Library / Asset Management", description: "Central repository for images, files, and media", status: "done", notes: "media_assets table with CRUD, admin Media Library page with grid view, folder filtering, file upload, copy URL, and delete" },
