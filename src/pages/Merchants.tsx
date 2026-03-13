@@ -165,11 +165,17 @@ export default function Merchants() {
                         </TableCell>
                         <TableCell>
                           {m.slug ? (
-                            <Link to={`/store/${m.slug}`} target="_blank">
-                              <Button variant="ghost" size="icon" className="h-7 w-7" title="View Storefront">
-                                <ExternalLink className="h-3.5 w-3.5" />
-                              </Button>
-                            </Link>
+                            <div className="flex items-center gap-1">
+                              <a
+                                href={getStorefrontUrl(m.slug)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Button variant="ghost" size="icon" className="h-7 w-7" title={`Visit ${m.slug}.yourdomain.com`}>
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                </Button>
+                              </a>
+                            </div>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
