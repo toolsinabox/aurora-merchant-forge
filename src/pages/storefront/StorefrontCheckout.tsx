@@ -655,6 +655,40 @@ export default function StorefrontCheckout() {
                     </div>
                   </label>
                 </div>
+
+                {/* Split Shipping / Multi-Address */}
+                {deliveryMethod === "shipping" && items.length > 1 && (
+                  <div className="flex items-center gap-2 mt-2">
+                    <Checkbox
+                      id="split_shipping"
+                      checked={splitShipping}
+                      onCheckedChange={(checked) => setSplitShipping(!!checked)}
+                    />
+                    <label htmlFor="split_shipping" className="text-sm cursor-pointer flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5" /> Ship items to different addresses
+                    </label>
+                  </div>
+                )}
+                {splitShipping && deliveryMethod === "shipping" && (
+                  <div className="space-y-3 mt-3 pl-4 border-l-2 border-primary/20">
+                    {items.map((item, idx) => {
+                      const addr = itemAddresses[item.id] || { address: "", city: "", zip: "", country: "" };
+                      return (
+                        <div key={item.id} className="border rounded-lg p-3 space-y-2">
+                          <p className="text-xs font-medium">{item.title} × {item.quantity}</p>
+                          <div className="space-y-1.5">
+                            <Input placeholder="Address" value={addr.address} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, address: e.target.value } }))} className="h-8 text-xs" />
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            <Input placeholder="City" value={addr.city} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, city: e.target.value } }))} className="h-8 text-xs" />
+                            <Input placeholder="ZIP" value={addr.zip} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, zip: e.target.value } }))} className="h-8 text-xs" />
+                            <Input placeholder="Country" value={addr.country} onChange={e => setItemAddresses(prev => ({ ...prev, [item.id]: { ...addr, country: e.target.value } }))} className="h-8 text-xs" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Shipping Method */}
