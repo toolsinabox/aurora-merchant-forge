@@ -1037,6 +1037,7 @@ export default function SettingsPage() {
 
           <TabsContent value="inventory" className="space-y-3">
             <InventorySettingsTab />
+            <CurrencyFormatTab />
           </TabsContent>
         </Tabs>
       </div>
