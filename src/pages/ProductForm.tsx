@@ -541,7 +541,7 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Inventory Control</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Track Inventory</Label>
+                      <FieldLabel label="Track Inventory" field="track_inventory" />
                       <Switch checked={form.track_inventory} onCheckedChange={(v) => update("track_inventory", v)} />
                     </div>
                     <div className="flex items-center justify-between">
