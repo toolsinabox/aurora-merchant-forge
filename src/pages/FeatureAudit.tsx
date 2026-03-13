@@ -351,7 +351,7 @@ const featureData: FeatureCategory[] = [
       { name: "Approve/Reject Quotes", description: "Customer approves or deletes quotes (approve_quote/)", status: "done", notes: "Approve/Reject buttons on sent quotes in storefront account Quotes tab" },
       { name: "My Store / Stockist Management", description: "Customers manage their stockist listing (mystore/)", status: "not_started" },
       { name: "Write Product Review", description: "Submit product review from account (write_review/)", status: "done", notes: "Review form with rating, title, body on product detail page for logged-in users" },
-      { name: "Write Content Review", description: "Submit content/page review (write_contentreview/)", status: "not_started" },
+      { name: "Write Content Review", description: "Submit content/page review (write_contentreview/)", status: "done", notes: "Review form with star rating, title, body on storefront content pages for logged-in users, moderation approval before display, average rating badge" },
       { name: "Submit Warranty Dispute", description: "Open/view warranty disputes (warranty/)", status: "done", notes: "Disputes tab in storefront account with submission form (order, product, type, reason, description) and status tracking" },
       { name: "Logout Page", description: "Logout confirmation (logout.template.html)", status: "done" },
     ],
