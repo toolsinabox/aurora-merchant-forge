@@ -14,7 +14,7 @@ import {
   useShippingZones, useCreateShippingZone, useDeleteShippingZone, useTeamMembers,
   useCustomerGroups, useCreateCustomerGroup, useDeleteCustomerGroup,
 } from "@/hooks/use-data";
-import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users } from "lucide-react";
+import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -22,6 +22,106 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+
+function SEOSettings() {
+  const { currentStore } = useAuth();
+  const [seoTitle, setSeoTitle] = useState("");
+  const [seoDesc, setSeoDesc] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("stores").select("seo_title_global, seo_description_global").eq("id", currentStore.id).single().then(({ data }) => {
+      if (data) {
+        setSeoTitle((data as any).seo_title_global || "");
+        setSeoDesc((data as any).seo_description_global || "");
+      }
+    });
+  }, [currentStore]);
+
+  const handleSave = async () => {
+    if (!currentStore) return;
+    setSaving(true);
+    await supabase.from("stores").update({ seo_title_global: seoTitle || null, seo_description_global: seoDesc || null } as any).eq("id", currentStore.id);
+    setSaving(false);
+    toast.success("SEO settings saved");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Globe className="h-4 w-4" /> Global SEO Settings</CardTitle></CardHeader>
+      <CardContent className="p-4 pt-2 space-y-4">
+        <div className="space-y-1">
+          <Label className="text-xs">Default Meta Title</Label>
+          <Input className="h-8 text-xs" value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} placeholder="My Store — Best Products Online" maxLength={60} />
+          <p className="text-2xs text-muted-foreground">{seoTitle.length}/60 characters — used as default title when pages don't specify their own</p>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Default Meta Description</Label>
+          <Textarea className="text-xs min-h-[60px]" value={seoDesc} onChange={(e) => setSeoDesc(e.target.value)} placeholder="Shop the best products at great prices..." maxLength={160} />
+          <p className="text-2xs text-muted-foreground">{seoDesc.length}/160 characters</p>
+        </div>
+        <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+          <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save SEO Settings"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
+const NOTIFICATION_KEYS = [
+  { key: "new_order", label: "New Order", desc: "When a new order is placed" },
+  { key: "low_stock", label: "Low Stock Alert", desc: "When stock falls below threshold" },
+  { key: "new_customer", label: "New Customer", desc: "When a new customer registers" },
+  { key: "return_request", label: "Return Request", desc: "When a customer requests a return" },
+  { key: "contact_form", label: "Contact Form", desc: "When a contact form is submitted" },
+  { key: "review_submitted", label: "Review Submitted", desc: "When a product review is submitted" },
+];
+
+function NotificationSettings() {
+  const { currentStore } = useAuth();
+  const [prefs, setPrefs] = useState<Record<string, boolean>>({
+    new_order: true, low_stock: true, new_customer: true, return_request: true, contact_form: true, review_submitted: true,
+  });
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("stores").select("notification_prefs").eq("id", currentStore.id).single().then(({ data }) => {
+      if (data && (data as any).notification_prefs) {
+        setPrefs({ ...prefs, ...(data as any).notification_prefs });
+      }
+    });
+  }, [currentStore]);
+
+  const handleSave = async () => {
+    if (!currentStore) return;
+    setSaving(true);
+    await supabase.from("stores").update({ notification_prefs: prefs } as any).eq("id", currentStore.id);
+    setSaving(false);
+    toast.success("Notification preferences saved");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Bell className="h-4 w-4" /> Notification Preferences</CardTitle></CardHeader>
+      <CardContent className="p-4 pt-2 space-y-4">
+        {NOTIFICATION_KEYS.map((n) => (
+          <div key={n.key} className="flex items-center justify-between">
+            <div>
+              <Label className="text-xs font-medium">{n.label}</Label>
+              <p className="text-2xs text-muted-foreground">{n.desc}</p>
+            </div>
+            <Switch checked={prefs[n.key] ?? true} onCheckedChange={(v) => setPrefs({ ...prefs, [n.key]: v })} />
+          </div>
+        ))}
+        <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+          <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save Preferences"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
 
 function CheckoutSettings() {
   const { currentStore } = useAuth();
@@ -240,7 +340,9 @@ export default function SettingsPage() {
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
             <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
+            <TabsTrigger value="seo" className="text-xs h-7">SEO</TabsTrigger>
             <TabsTrigger value="checkout" className="text-xs h-7">Checkout</TabsTrigger>
+            <TabsTrigger value="notifications" className="text-xs h-7">Notifications</TabsTrigger>
             <TabsTrigger value="team" className="text-xs h-7">Team</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
             <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
@@ -360,8 +462,16 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="seo" className="space-y-3">
+            <SEOSettings />
+          </TabsContent>
+
           <TabsContent value="checkout" className="space-y-3">
             <CheckoutSettings />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-3">
+            <NotificationSettings />
           </TabsContent>
 
           <TabsContent value="theme" className="space-y-3">

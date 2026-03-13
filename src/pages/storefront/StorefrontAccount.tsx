@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -91,7 +91,8 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers">("orders");
+  const [vouchers, setVouchers] = useState<any[]>([]);
 
   // Edit profile state
   const [editingProfile, setEditingProfile] = useState(false);
@@ -135,7 +136,7 @@ export default function StorefrontAccount() {
       setCustomer(cust);
 
       if (cust) {
-        const [ordsRes, retsRes, addrsRes] = await Promise.all([
+        const [ordsRes, retsRes, addrsRes, vouchersRes] = await Promise.all([
           supabase
             .from("orders")
             .select("*, order_items(*, products(title, images))")
@@ -151,10 +152,16 @@ export default function StorefrontAccount() {
             .select("*")
             .eq("customer_id", cust.id)
             .order("created_at", { ascending: false }),
+          supabase
+            .from("gift_vouchers")
+            .select("*")
+            .or(`purchased_by.eq.${user!.id},recipient_email.eq.${cust.email || ""}`)
+            .order("created_at", { ascending: false }),
         ]);
         setOrders(ordsRes.data || []);
         setReturns(retsRes.data || []);
         setAddresses(addrsRes.data || []);
+        setVouchers(vouchersRes.data || []);
       }
 
       // Load wishlist products
@@ -452,6 +459,7 @@ export default function StorefrontAccount() {
                 { key: "addresses", label: "Addresses", icon: MapPin, count: addresses.length },
                 { key: "wishlist", label: "Wishlist", icon: Heart, count: wishlistProducts.length },
                 { key: "returns", label: "Returns", icon: RotateCcw, count: returns.length },
+                { key: "vouchers", label: "Vouchers", icon: Gift, count: vouchers.length },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
@@ -673,6 +681,46 @@ export default function StorefrontAccount() {
                             <TableCell className="max-w-[150px] truncate">{r.reason}</TableCell>
                             <TableCell><StatusBadge status={r.status} /></TableCell>
                             <TableCell className="text-right font-medium">${Number(r.refund_amount).toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Vouchers Tab */}
+            {activeTab === "vouchers" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">My Gift Vouchers</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {vouchers.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <Gift className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+                      <p className="text-sm text-muted-foreground">No gift vouchers.</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Code</TableHead>
+                          <TableHead className="text-xs">Value</TableHead>
+                          <TableHead className="text-xs">Balance</TableHead>
+                          <TableHead className="text-xs">Status</TableHead>
+                          <TableHead className="text-xs">Expires</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {vouchers.map((v: any) => (
+                          <TableRow key={v.id} className="text-sm">
+                            <TableCell className="font-mono text-xs">{v.code}</TableCell>
+                            <TableCell>${Number(v.initial_value).toFixed(2)}</TableCell>
+                            <TableCell className="font-medium">${Number(v.balance).toFixed(2)}</TableCell>
+                            <TableCell><StatusBadge status={v.is_active ? "active" : "inactive"} /></TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{v.expires_at ? new Date(v.expires_at).toLocaleDateString() : "Never"}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
