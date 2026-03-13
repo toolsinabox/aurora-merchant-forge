@@ -847,7 +847,7 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">SEO</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="space-y-1">
-                      <Label className="text-xs">Page Title</Label>
+                      <FieldLabel label="Page Title" field="seo_title" />
                       <Input className="h-8 text-xs" value={form.seo_title} onChange={(e) => update("seo_title", e.target.value)} placeholder="SEO page title" />
                       <p className="text-2xs text-muted-foreground">{form.seo_title.length}/60 characters</p>
                     </div>
