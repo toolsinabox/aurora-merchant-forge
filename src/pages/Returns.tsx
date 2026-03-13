@@ -22,11 +22,65 @@ const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "compl
 export default function Returns() {
   const { data: returns = [], isLoading } = useReturns();
   const updateReturn = useUpdateReturn();
+  const { currentStore } = useAuth();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selected, setSelected] = useState<any>(null);
   const [adminNotes, setAdminNotes] = useState("");
   const [refundAmount, setRefundAmount] = useState("");
+  const [creatingReplacement, setCreatingReplacement] = useState(false);
+
+  const handleCreateReplacement = async () => {
+    if (!selected || !currentStore) return;
+    setCreatingReplacement(true);
+    try {
+      const orderNum = `RPL-${Date.now().toString(36).toUpperCase()}`;
+      // Get original order items
+      const { data: origItems } = await supabase
+        .from("order_items")
+        .select("*")
+        .eq("order_id", selected.order_id);
+      const subtotal = origItems?.reduce((s, i) => s + Number(i.total), 0) || 0;
+      const { data: newOrder, error } = await supabase
+        .from("orders")
+        .insert({
+          store_id: currentStore.id,
+          order_number: orderNum,
+          customer_id: selected.customer_id,
+          items_count: origItems?.length || 0,
+          subtotal,
+          total: subtotal,
+          status: "processing",
+          payment_status: "pending",
+          fulfillment_status: "unfulfilled",
+          notes: `Replacement for return on order ${selected.orders?.order_number || ""}`,
+          shipping_address: selected.orders?.shipping_address,
+        } as any)
+        .select()
+        .single();
+      if (error) throw error;
+      if (origItems && origItems.length > 0) {
+        const newItems = origItems.map((item: any) => ({
+          order_id: newOrder.id,
+          store_id: currentStore.id,
+          product_id: item.product_id,
+          variant_id: item.variant_id,
+          title: item.title,
+          sku: item.sku,
+          quantity: item.quantity,
+          unit_price: item.unit_price,
+          total: item.total,
+        }));
+        await supabase.from("order_items").insert(newItems);
+      }
+      toast.success(`Replacement order ${orderNum} created`);
+      setSelected(null);
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setCreatingReplacement(false);
+    }
+  };
 
   const filtered = (returns as any[]).filter((r) => {
     const matchSearch =
