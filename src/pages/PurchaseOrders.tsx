@@ -293,6 +293,11 @@ export default function PurchaseOrders() {
                     <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
+                        {["sent", "partial"].includes(p.status) && (
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Receive Items" onClick={() => openReceiveDialog(p)}>
+                            <PackageCheck className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
                         <Link to={`/purchase-orders/${p.id}/print`}>
                           <Button variant="ghost" size="icon" className="h-7 w-7" title="Print PO"><Printer className="h-3.5 w-3.5" /></Button>
                         </Link>
