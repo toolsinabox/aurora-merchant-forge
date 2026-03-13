@@ -545,7 +545,7 @@ const featureData: FeatureCategory[] = [
       { name: "Audience Segmentation", description: "Target campaigns by customer segment/tags", status: "done" },
       { name: "Campaign Scheduling", description: "Schedule campaigns for future send", status: "done" },
       { name: "Campaign Statistics (Open/Click/Revenue)", description: "Track campaign performance metrics", status: "partial" },
-      { name: "Abandoned Cart Recovery", description: "Automated emails for abandoned carts", status: "partial", notes: "Abandoned cart admin page with recovery status tracking, email sent marking" },
+      { name: "Abandoned Cart Recovery", description: "Automated emails for abandoned carts", status: "done", notes: "Abandoned cart admin page with recovery status tracking, email sent marking via abandoned-cart-email edge function" },
       { name: "Abandoned Cart Email Template", description: "Customizable abandoned cart email", status: "done", notes: "abandoned-cart-email edge function with styled HTML template showing cart items, total, and CTA" },
       { name: "Wishlist Reminder Emails", description: "Remind customers about wishlist items", status: "done", notes: "wishlist-reminder edge function sends personalized emails with wishlist items table and CTA to all customers with saved wishlist items" },
       { name: "Order Follow-Up Email", description: "Automated post-purchase follow-up email", status: "done", notes: "order-follow-up edge function sends review request email with order items list and CTA after delivery" },
