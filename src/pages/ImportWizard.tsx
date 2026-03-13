@@ -356,6 +356,22 @@ export default function ImportWizard() {
         {step === 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card>
+              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Import Type & Upload</CardTitle></CardHeader>
+              <CardContent className="p-4 pt-2 pb-2">
+                <div className="space-y-1 mb-3">
+                  <Label className="text-xs">Entity Type</Label>
+                  <Select value={entityType} onValueChange={(v) => setEntityType(v as ImportEntity)}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="products" className="text-xs">Products</SelectItem>
+                      <SelectItem value="orders" className="text-xs">Orders</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+            <div />
+            <Card>
               <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Upload CSV File</CardTitle></CardHeader>
               <CardContent className="p-4 pt-2 space-y-3">
                 <div className="space-y-1">
