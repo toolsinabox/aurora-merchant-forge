@@ -473,7 +473,7 @@ const featureData: FeatureCategory[] = [
       { name: "Supplier CRUD (GetSupplier / AddSupplier / UpdateSupplier)", description: "Manage supplier records via API", status: "done" },
       { name: "Supplier Contact Details", description: "Store supplier name, email, phone, address", status: "done" },
       { name: "Supplier Product Assignments", description: "Assign products/SKUs to specific suppliers", status: "done", notes: "supplier_products table with Product Assignments tab on Suppliers page, preferred supplier star toggle" },
-      { name: "Supplier Pricing / Cost", description: "Supplier-specific cost price per product", status: "partial", notes: "cost_price field exists but not supplier-linked" },
+      { name: "Supplier Pricing / Cost", description: "Supplier-specific cost price per product", status: "done", notes: "supplier_cost numeric column on supplier_products table, inline editable in Product Assignments tab" },
       { name: "Purchase Orders to Suppliers", description: "Generate and send POs to suppliers", status: "done", notes: "PO CRUD with supplier linking" },
       { name: "Supplier Lead Times", description: "Expected delivery timeframes per supplier", status: "done" },
       { name: "Supplier Performance Tracking", description: "Track on-time delivery and quality metrics", status: "done", notes: "Performance tab on Suppliers page showing PO count, total spend, received count, on-time delivery % per supplier" },
