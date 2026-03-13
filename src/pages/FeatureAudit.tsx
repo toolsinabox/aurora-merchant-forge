@@ -720,7 +720,7 @@ const featureData: FeatureCategory[] = [
       { name: "POS Interface", description: "In-store point of sale touchscreen interface", status: "done", notes: "Admin /pos page with product grid, cart panel, payment dialog, receipt dialog, touch-friendly layout" },
       { name: "POS Product Search / Barcode Scan", description: "Search products or scan barcodes in POS", status: "done", notes: "Product search by title/SKU with instant results grid on POS page" },
       { name: "POS Payment Processing", description: "Accept card, cash, split payments in POS", status: "done", notes: "Payment dialog with Card, Cash, Other methods; creates completed order with payment record and order_channel='pos'" },
-      { name: "POS Gift Voucher Redemption", description: "Redeem gift vouchers at POS", status: "not_started" },
+      { name: "POS Gift Voucher Redemption", description: "Redeem gift vouchers at POS", status: "done", notes: "Voucher code input on POS cart panel, validates active/unexpired voucher, deducts balance from gift_vouchers on payment, shows voucher discount on receipt" },
       { name: "POS Receipts", description: "Print or email POS receipts", status: "done", notes: "Receipt dialog with order summary, items, totals, Print Receipt button using browser print" },
       { name: "POS Cash Drawer Integration", description: "Open cash drawer from POS", status: "not_started" },
       { name: "POS Offline Mode", description: "Operate POS without internet connection", status: "not_started" },
