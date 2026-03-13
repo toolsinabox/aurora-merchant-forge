@@ -240,7 +240,9 @@ export default function SettingsPage() {
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
             <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
+            <TabsTrigger value="seo" className="text-xs h-7">SEO</TabsTrigger>
             <TabsTrigger value="checkout" className="text-xs h-7">Checkout</TabsTrigger>
+            <TabsTrigger value="notifications" className="text-xs h-7">Notifications</TabsTrigger>
             <TabsTrigger value="team" className="text-xs h-7">Team</TabsTrigger>
             <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
             <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
