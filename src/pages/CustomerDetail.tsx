@@ -128,6 +128,20 @@ export default function CustomerDetail() {
                         </SelectContent>
                       </Select>
                     </div>
+                    {(customerGroups as any[]).length > 0 && (
+                      <div>
+                        <Label className="text-xs">Customer Group</Label>
+                        <Select value={editForm.customer_group_id} onValueChange={(v) => setEditForm({ ...editForm, customer_group_id: v })}>
+                          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="No group" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="" className="text-xs">No Group</SelectItem>
+                            {(customerGroups as any[]).map((g: any) => (
+                              <SelectItem key={g.id} value={g.id} className="text-xs">{g.name}{g.discount_percent > 0 ? ` (${g.discount_percent}% off)` : ""}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div><Label className="text-xs">Tags (comma separated)</Label><Input className="h-8 text-xs" value={editForm.tags} onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })} placeholder="vip, wholesale" /></div>
                     <div><Label className="text-xs">Notes</Label><Textarea className="text-xs min-h-[60px]" value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} /></div>
                     <div className="flex gap-2">
