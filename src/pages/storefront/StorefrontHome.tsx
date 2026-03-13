@@ -142,6 +142,9 @@ export default function StorefrontHome() {
           </section>
         )}
 
+        {/* Mid-Page Advert */}
+        <AdvertBanner storeId={store.id} placement="homepage_mid" basePath={basePath} />
+
         {/* Featured Products */}
         {products.length > 0 && (
           <section className="my-8 sm:my-10">
