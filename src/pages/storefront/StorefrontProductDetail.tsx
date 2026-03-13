@@ -83,10 +83,12 @@ export default function StorefrontProductDetail() {
         
         if (varsRes.data && varsRes.data.length > 0) setSelectedVariant(varsRes.data[0].id);
 
-        // Separate cross-sells and upsells
+        // Separate cross-sells, upsells, and child products
         const rels = relsRes.data || [];
         const crossSellProducts = rels.filter((r: any) => r.relation_type === "cross_sell" || r.relation_type === "upsell").map((r: any) => r.related).filter(Boolean);
         setCrossSells(crossSellProducts);
+        const children = rels.filter((r: any) => r.relation_type === "child" || r.relation_type === "accessory").map((r: any) => r.related).filter(Boolean);
+        setChildProducts(children);
 
         // Fallback related products if no relations
         if (prodRes.data && found && crossSellProducts.length === 0) {
