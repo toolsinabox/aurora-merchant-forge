@@ -328,7 +328,7 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Product Type</Label>
+                        <FieldLabel label="Product Type" field="product_type" />
                         <Select value={form.product_type} onValueChange={(v) => update("product_type", v)}>
                           <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                           <SelectContent>
