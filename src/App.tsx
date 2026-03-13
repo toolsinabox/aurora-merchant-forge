@@ -73,6 +73,7 @@ import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
+import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
