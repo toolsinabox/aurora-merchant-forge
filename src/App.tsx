@@ -196,6 +196,7 @@ const App = () => (
                   <Route path="/shipping-zones" element={<RequireAuth><ShippingZones /></RequireAuth>} />
                   <Route path="/tax-rates" element={<RequireAuth><TaxRates /></RequireAuth>} />
                   <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
+                  <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
