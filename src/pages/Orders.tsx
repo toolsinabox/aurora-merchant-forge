@@ -108,15 +108,16 @@ export default function Orders() {
                   <TableHead className="text-xs h-8">Items</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                   <TableHead className="text-xs h-8">Payment</TableHead>
+                  <TableHead className="text-xs h-8">Fulfillment</TableHead>
                   <TableHead className="text-xs h-8 text-right">Total</TableHead>
                   <TableHead className="text-xs h-8">Date</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
                 ) : (
                   filtered.map((o: any) => (
                     <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${o.id}`)}>
@@ -125,6 +126,7 @@ export default function Orders() {
                       <TableCell className="py-2">{o.items_count}</TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.status} /></TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.payment_status} /></TableCell>
+                      <TableCell className="py-2"><StatusBadge status={o.fulfillment_status || "unfulfilled"} /></TableCell>
                       <TableCell className="py-2 text-right font-medium">${Number(o.total).toFixed(2)}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
