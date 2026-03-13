@@ -118,11 +118,12 @@ export default function Templates() {
         template_type: template.template_type || "content_block",
         context_type: template.context_type || "product",
         content: template.content || "",
+        custom_css: template.custom_css || "",
         is_active: template.is_active !== false,
       });
       setEditing(template);
     } else {
-      setForm({ name: "", slug: "", template_type: "content_block", context_type: "product", content: "", is_active: true });
+      setForm({ name: "", slug: "", template_type: "content_block", context_type: "product", content: "", custom_css: "", is_active: true });
       setEditing("new");
     }
     setEditorTab("edit");
