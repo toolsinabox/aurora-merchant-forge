@@ -416,7 +416,7 @@ const featureData: FeatureCategory[] = [
       { name: "Auto-Apply Coupons", description: "Automatically apply coupon based on cart rules", status: "done", notes: "Checkout auto-applies best eligible site-wide coupon on load" },
       { name: "Gift Vouchers (GetVoucher / AddVoucher / UpdateVoucher)", description: "Create, sell, and redeem gift vouchers/certificates", status: "done", notes: "Full gift voucher CRUD admin" },
       { name: "Gift Voucher Purchase (Storefront)", description: "Customers purchase gift vouchers with custom value/message", status: "done", notes: "Storefront /gift-vouchers page with preset/custom values, recipient details, and printable voucher card" },
-      { name: "Gift Voucher Email Delivery", description: "Send gift voucher to recipient by email on scheduled date", status: "not_started", notes: "Neto has gift_voucher system email" },
+      { name: "Gift Voucher Email Delivery", description: "Send gift voucher to recipient by email on scheduled date", status: "done", notes: "gift-voucher-email edge function sends styled email with voucher code, value, message to recipient on purchase" },
       { name: "Gift Voucher Balance Tracking", description: "Track remaining balance on vouchers", status: "done" },
       { name: "Gift Voucher Redemption at Checkout", description: "Apply voucher balance as payment", status: "done", notes: "Gift voucher code input at checkout, deducts balance from gift_vouchers table" },
     ],
