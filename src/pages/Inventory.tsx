@@ -40,6 +40,58 @@ export default function Inventory() {
   });
   const [transferring, setTransferring] = useState(false);
 
+  // Serial Numbers
+  const [serialOpen, setSerialOpen] = useState(false);
+  const [newSerial, setNewSerial] = useState({ productId: "", serialNumber: "", locationId: "", notes: "" });
+  const { data: serialNumbers = [], isLoading: loadingSerials } = useQuery({
+    queryKey: ["serial_numbers", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("serial_numbers" as any)
+        .select("*, product:product_id(title, sku), location:location_id(name)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+
+  const addSerial = useMutation({
+    mutationFn: async () => {
+      if (!currentStore || !newSerial.productId || !newSerial.serialNumber) throw new Error("Product and serial number required");
+      const { error } = await supabase.from("serial_numbers" as any).insert({
+        store_id: currentStore.id,
+        product_id: newSerial.productId,
+        serial_number: newSerial.serialNumber.trim(),
+        location_id: newSerial.locationId || null,
+        notes: newSerial.notes || null,
+        status: "available",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["serial_numbers"] });
+      setSerialOpen(false);
+      setNewSerial({ productId: "", serialNumber: "", locationId: "", notes: "" });
+      toast.success("Serial number added");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const deleteSerial = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("serial_numbers" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["serial_numbers"] });
+      toast.success("Serial number deleted");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const getVariantStock = (p: any) => {
     if (p.product_variants && p.product_variants.length > 0) {
       return p.product_variants.reduce((sum: number, v: any) => sum + (v.stock || 0), 0);
