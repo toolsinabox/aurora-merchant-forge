@@ -61,6 +61,9 @@ export default function StorefrontCheckout() {
   const [shippingCost, setShippingCost] = useState(0);
   const [isTaxExempt, setIsTaxExempt] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
+  const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
+  const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
 
   useEffect(() => {
     async function loadData() {
