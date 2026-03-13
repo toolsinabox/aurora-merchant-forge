@@ -737,6 +737,66 @@ export default function StorefrontAccount() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Quotes Tab */}
+            {activeTab === "quotes" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">My Quotes</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {quotes.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <FileQuestion className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+                      <p className="text-sm text-muted-foreground">No quotes yet.</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Quote #</TableHead>
+                          <TableHead className="text-xs">Date</TableHead>
+                          <TableHead className="text-xs">Status</TableHead>
+                          <TableHead className="text-xs text-right">Total</TableHead>
+                          <TableHead className="text-xs">Valid Until</TableHead>
+                          <TableHead className="text-xs">Action</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {quotes.map((q: any) => (
+                          <TableRow key={q.id} className="text-sm">
+                            <TableCell className="font-mono text-xs">{q.quote_number}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{new Date(q.created_at).toLocaleDateString()}</TableCell>
+                            <TableCell><StatusBadge status={q.status} /></TableCell>
+                            <TableCell className="text-right font-medium">${Number(q.total).toFixed(2)}</TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{q.valid_until ? new Date(q.valid_until).toLocaleDateString() : "—"}</TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                {q.status === "sent" && (
+                                  <>
+                                    <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={async () => {
+                                      await supabase.from("order_quotes" as any).update({ status: "approved", approved_at: new Date().toISOString() }).eq("id", q.id);
+                                      toast.success("Quote approved");
+                                      setQuotes(quotes.map((x: any) => x.id === q.id ? { ...x, status: "approved" } : x));
+                                    }}>Approve</Button>
+                                    <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={async () => {
+                                      await supabase.from("order_quotes" as any).update({ status: "rejected" }).eq("id", q.id);
+                                      toast.success("Quote rejected");
+                                      setQuotes(quotes.map((x: any) => x.id === q.id ? { ...x, status: "rejected" } : x));
+                                    }}>Reject</Button>
+                                  </>
+                                )}
+                                {q.status === "converted" && <span className="text-[10px] text-muted-foreground">Converted</span>}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
