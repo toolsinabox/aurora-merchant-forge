@@ -1218,6 +1218,69 @@ export default function SettingsPage() {
           <TabsContent value="payments" className="space-y-3">
             <PaymentGatewaysTab />
           </TabsContent>
+
+          <TabsContent value="email" className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Email / SMTP Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-2 space-y-3">
+                <p className="text-xs text-muted-foreground">Configure outgoing email settings for order confirmations, notifications, and marketing emails.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">SMTP Host</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.host} onChange={(e) => setSmtpForm({ ...smtpForm, host: e.target.value })} placeholder="smtp.gmail.com" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Port</Label>
+                    <Select value={smtpForm.port} onValueChange={(v) => setSmtpForm({ ...smtpForm, port: v })}>
+                      <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="25" className="text-xs">25 (SMTP)</SelectItem>
+                        <SelectItem value="465" className="text-xs">465 (SSL)</SelectItem>
+                        <SelectItem value="587" className="text-xs">587 (TLS)</SelectItem>
+                        <SelectItem value="2525" className="text-xs">2525 (Alt)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Username</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.username} onChange={(e) => setSmtpForm({ ...smtpForm, username: e.target.value })} placeholder="your@email.com" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Password</Label>
+                    <Input type="password" className="h-8 text-xs" value={smtpForm.password} onChange={(e) => setSmtpForm({ ...smtpForm, password: e.target.value })} placeholder="••••••••" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">From Name</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.from_name} onChange={(e) => setSmtpForm({ ...smtpForm, from_name: e.target.value })} placeholder="My Store" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">From Email</Label>
+                    <Input className="h-8 text-xs" value={smtpForm.from_email} onChange={(e) => setSmtpForm({ ...smtpForm, from_email: e.target.value })} placeholder="noreply@mystore.com" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Encryption</Label>
+                  <Select value={smtpForm.encryption} onValueChange={(v) => setSmtpForm({ ...smtpForm, encryption: v })}>
+                    <SelectTrigger className="h-8 text-xs w-48"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none" className="text-xs">None</SelectItem>
+                      <SelectItem value="ssl" className="text-xs">SSL</SelectItem>
+                      <SelectItem value="tls" className="text-xs">TLS (Recommended)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSaveSmtp} disabled={smtpSaving}>
+                  <Save className="h-3.5 w-3.5" /> {smtpSaving ? "Saving..." : "Save Email Settings"}
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
