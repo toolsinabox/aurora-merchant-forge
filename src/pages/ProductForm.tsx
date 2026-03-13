@@ -581,7 +581,7 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="grid grid-cols-4 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Weight (kg)</Label>
+                        <FieldLabel label="Weight (kg)" field="shipping_weight" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={shipping.shipping_weight} onChange={(e) => setShipping(p => ({ ...p, shipping_weight: e.target.value }))} />
                       </div>
                       <div className="space-y-1">
