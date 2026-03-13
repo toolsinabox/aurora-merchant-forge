@@ -130,6 +130,8 @@ export default function SettingsPage() {
         banner_text: brandForm.banner_text || null,
         description: brandForm.description || null,
         logo_url: brandForm.logo_url || null,
+        favicon_url: brandForm.favicon_url || null,
+        ga_tracking_id: brandForm.ga_tracking_id || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
