@@ -806,8 +806,8 @@ const featureData: FeatureCategory[] = [
     icon: <Palette className="h-5 w-5" />,
     features: [
       { name: "Store Theme Configuration", description: "Primary/secondary/accent colors, fonts, button radius", status: "done" },
-      { name: "Header Template", description: "Customizable header (headers/template.html)", status: "partial" },
-      { name: "Footer Template", description: "Customizable footer (footers/template.html)", status: "partial" },
+      { name: "Header Template", description: "Customizable header (headers/template.html)", status: "done", notes: "StorefrontLayout header with logo, mega menu, search, wishlist, cart, account links, mobile hamburger, and announcement banner" },
+      { name: "Footer Template", description: "Customizable footer (footers/template.html)", status: "done", notes: "StorefrontLayout footer with store info, quick links, customer service links, newsletter signup, social media icons, and copyright" },
       { name: "Custom CSS", description: "Custom CSS injection field per store", status: "done" },
       { name: "Hero Style Selection", description: "Hero section layout choice", status: "done" },
       { name: "Product Card Style Selection", description: "Product card layout variant", status: "done" },
