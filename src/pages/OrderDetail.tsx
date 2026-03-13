@@ -69,6 +69,8 @@ export default function OrderDetail() {
   const [paymentForm, setPaymentForm] = useState({ amount: "", method: "manual", reference: "", notes: "" });
   const [creditNoteOpen, setCreditNoteOpen] = useState(false);
   const [creditForm, setCreditForm] = useState({ amount: "", reason: "", notes: "" });
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [refundForm, setRefundForm] = useState({ amount: "", reason: "" });
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
