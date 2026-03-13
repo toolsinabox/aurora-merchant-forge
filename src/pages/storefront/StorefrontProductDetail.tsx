@@ -384,6 +384,40 @@ export default function StorefrontProductDetail() {
                 )}
               </div>
             )}
+
+            {/* Back in Stock Notification - show when out of stock */}
+            {!product.poa && (currentVariant ? currentVariant.stock <= 0 : (product.track_inventory && product.status === "active")) && !notifySubmitted && (
+              <div className="border rounded-lg p-4 bg-muted/30 space-y-2">
+                <p className="text-sm font-medium flex items-center gap-1.5"><Bell className="h-4 w-4" /> Notify me when back in stock</p>
+                <div className="flex gap-2">
+                  <Input
+                    type="email"
+                    placeholder="Your email"
+                    value={notifyEmail}
+                    onChange={(e) => setNotifyEmail(e.target.value)}
+                    className="h-9 text-sm"
+                  />
+                  <Button size="sm" className="h-9 shrink-0" onClick={async () => {
+                    if (!notifyEmail || !store) return;
+                    await supabase.from("back_in_stock_requests" as any).insert({
+                      store_id: store.id,
+                      product_id: product.id,
+                      variant_id: currentVariant?.id || null,
+                      email: notifyEmail,
+                      user_id: user?.id || null,
+                    });
+                    setNotifySubmitted(true);
+                    toast.success("You'll be notified when this item is back in stock!");
+                  }}>Notify Me</Button>
+                </div>
+              </div>
+            )}
+            {notifySubmitted && (
+              <div className="border rounded-lg p-3 bg-primary/5 text-sm flex items-center gap-2 text-primary">
+                <Check className="h-4 w-4" /> We'll email you when this product is available
+              </div>
+            )}
+
             {product.poa && (
               <Button variant="outline" className="w-full h-12" onClick={() => window.location.href = `mailto:${store?.contact_email || ''}`}>
                 Contact Us for Pricing
