@@ -20,6 +20,7 @@ export interface TemplateContext {
   upsells?: Record<string, any>[];
   free_gifts?: Record<string, any>[];
   adverts?: Record<string, any>[];
+  thumblist?: Record<string, any>[];
   shipping?: Record<string, any>;
   store?: Record<string, any>;
   order?: Record<string, any>;
@@ -249,6 +250,10 @@ function processBlocks(template: string, ctx: TemplateContext): string {
       case "adverts":
         items = ctx.adverts || [];
         break;
+      case "thumb":
+      case "thumblist":
+        items = ctx.thumblist || [];
+        break;
       default:
         return "";
     }
@@ -374,7 +379,7 @@ export const SUPPORTED_FORMATS = [
 ];
 
 export const SUPPORTED_BLOCKS = [
-  "crosssell", "upsell", "free_gift", "variants", "specifics", "pricing_tiers", "images", "tags",
+  "crosssell", "upsell", "free_gift", "variants", "specifics", "pricing_tiers", "images", "tags", "adverts", "thumblist",
 ];
 
 export const SUPPORTED_CONDITIONALS = [

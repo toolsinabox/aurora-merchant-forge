@@ -1163,6 +1163,12 @@ export function useUpdateShipment() {
             body: { store_id: currentStore.id, order_id: orderId, shipment_id: id },
           }).catch(() => {});
         }
+        // Also trigger follow-up email after delivery
+        if (updates.status === "delivered") {
+          supabase.functions.invoke("order-follow-up", {
+            body: { store_id: currentStore.id, order_id: orderId },
+          }).catch(() => {});
+        }
       }
       return data;
     },
