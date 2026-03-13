@@ -105,6 +105,7 @@ const App = () => (
                   <Route path="/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
