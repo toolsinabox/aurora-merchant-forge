@@ -49,6 +49,8 @@ export default function SettingsPage() {
     banner_text: "",
     description: "",
     logo_url: "",
+    favicon_url: "",
+    ga_tracking_id: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
