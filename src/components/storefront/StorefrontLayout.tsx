@@ -29,6 +29,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
   const [categories, setCategories] = useState<any[]>([]);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [bannerText, setBannerText] = useState<string | null>(null);
 
   useEffect(() => {
     if (!storeSlug) return;
@@ -36,6 +37,16 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       if (s) {
         setStoreId(s.id);
         if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
+        // Banner scheduling
+        const bt = (s as any).banner_text;
+        const bs = (s as any).banner_start;
+        const be = (s as any).banner_end;
+        if (bt) {
+          const now = new Date();
+          const startOk = !bs || new Date(bs) <= now;
+          const endOk = !be || new Date(be) >= now;
+          setBannerText(startOk && endOk ? bt : null);
+        }
         // Load categories for mega menu
         supabase.from("categories").select("id, name, slug, parent_id, sort_order")
           .eq("store_id", s.id).order("sort_order").then(({ data }) => {
@@ -68,6 +79,12 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
 
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
+      {/* Announcement Banner */}
+      {bannerText && (
+        <div className="bg-primary text-primary-foreground text-center text-xs py-2 px-4 font-medium">
+          {bannerText}
+        </div>
+      )}
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

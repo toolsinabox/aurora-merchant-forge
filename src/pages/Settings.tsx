@@ -282,6 +282,72 @@ function InventorySettingsTab() {
   );
 }
 
+function CurrencyFormatTab() {
+  const { currentStore } = useAuth();
+  const [symbolPosition, setSymbolPosition] = useState("before");
+  const [decimalPlaces, setDecimalPlaces] = useState("2");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("stores").select("currency_symbol_position, currency_decimal_places").eq("id", currentStore.id).single().then(({ data }) => {
+      if (data) {
+        setSymbolPosition((data as any).currency_symbol_position || "before");
+        setDecimalPlaces(String((data as any).currency_decimal_places ?? 2));
+      }
+    });
+  }, [currentStore]);
+
+  const handleSave = async () => {
+    if (!currentStore) return;
+    setSaving(true);
+    await supabase.from("stores").update({
+      currency_symbol_position: symbolPosition,
+      currency_decimal_places: Number(decimalPlaces) || 2,
+    } as any).eq("id", currentStore.id);
+    setSaving(false);
+    toast.success("Currency format saved");
+  };
+
+  const preview = symbolPosition === "before" ? `$1,234.${decimalPlaces === "0" ? "" : "56".slice(0, Number(decimalPlaces))}` : `1,234.${decimalPlaces === "0" ? "" : "56".slice(0, Number(decimalPlaces))}$`;
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Currency Display Format</CardTitle></CardHeader>
+      <CardContent className="p-4 pt-2 space-y-4">
+        <div className="space-y-1">
+          <Label className="text-xs">Symbol Position</Label>
+          <Select value={symbolPosition} onValueChange={setSymbolPosition}>
+            <SelectTrigger className="h-8 text-xs w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="before" className="text-xs">Before ($100)</SelectItem>
+              <SelectItem value="after" className="text-xs">After (100$)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Decimal Places</Label>
+          <Select value={decimalPlaces} onValueChange={setDecimalPlaces}>
+            <SelectTrigger className="h-8 text-xs w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0" className="text-xs">0 ($100)</SelectItem>
+              <SelectItem value="2" className="text-xs">2 ($100.00)</SelectItem>
+              <SelectItem value="3" className="text-xs">3 ($100.000)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="p-3 rounded-md border bg-muted/30 text-sm">
+          <span className="text-xs text-muted-foreground">Preview: </span>
+          <span className="font-medium">{preview}</span>
+        </div>
+        <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+          <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save Currency Format"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
   const updateStore = useUpdateStore();
@@ -307,6 +373,8 @@ export default function SettingsPage() {
   const [brandForm, setBrandForm] = useState({
     primary_color: "#2563eb",
     banner_text: "",
+    banner_start: "",
+    banner_end: "",
     description: "",
     logo_url: "",
     favicon_url: "",
@@ -338,7 +406,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, description, logo_url, favicon_url, ga_tracking_id")
+      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
@@ -346,6 +414,8 @@ export default function SettingsPage() {
           setBrandForm({
             primary_color: (data as any).primary_color || "#2563eb",
             banner_text: (data as any).banner_text || "",
+            banner_start: (data as any).banner_start ? (data as any).banner_start.slice(0, 16) : "",
+            banner_end: (data as any).banner_end ? (data as any).banner_end.slice(0, 16) : "",
             description: (data as any).description || "",
             logo_url: (data as any).logo_url || "",
             favicon_url: (data as any).favicon_url || "",
@@ -388,6 +458,8 @@ export default function SettingsPage() {
       .update({
         primary_color: brandForm.primary_color,
         banner_text: brandForm.banner_text || null,
+        banner_start: brandForm.banner_start ? new Date(brandForm.banner_start).toISOString() : null,
+        banner_end: brandForm.banner_end ? new Date(brandForm.banner_end).toISOString() : null,
         description: brandForm.description || null,
         logo_url: brandForm.logo_url || null,
         favicon_url: brandForm.favicon_url || null,
@@ -549,6 +621,17 @@ export default function SettingsPage() {
                   <Label className="text-xs">Banner Text</Label>
                   <Input className="h-8 text-xs" value={brandForm.banner_text} onChange={(e) => setBrandForm({ ...brandForm, banner_text: e.target.value })} placeholder="Free shipping on orders over $50!" />
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Banner Start</Label>
+                    <Input type="datetime-local" className="h-8 text-xs" value={brandForm.banner_start} onChange={(e) => setBrandForm({ ...brandForm, banner_start: e.target.value })} />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Banner End</Label>
+                    <Input type="datetime-local" className="h-8 text-xs" value={brandForm.banner_end} onChange={(e) => setBrandForm({ ...brandForm, banner_end: e.target.value })} />
+                  </div>
+                </div>
+                <p className="text-2xs text-muted-foreground">Leave dates empty to show banner always. Set dates to schedule the banner for a specific time window.</p>
                 <div className="space-y-1">
                   <Label className="text-xs">Store Description</Label>
                   <Input className="h-8 text-xs" value={brandForm.description} onChange={(e) => setBrandForm({ ...brandForm, description: e.target.value })} placeholder="A short description of your store..." />
@@ -954,6 +1037,7 @@ export default function SettingsPage() {
 
           <TabsContent value="inventory" className="space-y-3">
             <InventorySettingsTab />
+            <CurrencyFormatTab />
           </TabsContent>
         </Tabs>
       </div>
