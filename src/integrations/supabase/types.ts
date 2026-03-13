@@ -2691,10 +2691,14 @@ export type Database = {
       }
       stores: {
         Row: {
+          banner_end: string | null
+          banner_start: string | null
           banner_text: string | null
           contact_email: string | null
           created_at: string
           currency: string
+          currency_decimal_places: number | null
+          currency_symbol_position: string | null
           default_low_stock_threshold: number | null
           description: string | null
           favicon_url: string | null
@@ -2718,10 +2722,14 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          banner_end?: string | null
+          banner_start?: string | null
           banner_text?: string | null
           contact_email?: string | null
           created_at?: string
           currency?: string
+          currency_decimal_places?: number | null
+          currency_symbol_position?: string | null
           default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
@@ -2745,10 +2753,14 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          banner_end?: string | null
+          banner_start?: string | null
           banner_text?: string | null
           contact_email?: string | null
           created_at?: string
           currency?: string
+          currency_decimal_places?: number | null
+          currency_symbol_position?: string | null
           default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
