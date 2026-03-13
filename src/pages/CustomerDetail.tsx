@@ -27,6 +27,7 @@ export default function CustomerDetail() {
   const { data: addresses = [], isLoading: loadingAddresses } = useCustomerAddresses(id);
   const createAddress = useCreateCustomerAddress();
   const deleteAddress = useDeleteCustomerAddress();
+  const { data: customerGroups = [] } = useCustomerGroups();
 
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "" });
