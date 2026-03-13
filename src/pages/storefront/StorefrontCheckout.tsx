@@ -518,7 +518,18 @@ export default function StorefrontCheckout() {
                     <span className="text-muted-foreground">Shipping</span>
                     <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
                   </div>
-                </div>
+                  {taxAmount > 0 && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Tax</span>
+                      <span>${taxAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  {isTaxExempt && taxRate > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span className="text-xs">Tax Exempt</span>
+                      <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
+                    </div>
+                  )}
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
                   <span>${finalTotal.toFixed(2)}</span>
