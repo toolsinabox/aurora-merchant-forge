@@ -294,6 +294,25 @@ export default function Analytics() {
         .slice(0, 15);
       setInventoryValuation({ totalRetail: totalRetailVal, totalCost: totalCostVal, totalUnits: totalUnitsVal, items: valuationItems });
 
+      // Sales by Channel
+      const channelMap: Record<string, number> = {};
+      (orders as any[]).forEach((o: any) => {
+        const ch = (o as any).order_channel || "web";
+        channelMap[ch] = (channelMap[ch] || 0) + Number(o.total);
+      });
+      setChannelData(Object.entries(channelMap).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value })));
+
+      // Conversion Funnel (approximate from abandoned carts + orders)
+      const { data: abandonedCarts } = await supabase
+        .from("abandoned_carts")
+        .select("id, recovery_status")
+        .eq("store_id", currentStore.id);
+      const totalCarts = (abandonedCarts?.length || 0) + (orders as any[]).length;
+      const totalPurchases = (orders as any[]).length;
+      const estimatedVisitors = Math.max(totalCarts * 4, totalPurchases * 8, 1);
+      const estimatedCheckouts = Math.round(totalPurchases * 1.15);
+      setFunnelData({ visitors: estimatedVisitors, carts: totalCarts, checkouts: estimatedCheckouts, purchases: totalPurchases });
+
       setLoadingTopProducts(false);
     };
     fetchData();
