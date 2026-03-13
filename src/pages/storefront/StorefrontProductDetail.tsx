@@ -40,6 +40,7 @@ export default function StorefrontProductDetail() {
   const [pricingTiers, setPricingTiers] = useState<any[]>([]);
   const [crossSells, setCrossSells] = useState<any[]>([]);
   const [childProducts, setChildProducts] = useState<any[]>([]);
+  const [kitComponents, setKitComponents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
@@ -102,6 +103,16 @@ export default function StorefrontProductDetail() {
           if (prodRes.data.category_id) query.eq("category_id", prodRes.data.category_id);
           const { data: related } = await query;
           setRelatedProducts(related || []);
+        }
+
+        // Load kit components if product is a kit
+        if (prodRes.data?.is_kit) {
+          const { data: kitData } = await supabase
+            .from("kit_components" as any)
+            .select("*, component:component_product_id(id, title, price, images, sku)")
+            .eq("kit_product_id", productId)
+            .order("sort_order");
+          setKitComponents(kitData || []);
         }
       }
       setLoading(false);
@@ -363,6 +374,31 @@ export default function StorefrontProductDetail() {
                     <Badge variant="secondary" className="font-normal">{s.value}</Badge>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Editable Kit Components UI */}
+            {product.is_kit && kitComponents.length > 0 && (
+              <div className="space-y-2 border rounded-lg p-4">
+                <label className="text-sm font-medium">Kit Components</label>
+                <div className="space-y-2">
+                  {kitComponents.map((kc: any) => (
+                    <div key={kc.id} className="flex items-center gap-3 text-sm p-2 rounded bg-muted/30">
+                      {kc.component?.images?.[0] && (
+                        <img src={getImageUrl(kc.component.images[0])} alt="" className="w-10 h-10 rounded object-cover" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm line-clamp-1">{kc.component?.title}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Qty: {kc.quantity}
+                          {kc.is_optional && " · Optional"}
+                          {kc.is_swappable && ` · Swappable`}
+                        </p>
+                      </div>
+                      <span className="text-xs font-medium">${Number(kc.component?.price || 0).toFixed(2)}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

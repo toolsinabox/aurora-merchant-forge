@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 import { FieldLabel } from "@/components/products/BaseTag";
 import { ProductAddonsTab } from "@/components/products/ProductAddonsTab";
+import { KitComponentsTab } from "@/components/products/KitComponentsTab";
 
 export default function ProductForm() {
   const { id } = useParams();
@@ -288,6 +289,7 @@ export default function ProductForm() {
             <TabsTrigger value="variants" className="text-xs h-7">Variants ({variants.length})</TabsTrigger>
             <TabsTrigger value="specifics" className="text-xs h-7">Specifics</TabsTrigger>
             <TabsTrigger value="addons" className="text-xs h-7">Addons</TabsTrigger>
+            {form.is_kit && <TabsTrigger value="kit" className="text-xs h-7">Kit Components</TabsTrigger>}
             <TabsTrigger value="merchandising" className="text-xs h-7">Merchandising</TabsTrigger>
             <TabsTrigger value="seo" className="text-xs h-7">SEO</TabsTrigger>
             <TabsTrigger value="advanced" className="text-xs h-7">Advanced</TabsTrigger>
@@ -847,6 +849,13 @@ export default function ProductForm() {
               <TabsContent value="addons" className="mt-0 space-y-3">
                 <ProductAddonsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
               </TabsContent>
+
+              {/* KIT COMPONENTS TAB */}
+              {form.is_kit && (
+                <TabsContent value="kit" className="mt-0 space-y-3">
+                  <KitComponentsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
+                </TabsContent>
+              )}
 
               {/* SEO TAB */}
               <TabsContent value="seo" className="mt-0 space-y-3">

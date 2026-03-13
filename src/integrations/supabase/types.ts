@@ -871,6 +871,194 @@ export type Database = {
           },
         ]
       }
+      kit_components: {
+        Row: {
+          component_product_id: string
+          created_at: string
+          id: string
+          is_optional: boolean
+          is_swappable: boolean
+          kit_product_id: string
+          quantity: number
+          sort_order: number
+          store_id: string
+          swap_group: string | null
+        }
+        Insert: {
+          component_product_id: string
+          created_at?: string
+          id?: string
+          is_optional?: boolean
+          is_swappable?: boolean
+          kit_product_id: string
+          quantity?: number
+          sort_order?: number
+          store_id: string
+          swap_group?: string | null
+        }
+        Update: {
+          component_product_id?: string
+          created_at?: string
+          id?: string
+          is_optional?: boolean
+          is_swappable?: boolean
+          kit_product_id?: string
+          quantity?: number
+          sort_order?: number
+          store_id?: string
+          swap_group?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kit_components_component_product_id_fkey"
+            columns: ["component_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kit_components_kit_product_id_fkey"
+            columns: ["kit_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kit_components_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      layby_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          layby_plan_id: string
+          notes: string | null
+          payment_method: string
+          store_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          layby_plan_id: string
+          notes?: string | null
+          payment_method?: string
+          store_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          layby_plan_id?: string
+          notes?: string | null
+          payment_method?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "layby_payments_layby_plan_id_fkey"
+            columns: ["layby_plan_id"]
+            isOneToOne: false
+            referencedRelation: "layby_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "layby_payments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      layby_plans: {
+        Row: {
+          amount_paid: number
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          deposit_amount: number
+          frequency: string
+          id: string
+          installment_amount: number
+          installments_count: number
+          installments_paid: number
+          next_due_date: string | null
+          order_id: string
+          status: string
+          store_id: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          deposit_amount?: number
+          frequency?: string
+          id?: string
+          installment_amount?: number
+          installments_count?: number
+          installments_paid?: number
+          next_due_date?: string | null
+          order_id: string
+          status?: string
+          store_id: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          deposit_amount?: number
+          frequency?: string
+          id?: string
+          installment_amount?: number
+          installments_count?: number
+          installments_paid?: number
+          next_due_date?: string | null
+          order_id?: string
+          status?: string
+          store_id?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "layby_plans_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "layby_plans_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "layby_plans_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketing_campaigns: {
         Row: {
           audience_segment: string | null
