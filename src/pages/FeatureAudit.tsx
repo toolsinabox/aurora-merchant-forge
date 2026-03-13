@@ -213,7 +213,7 @@ const featureData: FeatureCategory[] = [
       { name: "Credit Notes", description: "Issue credit notes against orders", status: "not_started" },
       { name: "Order Splitting", description: "Split single order into multiple orders", status: "not_started" },
       { name: "Order Merging", description: "Merge multiple orders from same customer", status: "not_started" },
-      { name: "Order Duplication / Reorder", description: "Clone an existing order as new", status: "not_started" },
+      { name: "Order Duplication / Reorder", description: "Clone an existing order as new", status: "done", notes: "Duplicate action on orders list" },
       { name: "Multi-Address Checkout / Split Shipping", description: "Ship different items to different addresses in one order", status: "not_started", notes: "Neto has address.template.html for multi-address" },
       { name: "Order Export (CSV/XML)", description: "Bulk export orders in various formats", status: "partial", notes: "Export wizard exists" },
       { name: "Order Import", description: "Bulk import orders from CSV/XML", status: "not_started" },
