@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
-  BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList,
+  BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -39,6 +39,7 @@ const marketingNav = [
 ];
 
 const systemNav = [
+  { title: "Templates", url: "/templates", icon: Code2 },
   { title: "Activity Log", url: "/activity-log", icon: ClipboardList },
   { title: "Settings", url: "/settings", icon: Settings },
 ];

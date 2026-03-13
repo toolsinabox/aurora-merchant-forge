@@ -1496,6 +1496,53 @@ export type Database = {
           },
         ]
       }
+      store_templates: {
+        Row: {
+          content: string
+          context_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          slug: string
+          store_id: string
+          template_type: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          context_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          slug?: string
+          store_id: string
+          template_type?: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          context_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          store_id?: string
+          template_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_templates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_themes: {
         Row: {
           accent_color: string | null
