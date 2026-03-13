@@ -82,6 +82,33 @@ const INTEGRATIONS: Integration[] = [
     ],
     docs_url: "https://developers.sendle.com/",
   },
+  {
+    key: "startrack", name: "StarTrack", logo: "⭐", description: "StarTrack express and premium shipping services (AU)",
+    category: "shipping",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "account_number", label: "Account Number", type: "text", placeholder: "1234567890" },
+      { key: "password", label: "Password", type: "password", placeholder: "xxxxxxxx" },
+    ],
+  },
+  {
+    key: "aramex", name: "Fastway / Aramex", logo: "🟧", description: "Aramex (formerly Fastway) courier services",
+    category: "shipping",
+    fields: [
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "account_number", label: "Account Number", type: "text", placeholder: "12345" },
+    ],
+  },
+  {
+    key: "ups_fedex_dhl", name: "UPS / FedEx / DHL", logo: "🌍", description: "International carrier rate integration",
+    category: "shipping",
+    fields: [
+      { key: "carrier", label: "Carrier", type: "text", placeholder: "ups / fedex / dhl" },
+      { key: "api_key", label: "API Key", type: "password", placeholder: "xxxxxxxx" },
+      { key: "account_number", label: "Account Number", type: "text", placeholder: "1234567890" },
+      { key: "api_secret", label: "API Secret", type: "password", placeholder: "xxxxxxxx" },
+    ],
+  },
   // Marketplace
   {
     key: "ebay", name: "eBay", logo: "🛒", description: "List products on eBay, sync orders and inventory",
