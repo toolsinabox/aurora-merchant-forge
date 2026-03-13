@@ -245,6 +245,43 @@ function CheckoutSettings() {
   );
 }
 
+function InventorySettingsTab() {
+  const { currentStore } = useAuth();
+  const [threshold, setThreshold] = useState("10");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("stores").select("default_low_stock_threshold").eq("id", currentStore.id).single().then(({ data }) => {
+      if (data) setThreshold(String((data as any).default_low_stock_threshold ?? 10));
+    });
+  }, [currentStore]);
+
+  const handleSave = async () => {
+    if (!currentStore) return;
+    setSaving(true);
+    await supabase.from("stores").update({ default_low_stock_threshold: Number(threshold) || 10 } as any).eq("id", currentStore.id);
+    setSaving(false);
+    toast.success("Inventory settings saved");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Inventory Settings</CardTitle></CardHeader>
+      <CardContent className="p-4 pt-2 space-y-4">
+        <div className="space-y-1">
+          <Label className="text-xs">Default Low Stock Threshold</Label>
+          <Input className="h-8 text-xs w-40" type="number" min="0" value={threshold} onChange={(e) => setThreshold(e.target.value)} />
+          <p className="text-2xs text-muted-foreground">Products with stock at or below this level will trigger low stock alerts</p>
+        </div>
+        <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+          <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save Inventory Settings"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
   const updateStore = useUpdateStore();
