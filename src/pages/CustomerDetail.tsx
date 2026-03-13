@@ -101,7 +101,12 @@ export default function CustomerDetail() {
           </div>
           <StatusBadge status={customer.segment} />
           {!editing && (
-            <Button size="sm" variant="outline" className="text-xs" onClick={startEdit}>Edit</Button>
+            <div className="flex gap-1.5">
+              <Button size="sm" variant="outline" className="text-xs" onClick={() => navigate(`/customers/${id}/statement`)}>
+                <FileText className="h-3 w-3 mr-1" />Statement
+              </Button>
+              <Button size="sm" variant="outline" className="text-xs" onClick={startEdit}>Edit</Button>
+            </div>
           )}
         </div>
 
