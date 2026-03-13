@@ -699,7 +699,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Groups (Wholesale/Retail/VIP)", description: "Assign customers to price-tier groups", status: "done", notes: "customer_groups table with CRUD in Settings, assignable on customer detail" },
       { name: "Group-Based Pricing", description: "Show different prices per customer group", status: "done", notes: "Pricing tiers with user_group exist" },
       { name: "Wholesale Registration Form", description: "Separate wholesale signup with admin approval", status: "done", notes: "Storefront /wholesale page with business details form, stored in wholesale_applications table" },
-      { name: "Wholesale Approval Workflow", description: "Admin reviews and approves wholesale applicants", status: "partial", notes: "Applications stored with status field, admin review UI pending" },
+      { name: "Wholesale Approval Workflow", description: "Admin reviews and approves wholesale applicants", status: "done", notes: "Wholesale Applications tab in Settings page with approve/reject actions, status badges, and customer group assignment" },
       { name: "Credit Terms (Net 7/14/30/60/90)", description: "Allow B2B customers to order on credit", status: "done", notes: "credit_terms and credit_limit fields on customer_groups, manageable in Settings" },
       { name: "Credit Limit per Customer", description: "Set maximum credit balance per customer", status: "done", notes: "credit_limit numeric field on customer_groups table, editable in Settings" },
       { name: "Order Minimum for Wholesale", description: "Minimum order value/quantity for wholesale customers", status: "not_started" },

@@ -664,6 +664,14 @@ export default function StorefrontProductDetail() {
           getImageUrl={getImageUrl}
         />
       )}
+      <AddToCartPopup
+        open={cartPopupOpen}
+        onOpenChange={setCartPopupOpen}
+        item={cartPopupItem}
+        cartTotal={cartTotal}
+        cartItemCount={cartItemCount}
+        basePath={basePath}
+      />
     </StorefrontLayout>
   );
 }
