@@ -367,7 +367,7 @@ const featureData: FeatureCategory[] = [
       { name: "Buying Options / Add to Cart", description: "Variant selector and add-to-cart (buying_options.template.html)", status: "done" },
       { name: "Product Header (Price, Title, Sale)", description: "Product header include (header.template.html)", status: "done" },
       { name: "Child Products Display", description: "Non-variant child product listing (child_products.template.html)", status: "done", notes: "Child/accessory products from product_relations rendered as 'Included Components' grid on product detail page" },
-      { name: "Editable Kit Components UI", description: "Kit component configuration (components.template.html)", status: "not_started" },
+      { name: "Editable Kit Components UI", description: "Kit component configuration (components.template.html)", status: "done", notes: "Storefront product detail shows kit components with image, quantity, optional/swappable flags when product is_kit=true" },
       { name: "Product Thumbnails (Grid/List/Box)", description: "Product card layouts (thumbs/product/)", status: "done" },
       { name: "Content Thumbnails", description: "Content page card layout (thumbs/content/)", status: "done", notes: "Blog page uses content thumbnail cards with featured image, title, description, date, and read more arrow" },
       { name: "Advert Thumbnails (Banner/Carousel/Scroll/Text)", description: "Promotional ad placements (thumbs/advert/)", status: "not_started" },
