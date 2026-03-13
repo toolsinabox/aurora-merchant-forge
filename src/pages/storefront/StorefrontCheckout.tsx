@@ -74,6 +74,7 @@ export default function StorefrontCheckout() {
   const [canPayOnAccount, setCanPayOnAccount] = useState(false);
   const [payOnAccount, setPayOnAccount] = useState(false);
   const [creditTerms, setCreditTerms] = useState("");
+  const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
 
   useEffect(() => {
     async function loadData() {
