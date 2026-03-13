@@ -332,7 +332,7 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Customer Login Page", description: "Login form (login.template.html)", status: "done" },
       { name: "Customer Registration Page", description: "Registration form (register/template.html)", status: "done" },
-      { name: "Account Dashboard", description: "Account home with order summary (customer/template.html)", status: "partial" },
+      { name: "Account Dashboard", description: "Account home with order summary (customer/template.html)", status: "done", notes: "Tabs: orders, addresses, shipment tracking" },
       { name: "View Order History", description: "List past orders from account (nr_view_order)", status: "not_started" },
       { name: "View Single Order Detail", description: "View order details (order.template.html)", status: "not_started" },
       { name: "View Quote Detail", description: "View quote details (quote.template.html)", status: "not_started" },
