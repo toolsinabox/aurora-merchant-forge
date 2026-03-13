@@ -582,7 +582,7 @@ const featureData: FeatureCategory[] = [
       { name: "Contact Form Email", description: "Email sent to admin when contact form submitted", status: "done", notes: "contact-email edge function queues admin notification with contact details in email_queue table" },
       { name: "eBay Notification Emails", description: "eBay listing/sale event notifications", status: "not_started" },
       { name: "Batch Job Error Email", description: "Notification when automated batch jobs fail", status: "not_started" },
-      { name: "Low Stock Alert Email", description: "Alert admin when stock falls below threshold", status: "not_started" },
+      { name: "Low Stock Alert Email", description: "Alert admin when stock falls below threshold", status: "done", notes: "low-stock-alert edge function scans inventory_stock for items below threshold, sends admin email with product table" },
       { name: "New Order Admin Notification", description: "Admin email on new order received", status: "done", notes: "order-email-trigger edge function sends admin notification with order summary to store contact_email" },
     ],
   },
