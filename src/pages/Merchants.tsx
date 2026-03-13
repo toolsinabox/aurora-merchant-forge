@@ -162,7 +162,17 @@ export default function Merchants() {
                         <TableCell className="text-muted-foreground">
                           {format(new Date(m.created_at), "MMM d, yyyy")}
                         </TableCell>
-                      </TableRow>
+                        <TableCell>
+                          {m.slug ? (
+                            <Link to={`/store/${m.slug}`} target="_blank">
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="View Storefront">
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Button>
+                            </Link>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
                     ))
                   )}
                 </TableBody>
