@@ -348,6 +348,8 @@ export default function SettingsPage() {
           setBrandForm({
             primary_color: (data as any).primary_color || "#2563eb",
             banner_text: (data as any).banner_text || "",
+            banner_start: (data as any).banner_start ? (data as any).banner_start.slice(0, 16) : "",
+            banner_end: (data as any).banner_end ? (data as any).banner_end.slice(0, 16) : "",
             description: (data as any).description || "",
             logo_url: (data as any).logo_url || "",
             favicon_url: (data as any).favicon_url || "",
