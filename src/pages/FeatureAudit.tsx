@@ -492,7 +492,7 @@ const featureData: FeatureCategory[] = [
       { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "done", notes: "Inline editable exchange rate per currency on admin Currencies page; rates stored as numeric relative to base/default currency" },
       { name: "Currency Switcher (Storefront)", description: "Customer can switch display currency on storefront", status: "done", notes: "CurrencySwitcher dropdown in storefront header; useCurrency hook loads active currencies per store, converts prices via exchange rate, persists selection in localStorage" },
       { name: "Currency-Specific Pricing", description: "Set prices in each supported currency", status: "done", notes: "Exchange rate-based conversion from base currency; currencies table stores per-currency rate, symbol; useCurrency.convert() applies rate to base price" },
-      { name: "Multi-Language Support", description: "Translate storefront content into multiple languages", status: "not_started" },
+      { name: "Multi-Language Support", description: "Translate storefront content into multiple languages", status: "done", notes: "store_languages and store_translations tables; LanguageProvider context with useLanguage hook for t() and tEntity() translation functions; LanguageSwitcher dropdown in storefront header; localStorage persistence of locale preference" },
       { name: "Timezone Configuration", description: "Store timezone setting", status: "done" },
     ],
   },
