@@ -160,7 +160,84 @@ export default function ImportWizard() {
     toast.success(`Loaded template: ${template.name}`);
   };
 
+  const handleImportOrders = async () => {
+    if (!currentStore || !user) return;
+    setImporting(true);
+    const errors: { row: number; error: string }[] = [];
+    let success = 0;
+
+    for (let i = 0; i < csvData.rows.length; i++) {
+      const row = csvData.rows[i];
+      const order: any = { store_id: currentStore.id };
+
+      for (const [fieldKey, mapping] of Object.entries(mappings)) {
+        if (fieldKey === "customer_email") continue; // handled separately
+        if (mapping.source === "__static__") {
+          order[fieldKey] = staticValues[fieldKey] || mapping.static_value || "";
+        } else {
+          const colIndex = csvData.headers.indexOf(mapping.source);
+          if (colIndex >= 0) order[fieldKey] = row[colIndex] || "";
+        }
+      }
+
+      // Numeric coercion
+      ["subtotal", "tax", "shipping", "discount", "total"].forEach(f => {
+        if (order[f]) order[f] = parseFloat(order[f]) || 0;
+      });
+      if (order.tags && typeof order.tags === "string") order.tags = order.tags.split(",").map((t: string) => t.trim()).filter(Boolean);
+      if (!order.order_number) {
+        errors.push({ row: i + 2, error: "Missing required field: order_number" });
+        continue;
+      }
+      if (!order.status) order.status = "pending";
+      if (!order.payment_status) order.payment_status = "unpaid";
+      if (!order.fulfillment_status) order.fulfillment_status = "unfulfilled";
+
+      // Lookup customer by email if provided
+      const emailMapping = mappings["customer_email"];
+      if (emailMapping) {
+        let email = "";
+        if (emailMapping.source === "__static__") email = staticValues["customer_email"] || "";
+        else {
+          const colIndex = csvData.headers.indexOf(emailMapping.source);
+          email = colIndex >= 0 ? row[colIndex] || "" : "";
+        }
+        if (email) {
+          const { data: custs } = await supabase
+            .from("customers")
+            .select("id")
+            .eq("store_id", currentStore.id)
+            .eq("email", email)
+            .limit(1);
+          if (custs && custs.length > 0) order.customer_id = custs[0].id;
+        }
+      }
+
+      try {
+        const { error } = await supabase.from("orders").insert(order);
+        if (error) throw error;
+        success++;
+      } catch (err: any) {
+        errors.push({ row: i + 2, error: err.message });
+      }
+    }
+
+    await supabase.from("import_logs" as any).insert({
+      store_id: currentStore.id, user_id: user.id, entity_type: "orders",
+      file_name: fileName, total_rows: csvData.rows.length,
+      success_count: success, error_count: errors.length,
+      errors: errors as any, status: errors.length === 0 ? "completed" : "completed_with_errors",
+      completed_at: new Date().toISOString(),
+    });
+
+    setResults({ success, errors });
+    setImporting(false);
+    setStep(3);
+    toast.success(`Import complete: ${success} orders created, ${errors.length} errors`);
+  };
+
   const handleImport = async () => {
+    if (entityType === "orders") return handleImportOrders();
     if (!currentStore || !user) return;
     setImporting(true);
     const errors: { row: number; error: string }[] = [];
