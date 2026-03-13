@@ -539,6 +539,8 @@ export default function SettingsPage() {
             logo_url: (data as any).logo_url || "",
             favicon_url: (data as any).favicon_url || "",
             ga_tracking_id: (data as any).ga_tracking_id || "",
+            gtm_container_id: (data as any).gtm_container_id || "",
+            fb_pixel_id: (data as any).fb_pixel_id || "",
           });
         }
       });
