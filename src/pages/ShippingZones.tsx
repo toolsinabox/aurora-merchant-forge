@@ -81,6 +81,8 @@ export default function ShippingZones() {
       regions: z.regions,
       flat_rate: String(z.flat_rate),
       free_above: z.free_above ? String(z.free_above) : "",
+      rate_type: z.rate_type || "flat",
+      per_kg_rate: String(z.per_kg_rate || 0),
     });
     setEditZone(z);
   };
