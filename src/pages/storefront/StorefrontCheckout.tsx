@@ -73,6 +73,15 @@ export default function StorefrontCheckout() {
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
+        // Check if customer group is tax exempt
+        if ((c as any).customer_group_id) {
+          const { data: grp } = await supabase
+            .from("customer_groups" as any)
+            .select("is_tax_exempt")
+            .eq("id", (c as any).customer_group_id)
+            .maybeSingle();
+          if (grp && (grp as any).is_tax_exempt) setIsTaxExempt(true);
+        }
         const { data: addrs } = await supabase
           .from("customer_addresses" as any)
           .select("*")
