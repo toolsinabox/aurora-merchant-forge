@@ -77,6 +77,7 @@ import StorefrontStoreFinder from "./pages/storefront/StorefrontStoreFinder.tsx"
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 import Quotes from "./pages/Quotes.tsx";
+import PrintQuote from "./pages/PrintQuote.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
