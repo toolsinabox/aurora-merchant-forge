@@ -391,27 +391,35 @@ export default function StorefrontProductDetail() {
               </div>
             </div>
 
-            {!product.poa && (
-              <div className="flex gap-3">
-                <Button
-                  className="flex-1 h-12 text-base font-medium gap-2"
-                  onClick={handleAddToCart}
-                  disabled={currentVariant && currentVariant.stock <= 0}
-                >
-                  {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
-                </Button>
-                {store && (
+            {!product.poa && (() => {
+              const isOutOfStock = currentVariant ? currentVariant.stock <= 0 : false;
+              const preorderQty = product.preorder_quantity || 0;
+              const canPreorder = isOutOfStock && preorderQty > 0;
+              const canBuy = !isOutOfStock || canPreorder;
+              return (
+                <div className="flex gap-3">
                   <Button
-                    variant="outline"
-                    size="icon"
-                    className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
-                    onClick={() => toggleItem(product.id, store.id)}
+                    className="flex-1 h-12 text-base font-medium gap-2"
+                    onClick={handleAddToCart}
+                    disabled={!canBuy}
                   >
-                    <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                    {added ? <><Check className="h-5 w-5" /> Added!</> :
+                      canPreorder ? <><Clock className="h-5 w-5" /> Pre-Order — ${(Number(finalPrice) * quantity).toFixed(2)}</> :
+                      <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
                   </Button>
-                )}
-              </div>
-            )}
+                  {store && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
+                      onClick={() => toggleItem(product.id, store.id)}
+                    >
+                      <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                    </Button>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Back in Stock Notification - show when out of stock */}
             {!product.poa && (currentVariant ? currentVariant.stock <= 0 : (product.track_inventory && product.status === "active")) && !notifySubmitted && (
