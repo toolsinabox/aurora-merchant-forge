@@ -87,36 +87,73 @@ const App = () => (
                   <Route path="/" element={<StorefrontHome />} />
                   <Route path="/products" element={<StorefrontProducts />} />
                   <Route path="/product/:productId" element={<StorefrontProductDetail />} />
-                   <Route path="/cart" element={<StorefrontCart />} />
-                   <Route path="/compare" element={<StorefrontCompare />} />
-                   <Route path="/checkout" element={<StorefrontCheckout />} />
-                   <Route path="/login" element={<StorefrontLogin />} />
+                  <Route path="/cart" element={<StorefrontCart />} />
+                  <Route path="/compare" element={<StorefrontCompare />} />
+                  <Route path="/checkout" element={<StorefrontCheckout />} />
+                  <Route path="/login" element={<StorefrontLogin />} />
                   <Route path="/signup" element={<StorefrontSignup />} />
                   <Route path="/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="/page/:pageSlug" element={<StorefrontContentPage />} />
                   <Route path="/blog" element={<StorefrontBlog />} />
                   <Route path="/track-order" element={<StorefrontTrackOrder />} />
+
+                  {/* Merchant Control Panel (/_cpanel) */}
+                  <Route path="/_cpanel" element={<Login />} />
+                  <Route path="/_cpanel/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/_cpanel/reset-password" element={<ResetPassword />} />
+                  <Route path="/_cpanel/signup" element={<Signup />} />
+                  <Route path="/_cpanel/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
+                  <Route path="/_cpanel/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                  <Route path="/_cpanel/products" element={<RequireAuth><Products /></RequireAuth>} />
+                  <Route path="/_cpanel/products/new" element={<RequireAuth><ProductForm /></RequireAuth>} />
+                  <Route path="/_cpanel/products/:id" element={<RequireAuth><ProductForm /></RequireAuth>} />
+                  <Route path="/_cpanel/categories" element={<RequireAuth><Categories /></RequireAuth>} />
+                  <Route path="/_cpanel/inventory" element={<RequireAuth><Inventory /></RequireAuth>} />
+                  <Route path="/_cpanel/orders" element={<RequireAuth><Orders /></RequireAuth>} />
+                  <Route path="/_cpanel/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
+                  <Route path="/_cpanel/customers" element={<RequireAuth><Customers /></RequireAuth>} />
+                  <Route path="/_cpanel/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
+                  <Route path="/_cpanel/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
+                  <Route path="/_cpanel/coupons" element={<RequireAuth><Coupons /></RequireAuth>} />
+                  <Route path="/_cpanel/returns" element={<RequireAuth><Returns /></RequireAuth>} />
+                  <Route path="/_cpanel/reviews" element={<RequireAuth><Reviews /></RequireAuth>} />
+                  <Route path="/_cpanel/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
+                  <Route path="/_cpanel/activity-log" element={<RequireAuth><ActivityLog /></RequireAuth>} />
+                  <Route path="/_cpanel/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
+                  <Route path="/_cpanel/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
+                  <Route path="/_cpanel/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/_cpanel/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
+                  <Route path="/_cpanel/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
+                  <Route path="/_cpanel/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
+                  <Route path="/_cpanel/content-pages" element={<RequireAuth><ContentPages /></RequireAuth>} />
+                  <Route path="/_cpanel/purchase-orders" element={<RequireAuth><PurchaseOrders /></RequireAuth>} />
+                  <Route path="/_cpanel/shipping-zones" element={<RequireAuth><ShippingZones /></RequireAuth>} />
+                  <Route path="/_cpanel/tax-rates" element={<RequireAuth><TaxRates /></RequireAuth>} />
+                  <Route path="/_cpanel/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
+                  <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
+                  <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+
                   <Route path="*" element={<NotFound />} />
                 </>
               ) : (
                 <>
-                  {/* Platform mode: admin + path-based storefronts */}
+                  {/* Platform mode: getcelora.com */}
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
 
-                  {/* Platform Admin Routes */}
-                  <Route path="/admin/login" element={<PlatformLogin />} />
-                  <Route path="/admin/dashboard" element={<RequirePlatformAdmin><PlatformDashboard /></RequirePlatformAdmin>} />
-                  <Route path="/admin/merchants" element={<RequirePlatformAdmin><PlatformMerchants /></RequirePlatformAdmin>} />
-                  <Route path="/admin/settings" element={<RequirePlatformAdmin><PlatformSettings /></RequirePlatformAdmin>} />
-                  <Route path="/admin/customers" element={<RequirePlatformAdmin><PlatformCustomers /></RequirePlatformAdmin>} />
-                  <Route path="/admin/analytics" element={<RequirePlatformAdmin><PlatformAnalytics /></RequirePlatformAdmin>} />
+                  {/* Platform Admin Routes (/platform/*) */}
+                  <Route path="/platform" element={<PlatformLogin />} />
+                  <Route path="/platform/dashboard" element={<RequirePlatformAdmin><PlatformDashboard /></RequirePlatformAdmin>} />
+                  <Route path="/platform/merchants" element={<RequirePlatformAdmin><PlatformMerchants /></RequirePlatformAdmin>} />
+                  <Route path="/platform/settings" element={<RequirePlatformAdmin><PlatformSettings /></RequirePlatformAdmin>} />
+                  <Route path="/platform/customers" element={<RequirePlatformAdmin><PlatformCustomers /></RequirePlatformAdmin>} />
+                  <Route path="/platform/analytics" element={<RequirePlatformAdmin><PlatformAnalytics /></RequirePlatformAdmin>} />
 
-                  {/* Merchant Routes */}
+                  {/* Merchant Routes (dev/preview fallback) */}
                   <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
                   <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
                   <Route path="/products" element={<RequireAuth><Products /></RequireAuth>} />
@@ -147,7 +184,8 @@ const App = () => (
                   <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
-                  {/* Public Storefront (path-based) */}
+
+                  {/* Public Storefront (path-based for dev/preview) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
                   <Route path="/store/:storeSlug/products" element={<StorefrontProducts />} />
                   <Route path="/store/:storeSlug/product/:productId" element={<StorefrontProductDetail />} />
