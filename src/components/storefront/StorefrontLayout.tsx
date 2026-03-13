@@ -25,11 +25,15 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
   const [searchOpen, setSearchOpen] = useState(false);
   const [storeId, setStoreId] = useState<string>("");
+  const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
-      if (s) setStoreId(s.id);
+      if (s) {
+        setStoreId(s.id);
+        if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
+      }
     });
   }, [storeSlug]);
 
