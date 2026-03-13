@@ -213,6 +213,7 @@ export default function StorefrontCheckout() {
       }
 
       setOrderNumber(orderNum);
+      setOrderTotal(finalTotal);
       setCompleted(true);
       clearCart();
     } catch (err: any) {
