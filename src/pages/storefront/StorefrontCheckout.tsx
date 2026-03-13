@@ -530,6 +530,7 @@ export default function StorefrontCheckout() {
                       <span className="text-xs">-${(subtotalAfterDiscount * taxRate).toFixed(2)}</span>
                     </div>
                   )}
+                </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>
                   <span>${finalTotal.toFixed(2)}</span>
