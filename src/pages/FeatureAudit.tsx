@@ -393,7 +393,7 @@ const featureData: FeatureCategory[] = [
       { name: "Category Description / Content", description: "Rich text content on category pages", status: "done" },
       { name: "Category Image / Banner", description: "Hero image or banner per category", status: "done" },
       { name: "Category SEO Fields", description: "Meta title/description per category", status: "done" },
-      { name: "Category Filters (Faceted Navigation)", description: "Filter products by specifics within a category", status: "not_started" },
+      { name: "Category Filters (Faceted Navigation)", description: "Filter products by specifics within a category", status: "done", notes: "Brand, price range, and product specifics filters with active filter badges" },
       { name: "Smart / Automated Categories", description: "Auto-populate categories based on product rules", status: "not_started" },
     ],
   },
