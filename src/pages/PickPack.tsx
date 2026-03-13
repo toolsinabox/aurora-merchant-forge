@@ -109,10 +109,26 @@ export default function PickPack() {
           ))}
         </div>
 
-        <div className="relative">
-          <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
-          <Input placeholder="Search by order number..." value={search}
-            onChange={e => setSearch(e.target.value)} className="pl-8 h-9 text-sm" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
+            <Input placeholder="Search by order number..." value={search}
+              onChange={e => setSearch(e.target.value)} className="pl-8 h-9 text-sm" />
+          </div>
+          <BarcodeScanner
+            placeholder="Scan barcode to auto-check item..."
+            autoFocus={false}
+            onScan={(barcode) => {
+              // Find matching item by SKU and auto-check it
+              const match = pickItems.find((item: any) => item.sku === barcode);
+              if (match) {
+                setCheckedItems(prev => ({ ...prev, [match.id]: true }));
+                toast.success(`Picked: ${match.title} (${barcode})`);
+              } else {
+                toast.error(`No matching item for barcode: ${barcode}`);
+              }
+            }}
+          />
         </div>
 
         {/* Pick Step */}
