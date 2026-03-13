@@ -525,7 +525,7 @@ const featureData: FeatureCategory[] = [
       { name: "Review Title & Body", description: "Structured review content", status: "done" },
       { name: "Review Approval/Moderation", description: "Admin approves reviews before display", status: "done" },
       { name: "Review Author Name", description: "Display reviewer name", status: "done" },
-      { name: "Review Response (Admin Reply)", description: "Admin can reply to customer reviews", status: "not_started" },
+      { name: "Review Response (Admin Reply)", description: "Admin can reply to customer reviews", status: "done", notes: "Reply dialog in admin Reviews page, displayed on storefront with 'Store Response' label" },
       { name: "Review Photos", description: "Customers upload photos with reviews", status: "not_started" },
       { name: "Verified Purchase Badge", description: "Mark reviews from verified buyers", status: "done", notes: "Checks order_items for reviewer's user_id, shows ShieldCheck badge" },
       { name: "Review Aggregation / Average Rating", description: "Calculate and display average rating per product", status: "done", notes: "Average rating display plus star breakdown bar chart with counts" },
