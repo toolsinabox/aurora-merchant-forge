@@ -804,6 +804,56 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Sales by Channel + Conversion Funnel */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Channel</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[220px]" /> : channelData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No channel data yet</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={channelData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      {channelData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Conversion Funnel</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[220px]" /> : (
+                <div className="space-y-3 py-2">
+                  {[
+                    { label: "Visitors (est.)", value: funnelData.visitors, color: "hsl(217, 91%, 50%)" },
+                    { label: "Added to Cart", value: funnelData.carts, color: "hsl(38, 92%, 50%)" },
+                    { label: "Reached Checkout", value: funnelData.checkouts, color: "hsl(280, 68%, 55%)" },
+                    { label: "Purchased", value: funnelData.purchases, color: "hsl(142, 71%, 45%)" },
+                  ].map((step, i) => {
+                    const pct = funnelData.visitors > 0 ? (step.value / funnelData.visitors * 100) : 0;
+                    return (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-medium">{step.label}</span>
+                          <span className="text-muted-foreground">{step.value.toLocaleString()} ({pct.toFixed(1)}%)</span>
+                        </div>
+                        <div className="h-6 rounded-md overflow-hidden bg-muted/30" style={{ width: "100%" }}>
+                          <div className="h-full rounded-md transition-all" style={{ width: `${pct}%`, backgroundColor: step.color, minWidth: pct > 0 ? "4px" : "0" }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AdminLayout>
   );
