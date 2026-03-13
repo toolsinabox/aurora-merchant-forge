@@ -617,7 +617,7 @@ export default function StorefrontCheckout() {
                   )}
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Shipping</span>
-                    <span>{shippingCost > 0 ? `$${shippingCost.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
+                    <span>{deliveryMethod === "pickup" ? "Pickup (Free)" : actualShipping > 0 ? `$${actualShipping.toFixed(2)}` : selectedZone ? "Free" : "Select method"}</span>
                   </div>
                   {taxAmount > 0 && (
                     <div className="flex justify-between">
