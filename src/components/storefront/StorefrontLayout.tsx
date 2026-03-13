@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { StorefrontSearch } from "./StorefrontSearch";
 import { NewsletterSignup } from "./NewsletterSignup";
+import { CookieConsentBanner } from "./CookieConsentBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
