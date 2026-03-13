@@ -1157,6 +1157,12 @@ export function useUpdateShipment() {
           title: statusLabels[updates.status] || `Shipment ${updates.status}`,
           description: `Shipment updated to ${updates.status}`,
         });
+        // Send delivered email when shipment is marked delivered
+        if (updates.status === "delivered") {
+          supabase.functions.invoke("order-delivered-email", {
+            body: { store_id: currentStore.id, order_id: orderId, shipment_id: id },
+          }).catch(() => {});
+        }
       }
       return data;
     },
