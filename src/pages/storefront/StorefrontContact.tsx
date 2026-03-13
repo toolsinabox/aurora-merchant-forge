@@ -40,6 +40,10 @@ export default function StorefrontContact() {
         message: form.message,
       } as any);
       if (error) throw error;
+      // Trigger contact form email to admin
+      supabase.functions.invoke("contact-email", {
+        body: { store_id: storeId, name: form.name, email: form.email, subject: form.subject, message: form.message },
+      }).catch(() => {}); // fire and forget
       setSubmitted(true);
       toast.success("Message sent!");
     } catch (err: any) {
