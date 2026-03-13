@@ -268,6 +268,16 @@ export default function CustomerDetail() {
               <Button size="sm" variant="outline" className="text-xs" onClick={() => navigate(`/customers/${id}/statement`)}>
                 <FileText className="h-3 w-3 mr-1" />Statement
               </Button>
+              <Button size="sm" variant="outline" className="text-xs" onClick={async () => {
+                if (!currentStore || !customer.email) { toast.error("No email address"); return; }
+                const { error } = await supabase.functions.invoke("customer-statement-email", {
+                  body: { store_id: currentStore.id, customer_id: customer.id },
+                });
+                if (error) toast.error("Failed to send statement");
+                else toast.success("Statement email queued");
+              }}>
+                <Mail className="h-3 w-3 mr-1" />Email Statement
+              </Button>
               <Dialog open={mergeOpen} onOpenChange={setMergeOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="outline" className="text-xs"><Merge className="h-3 w-3 mr-1" />Merge</Button>
