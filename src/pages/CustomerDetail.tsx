@@ -259,6 +259,9 @@ export default function CustomerDetail() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Store Credit */}
+            <StoreCreditCard customerId={customer.id} storeId={(customer as any).store_id} />
           </div>
 
           <div className="lg:col-span-2 space-y-3">
