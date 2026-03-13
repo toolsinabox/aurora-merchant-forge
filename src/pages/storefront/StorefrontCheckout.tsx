@@ -800,6 +800,23 @@ export default function StorefrontCheckout() {
                   </div>
                 )}
 
+                {/* Store Credit */}
+                {storeCreditBalance > 0 && (
+                  <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Checkbox
+                        id="use_credit"
+                        checked={useStoreCredit}
+                        onCheckedChange={(checked) => setUseStoreCredit(!!checked)}
+                      />
+                      <label htmlFor="use_credit" className="text-xs cursor-pointer">
+                        Use store credit (${storeCreditBalance.toFixed(2)})
+                      </label>
+                    </div>
+                    {useStoreCredit && <span className="text-xs font-medium text-primary">-${storeCreditAmount.toFixed(2)}</span>}
+                  </div>
+                )}
+
                 <Separator />
 
                 <div className="space-y-1.5 text-sm">
