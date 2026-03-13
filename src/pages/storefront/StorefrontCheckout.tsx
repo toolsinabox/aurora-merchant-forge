@@ -613,6 +613,39 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
+              {/* Estimated Delivery */}
+              {estimatedDelivery && deliveryMethod === "shipping" && (
+                <div className="border rounded-lg p-4 bg-primary/5 border-primary/20">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-primary" />
+                    <p className="text-sm font-medium">Estimated Delivery</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">{estimatedDelivery}</p>
+                </div>
+              )}
+
+              {/* Upsell Products */}
+              {upsellProducts.length > 0 && (
+                <div className="border rounded-lg p-5 space-y-3">
+                  <h2 className="font-semibold flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" /> You might also like
+                  </h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    {upsellProducts.slice(0, 4).map((p: any) => (
+                      <div key={p.id} className="flex items-center gap-2 p-2 border rounded-lg hover:bg-muted/50 transition-colors">
+                        {p.images?.[0] && (
+                          <img src={p.images[0]} alt={p.title} className="w-10 h-10 object-cover rounded" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium line-clamp-1">{p.title}</p>
+                          <p className="text-xs text-primary font-semibold">${Number(p.price).toFixed(2)}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
