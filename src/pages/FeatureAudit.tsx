@@ -262,7 +262,7 @@ const featureData: FeatureCategory[] = [
       { name: "Dispute Types (Refund/Repair/Replace)", description: "Different dispute resolution types", status: "not_started" },
       { name: "Dispute Reason Selection", description: "Pre-defined dispute reasons for customers to choose from", status: "not_started" },
       { name: "Dispute Email Notifications", description: "Automated emails when disputes are raised, updated, closed", status: "not_started" },
-      { name: "RMA Report", description: "Reporting on return rates, reasons, costs", status: "not_started" },
+      { name: "RMA Report", description: "Reporting on return rates, reasons, costs", status: "done", notes: "KPI cards + status breakdown + top reasons on Returns page Report tab" },
     ],
   },
 
