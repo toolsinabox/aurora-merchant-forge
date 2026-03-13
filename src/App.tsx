@@ -63,6 +63,9 @@ import StorefrontCompare from "./pages/storefront/StorefrontCompare.tsx";
 import StorefrontContentPage from "./pages/storefront/StorefrontContentPage.tsx";
 import StorefrontTrackOrder from "./pages/storefront/StorefrontTrackOrder.tsx";
 import StorefrontBlog from "./pages/storefront/StorefrontBlog.tsx";
+import StorefrontGiftVouchers from "./pages/storefront/StorefrontGiftVouchers.tsx";
+import PrintGiftVoucher from "./pages/PrintGiftVoucher.tsx";
+import WarehouseDashboard from "./pages/WarehouseDashboard.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
