@@ -256,7 +256,7 @@ const featureData: FeatureCategory[] = [
       { name: "Refund Amount Tracking", description: "Track refund amounts per return", status: "done" },
       { name: "Admin Notes on Returns", description: "Internal staff notes per return", status: "done" },
       { name: "Customer-Initiated Returns (Storefront)", description: "Customers can submit returns from their account", status: "done", notes: "Return request dialog on account page with order selection and reason" },
-      { name: "Return Shipping Labels", description: "Generate prepaid return shipping labels", status: "not_started" },
+      { name: "Return Shipping Labels", description: "Generate prepaid return shipping labels", status: "done", notes: "PrintReturnLabel page with RMA number, from/to addresses (reversed for returns), reason, instructions; accessible from returns list via /returns/:id/label" },
       { name: "Exchange / Replacement Orders", description: "Create replacement orders linked to returns", status: "done", notes: "Replacement Order button on return detail dialog creates new order with original items and links to return" },
       { name: "Warranty Claims (Disputes)", description: "Customer warranty dispute system with status workflow", status: "done", notes: "warranty_disputes table with open→in_review→resolved/closed workflow, admin Disputes tab on Returns page, storefront account submission form with order/product/type/reason selection" },
       { name: "Dispute Types (Refund/Repair/Replace)", description: "Different dispute resolution types", status: "done", notes: "dispute_type field with refund/repair/replace options on warranty_disputes table" },
