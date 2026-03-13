@@ -90,6 +90,8 @@ import RolePermissions from "./pages/RolePermissions.tsx";
 import Adverts from "./pages/Adverts.tsx";
 import Sessions from "./pages/Sessions.tsx";
 import EmailTemplates from "./pages/EmailTemplates.tsx";
+import LoyaltyProgram from "./pages/LoyaltyProgram.tsx";
+import ReportBuilder from "./pages/ReportBuilder.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
