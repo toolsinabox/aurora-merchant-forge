@@ -177,10 +177,15 @@ export default function AbandonedCarts() {
                         <TableCell className="py-2 text-muted-foreground">{format(new Date(c.abandoned_at), "MMM d, HH:mm")}</TableCell>
                         <TableCell className="py-2">
                           <div className="flex gap-1">
-                            {c.recovery_status === "pending" && (
-                              <Button variant="ghost" size="icon" className="h-6 w-6" title="Mark email sent" onClick={() => markEmailSent.mutate(c.id)}>
-                                <Mail className="h-3 w-3" />
-                              </Button>
+                            {c.recovery_status !== "recovered" && c.recovery_status !== "email_sent_3" && (
+                              <>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" title="Send recovery email" onClick={() => markEmailSent.mutate({ id: c.id })}>
+                                  <Mail className="h-3 w-3" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-6 w-6" title="Send with coupon" onClick={() => { setCouponCartId(c.id); setCouponInput(""); }}>
+                                  <Gift className="h-3 w-3" />
+                                </Button>
+                              </>
                             )}
                             {c.recovery_status !== "recovered" && (
                               <Button variant="ghost" size="icon" className="h-6 w-6" title="Mark recovered" onClick={() => markRecovered.mutate(c.id)}>
