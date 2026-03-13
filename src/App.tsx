@@ -255,6 +255,9 @@ const App = () => (
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/webhooks" element={<RequireAuth><Webhooks /></RequireAuth>} />
                   <Route path="/media" element={<RequireAuth><MediaLibrary /></RequireAuth>} />
+                  <Route path="/content-blocks" element={<RequireAuth><ContentBlocks /></RequireAuth>} />
+                  <Route path="/backorders" element={<RequireAuth><Backorders /></RequireAuth>} />
+                  <Route path="/staff-activity" element={<RequireAuth><StaffActivity /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
