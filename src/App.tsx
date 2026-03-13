@@ -74,6 +74,7 @@ import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
 import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
 import StorefrontStoreFinder from "./pages/storefront/StorefrontStoreFinder.tsx";
+import StorefrontForgotUsername from "./pages/storefront/StorefrontForgotUsername.tsx";
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 import Quotes from "./pages/Quotes.tsx";
