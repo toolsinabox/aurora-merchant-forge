@@ -42,6 +42,7 @@ export default function StorefrontCheckout() {
     address: "", city: "", zip: "", country: "",
     notes: "",
   });
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -55,12 +56,34 @@ export default function StorefrontCheckout() {
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
+        // Load saved addresses
+        const { data: addrs } = await supabase
+          .from("customer_addresses" as any)
+          .select("*")
+          .eq("customer_id", c.id)
+          .order("is_default_shipping", { ascending: false });
+        if (addrs && addrs.length > 0) {
+          setSavedAddresses(addrs);
+          const def = addrs.find((a: any) => a.is_default_shipping) || addrs[0];
+          applyAddress(def);
+        }
       } else {
         setForm((prev) => ({ ...prev, email: user!.email || prev.email }));
       }
     }
     prefill();
   }, [user]);
+
+  const applyAddress = (addr: any) => {
+    setForm((prev) => ({
+      ...prev,
+      address: [addr.address_line1, addr.address_line2].filter(Boolean).join(", "),
+      city: addr.city || "",
+      zip: addr.postal_code || "",
+      country: addr.country || "",
+      phone: addr.phone || prev.phone,
+    }));
+  };
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
