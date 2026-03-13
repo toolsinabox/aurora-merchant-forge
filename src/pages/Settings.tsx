@@ -807,6 +807,12 @@ export default function SettingsPage() {
                   <Label className="text-xs">Store Description</Label>
                   <Input className="h-8 text-xs" value={brandForm.description} onChange={(e) => setBrandForm({ ...brandForm, description: e.target.value })} placeholder="A short description of your store..." />
                 </div>
+                <Separator />
+                <div className="space-y-1">
+                  <Label className="text-xs">LiveChat / Support Widget Code</Label>
+                  <Textarea className="text-xs font-mono min-h-[60px]" value={brandForm.chat_widget_code} onChange={(e) => setBrandForm({ ...brandForm, chat_widget_code: e.target.value })} placeholder="Paste your chat widget embed code (Tidio, LiveChat, Zendesk, Intercom, etc.)" />
+                  <p className="text-2xs text-muted-foreground">Paste the full &lt;script&gt; embed code from your chat provider. It will be injected on your storefront.</p>
+                </div>
                 <div className="flex items-center gap-3 p-3 rounded-md border bg-muted/30">
                   <div className="h-10 w-10 rounded-lg" style={{ backgroundColor: brandForm.primary_color }} />
                   <div>
