@@ -362,8 +362,16 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="seo" className="space-y-3">
+            <SEOSettings />
+          </TabsContent>
+
           <TabsContent value="checkout" className="space-y-3">
             <CheckoutSettings />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="space-y-3">
+            <NotificationSettings />
           </TabsContent>
 
           <TabsContent value="theme" className="space-y-3">
