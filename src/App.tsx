@@ -298,6 +298,7 @@ const App = () => (
                    <Route path="/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
                    <Route path="/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
                    <Route path="/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
