@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { BulkEditDialog } from "@/components/products/BulkEditDialog";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
