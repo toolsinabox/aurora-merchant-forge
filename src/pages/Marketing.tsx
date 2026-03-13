@@ -118,6 +118,9 @@ export default function Marketing() {
                         <TableHead className="text-xs">Type</TableHead>
                         <TableHead className="text-xs">Status</TableHead>
                         <TableHead className="text-xs">Audience</TableHead>
+                        <TableHead className="text-xs text-right">Opens</TableHead>
+                        <TableHead className="text-xs text-right">Clicks</TableHead>
+                        <TableHead className="text-xs text-right">Revenue</TableHead>
                         <TableHead className="text-xs">Created</TableHead>
                         <TableHead className="text-xs w-10"></TableHead>
                       </TableRow>
