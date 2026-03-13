@@ -831,7 +831,7 @@ const featureData: FeatureCategory[] = [
       { name: "User Roles (Owner/Admin/Staff)", description: "Role-based access control per store", status: "done" },
       { name: "Platform Admin Role", description: "Super-admin platform-wide role", status: "done" },
       { name: "Role-Based Permissions", description: "Granular permissions per role (view/edit/delete)", status: "done", notes: "role_permissions table with per-role/per-resource CRUD matrix, admin Permissions page with owner/admin/staff roles, 19 resources, save/load" },
-      { name: "Multi-Store Staff Access", description: "Staff can access multiple stores", status: "partial" },
+      { name: "Multi-Store Staff Access", description: "Staff can access multiple stores", status: "done", notes: "AuthContext loads all stores user has roles for via get_user_store_ids RPC, store switcher dropdown in sidebar header, persisted selection in localStorage" },
       { name: "Activity Log / Audit Trail", description: "Track who did what and when", status: "done" },
       { name: "Two-Factor Authentication (2FA)", description: "TOTP/SMS 2FA for admin accounts", status: "not_started" },
       { name: "API Key Management", description: "Generate and manage API keys per store", status: "done", notes: "api_keys table with SHA-256 hashing, admin API Keys page with create (name + scopes), copy-once key display, active toggle, revoke" },
