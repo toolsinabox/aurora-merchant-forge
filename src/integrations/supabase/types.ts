@@ -811,6 +811,57 @@ export type Database = {
           },
         ]
       }
+      order_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          payment_method: string
+          recorded_by: string
+          reference: string | null
+          store_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          payment_method?: string
+          recorded_by: string
+          reference?: string | null
+          store_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          payment_method?: string
+          recorded_by?: string
+          reference?: string | null
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_payments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_shipments: {
         Row: {
           carrier: string | null
@@ -942,6 +993,7 @@ export type Database = {
           status: string
           store_id: string
           subtotal: number
+          tags: string[] | null
           tax: number
           total: number
           updated_at: string
@@ -962,6 +1014,7 @@ export type Database = {
           status?: string
           store_id: string
           subtotal?: number
+          tags?: string[] | null
           tax?: number
           total?: number
           updated_at?: string
@@ -982,6 +1035,7 @@ export type Database = {
           status?: string
           store_id?: string
           subtotal?: number
+          tags?: string[] | null
           tax?: number
           total?: number
           updated_at?: string
@@ -1136,6 +1190,8 @@ export type Database = {
       }
       product_reviews: {
         Row: {
+          admin_reply: string | null
+          admin_reply_at: string | null
           author_name: string
           body: string | null
           created_at: string
@@ -1150,6 +1206,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admin_reply?: string | null
+          admin_reply_at?: string | null
           author_name?: string
           body?: string | null
           created_at?: string
@@ -1164,6 +1222,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admin_reply?: string | null
+          admin_reply_at?: string | null
           author_name?: string
           body?: string | null
           created_at?: string
