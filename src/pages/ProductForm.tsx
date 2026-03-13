@@ -386,7 +386,7 @@ export default function ProductForm() {
                       <Input className="h-8 text-xs" value={form.availability_description} onChange={(e) => update("availability_description", e.target.value)} placeholder="e.g. Usually ships in 2-3 days" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Internal Notes</Label>
+                      <FieldLabel label="Internal Notes" field="internal_notes" />
                       <Textarea className="text-xs min-h-[60px]" value={form.internal_notes} onChange={(e) => update("internal_notes", e.target.value)} placeholder="Internal notes (not visible to customers)" />
                     </div>
                   </CardContent>
