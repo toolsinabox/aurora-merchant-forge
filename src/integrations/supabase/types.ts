@@ -796,10 +796,13 @@ export type Database = {
       }
       inventory_stock: {
         Row: {
+          batch_number: string | null
           bin_location: string | null
           created_at: string
+          expiry_date: string | null
           id: string
           location_id: string
+          lot_number: string | null
           low_stock_threshold: number
           product_id: string
           quantity: number
@@ -808,10 +811,13 @@ export type Database = {
           variant_id: string | null
         }
         Insert: {
+          batch_number?: string | null
           bin_location?: string | null
           created_at?: string
+          expiry_date?: string | null
           id?: string
           location_id: string
+          lot_number?: string | null
           low_stock_threshold?: number
           product_id: string
           quantity?: number
@@ -820,10 +826,13 @@ export type Database = {
           variant_id?: string | null
         }
         Update: {
+          batch_number?: string | null
           bin_location?: string | null
           created_at?: string
+          expiry_date?: string | null
           id?: string
           location_id?: string
+          lot_number?: string | null
           low_stock_threshold?: number
           product_id?: string
           quantity?: number
@@ -1488,6 +1497,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      product_addons: {
+        Row: {
+          created_at: string
+          field_type: string
+          id: string
+          is_required: boolean | null
+          name: string
+          options: Json | null
+          price_adjustment: number | null
+          product_id: string
+          sort_order: number | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          field_type?: string
+          id?: string
+          is_required?: boolean | null
+          name: string
+          options?: Json | null
+          price_adjustment?: number | null
+          product_id: string
+          sort_order?: number | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          field_type?: string
+          id?: string
+          is_required?: boolean | null
+          name?: string
+          options?: Json | null
+          price_adjustment?: number | null
+          product_id?: string
+          sort_order?: number | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_addons_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_addons_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_pricing_tiers: {
         Row: {
