@@ -115,13 +115,13 @@ export default function Onboarding() {
 
     const { data: store } = await supabase
       .from("stores")
-      .select("id, name, currency, timezone")
+      .select("id, name, slug, currency, timezone")
       .eq("slug", form.slug)
       .single();
 
     setLoading(false);
     if (store) {
-      setCurrentStore({ id: store.id, name: store.name, currency: store.currency, timezone: store.timezone });
+      setCurrentStore({ id: store.id, name: store.name, slug: store.slug, currency: store.currency, timezone: store.timezone });
       toast.success("Store created! Welcome to Commerce Cloud.");
       navigate("/dashboard");
     } else {
