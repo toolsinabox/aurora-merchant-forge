@@ -546,7 +546,7 @@ const featureData: FeatureCategory[] = [
       { name: "Campaign Scheduling", description: "Schedule campaigns for future send", status: "done" },
       { name: "Campaign Statistics (Open/Click/Revenue)", description: "Track campaign performance metrics", status: "partial" },
       { name: "Abandoned Cart Recovery", description: "Automated emails for abandoned carts", status: "partial", notes: "Abandoned cart admin page with recovery status tracking, email sent marking" },
-      { name: "Abandoned Cart Email Template", description: "Customizable abandoned cart email", status: "not_started", notes: "Neto has abandoned_cart_email template" },
+      { name: "Abandoned Cart Email Template", description: "Customizable abandoned cart email", status: "done", notes: "abandoned-cart-email edge function with styled HTML template showing cart items, total, and CTA" },
       { name: "Wishlist Reminder Emails", description: "Remind customers about wishlist items", status: "not_started", notes: "Neto has wishlist system email" },
       { name: "Order Follow-Up Email", description: "Automated post-purchase follow-up email", status: "not_started", notes: "Neto has order_follow_up email" },
       { name: "Newsletter Subscription", description: "Newsletter signup form and mailing list", status: "done", notes: "Email signup in storefront footer with newsletter_subscribers table" },
