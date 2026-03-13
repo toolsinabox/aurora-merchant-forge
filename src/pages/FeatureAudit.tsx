@@ -795,8 +795,8 @@ const featureData: FeatureCategory[] = [
       { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "done", notes: "[%advert%]...[%/advert%] block tags in template engine using adverts context array with image_url, link_url, title, subtitle, button_text fields" },
       { name: "AJAX Partial Rendering", description: "Reload template includes without full page refresh", status: "not_started" },
       { name: "Custom CSS per Template", description: "Template-specific CSS injection", status: "done", notes: "custom_css column on store_templates, CSS tab in template editor with live preview, RenderedTemplate component injects per-template <style> blocks" },
-      { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "not_started" },
-      { name: "Theme Info File (netothemeinfo.txt)", description: "Theme metadata: name, version, description", status: "not_started" },
+      { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "done", notes: "theme_presets table with 5 system themes (Classic, Modern Dark, Minimal, Boutique, Tech); each preset maps to store_themes columns (primary/secondary/accent colors, fonts, radius, layout, hero/card styles); admin can apply preset to overwrite store theme settings" },
+      { name: "Theme Info File (netothemeinfo.txt)", description: "Theme metadata: name, version, description", status: "done", notes: "theme_presets table stores name, description, is_system flag, and full theme_config JSONB metadata per theme" },
     ],
   },
 
