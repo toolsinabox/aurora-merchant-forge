@@ -103,9 +103,82 @@ function StoreCreditCard({ customerId, storeId }: { customerId: string; storeId:
   );
 }
 
+function CustomerFilesCard({ customerId, storeId }: { customerId: string; storeId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [uploading, setUploading] = useState(false);
+
+  const { data: files = [], isLoading } = useQuery({
+    queryKey: ["customer_files", customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("customer_files" as any).select("*").eq("customer_id", customerId).order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !storeId || !user) return;
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `customer-files/${storeId}/${customerId}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("product-images").upload(path, file);
+    if (upErr) { toast.error(upErr.message); setUploading(false); return; }
+    const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(path);
+    await supabase.from("customer_files" as any).insert({
+      store_id: storeId, customer_id: customerId, file_name: file.name,
+      file_url: publicUrl, file_type: file.type, file_size: file.size, uploaded_by: user.id,
+    });
+    qc.invalidateQueries({ queryKey: ["customer_files", customerId] });
+    setUploading(false);
+    toast.success("File uploaded");
+    e.target.value = "";
+  };
+
+  const deleteFile = async (id: string) => {
+    await supabase.from("customer_files" as any).delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["customer_files", customerId] });
+    toast.success("File deleted");
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+        <CardTitle className="text-sm">Files & Documents</CardTitle>
+        <label>
+          <input type="file" className="hidden" onChange={handleUpload} />
+          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" asChild disabled={uploading}>
+            <span><Upload className="h-3 w-3" /> {uploading ? "Uploading..." : "Upload"}</span>
+          </Button>
+        </label>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        {isLoading ? <Skeleton className="h-12 w-full" /> : (files as any[]).length === 0 ? (
+          <p className="text-xs text-muted-foreground text-center py-4">No files uploaded yet.</p>
+        ) : (
+          <div className="space-y-1.5">
+            {(files as any[]).map((f: any) => (
+              <div key={f.id} className="flex items-center gap-2 text-xs border rounded-md px-3 py-2 group">
+                <Paperclip className="h-3 w-3 text-muted-foreground shrink-0" />
+                <a href={f.file_url} target="_blank" rel="noopener noreferrer" className="flex-1 font-medium truncate hover:underline">{f.file_name}</a>
+                <span className="text-muted-foreground text-[10px]">{f.file_size ? `${(f.file_size / 1024).toFixed(0)} KB` : ""}</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5 opacity-0 group-hover:opacity-100" onClick={() => deleteFile(f.id)}>
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function CustomerDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { currentStore } = useAuth();
   const qc = useQueryClient();
   const { data: customer, isLoading } = useCustomer(id);
   const { data: orders = [] } = useOrders();
