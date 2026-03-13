@@ -67,6 +67,9 @@ export default function StorefrontCheckout() {
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
+  const [storeCreditBalance, setStoreCreditBalance] = useState(0);
+  const [useStoreCredit, setUseStoreCredit] = useState(false);
+  const [customerId, setCustomerId] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
