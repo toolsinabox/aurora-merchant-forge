@@ -85,6 +85,8 @@ import MediaLibrary from "./pages/MediaLibrary.tsx";
 import ContentBlocks from "./pages/ContentBlocks.tsx";
 import Backorders from "./pages/Backorders.tsx";
 import StaffActivity from "./pages/StaffActivity.tsx";
+import ApiKeys from "./pages/ApiKeys.tsx";
+import RolePermissions from "./pages/RolePermissions.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
