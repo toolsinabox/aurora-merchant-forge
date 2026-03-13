@@ -169,7 +169,7 @@ const featureData: FeatureCategory[] = [
       { name: "Warehouse Locations CRUD", description: "Add/edit/delete warehouse and store locations", status: "done" },
       { name: "Warehouse Types (Warehouse/Store/Dropship)", description: "Different location types", status: "done" },
       { name: "Stock by Variant", description: "Track inventory per variant within each warehouse", status: "done" },
-      { name: "Stock Transfer Between Warehouses", description: "Transfer stock from one location to another", status: "not_started" },
+      { name: "Stock Transfer Between Warehouses", description: "Transfer stock from one location to another", status: "done", notes: "Transfer dialog with source/destination locations" },
       { name: "Purchase Orders (PO Creation)", description: "Create purchase orders to suppliers", status: "done", notes: "Full PO CRUD with supplier linking" },
       { name: "Purchase Order Receiving", description: "Receive stock against purchase orders, partial receipts", status: "partial", notes: "Status workflow exists, item-level receiving not yet" },
       { name: "Purchase Order Status Workflow", description: "Draft → Sent → Partial → Received → Closed", status: "done" },
