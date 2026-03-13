@@ -66,7 +66,7 @@ const systemNav = [
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
-  { title: "Integrations", url: `${prefix}/integrations`, icon: Link },
+  { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "API Keys", url: `${prefix}/api-keys`, icon: Key },
   { title: "API Docs", url: `${prefix}/api-docs`, icon: Book },
