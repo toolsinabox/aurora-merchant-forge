@@ -622,6 +622,35 @@ export default function Analytics() {
               )}
             </CardContent>
           </Card>
+
+          {/* Slow-Moving Stock Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Slow-Moving Stock</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : slowMovingProducts.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No slow-moving products detected</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Price</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units Sold</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {slowMovingProducts.map((p: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right">${p.price.toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.unitsSold}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AdminLayout>

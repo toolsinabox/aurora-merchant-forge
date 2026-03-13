@@ -105,6 +105,8 @@ const App = () => (
                   <Route path="/page/:pageSlug" element={<StorefrontContentPage />} />
                   <Route path="/blog" element={<StorefrontBlog />} />
                   <Route path="/track-order" element={<StorefrontTrackOrder />} />
+                  <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
+                  <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
