@@ -435,7 +435,7 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo Start</Label>
+                        <FieldLabel label="Promo Start" field="promo_start" />
                         <Input className="h-8 text-xs" type="datetime-local" value={form.promo_start} onChange={(e) => update("promo_start", e.target.value)} />
                       </div>
                       <div className="space-y-1">
