@@ -392,6 +392,8 @@ export default function SettingsPage() {
       .update({
         primary_color: brandForm.primary_color,
         banner_text: brandForm.banner_text || null,
+        banner_start: brandForm.banner_start ? new Date(brandForm.banner_start).toISOString() : null,
+        banner_end: brandForm.banner_end ? new Date(brandForm.banner_end).toISOString() : null,
         description: brandForm.description || null,
         logo_url: brandForm.logo_url || null,
         favicon_url: brandForm.favicon_url || null,
