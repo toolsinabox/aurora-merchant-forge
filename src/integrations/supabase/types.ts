@@ -308,9 +308,51 @@ export type Database = {
           },
         ]
       }
+      customer_groups: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount_percent: number | null
+          id: string
+          is_tax_exempt: boolean | null
+          name: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          is_tax_exempt?: boolean | null
+          name: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount_percent?: number | null
+          id?: string
+          is_tax_exempt?: boolean | null
+          name?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_groups_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           created_at: string
+          customer_group_id: string | null
           email: string | null
           id: string
           name: string
@@ -326,6 +368,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          customer_group_id?: string | null
           email?: string | null
           id?: string
           name: string
@@ -341,6 +384,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          customer_group_id?: string | null
           email?: string | null
           id?: string
           name?: string
@@ -355,6 +399,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "customers_customer_group_id_fkey"
+            columns: ["customer_group_id"]
+            isOneToOne: false
+            referencedRelation: "customer_groups"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "customers_store_id_fkey"
             columns: ["store_id"]
@@ -978,6 +1029,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          billing_address: string | null
           coupon_id: string | null
           created_at: string
           customer_id: string | null
@@ -999,6 +1051,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          billing_address?: string | null
           coupon_id?: string | null
           created_at?: string
           customer_id?: string | null
@@ -1020,6 +1073,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          billing_address?: string | null
           coupon_id?: string | null
           created_at?: string
           customer_id?: string | null
@@ -1270,7 +1324,9 @@ export type Database = {
           base_unit_qty: number | null
           cartons: number | null
           created_at: string
+          dangerous_goods: boolean | null
           flat_rate_charge: number | null
+          free_shipping: boolean | null
           id: string
           product_id: string
           requires_packaging: boolean | null
@@ -1292,7 +1348,9 @@ export type Database = {
           base_unit_qty?: number | null
           cartons?: number | null
           created_at?: string
+          dangerous_goods?: boolean | null
           flat_rate_charge?: number | null
+          free_shipping?: boolean | null
           id?: string
           product_id: string
           requires_packaging?: boolean | null
@@ -1314,7 +1372,9 @@ export type Database = {
           base_unit_qty?: number | null
           cartons?: number | null
           created_at?: string
+          dangerous_goods?: boolean | null
           flat_rate_charge?: number | null
+          free_shipping?: boolean | null
           id?: string
           product_id?: string
           requires_packaging?: boolean | null
