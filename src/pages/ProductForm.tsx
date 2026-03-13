@@ -936,7 +936,7 @@ export default function ProductForm() {
                     <Input className="h-8 text-xs" value={form.tags} onChange={(e) => update("tags", e.target.value)} placeholder="Comma separated tags" />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Search Keywords</Label>
+                    <FieldLabel label="Search Keywords" field="search_keywords" />
                     <Input className="h-8 text-xs" value={form.search_keywords} onChange={(e) => update("search_keywords", e.target.value)} placeholder="Additional search terms" />
                   </div>
                 </CardContent>
