@@ -115,9 +115,9 @@ export default function Orders() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
                 ) : (
                   filtered.map((o: any) => (
                     <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${o.id}`)}>
