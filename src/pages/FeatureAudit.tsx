@@ -313,7 +313,7 @@ const featureData: FeatureCategory[] = [
       { name: "Checkout — Upsell Page", description: "Pre-checkout upsells (upsell.template.html)", status: "done", notes: "Upsell section on checkout showing related/cross-sell products from product_relations, with fallback to random products" },
       { name: "Checkout — Error Handling", description: "Cart error display (cart.error.html)", status: "done", notes: "Validation toasts for missing fields, billing address, and empty cart checks" },
       { name: "Invoice / Thank You Page", description: "Post-checkout success page (invoice.template.html)", status: "done", notes: "Enhanced thank you page with order number, total, and View Orders link" },
-      { name: "Quote Invoice Page", description: "Post-quote success page (quote_invoice.template.html)", status: "not_started" },
+      { name: "Quote Invoice Page", description: "Post-quote success page (quote_invoice.template.html)", status: "done", notes: "Printable quote page accessible from admin Quotes list" },
       { name: "Empty Cart Page", description: "Display when cart is empty (empty.template.html)", status: "done", notes: "Empty state with icon and continue shopping link" },
       { name: "404 Page", description: "Custom 404 not found page (404.template.html)", status: "done" },
       { name: "Content Pages (CMS)", description: "Generic content pages (default.template.html)", status: "done", notes: "Storefront CMS page route with slug-based rendering" },
