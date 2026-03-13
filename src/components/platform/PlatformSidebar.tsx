@@ -27,7 +27,7 @@ export function PlatformSidebar() {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/admin/login");
+    navigate("/platform");
   };
 
   return (

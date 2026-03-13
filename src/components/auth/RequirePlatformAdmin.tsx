@@ -24,8 +24,8 @@ export function RequirePlatformAdmin({ children }: { children: React.ReactNode }
     );
   }
 
-  if (!user) return <Navigate to="/admin/login" replace />;
-  if (!isAdmin) return <Navigate to="/admin/login" replace />;
+  if (!user) return <Navigate to="/platform" replace />;
+  if (!isAdmin) return <Navigate to="/platform" replace />;
 
   return <>{children}</>;
 }

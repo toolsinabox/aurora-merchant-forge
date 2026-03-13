@@ -39,7 +39,7 @@ export default function PlatformLogin() {
     }
 
     toast.success("Welcome back, Admin");
-    navigate("/admin/dashboard");
+    navigate("/platform/dashboard");
   };
 
   return (

@@ -10,6 +10,7 @@ const PLATFORM_DOMAINS = [
   "lovable.dev",
   "lovableproject.com",
   "127.0.0.1",
+  "getcelora.com",
 ];
 
 /**

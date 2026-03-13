@@ -1,5 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
+import { getSubdomainSlug } from "@/lib/subdomain";
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -12,6 +13,9 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) {
+    const isSubdomain = !!getSubdomainSlug();
+    return <Navigate to={isSubdomain ? "/_cpanel" : "/login"} replace />;
+  }
   return <>{children}</>;
 }
