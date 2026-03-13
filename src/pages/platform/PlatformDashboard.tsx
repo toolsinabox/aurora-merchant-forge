@@ -58,7 +58,7 @@ export default function PlatformDashboard() {
             <h1 className="text-lg font-semibold">Platform Dashboard</h1>
             <p className="text-xs text-muted-foreground">Global overview across all merchants</p>
           </div>
-          <Link to="/admin/merchants">
+          <Link to="/platform/merchants">
             <Button size="sm" variant="outline" className="text-xs h-8">
               Manage Merchants
             </Button>
