@@ -725,7 +725,7 @@ const featureData: FeatureCategory[] = [
       { name: "POS Cash Drawer Integration", description: "Open cash drawer from POS", status: "not_started" },
       { name: "POS Offline Mode", description: "Operate POS without internet connection", status: "not_started" },
       { name: "POS Multi-Register", description: "Multiple POS registers per store location", status: "not_started" },
-      { name: "POS End-of-Day Reconciliation", description: "Cash up and reconcile POS at end of day", status: "not_started" },
+      { name: "POS End-of-Day Reconciliation", description: "Cash up and reconcile POS at end of day", status: "done", notes: "EOD dialog with total sales, order count, card/cash/other breakdown, opening float, actual cash count, variance calculation (over/short/balanced), notes, Close Register saves to pos_register_sessions; Today's Sales tab with transaction list and KPIs" },
       { name: "POS Customer Lookup", description: "Search and attach customer to POS sale", status: "done", notes: "Customer search by name/email/phone in POS cart panel, selected customer attached to order" },
       { name: "POS Layby/Deposit", description: "Take deposits and manage layby from POS", status: "not_started" },
     ],
