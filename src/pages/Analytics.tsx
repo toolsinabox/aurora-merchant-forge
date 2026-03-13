@@ -476,6 +476,73 @@ export default function Analytics() {
               )}
             </CardContent>
           </Card>
+
+          {/* Profit Margin Report */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Profit Margin by Product</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : profitData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No profit data — set cost prices on products</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Cost</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Profit</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Margin</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {profitData.map((p: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right">${p.revenue.toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right">${p.cost.toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right font-medium" style={{ color: p.profit >= 0 ? 'hsl(142, 71%, 45%)' : 'hsl(0, 72%, 51%)' }}>
+                          ${p.profit.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="py-1.5 text-right">{p.margin}%</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Tax Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Tax Report</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Total Tax Collected</p>
+                      <p className="text-lg font-bold">${taxSummary.totalTax.toFixed(2)}</p>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Taxed Orders</p>
+                      <p className="text-lg font-bold">{taxSummary.orderCount}</p>
+                    </div>
+                  </div>
+                  {taxSummary.byMonth.length > 0 && (
+                    <ResponsiveContainer width="100%" height={140}>
+                      <BarChart data={taxSummary.byMonth}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Tax"]} />
+                        <Bar dataKey="amount" fill="hsl(38, 92%, 50%)" radius={[2, 2, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AdminLayout>
