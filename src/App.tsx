@@ -134,6 +134,8 @@ const App = () => (
                   <Route path="/_cpanel/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id/print" element={<RequireAuth><PrintInvoice /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id/receipt/:paymentId" element={<RequireAuth><PrintPaymentReceipt /></RequireAuth>} />
+                  <Route path="/_cpanel/orders/:id/shipping-label" element={<RequireAuth><PrintShippingLabel /></RequireAuth>} />
+                  <Route path="/_cpanel/orders/:id/shipping-label/:shipmentId" element={<RequireAuth><PrintShippingLabel /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id/packing-slip" element={<RequireAuth><PrintPackingSlip /></RequireAuth>} />
                   <Route path="/_cpanel/pick-list" element={<RequireAuth><PrintPickList /></RequireAuth>} />
                   <Route path="/_cpanel/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
