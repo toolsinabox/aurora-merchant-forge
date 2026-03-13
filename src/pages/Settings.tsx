@@ -527,7 +527,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id")
+      .select("primary_color, banner_text, banner_start, banner_end, description, logo_url, favicon_url, ga_tracking_id, gtm_container_id, fb_pixel_id, google_ads_id, google_ads_conversion_label, smtp_config")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
