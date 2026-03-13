@@ -132,7 +132,7 @@ export default function ImportWizard() {
   const [templateName, setTemplateName] = useState("");
   const [entityType, setEntityType] = useState<ImportEntity>("products");
 
-  const ACTIVE_FIELDS = entityType === "orders" ? ORDER_FIELDS : PRODUCT_FIELDS;
+  const ACTIVE_FIELDS = entityType === "orders" ? ORDER_FIELDS : entityType === "reviews" ? REVIEW_FIELDS : PRODUCT_FIELDS;
 
   const { data: templates = [] } = useImportTemplates();
   const createTemplate = useCreateImportTemplate();
