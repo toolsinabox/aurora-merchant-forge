@@ -70,6 +70,7 @@ export default function Products() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selected, setSelected] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = products.filter((p) => {
