@@ -231,6 +231,7 @@ export default function CustomerDetail() {
         segment: editForm.segment,
         tags,
         customer_group_id: editForm.customer_group_id || null,
+        logo_url: (editForm as any).logo_url || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
