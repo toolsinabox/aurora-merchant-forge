@@ -91,10 +91,11 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [disputes, setDisputes] = useState<any[]>([]);
+  const [customerFiles, setCustomerFiles] = useState<any[]>([]);
 
   // Dispute form state
   const [disputeOpen, setDisputeOpen] = useState(false);
