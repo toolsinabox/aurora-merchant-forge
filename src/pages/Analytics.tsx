@@ -93,6 +93,7 @@ export default function Analytics() {
   const [couponStats, setCouponStats] = useState<any[]>([]);
   const [profitData, setProfitData] = useState<any[]>([]);
   const [taxSummary, setTaxSummary] = useState<{ totalTax: number; orderCount: number; byMonth: any[] }>({ totalTax: 0, orderCount: 0, byMonth: [] });
+  const [acquisitionData, setAcquisitionData] = useState<{ newCustomers: number; returning: number; byMonth: any[] }>({ newCustomers: 0, returning: 0, byMonth: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
