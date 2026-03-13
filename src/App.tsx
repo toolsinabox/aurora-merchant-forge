@@ -269,6 +269,8 @@ const App = () => (
                   <Route path="/api-keys" element={<RequireAuth><ApiKeys /></RequireAuth>} />
                   <Route path="/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
+                  <Route path="/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
+                  <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

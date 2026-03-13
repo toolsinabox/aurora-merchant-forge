@@ -80,6 +80,9 @@ export default function StorefrontHome() {
   return (
     <StorefrontLayout storeName={store.name}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Advert Banner */}
+        <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
+
         {/* Hero Section */}
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-primary/70 text-primary-foreground my-6 sm:my-8">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_60%)]" />
