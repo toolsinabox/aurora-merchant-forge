@@ -74,6 +74,7 @@ import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
 import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
 import StorefrontStoreFinder from "./pages/storefront/StorefrontStoreFinder.tsx";
+import StorefrontForgotUsername from "./pages/storefront/StorefrontForgotUsername.tsx";
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
 import Quotes from "./pages/Quotes.tsx";
@@ -123,6 +124,7 @@ const App = () => (
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/wholesale" element={<StorefrontWholesale />} />
                   <Route path="/store-finder" element={<StorefrontStoreFinder />} />
+                  <Route path="/forgot-username" element={<StorefrontForgotUsername />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
@@ -261,6 +263,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/store/:storeSlug/wholesale" element={<StorefrontWholesale />} />
                   <Route path="/store/:storeSlug/store-finder" element={<StorefrontStoreFinder />} />
+                  <Route path="/store/:storeSlug/forgot-username" element={<StorefrontForgotUsername />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}
