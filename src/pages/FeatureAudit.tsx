@@ -578,7 +578,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Statement Email", description: "Account statement with transaction history", status: "done", notes: "customer-statement-email edge function sends account statement with orders, payments, outstanding balance, and CTA; triggered from customer detail Email Statement button" },
       { name: "Dispute/Warranty Emails", description: "Emails for dispute raised, updated, resolved", status: "done", notes: "dispute-email edge function sends customer and admin notifications with dispute details, status badge, and order/product info" },
       { name: "Dropship Notification Email", description: "Emails to dropship suppliers for new orders", status: "done", notes: "dropship-notification edge function sends supplier email with order items and shipping address" },
-      { name: "Import Notification Email", description: "Email with login details on customer import", status: "not_started" },
+      { name: "Import Notification Email", description: "Email with login details on customer import", status: "done", notes: "import-notification-email edge function sends welcome email with login credentials for bulk-imported customers" },
       { name: "Contact Form Email", description: "Email sent to admin when contact form submitted", status: "done", notes: "contact-email edge function queues admin notification with contact details in email_queue table" },
       { name: "eBay Notification Emails", description: "eBay listing/sale event notifications", status: "not_started" },
       { name: "Batch Job Error Email", description: "Notification when automated batch jobs fail", status: "not_started" },
