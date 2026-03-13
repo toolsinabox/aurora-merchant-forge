@@ -40,6 +40,7 @@ export default function StorefrontProductDetail() {
   const [pricingTiers, setPricingTiers] = useState<any[]>([]);
   const [crossSells, setCrossSells] = useState<any[]>([]);
   const [childProducts, setChildProducts] = useState<any[]>([]);
+  const [kitComponents, setKitComponents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
