@@ -146,9 +146,11 @@ export default function StorefrontWholesale() {
                 <Label>ABN / Tax ID</Label>
                 <Input
                   value={form.abn_tax_id}
-                  onChange={(e) => setForm({ ...form, abn_tax_id: e.target.value })}
+                  onChange={(e) => { setForm({ ...form, abn_tax_id: e.target.value }); setAbnError(""); }}
                   placeholder="12 345 678 901"
+                  className={abnError ? "border-destructive" : ""}
                 />
+                {abnError && <p className="text-xs text-destructive">{abnError}</p>}
               </div>
               <div className="space-y-1.5">
                 <Label>Tell us about your business</Label>
