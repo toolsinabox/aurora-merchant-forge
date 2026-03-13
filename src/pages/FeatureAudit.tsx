@@ -650,7 +650,7 @@ const featureData: FeatureCategory[] = [
       { name: "Pick & Pack Workflow", description: "Guided pick → pack → ship workflow in admin", status: "done", notes: "Admin /pick-pack page with 3-step workflow: pick items with checkboxes, pack orders, ship orders" },
       { name: "Barcode Scanning (Pick)", description: "Scan product barcodes during pick process", status: "not_started" },
       { name: "Barcode Scanning (Receive)", description: "Scan barcodes when receiving stock", status: "not_started" },
-      { name: "Batch Printing (Labels + Slips)", description: "Print multiple shipping labels and packing slips", status: "not_started" },
+      { name: "Batch Printing (Labels + Slips)", description: "Print multiple shipping labels and packing slips", status: "done", notes: "Bulk action bar on orders list with Print Packing Slips, Print Labels, and Print Invoices buttons for selected orders" },
       { name: "Warehouse Dashboard", description: "Overview of pending picks, packs, and dispatches", status: "done", notes: "Admin warehouse page with KPI cards (awaiting pick, items to pick, processing, shipped), recent shipments, low stock alerts" },
       { name: "Multi-Warehouse Order Routing", description: "Route order items to nearest/best warehouse", status: "not_started" },
       { name: "Stock Count / Stocktake Mode", description: "In-warehouse stock counting with barcode scanning", status: "not_started" },
