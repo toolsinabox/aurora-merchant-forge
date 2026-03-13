@@ -382,7 +382,7 @@ export default function ProductForm() {
                       <Input className="h-8 text-xs" value={form.warranty} onChange={(e) => update("warranty", e.target.value)} placeholder="e.g. 2 Year Manufacturer Warranty" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Availability Description</Label>
+                      <FieldLabel label="Availability Description" field="availability_description" />
                       <Input className="h-8 text-xs" value={form.availability_description} onChange={(e) => update("availability_description", e.target.value)} placeholder="e.g. Usually ships in 2-3 days" />
                     </div>
                     <div className="space-y-1">
