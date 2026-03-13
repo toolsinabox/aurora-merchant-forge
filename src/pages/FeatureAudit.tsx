@@ -746,7 +746,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Acquisition Report", description: "New vs returning customer metrics", status: "not_started" },
       { name: "Conversion Rate / Funnel Analytics", description: "Visitor → Cart → Checkout → Purchase funnel", status: "not_started" },
       { name: "Average Order Value (AOV) Trend", description: "Track AOV over time", status: "done", notes: "Line chart on Analytics page" },
-      { name: "Profit Margin Report", description: "Revenue minus cost analysis", status: "not_started" },
+      { name: "Profit Margin Report", description: "Revenue minus cost analysis", status: "done", notes: "Profit margin table on Analytics page showing revenue, cost, profit, margin% by product" },
       { name: "Inventory Value Report", description: "Total stock value across all locations", status: "not_started" },
       { name: "Slow-Moving Stock Report", description: "Products with low sales velocity", status: "not_started" },
       { name: "Stock Turnover Report", description: "Inventory turnover rate analysis", status: "not_started" },
