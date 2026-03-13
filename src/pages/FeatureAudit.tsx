@@ -647,7 +647,7 @@ const featureData: FeatureCategory[] = [
     icon: <Warehouse className="h-5 w-5" />,
     features: [
       { name: "Warehouse API (GetWarehouse / AddWarehouse / UpdateWarehouse)", description: "Full warehouse management via API", status: "partial", notes: "Location CRUD exists, not full warehouse API" },
-      { name: "Pick & Pack Workflow", description: "Guided pick → pack → ship workflow in admin", status: "not_started" },
+      { name: "Pick & Pack Workflow", description: "Guided pick → pack → ship workflow in admin", status: "done", notes: "Admin /pick-pack page with 3-step workflow: pick items with checkboxes, pack orders, ship orders" },
       { name: "Barcode Scanning (Pick)", description: "Scan product barcodes during pick process", status: "not_started" },
       { name: "Barcode Scanning (Receive)", description: "Scan barcodes when receiving stock", status: "not_started" },
       { name: "Batch Printing (Labels + Slips)", description: "Print multiple shipping labels and packing slips", status: "not_started" },
