@@ -504,7 +504,7 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Content Pages CRUD (GetContent / AddContent / UpdateContent)", description: "Manage CMS pages via API", status: "done" },
       { name: "About Page", description: "About us content page", status: "done", notes: "Via CMS page type" },
-      { name: "Contact Page with Form", description: "Contact form page with email notification", status: "partial", notes: "CMS page exists, contact form email not implemented" },
+      { name: "Contact Page with Form", description: "Contact form page with email notification", status: "done", notes: "Storefront /contact page with form that stores submissions in contact_submissions table" },
       { name: "FAQ Page", description: "Frequently asked questions page", status: "done", notes: "Via CMS page type: faq" },
       { name: "Blog / News Articles", description: "Blog listing and post pages", status: "done", notes: "Via CMS page type: blog" },
       { name: "Banner / Announcement Management", description: "Create and schedule banner ads on storefront", status: "partial", notes: "Banner text field exists" },
