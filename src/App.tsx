@@ -71,6 +71,8 @@ import Redirects from "./pages/Redirects.tsx";
 import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
+import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
+import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
