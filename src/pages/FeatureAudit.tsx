@@ -670,7 +670,7 @@ const featureData: FeatureCategory[] = [
       { name: "Abandoned Cart Recovery Status", description: "Track whether cart was recovered or lost", status: "done" },
       { name: "Abandoned Cart Recovery Stats", description: "Dashboard metrics: recovery rate, revenue recovered", status: "done", notes: "KPI cards: total carts, potential revenue, pending, recovery rate" },
       { name: "Multi-Step Recovery Sequences", description: "Send multiple follow-up emails over time", status: "not_started" },
-      { name: "Abandoned Cart with Coupon Incentive", description: "Include discount coupon in recovery email", status: "not_started" },
+      { name: "Abandoned Cart with Coupon Incentive", description: "Include discount coupon in recovery email", status: "done", notes: "abandoned-cart-email accepts optional coupon_code param, looks up active coupon and renders styled discount banner with code in email" },
     ],
   },
 
