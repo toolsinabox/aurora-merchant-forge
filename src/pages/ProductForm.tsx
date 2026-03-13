@@ -318,7 +318,7 @@ export default function ProductForm() {
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Brand</Label>
+                        <FieldLabel label="Brand" field="brand" />
                         <Input className="h-8 text-xs" value={form.brand} onChange={(e) => update("brand", e.target.value)} placeholder="Brand name" />
                       </div>
                       <div className="space-y-1">
