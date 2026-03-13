@@ -458,7 +458,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax-Inclusive Pricing", description: "Display prices inclusive of tax", status: "done" },
       { name: "Tax-Exclusive Pricing", description: "Display prices exclusive of tax, add at checkout", status: "partial" },
       { name: "GST / VAT Handling", description: "Australian GST or European VAT calculation", status: "not_started" },
-      { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "not_started" },
+      { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "done", notes: "is_tax_exempt on customer_groups, applied at checkout to skip tax" },
       { name: "Tax Reporting / BAS Report", description: "Tax summary reports for accounting", status: "not_started" },
       { name: "Auto Tax Calculation by Address", description: "Calculate tax based on shipping destination", status: "not_started" },
       { name: "Multi-Tax (State + County)", description: "Compound tax rates for US states", status: "not_started" },
