@@ -331,6 +331,17 @@ export default function Suppliers() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="performance" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2"><BarChart3 className="h-4 w-4" /> Supplier Performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <SupplierPerformance suppliers={suppliers} storeId={currentStore?.id} />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
