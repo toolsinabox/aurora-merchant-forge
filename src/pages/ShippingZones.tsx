@@ -172,7 +172,7 @@ export default function ShippingZones() {
 }
 
 function ZoneForm({ form, setForm, onSubmit, loading, label }: {
-  form: { name: string; regions: string; flat_rate: string; free_above: string };
+  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string };
   setForm: (f: any) => void;
   onSubmit: () => void;
   loading: boolean;
@@ -188,16 +188,39 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
         <Label className="text-xs">Regions</Label>
         <Input placeholder="e.g. AU, NZ or Worldwide" value={form.regions} onChange={(e) => setForm({ ...form, regions: e.target.value })} />
       </div>
+      <div>
+        <Label className="text-xs">Rate Type</Label>
+        <Select value={form.rate_type} onValueChange={(v) => setForm({ ...form, rate_type: v })}>
+          <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="flat" className="text-xs">Flat Rate</SelectItem>
+            <SelectItem value="weight" className="text-xs">Weight-Based (per kg)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label className="text-xs">Flat Rate ($)</Label>
-          <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
-        </div>
+        {form.rate_type === "weight" ? (
+          <div>
+            <Label className="text-xs">Rate per kg ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
+          </div>
+        ) : (
+          <div>
+            <Label className="text-xs">Flat Rate ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
+          </div>
+        )}
         <div>
           <Label className="text-xs">Free Above ($)</Label>
           <Input type="number" step="0.01" min="0" placeholder="Optional" value={form.free_above} onChange={(e) => setForm({ ...form, free_above: e.target.value })} />
         </div>
       </div>
+      {form.rate_type === "weight" && (
+        <div>
+          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to weight cost)</span></Label>
+          <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
+        </div>
+      )}
       <Button onClick={onSubmit} disabled={loading} className="w-full">{label}</Button>
     </div>
   );
