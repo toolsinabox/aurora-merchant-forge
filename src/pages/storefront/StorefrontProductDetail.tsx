@@ -464,6 +464,33 @@ export default function StorefrontProductDetail() {
           </div>
         )}
 
+        {/* Recently Viewed */}
+        {(() => {
+          const recentItems = getRecent(product.id, 4);
+          if (recentItems.length === 0) return null;
+          return (
+            <div className="mt-12">
+              <Separator className="mb-8" />
+              <h2 className="text-xl font-bold mb-5">Recently Viewed</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                {recentItems.map((p) => (
+                  <Link key={p.id} to={`${basePath}/product/${p.id}`} className="group">
+                    <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-2.5">
+                      {p.image ? (
+                        <img src={getImageUrl(p.image)} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
+                      )}
+                    </div>
+                    <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
+                    <p className="text-sm font-bold mt-0.5">${Number(p.price).toFixed(2)}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Reviews */}
         {store && (
           <div className="mt-12">

@@ -374,7 +374,7 @@ const featureData: FeatureCategory[] = [
       { name: "Product Reviews Display", description: "Star ratings and review text on product page", status: "done" },
       { name: "Product Compare", description: "Side-by-side product comparison", status: "done" },
       { name: "Notify Me (Back in Stock)", description: "Email notification when out-of-stock item returns", status: "not_started", notes: "Neto has notify_me system email" },
-      { name: "Recently Viewed Products", description: "Track and display recently viewed items", status: "not_started" },
+      { name: "Recently Viewed Products", description: "Track and display recently viewed items", status: "done", notes: "localStorage-based tracking on product detail page" },
       { name: "Product Quick View", description: "Quick view popup without navigating away", status: "not_started" },
       { name: "Shipping Calculator on Product Page", description: "Estimate shipping cost on product page", status: "not_started" },
       { name: "Product Tabs (Description/Specs/Reviews)", description: "Tabbed content on product page", status: "partial" },
