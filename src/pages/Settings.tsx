@@ -914,6 +914,10 @@ export default function SettingsPage() {
           <TabsContent value="wholesale" className="space-y-3">
             <WholesaleApplicationsTab />
           </TabsContent>
+
+          <TabsContent value="inventory" className="space-y-3">
+            <InventorySettingsTab />
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
