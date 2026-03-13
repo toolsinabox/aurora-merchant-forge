@@ -170,7 +170,7 @@ export default function Products() {
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => fileInputRef.current?.click()} disabled={importing}>
               {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} Import
             </Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/export")}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
             <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => navigate("/products/import")}>
