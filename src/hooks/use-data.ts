@@ -616,6 +616,49 @@ export function useDeleteOrder() {
   });
 }
 
+// ===================== ORDER PAYMENTS =====================
+
+export function useOrderPayments(orderId: string | undefined) {
+  return useQuery({
+    queryKey: ["order_payments", orderId],
+    queryFn: async () => {
+      if (!orderId) return [];
+      const { data, error } = await supabase
+        .from("order_payments" as any)
+        .select("*")
+        .eq("order_id", orderId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!orderId,
+  });
+}
+
+export function useCreateOrderPayment() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: async (payment: { order_id: string; amount: number; payment_method: string; reference?: string; notes?: string }) => {
+      if (!currentStore || !user) throw new Error("Not authenticated");
+      const { data, error } = await supabase
+        .from("order_payments" as any)
+        .insert({ ...payment, store_id: currentStore.id, recorded_by: user.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["order_payments", vars.order_id] });
+      qc.invalidateQueries({ queryKey: ["order", vars.order_id] });
+      toast.success("Payment recorded");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
 // ===================== INVENTORY =====================
 
 export function useInventoryLocations() {

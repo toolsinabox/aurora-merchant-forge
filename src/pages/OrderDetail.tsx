@@ -9,16 +9,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import {
   useOrder, useUpdateOrder, useDeleteOrder,
   useOrderShipments, useCreateShipment, useUpdateShipment,
   useOrderTimeline, useCreateTimelineEvent,
+  useOrderPayments, useCreateOrderPayment,
 } from "@/hooks/use-data";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
-  Clock, Plus, ExternalLink, MessageSquare, Send,
+  Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -58,6 +60,12 @@ export default function OrderDetail() {
   const [notes, setNotes] = useState<string | null>(null);
   const [shipDialogOpen, setShipDialogOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
+  const [newTag, setNewTag] = useState("");
+  const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({ amount: "", method: "manual", reference: "", notes: "" });
+
+  const { data: payments = [] } = useOrderPayments(id);
+  const createPayment = useCreateOrderPayment();
 
   // Shipment form state
   const [shipForm, setShipForm] = useState({
@@ -74,6 +82,7 @@ export default function OrderDetail() {
 
   const currentNotes = notes !== null ? notes : ((order as any).notes || "");
   const orderItems = (order as any).order_items || [];
+  const orderTags: string[] = (order as any).tags || [];
 
   const handleStatusChange = async (field: string, value: string) => {
     await updateOrder.mutateAsync({ id: order.id, [field]: value } as any);
@@ -83,6 +92,36 @@ export default function OrderDetail() {
       title: `${field.replace("_", " ")} changed`,
       description: `Changed to "${value}"`,
     });
+  };
+
+  const handleAddTag = () => {
+    if (!newTag.trim() || orderTags.includes(newTag.trim())) return;
+    updateOrder.mutate({ id: order.id, tags: [...orderTags, newTag.trim()] } as any);
+    setNewTag("");
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    updateOrder.mutate({ id: order.id, tags: orderTags.filter(t => t !== tag) } as any);
+  };
+
+  const handleRecordPayment = async () => {
+    const amount = parseFloat(paymentForm.amount);
+    if (!amount || amount <= 0) return;
+    await createPayment.mutateAsync({
+      order_id: order.id,
+      amount,
+      payment_method: paymentForm.method,
+      reference: paymentForm.reference || undefined,
+      notes: paymentForm.notes || undefined,
+    });
+    await createTimelineEvent.mutateAsync({
+      order_id: order.id,
+      event_type: "payment",
+      title: "Payment recorded",
+      description: `$${amount.toFixed(2)} via ${paymentForm.method}${paymentForm.reference ? ` (${paymentForm.reference})` : ""}`,
+    });
+    setPaymentDialogOpen(false);
+    setPaymentForm({ amount: "", method: "manual", reference: "", notes: "" });
   };
 
   const handleCreateShipment = async () => {
@@ -423,7 +462,47 @@ export default function OrderDetail() {
             {/* Payment */}
             <Card>
               <CardHeader className="py-3 px-4">
-                <CardTitle className="text-sm flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payment</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payment</CardTitle>
+                  <Dialog open={paymentDialogOpen} onOpenChange={setPaymentDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-6 text-[10px] gap-1"><Plus className="h-3 w-3" /> Record</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-sm">
+                      <DialogHeader><DialogTitle className="text-sm">Record Payment</DialogTitle></DialogHeader>
+                      <div className="space-y-3">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Amount</Label>
+                          <Input type="number" step="0.01" className="h-8 text-xs" placeholder="0.00" value={paymentForm.amount} onChange={(e) => setPaymentForm(p => ({ ...p, amount: e.target.value }))} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Method</Label>
+                          <Select value={paymentForm.method} onValueChange={(v) => setPaymentForm(p => ({ ...p, method: v }))}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="manual" className="text-xs">Manual / Cash</SelectItem>
+                              <SelectItem value="bank_transfer" className="text-xs">Bank Transfer</SelectItem>
+                              <SelectItem value="check" className="text-xs">Check</SelectItem>
+                              <SelectItem value="credit_card" className="text-xs">Credit Card</SelectItem>
+                              <SelectItem value="other" className="text-xs">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Reference</Label>
+                          <Input className="h-8 text-xs" placeholder="Transaction ID, check #, etc." value={paymentForm.reference} onChange={(e) => setPaymentForm(p => ({ ...p, reference: e.target.value }))} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Notes</Label>
+                          <Textarea className="text-xs min-h-[50px]" value={paymentForm.notes} onChange={(e) => setPaymentForm(p => ({ ...p, notes: e.target.value }))} />
+                        </div>
+                        <Button className="w-full text-xs" disabled={!paymentForm.amount || createPayment.isPending} onClick={handleRecordPayment}>
+                          {createPayment.isPending ? "Recording..." : "Record Payment"}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </CardHeader>
               <CardContent className="px-4 pb-4 pt-0 space-y-3">
                 <Select value={order.payment_status} onValueChange={(v) => handleStatusChange("payment_status", v)}>
@@ -436,6 +515,28 @@ export default function OrderDetail() {
                   <span className="text-xs text-muted-foreground">Current:</span>
                   <StatusBadge status={order.payment_status} />
                 </div>
+                {(payments as any[]).length > 0 && (
+                  <>
+                    <Separator />
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium">Payment History</p>
+                      {(payments as any[]).map((p: any) => (
+                        <div key={p.id} className="flex items-center justify-between text-xs">
+                          <div>
+                            <span className="font-medium">${Number(p.amount).toFixed(2)}</span>
+                            <span className="text-muted-foreground ml-1.5 capitalize">{p.payment_method.replace("_", " ")}</span>
+                            {p.reference && <span className="text-muted-foreground ml-1">({p.reference})</span>}
+                          </div>
+                          <span className="text-muted-foreground">{new Date(p.created_at).toLocaleDateString()}</span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between text-xs font-medium pt-1 border-t">
+                        <span>Total Paid</span>
+                        <span>${(payments as any[]).reduce((s: number, p: any) => s + Number(p.amount), 0).toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
 
@@ -478,6 +579,38 @@ export default function OrderDetail() {
                       Mark as Delivered
                     </Button>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Tags */}
+            <Card>
+              <CardHeader className="py-3 px-4">
+                <CardTitle className="text-sm flex items-center gap-2"><Tag className="h-4 w-4" /> Tags</CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 pt-0 space-y-2">
+                <div className="flex flex-wrap gap-1.5">
+                  {orderTags.map((tag: string) => (
+                    <Badge key={tag} variant="secondary" className="text-xs gap-1 pr-1">
+                      {tag}
+                      <button onClick={() => handleRemoveTag(tag)} className="ml-0.5 hover:text-destructive">
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {orderTags.length === 0 && <p className="text-xs text-muted-foreground">No tags</p>}
+                </div>
+                <div className="flex gap-1.5">
+                  <Input
+                    className="h-7 text-xs flex-1"
+                    placeholder="Add tag..."
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+                  />
+                  <Button size="sm" variant="outline" className="h-7 text-xs px-2" onClick={handleAddTag} disabled={!newTag.trim()}>
+                    <Plus className="h-3 w-3" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
