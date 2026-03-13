@@ -336,10 +336,10 @@ export default function Templates() {
                         <Badge key={t} variant="secondary" className="text-[10px] font-mono">[@{t}@]</Badge>
                       ))}
                       {tags.blocks.map((b) => (
-                        <Badge key={b} variant="outline" className="text-[10px] font-mono text-blue-600">[%{b}%]</Badge>
+                        <Badge key={b} variant="outline" className="text-[10px] font-mono text-primary">[%{b}%]</Badge>
                       ))}
                       {tags.conditionals.map((c) => (
-                        <Badge key={c} variant="outline" className="text-[10px] font-mono text-amber-600">[?{c}?]</Badge>
+                        <Badge key={c} variant="outline" className="text-[10px] font-mono text-accent-foreground">[?{c}?]</Badge>
                       ))}
                       {tags.valueTags.length === 0 && tags.blocks.length === 0 && tags.conditionals.length === 0 && (
                         <span className="text-[10px] text-muted-foreground">No tags detected</span>
