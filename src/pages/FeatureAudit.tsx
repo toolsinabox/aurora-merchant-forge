@@ -896,7 +896,7 @@ const featureData: FeatureCategory[] = [
       { name: "Add-On Types (Custom Panel / Shipping / Payment)", description: "Different add-on types for different integration points", status: "done", notes: "addon_type column supports custom_panel, integration, shipping, pricing, accounting, data_feed types with color-coded badges" },
       { name: "Developer Sandbox / Test Mode", description: "Test environment for development", status: "done", notes: "Test/Production mode toggle on API Docs page with Sandbox badge indicator" },
       { name: "API Documentation (Auto-Generated)", description: "Public API docs for developers", status: "done", notes: "Admin /api-docs page with 5 API sections (Products, Orders, Customers, Inventory, Webhooks), expandable endpoints with method badges, query params, request body, example responses, cURL examples, copy-to-clipboard, quick start guide" },
-      { name: "Batch API Requests", description: "Execute multiple API calls in single request", status: "not_started" },
+      { name: "Batch API Requests", description: "Execute multiple API calls in single request", status: "done", notes: "batch-api edge function accepts array of up to 20 requests with method/path/body, forwards to rest-api, returns all results in parallel; authenticated via x-api-key" },
     ],
   },
 
