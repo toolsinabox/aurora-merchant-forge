@@ -217,7 +217,16 @@ export default function Inventory() {
             <h1 className="text-lg font-semibold">Inventory</h1>
             <p className="text-xs text-muted-foreground">Track stock across all locations</p>
           </div>
-          <div className="flex gap-2">
+        </div>
+
+        <Tabs defaultValue="stock">
+          <TabsList className="h-8">
+            <TabsTrigger value="stock" className="text-xs h-7">Stock</TabsTrigger>
+            <TabsTrigger value="serials" className="text-xs h-7">Serial Numbers</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stock" className="space-y-3">
+          <div className="flex items-center justify-end gap-2">
             <Button
               size="sm"
               variant={showHistory ? "default" : "outline"}
