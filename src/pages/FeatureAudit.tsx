@@ -554,7 +554,7 @@ const featureData: FeatureCategory[] = [
       { name: "Referral / Loyalty Program", description: "Points-based loyalty or referral rewards", status: "done", notes: "loyalty_points and loyalty_transactions tables with balance/tier tracking, admin Loyalty Program page with KPI cards, member list with tier badges, point adjustment dialog (earn/redeem/bonus), recent transactions feed, auto-tier progression (bronze→silver→gold→platinum)" },
       { name: "Google Ads Integration", description: "Conversion tracking and remarketing for Google Ads", status: "done", notes: "google_ads_id and google_ads_conversion_label on stores table, gtag.js dynamically injected in storefront, configurable in Settings Branding tab" },
       { name: "Facebook Pixel Integration", description: "Meta/Facebook pixel for conversion tracking", status: "done", notes: "fb_pixel_id on stores table, Meta Pixel injected in storefront layout, configurable in Settings Branding tab" },
-      { name: "Affiliate Program", description: "Affiliate tracking with commission management", status: "not_started" },
+      { name: "Affiliate Program", description: "Affiliate tracking with commission management", status: "done", notes: "affiliates and affiliate_referrals tables; admin /affiliates page with KPI cards (total affiliates, active, referred revenue, unpaid commission), affiliate list with referral code copy, commission rate/type, status toggle; referral detail dialog with per-referral pay-out action; create affiliate dialog with auto-generated 8-char referral code" },
     ],
   },
 
