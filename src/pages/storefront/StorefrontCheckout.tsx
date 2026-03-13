@@ -11,7 +11,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X, MapPin } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin, Truck } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 
 interface AppliedCoupon {
