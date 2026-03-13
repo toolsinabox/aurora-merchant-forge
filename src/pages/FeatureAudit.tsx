@@ -198,7 +198,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Notes (Internal/Customer)", description: "Add notes to orders visible to staff or customer", status: "done" },
       { name: "Order Timeline / History", description: "Chronological event log for each order", status: "done" },
       { name: "Shipping Address", description: "Shipping address per order", status: "done" },
-      { name: "Billing Address", description: "Separate billing address", status: "partial", notes: "Single address field currently" },
+      { name: "Billing Address", description: "Separate billing address", status: "done", notes: "Billing address with 'same as shipping' checkbox at checkout, displayed on order detail" },
       { name: "Order Subtotal / Tax / Shipping / Discount / Total", description: "Full order financial breakdown", status: "done" },
       { name: "Coupon Application to Orders", description: "Apply discount coupons to orders", status: "done" },
       { name: "Order Shipments (Partial Shipments)", description: "Multiple shipments per order with tracking", status: "done" },
