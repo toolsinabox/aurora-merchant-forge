@@ -1204,3 +1204,101 @@ export function useDeleteStoreTemplate() {
     onError: (e) => toast.error(e.message),
   });
 }
+
+// ===================== MARKETING CAMPAIGNS =====================
+
+export function useMarketingCampaigns() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["marketing_campaigns", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("marketing_campaigns" as any)
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateCampaign() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (campaign: { name: string; subject?: string; content?: string; campaign_type?: string; audience_segment?: string; audience_tags?: string[]; scheduled_at?: string }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("marketing_campaigns" as any)
+        .insert({ ...campaign, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["marketing_campaigns"] });
+      toast.success("Campaign created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useUpdateCampaign() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
+      const { data, error } = await supabase
+        .from("marketing_campaigns" as any)
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["marketing_campaigns"] });
+      toast.success("Campaign updated");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteCampaign() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("marketing_campaigns" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["marketing_campaigns"] });
+      toast.success("Campaign deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+// ===================== ABANDONED CARTS =====================
+
+export function useAbandonedCarts() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["abandoned_carts", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("abandoned_carts" as any)
+        .select("*, customers(name, email)")
+        .eq("store_id", currentStore.id)
+        .order("abandoned_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+}
