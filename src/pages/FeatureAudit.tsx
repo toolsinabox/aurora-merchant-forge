@@ -418,7 +418,7 @@ const featureData: FeatureCategory[] = [
       { name: "Gift Voucher Purchase (Storefront)", description: "Customers purchase gift vouchers with custom value/message", status: "not_started" },
       { name: "Gift Voucher Email Delivery", description: "Send gift voucher to recipient by email on scheduled date", status: "not_started", notes: "Neto has gift_voucher system email" },
       { name: "Gift Voucher Balance Tracking", description: "Track remaining balance on vouchers", status: "done" },
-      { name: "Gift Voucher Redemption at Checkout", description: "Apply voucher balance as payment", status: "not_started" },
+      { name: "Gift Voucher Redemption at Checkout", description: "Apply voucher balance as payment", status: "done", notes: "Gift voucher code input at checkout, deducts balance from gift_vouchers table" },
     ],
   },
 
