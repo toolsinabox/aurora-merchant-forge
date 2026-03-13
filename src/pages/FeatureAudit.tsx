@@ -708,7 +708,7 @@ const featureData: FeatureCategory[] = [
       { name: "Quote / RFQ Workflow", description: "Request for quote → Admin pricing → Customer approval → Order", status: "not_started" },
       { name: "Bulk/Quick Order Form", description: "Enter multiple SKUs and quantities on single form", status: "done", notes: "Storefront /quick-order page with SKU lookup, quantity entry, and add-all-to-cart" },
       { name: "Restricted Product Visibility", description: "Show/hide products or categories by customer group", status: "done", notes: "visibility_groups UUID[] column on products table; null = visible to all, array of customer_group IDs restricts to those groups" },
-      { name: "Account Payment (Pay on Account)", description: "Allow B2B customers to pay on their account balance", status: "not_started" },
+      { name: "Account Payment (Pay on Account)", description: "Allow B2B customers to pay on their account balance", status: "done", notes: "Checkout detects customer group credit_terms, shows 'Pay on Account' checkbox with terms label, order notes tagged with payment method" },
     ],
   },
 
