@@ -41,6 +41,7 @@ export default function POS() {
   const [lastOrder, setLastOrder] = useState<any>(null);
   const [processing, setProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("sale");
+  const [selectedRegister, setSelectedRegister] = useState<string>("");
 
   // Gift voucher state
   const [voucherCode, setVoucherCode] = useState("");
