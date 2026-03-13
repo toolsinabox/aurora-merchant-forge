@@ -65,6 +65,18 @@ function ProductCard({ p, basePath, store, onQuickView }: { p: any; basePath: st
           variant="secondary"
           size="icon"
           className="h-8 w-8 rounded-full shadow-sm"
+          title="Quick View"
+          onClick={(e) => {
+            e.preventDefault();
+            onQuickView(p);
+          }}
+        >
+          <Eye className="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          className="h-8 w-8 rounded-full shadow-sm"
           onClick={(e) => {
             e.preventDefault();
             toggleItem(p.id, store?.id);
