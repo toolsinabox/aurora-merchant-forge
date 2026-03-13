@@ -188,6 +188,8 @@ const App = () => (
                   <Route path="/_cpanel/content-blocks" element={<RequireAuth><ContentBlocks /></RequireAuth>} />
                   <Route path="/_cpanel/backorders" element={<RequireAuth><Backorders /></RequireAuth>} />
                   <Route path="/_cpanel/staff-activity" element={<RequireAuth><StaffActivity /></RequireAuth>} />
+                  <Route path="/_cpanel/api-keys" element={<RequireAuth><ApiKeys /></RequireAuth>} />
+                  <Route path="/_cpanel/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
