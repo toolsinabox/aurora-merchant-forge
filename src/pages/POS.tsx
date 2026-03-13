@@ -41,6 +41,7 @@ export default function POS() {
   const [lastOrder, setLastOrder] = useState<any>(null);
   const [processing, setProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("sale");
+  const [selectedRegister, setSelectedRegister] = useState<string>("");
 
   // Gift voucher state
   const [voucherCode, setVoucherCode] = useState("");
@@ -60,6 +61,17 @@ export default function POS() {
   const [actualCash, setActualCash] = useState("");
   const [eodNotes, setEodNotes] = useState("");
   const [currentSession, setCurrentSession] = useState<any>(null);
+
+  // Load registers
+  const { data: registers = [] } = useQuery({
+    queryKey: ["pos_registers", storeId],
+    queryFn: async () => {
+      if (!storeId) return [];
+      const { data } = await supabase.from("pos_registers" as any).select("id, name, location_id, is_active").eq("store_id", storeId).eq("is_active", true).order("name");
+      return (data || []) as any[];
+    },
+    enabled: !!storeId,
+  });
 
   const { data: products = [] } = useQuery({
     queryKey: ["pos_products", storeId, search],
@@ -228,6 +240,7 @@ export default function POS() {
       await supabase.from("pos_register_sessions" as any).insert({
         store_id: storeId,
         opened_by: user.id,
+        register_id: selectedRegister || null,
         opening_float: Number(openingFloat),
         expected_cash: expectedCash,
         actual_cash: Number(actualCash),
@@ -244,6 +257,7 @@ export default function POS() {
       toast.success("Register closed successfully");
       setShowEOD(false);
     } catch (err: any) { toast.error(err.message); }
+  };
 
   const createLayby = async () => {
     if (!storeId || !user || !selectedCustomer || cart.length === 0) return;
@@ -313,10 +327,24 @@ export default function POS() {
     <AdminLayout>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="flex items-center justify-between mb-3">
-          <TabsList>
-            <TabsTrigger value="sale">New Sale</TabsTrigger>
-            <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-3">
+            <TabsList>
+              <TabsTrigger value="sale">New Sale</TabsTrigger>
+              <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
+            </TabsList>
+            {registers.length > 0 && (
+              <Select value={selectedRegister} onValueChange={setSelectedRegister}>
+                <SelectTrigger className="w-[160px] h-8 text-xs">
+                  <SelectValue placeholder="Select register..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {registers.map((r: any) => (
+                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </div>
           <Button variant="outline" size="sm" onClick={() => setShowEOD(true)} className="gap-2">
             <Clock className="h-4 w-4" /> End of Day
           </Button>

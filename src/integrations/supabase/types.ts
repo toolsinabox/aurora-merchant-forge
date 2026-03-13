@@ -922,6 +922,7 @@ export type Database = {
           customer_group_id: string | null
           email: string | null
           id: string
+          logo_url: string | null
           name: string
           notes: string | null
           phone: string | null
@@ -938,6 +939,7 @@ export type Database = {
           customer_group_id?: string | null
           email?: string | null
           id?: string
+          logo_url?: string | null
           name: string
           notes?: string | null
           phone?: string | null
@@ -954,6 +956,7 @@ export type Database = {
           customer_group_id?: string | null
           email?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
           notes?: string | null
           phone?: string | null
@@ -2415,6 +2418,7 @@ export type Database = {
           opened_by: string
           opening_float: number
           other_total: number | null
+          register_id: string | null
           status: string
           store_id: string
           total_orders: number | null
@@ -2435,6 +2439,7 @@ export type Database = {
           opened_by: string
           opening_float?: number
           other_total?: number | null
+          register_id?: string | null
           status?: string
           store_id: string
           total_orders?: number | null
@@ -2455,6 +2460,7 @@ export type Database = {
           opened_by?: string
           opening_float?: number
           other_total?: number | null
+          register_id?: string | null
           status?: string
           store_id?: string
           total_orders?: number | null
@@ -2463,7 +2469,59 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "pos_register_sessions_register_id_fkey"
+            columns: ["register_id"]
+            isOneToOne: false
+            referencedRelation: "pos_registers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pos_register_sessions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pos_registers: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          location_id: string | null
+          name: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_id?: string | null
+          name: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_id?: string | null
+          name?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pos_registers_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pos_registers_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -3996,6 +4054,44 @@ export type Database = {
           },
         ]
       }
+      store_languages: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          is_default: boolean
+          locale: string
+          name: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          locale: string
+          name: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          locale?: string
+          name?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_languages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_templates: {
         Row: {
           content: string
@@ -4109,6 +4205,50 @@ export type Database = {
             foreignKeyName: "store_themes_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: true
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_translations: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          field_name: string
+          id: string
+          locale: string
+          store_id: string
+          translated_value: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          field_name: string
+          id?: string
+          locale?: string
+          store_id: string
+          translated_value: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          field_name?: string
+          id?: string
+          locale?: string
+          store_id?: string
+          translated_value?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_translations_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
             referencedRelation: "stores"
             referencedColumns: ["id"]
           },
@@ -4447,6 +4587,54 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "user_roles_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      warehouse_routing_rules: {
+        Row: {
+          country: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          location_id: string
+          priority: number
+          region: string | null
+          store_id: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_id: string
+          priority?: number
+          region?: string | null
+          store_id: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          location_id?: string
+          priority?: number
+          region?: string | null
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "warehouse_routing_rules_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "warehouse_routing_rules_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"

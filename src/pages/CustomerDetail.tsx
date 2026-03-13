@@ -189,7 +189,7 @@ export default function CustomerDetail() {
   const { data: customerGroups = [] } = useCustomerGroups();
 
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "" });
+  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "", logo_url: "" });
   const [addrOpen, setAddrOpen] = useState(false);
   const [mergeOpen, setMergeOpen] = useState(false);
   const [mergeEmail, setMergeEmail] = useState("");
@@ -215,6 +215,7 @@ export default function CustomerDetail() {
       segment: customer.segment,
       tags: (customer.tags || []).join(", "),
       customer_group_id: (customer as any).customer_group_id || "",
+      logo_url: (customer as any).logo_url || "",
     });
     setEditing(true);
   };
@@ -231,6 +232,7 @@ export default function CustomerDetail() {
         segment: editForm.segment,
         tags,
         customer_group_id: editForm.customer_group_id || null,
+        logo_url: (editForm as any).logo_url || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
@@ -370,6 +372,7 @@ export default function CustomerDetail() {
                     )}
                     <div><Label className="text-xs">Tags (comma separated)</Label><Input className="h-8 text-xs" value={editForm.tags} onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })} placeholder="vip, wholesale" /></div>
                     <div><Label className="text-xs">Notes</Label><Textarea className="text-xs min-h-[60px]" value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} /></div>
+                    <div><Label className="text-xs">Dropship Logo URL</Label><Input className="h-8 text-xs" value={editForm.logo_url} onChange={(e) => setEditForm({ ...editForm, logo_url: e.target.value })} placeholder="https://..." /></div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 text-xs" onClick={saveEdit}><Save className="h-3 w-3 mr-1" />Save</Button>
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditing(false)}>Cancel</Button>
@@ -394,6 +397,12 @@ export default function CustomerDetail() {
                       </div>
                     )}
                     {customer.notes && <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded p-2">{customer.notes}</p>}
+                    {(customer as any).logo_url && (
+                      <div className="mt-2">
+                        <Label className="text-[10px] text-muted-foreground">Dropship Logo</Label>
+                        <img src={(customer as any).logo_url} alt="Customer logo" className="h-12 mt-1 rounded border object-contain" />
+                      </div>
+                    )}
                   </>
                 )}
               </CardContent>
