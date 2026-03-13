@@ -42,6 +42,10 @@ export default function StorefrontSignup() {
           email,
           user_id: data.user.id,
         } as any);
+        // Send welcome email
+        supabase.functions.invoke("welcome-email", {
+          body: { store_id: store.id, customer_name: name, customer_email: email },
+        }).catch(() => {});
       }
     }
 

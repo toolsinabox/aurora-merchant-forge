@@ -705,6 +705,10 @@ export function useCreateOrderPayment() {
         .select()
         .single();
       if (error) throw error;
+      // Trigger payment confirmation email
+      supabase.functions.invoke("payment-email", {
+        body: { order_id: payment.order_id, store_id: currentStore.id, amount: payment.amount, payment_method: payment.payment_method },
+      }).catch(() => {});
       return data;
     },
     onSuccess: (_, vars) => {
