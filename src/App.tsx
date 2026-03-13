@@ -57,6 +57,7 @@ import StorefrontAccount from "./pages/storefront/StorefrontAccount.tsx";
 import StorefrontCompare from "./pages/storefront/StorefrontCompare.tsx";
 import StorefrontContentPage from "./pages/storefront/StorefrontContentPage.tsx";
 import StorefrontTrackOrder from "./pages/storefront/StorefrontTrackOrder.tsx";
+import StorefrontBlog from "./pages/storefront/StorefrontBlog.tsx";
 const queryClient = new QueryClient();
 
 // Check if we're on a store subdomain
@@ -87,6 +88,7 @@ const App = () => (
                   <Route path="/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="/page/:pageSlug" element={<StorefrontContentPage />} />
+                  <Route path="/blog" element={<StorefrontBlog />} />
                   <Route path="/track-order" element={<StorefrontTrackOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
@@ -141,6 +143,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/store/:storeSlug/account" element={<StorefrontAccount />} />
                   <Route path="/store/:storeSlug/page/:pageSlug" element={<StorefrontContentPage />} />
+                  <Route path="/store/:storeSlug/blog" element={<StorefrontBlog />} />
                   <Route path="/store/:storeSlug/track-order" element={<StorefrontTrackOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </>

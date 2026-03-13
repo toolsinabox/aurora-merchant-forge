@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { StorefrontSearch } from "./StorefrontSearch";
 import { NewsletterSignup } from "./NewsletterSignup";
+import { CookieConsentBanner } from "./CookieConsentBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
@@ -24,11 +25,15 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
   const [searchOpen, setSearchOpen] = useState(false);
   const [storeId, setStoreId] = useState<string>("");
+  const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
-      if (s) setStoreId(s.id);
+      if (s) {
+        setStoreId(s.id);
+        if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
+      }
     });
   }, [storeSlug]);
 
@@ -141,7 +146,9 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
               <nav className="flex flex-col gap-2">
                 <Link to={basePath || "/"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
                 <Link to={`${basePath}/products`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">All Products</Link>
+                <Link to={`${basePath}/blog`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
                 <Link to={`${basePath}/cart`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Cart</Link>
+                <Link to={`${basePath}/track-order`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Track Order</Link>
               </nav>
             </div>
             <div>
@@ -164,11 +171,24 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
               )}
             </div>
           </div>
+          {/* Social Links */}
+          {Object.keys(socialLinks).length > 0 && (
+            <div className="flex justify-center gap-4 mb-6">
+              {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Facebook</a>}
+              {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Instagram</a>}
+              {socialLinks.twitter && <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Twitter</a>}
+              {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">YouTube</a>}
+              {socialLinks.tiktok && <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">TikTok</a>}
+              {socialLinks.linkedin && <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">LinkedIn</a>}
+            </div>
+          )}
           <div className="border-t pt-6 text-center text-xs text-muted-foreground">
             © {new Date().getFullYear()} {storeName || "Store"}. All rights reserved.
           </div>
         </div>
       </footer>
+
+      <CookieConsentBanner />
     </div>
   );
 }

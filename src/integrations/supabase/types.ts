@@ -2076,6 +2076,7 @@ export type Database = {
           owner_id: string
           primary_color: string | null
           slug: string | null
+          social_links: Json | null
           timezone: string
           updated_at: string
         }
@@ -2091,6 +2092,7 @@ export type Database = {
           owner_id: string
           primary_color?: string | null
           slug?: string | null
+          social_links?: Json | null
           timezone?: string
           updated_at?: string
         }
@@ -2106,6 +2108,7 @@ export type Database = {
           owner_id?: string
           primary_color?: string | null
           slug?: string | null
+          social_links?: Json | null
           timezone?: string
           updated_at?: string
         }
