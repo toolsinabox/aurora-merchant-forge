@@ -47,6 +47,12 @@ export default function StorefrontProductDetail() {
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { addProduct: trackView, getRecent } = useRecentlyViewed();
+  const { user } = useAuth();
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [notifySubmitted, setNotifySubmitted] = useState(false);
+  const [shippingEstimate, setShippingEstimate] = useState<{ zone: string; cost: string } | null>(null);
+  const [shippingZones, setShippingZones] = useState<any[]>([]);
+  const [estimateZip, setEstimateZip] = useState("");
 
   useEffect(() => {
     async function load() {
