@@ -574,7 +574,7 @@ const featureData: FeatureCategory[] = [
       { name: "Abandoned Cart Email", description: "Reminder email for abandoned carts", status: "done", notes: "abandoned-cart-email edge function sends recovery email with cart items, total, and CTA button, updates recovery_status" },
       { name: "Wishlist Reminder Email", description: "Periodic wishlist item reminder", status: "done", notes: "wishlist-reminder edge function sends personalized emails with saved items to all customers" },
       { name: "Gift Voucher Email", description: "Gift voucher delivery to recipient", status: "done", notes: "gift-voucher-email edge function sends branded email with code, value, message to recipient on admin and storefront voucher creation" },
-      { name: "Back in Stock / Notify Me Email", description: "Notification when product is restocked", status: "not_started" },
+      { name: "Back in Stock / Notify Me Email", description: "Notification when product is restocked", status: "done", notes: "back-in-stock-email edge function notifies customers from back_in_stock_requests table when product is restocked, marks requests as notified" },
       { name: "Customer Statement Email", description: "Account statement with transaction history", status: "not_started" },
       { name: "Dispute/Warranty Emails", description: "Emails for dispute raised, updated, resolved", status: "not_started" },
       { name: "Dropship Notification Email", description: "Emails to dropship suppliers for new orders", status: "not_started" },
