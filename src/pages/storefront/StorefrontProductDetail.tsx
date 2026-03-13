@@ -131,7 +131,7 @@ export default function StorefrontProductDetail() {
 
   const handleAddToCart = () => {
     if (!product) return;
-    addItem({
+    const itemData = {
       product_id: product.id,
       variant_id: currentVariant?.id || null,
       title: product.title,
@@ -140,9 +140,17 @@ export default function StorefrontProductDetail() {
       image: images[0],
       sku: currentVariant?.sku || product.sku,
       quantity,
+    };
+    addItem(itemData);
+    setCartPopupItem({
+      title: product.title,
+      price: Number(finalPrice),
+      quantity,
+      image: images[0],
+      variant_name: currentVariant?.name,
     });
+    setCartPopupOpen(true);
     setAdded(true);
-    toast.success("Added to cart");
     setTimeout(() => setAdded(false), 2000);
   };
 
