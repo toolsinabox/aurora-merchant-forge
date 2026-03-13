@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useReturns, useUpdateReturn } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle, RefreshCw } from "lucide-react";
+import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle, RefreshCw, ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -16,8 +16,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
+const DISPUTE_TYPES = ["refund", "repair", "replace"];
+const DISPUTE_REASONS = [
+  "Product defective on arrival",
+  "Product broke within warranty period",
+  "Product not as described",
+  "Missing parts or accessories",
+  "Performance issues",
+  "Safety concern",
+  "Other",
+];
 
 export default function Returns() {
   const { data: returns = [], isLoading } = useReturns();
