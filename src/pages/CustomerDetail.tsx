@@ -372,7 +372,7 @@ export default function CustomerDetail() {
                     )}
                     <div><Label className="text-xs">Tags (comma separated)</Label><Input className="h-8 text-xs" value={editForm.tags} onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })} placeholder="vip, wholesale" /></div>
                     <div><Label className="text-xs">Notes</Label><Textarea className="text-xs min-h-[60px]" value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} /></div>
-                    <div><Label className="text-xs">Dropship Logo URL</Label><Input className="h-8 text-xs" value={(editForm as any).logo_url || ""} onChange={(e) => setEditForm({ ...editForm, logo_url: e.target.value } as any)} placeholder="https://..." /></div>
+                    <div><Label className="text-xs">Dropship Logo URL</Label><Input className="h-8 text-xs" value={editForm.logo_url} onChange={(e) => setEditForm({ ...editForm, logo_url: e.target.value })} placeholder="https://..." /></div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 text-xs" onClick={saveEdit}><Save className="h-3 w-3 mr-1" />Save</Button>
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditing(false)}>Cancel</Button>
