@@ -879,7 +879,7 @@ const featureData: FeatureCategory[] = [
       { name: "SEO Settings (Global)", description: "Site-wide meta tags, sitemap settings", status: "done", notes: "SEO tab in Settings with global meta title (60 chars) and meta description (160 chars) stored on stores table" },
       { name: "Social Media Links", description: "Store social media profile links", status: "done", notes: "social_links JSONB field on stores table, displayed in storefront footer" },
       { name: "Cookie/Privacy Consent Banner", description: "GDPR/Privacy cookie consent management", status: "done", notes: "Cookie consent banner with Accept/Decline, localStorage persistence" },
-      { name: "Terms & Conditions / Privacy Policy", description: "Store-level legal pages", status: "not_started" },
+      { name: "Terms & Conditions / Privacy Policy", description: "Store-level legal pages", status: "done", notes: "Links in storefront footer to /page/terms-and-conditions and /page/privacy-policy via CMS content pages" },
     ],
   },
 
