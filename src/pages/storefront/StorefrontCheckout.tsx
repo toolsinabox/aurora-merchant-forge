@@ -294,6 +294,15 @@ export default function StorefrontCheckout() {
         }
       }
 
+      // Deduct gift voucher balance
+      if (appliedVoucher) {
+        const newBalance = Math.max(0, appliedVoucher.balance - appliedVoucher.amountUsed);
+        await supabase.from("gift_vouchers").update({
+          balance: newBalance,
+          redeemed_at: newBalance === 0 ? new Date().toISOString() : null,
+        } as any).eq("id", appliedVoucher.id);
+      }
+
       setOrderNumber(orderNum);
       setOrderTotal(finalTotal);
       setCompleted(true);
