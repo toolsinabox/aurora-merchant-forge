@@ -206,7 +206,11 @@ const App = () => (
                   <Route path="/_cpanel/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
                   <Route path="/_cpanel/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
                   <Route path="/_cpanel/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
-                  <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+                   <Route path="/_cpanel/addons" element={<RequireAuth><Addons /></RequireAuth>} />
+                   <Route path="/_cpanel/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
+                   <Route path="/_cpanel/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
+                   <Route path="/_cpanel/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
                 </>
