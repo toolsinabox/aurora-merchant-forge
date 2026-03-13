@@ -1126,3 +1126,81 @@ export function useUpdateStore() {
     onError: (e) => toast.error(e.message),
   });
 }
+
+// ===================== STORE TEMPLATES (B@SE) =====================
+
+export function useStoreTemplates() {
+  const { currentStore } = useAuth();
+  return useQuery({
+    queryKey: ["store_templates", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("store_templates" as any)
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+}
+
+export function useCreateStoreTemplate() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (tmpl: { name: string; slug?: string; template_type?: string; context_type?: string; content: string; is_active?: boolean }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("store_templates" as any)
+        .insert({ ...tmpl, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store_templates"] });
+      toast.success("Template created");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useUpdateStoreTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; name?: string; slug?: string; template_type?: string; context_type?: string; content?: string; is_active?: boolean }) => {
+      const { data, error } = await supabase
+        .from("store_templates" as any)
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store_templates"] });
+      toast.success("Template saved");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteStoreTemplate() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("store_templates" as any).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store_templates"] });
+      toast.success("Template deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
