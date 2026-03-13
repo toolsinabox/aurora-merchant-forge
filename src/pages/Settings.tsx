@@ -757,6 +757,14 @@ export default function SettingsPage() {
                     <Label className="text-xs">Facebook / Meta Pixel ID</Label>
                     <Input className="h-8 text-xs" value={brandForm.fb_pixel_id} onChange={(e) => setBrandForm({ ...brandForm, fb_pixel_id: e.target.value })} placeholder="1234567890" />
                   </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Ads Conversion ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.google_ads_id} onChange={(e) => setBrandForm({ ...brandForm, google_ads_id: e.target.value })} placeholder="AW-XXXXXXXXX" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Ads Conversion Label</Label>
+                    <Input className="h-8 text-xs" value={brandForm.google_ads_conversion_label} onChange={(e) => setBrandForm({ ...brandForm, google_ads_conversion_label: e.target.value })} placeholder="AbCdEfGhIjK" />
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Banner Text</Label>
