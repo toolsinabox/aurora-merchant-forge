@@ -387,6 +387,15 @@ export default function Templates() {
                       />
                     </TabsContent>
 
+                    <TabsContent value="css" className="m-0 p-0">
+                      <Textarea
+                        className="min-h-[500px] border-0 rounded-none font-mono text-xs leading-relaxed resize-none focus-visible:ring-0"
+                        placeholder={`.product-card {\n  border: 1px solid #e5e7eb;\n  border-radius: 8px;\n  padding: 16px;\n}\n\n.product-card h2 {\n  font-size: 18px;\n  font-weight: 700;\n}`}
+                        value={form.custom_css}
+                        onChange={(e) => setForm((p) => ({ ...p, custom_css: e.target.value }))}
+                      />
+                    </TabsContent>
+
                     <TabsContent value="preview" className="m-0 p-4">
                       {previewHtml ? (
                         <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: previewHtml }} />
