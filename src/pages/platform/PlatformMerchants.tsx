@@ -216,6 +216,28 @@ export default function PlatformMerchants() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Plan Limits Editor */}
+      <Dialog open={!!planStore} onOpenChange={(v) => { if (!v) setPlanStore(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Plan Limits: {planStore?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">Set -1 for unlimited</p>
+            {["products", "orders_per_month", "staff", "storage_mb"].map(field => (
+              <div key={field} className="space-y-1">
+                <Label className="text-xs capitalize">{field.replace(/_/g, " ")}</Label>
+                <Input
+                  className="h-8 text-xs"
+                  type="number"
+                  value={planLimits[field] ?? ""}
+                  onChange={(e) => setPlanLimits({ ...planLimits, [field]: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+            ))}
+            <Button size="sm" className="w-full text-xs" onClick={savePlanLimits}>Save Limits</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PlatformLayout>
   );
 }
