@@ -66,7 +66,7 @@ export default function GiftVouchers() {
   const createMutation = useMutation({
     mutationFn: async () => {
       if (!currentStore) throw new Error("No store");
-      const { error } = await supabase.from("gift_vouchers").insert({
+      const { data: inserted, error } = await supabase.from("gift_vouchers").insert({
         store_id: currentStore.id,
         code: form.code,
         initial_value: form.initial_value,
@@ -77,8 +77,14 @@ export default function GiftVouchers() {
         message: form.message || null,
         is_active: form.is_active,
         expires_at: form.expires_at || null,
-      });
+      }).select("id").single();
       if (error) throw error;
+      // Send gift voucher email to recipient if email provided
+      if (form.recipient_email && inserted?.id) {
+        supabase.functions.invoke("gift-voucher-email", {
+          body: { voucher_id: inserted.id, store_id: currentStore.id },
+        }).catch(() => {});
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gift_vouchers"] });

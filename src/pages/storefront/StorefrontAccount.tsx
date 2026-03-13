@@ -426,6 +426,10 @@ export default function StorefrontAccount() {
                         notes: "Paid from customer account",
                       });
                       await supabase.from("orders").update({ payment_status: "paid" }).eq("id", selectedOrder.id);
+                      // Trigger payment confirmation email
+                      supabase.functions.invoke("payment-email", {
+                        body: { order_id: selectedOrder.id, store_id: selectedOrder.store_id, amount: Number(selectedOrder.total), payment_method: "account" },
+                      }).catch(() => {});
                       setSelectedOrder({ ...selectedOrder, payment_status: "paid" });
                       setOrders(orders.map(o => o.id === selectedOrder.id ? { ...o, payment_status: "paid" } : o));
                       toast.success("Payment recorded successfully!");
