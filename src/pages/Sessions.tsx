@@ -8,6 +8,7 @@ import { Monitor, Smartphone, Globe, LogOut, RefreshCw, Shield } from "lucide-re
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { TwoFactorSetup } from "@/components/admin/TwoFactorSetup";
 
 export default function Sessions() {
   const { user, signOut } = useAuth();
