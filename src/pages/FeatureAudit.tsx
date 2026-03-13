@@ -228,7 +228,7 @@ const featureData: FeatureCategory[] = [
     category: "Payments",
     icon: <CreditCard className="h-5 w-5" />,
     features: [
-      { name: "Payment Recording (GetPayment / AddPayment)", description: "Record and retrieve payments against orders", status: "partial", notes: "Payment status tracked but no gateway integration" },
+      { name: "Payment Recording (GetPayment / AddPayment)", description: "Record and retrieve payments against orders", status: "done", notes: "order_payments table with full CRUD, payment history on order detail" },
       { name: "Stripe Integration", description: "Accept credit card payments via Stripe", status: "not_started" },
       { name: "PayPal Integration", description: "PayPal checkout / express checkout", status: "not_started" },
       { name: "Afterpay / Zip Pay (BNPL)", description: "Buy Now Pay Later integrations", status: "not_started" },
