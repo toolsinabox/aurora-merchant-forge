@@ -37,6 +37,16 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       if (s) {
         setStoreId(s.id);
         if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
+        // Banner scheduling
+        const bt = (s as any).banner_text;
+        const bs = (s as any).banner_start;
+        const be = (s as any).banner_end;
+        if (bt) {
+          const now = new Date();
+          const startOk = !bs || new Date(bs) <= now;
+          const endOk = !be || new Date(be) >= now;
+          setBannerText(startOk && endOk ? bt : null);
+        }
         // Load categories for mega menu
         supabase.from("categories").select("id, name, slug, parent_id, sort_order")
           .eq("store_id", s.id).order("sort_order").then(({ data }) => {
