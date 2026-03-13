@@ -55,6 +55,7 @@ import StorefrontLogin from "./pages/storefront/StorefrontLogin.tsx";
 import StorefrontSignup from "./pages/storefront/StorefrontSignup.tsx";
 import StorefrontAccount from "./pages/storefront/StorefrontAccount.tsx";
 import StorefrontCompare from "./pages/storefront/StorefrontCompare.tsx";
+import StorefrontContentPage from "./pages/storefront/StorefrontContentPage.tsx";
 const queryClient = new QueryClient();
 
 // Check if we're on a store subdomain
