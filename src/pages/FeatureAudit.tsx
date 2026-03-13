@@ -348,7 +348,7 @@ const featureData: FeatureCategory[] = [
       { name: "Wishlist (Favourites)", description: "Save/view/reorder wishlist items (favourites/ & wishlist/)", status: "done" },
       { name: "View Customer Vouchers", description: "View gift vouchers on account (vouchers/)", status: "done", notes: "Vouchers tab in storefront account showing purchased and received gift vouchers with code, value, balance, and expiry" },
       { name: "View Customer Files", description: "View/download uploaded documents (files/)", status: "not_started" },
-      { name: "Approve/Reject Quotes", description: "Customer approves or deletes quotes (approve_quote/)", status: "not_started" },
+      { name: "Approve/Reject Quotes", description: "Customer approves or deletes quotes (approve_quote/)", status: "done", notes: "Approve/Reject buttons on sent quotes in storefront account Quotes tab" },
       { name: "My Store / Stockist Management", description: "Customers manage their stockist listing (mystore/)", status: "not_started" },
       { name: "Write Product Review", description: "Submit product review from account (write_review/)", status: "done", notes: "Review form with rating, title, body on product detail page for logged-in users" },
       { name: "Write Content Review", description: "Submit content/page review (write_contentreview/)", status: "not_started" },
