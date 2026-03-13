@@ -395,6 +395,7 @@ export default function Inventory() {
                 <TableRow>
                   <TableHead className="text-xs h-8">Product</TableHead>
                   <TableHead className="text-xs h-8">SKU</TableHead>
+                  <TableHead className="text-xs h-8">Bin Location</TableHead>
                   <TableHead className="text-xs h-8 text-right">Stock</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                 </TableRow>
