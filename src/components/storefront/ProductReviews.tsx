@@ -242,6 +242,12 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
                 </div>
                 {review.title && <p className="font-medium text-sm">{review.title}</p>}
                 {review.body && <p className="text-sm text-muted-foreground">{review.body}</p>}
+                {review.admin_reply && (
+                  <div className="ml-6 mt-2 border-l-2 border-primary/30 pl-3 py-1">
+                    <p className="text-xs font-medium text-primary">Store Response</p>
+                    <p className="text-sm text-muted-foreground">{review.admin_reply}</p>
+                  </div>
+                )}
               </div>
             );
           })}

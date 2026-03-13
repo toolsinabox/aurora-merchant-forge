@@ -176,6 +176,18 @@ export default function StorefrontProductDetail() {
         type="product"
         price={Number(finalPrice)}
         currency={store?.currency || "USD"}
+        canonicalUrl={window.location.origin + window.location.pathname}
+        product={{
+          name: product.title,
+          description: product.short_description || product.description?.slice(0, 300),
+          sku: currentVariant?.sku || product.sku,
+          brand: product.brand,
+          image: images[0] ? getImageUrl(images[0]) : undefined,
+          price: Number(finalPrice),
+          currency: store?.currency || "USD",
+          availability: (currentVariant && currentVariant.stock <= 0) ? "OutOfStock" : "InStock",
+          url: window.location.href,
+        }}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Breadcrumbs */}
