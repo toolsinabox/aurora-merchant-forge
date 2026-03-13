@@ -113,6 +113,8 @@ const App = () => (
                   <Route path="/admin/dashboard" element={<RequirePlatformAdmin><PlatformDashboard /></RequirePlatformAdmin>} />
                   <Route path="/admin/merchants" element={<RequirePlatformAdmin><PlatformMerchants /></RequirePlatformAdmin>} />
                   <Route path="/admin/settings" element={<RequirePlatformAdmin><PlatformSettings /></RequirePlatformAdmin>} />
+                  <Route path="/admin/customers" element={<RequirePlatformAdmin><PlatformCustomers /></RequirePlatformAdmin>} />
+                  <Route path="/admin/analytics" element={<RequirePlatformAdmin><PlatformAnalytics /></RequirePlatformAdmin>} />
 
                   {/* Merchant Routes */}
                   <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
