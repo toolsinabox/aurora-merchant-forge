@@ -546,6 +546,7 @@ export default function SettingsPage() {
             fb_pixel_id: (data as any).fb_pixel_id || "",
             google_ads_id: (data as any).google_ads_id || "",
             google_ads_conversion_label: (data as any).google_ads_conversion_label || "",
+            chat_widget_code: (data as any).chat_widget_code || "",
           });
           if ((data as any).smtp_config) {
             setSmtpForm({ ...(data as any).smtp_config });
