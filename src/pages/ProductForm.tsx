@@ -18,6 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 import { FieldLabel } from "@/components/products/BaseTag";
 import { ProductAddonsTab } from "@/components/products/ProductAddonsTab";
+import { KitComponentsTab } from "@/components/products/KitComponentsTab";
 
 export default function ProductForm() {
   const { id } = useParams();
