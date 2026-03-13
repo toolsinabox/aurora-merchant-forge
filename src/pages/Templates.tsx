@@ -398,7 +398,10 @@ export default function Templates() {
 
                     <TabsContent value="preview" className="m-0 p-4">
                       {previewHtml ? (
-                        <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                        <>
+                          {form.custom_css && <style dangerouslySetInnerHTML={{ __html: form.custom_css }} />}
+                          <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                        </>
                       ) : (
                         <p className="text-xs text-muted-foreground text-center py-12">Enter template content to see a preview.</p>
                       )}
