@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
-  Building, Gift, FileText, ClipboardCopy,
+  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -24,6 +24,7 @@ const catalogNav = [
   { title: "Products", url: "/products", icon: Package },
   { title: "Categories", url: "/categories", icon: Layers },
   { title: "Inventory", url: "/inventory", icon: Warehouse },
+  { title: "Stock Adjustments", url: "/stock-adjustments", icon: History },
   { title: "Suppliers", url: "/suppliers", icon: Building },
   { title: "Purchase Orders", url: "/purchase-orders", icon: ClipboardCopy },
 ];
@@ -48,6 +49,8 @@ const contentNav = [
 ];
 
 const systemNav = [
+  { title: "Shipping Zones", url: "/shipping-zones", icon: Truck },
+  { title: "Tax Rates", url: "/tax-rates", icon: Percent },
   { title: "Activity Log", url: "/activity-log", icon: ClipboardList },
   { title: "Feature Audit", url: "/feature-audit", icon: ClipboardCheck },
   { title: "Settings", url: "/settings", icon: Settings },

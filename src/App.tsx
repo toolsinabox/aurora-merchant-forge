@@ -41,6 +41,10 @@ import Suppliers from "./pages/Suppliers.tsx";
 import GiftVouchers from "./pages/GiftVouchers.tsx";
 import ContentPages from "./pages/ContentPages.tsx";
 import PurchaseOrders from "./pages/PurchaseOrders.tsx";
+import ShippingZones from "./pages/ShippingZones.tsx";
+import TaxRates from "./pages/TaxRates.tsx";
+import StockAdjustments from "./pages/StockAdjustments.tsx";
+import StorefrontWishlist from "./pages/storefront/StorefrontWishlist.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
@@ -77,6 +81,7 @@ const App = () => (
                    <Route path="/checkout" element={<StorefrontCheckout />} />
                    <Route path="/login" element={<StorefrontLogin />} />
                   <Route path="/signup" element={<StorefrontSignup />} />
+                  <Route path="/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="*" element={<NotFound />} />
                 </>
@@ -114,6 +119,9 @@ const App = () => (
                   <Route path="/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
                   <Route path="/content-pages" element={<RequireAuth><ContentPages /></RequireAuth>} />
                   <Route path="/purchase-orders" element={<RequireAuth><PurchaseOrders /></RequireAuth>} />
+                  <Route path="/shipping-zones" element={<RequireAuth><ShippingZones /></RequireAuth>} />
+                  <Route path="/tax-rates" element={<RequireAuth><TaxRates /></RequireAuth>} />
+                  <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
@@ -124,6 +132,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/checkout" element={<StorefrontCheckout />} />
                   <Route path="/store/:storeSlug/login" element={<StorefrontLogin />} />
                   <Route path="/store/:storeSlug/signup" element={<StorefrontSignup />} />
+                  <Route path="/store/:storeSlug/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/store/:storeSlug/account" element={<StorefrontAccount />} />
                   <Route path="*" element={<NotFound />} />
                 </>

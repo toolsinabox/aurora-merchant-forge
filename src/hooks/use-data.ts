@@ -1302,3 +1302,75 @@ export function useAbandonedCarts() {
     enabled: !!currentStore,
   });
 }
+
+// ===================== CUSTOMER ADDRESSES =====================
+
+export function useCustomerAddresses(customerId: string | undefined) {
+  return useQuery({
+    queryKey: ["customer_addresses", customerId],
+    queryFn: async () => {
+      if (!customerId) return [];
+      const { data, error } = await supabase
+        .from("customer_addresses" as any)
+        .select("*")
+        .eq("customer_id", customerId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!customerId,
+  });
+}
+
+export function useCreateCustomerAddress() {
+  const qc = useQueryClient();
+  const { currentStore } = useAuth();
+  return useMutation({
+    mutationFn: async (addr: {
+      customer_id: string;
+      label?: string;
+      first_name?: string;
+      last_name?: string;
+      company?: string;
+      address_line1: string;
+      address_line2?: string;
+      city: string;
+      state?: string;
+      postal_code: string;
+      country?: string;
+      phone?: string;
+      is_default_billing?: boolean;
+      is_default_shipping?: boolean;
+    }) => {
+      if (!currentStore) throw new Error("No store");
+      const { data, error } = await supabase
+        .from("customer_addresses" as any)
+        .insert({ ...addr, store_id: currentStore.id })
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["customer_addresses", vars.customer_id] });
+      toast.success("Address added");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
+
+export function useDeleteCustomerAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, customerId }: { id: string; customerId: string }) => {
+      const { error } = await supabase.from("customer_addresses" as any).delete().eq("id", id);
+      if (error) throw error;
+      return customerId;
+    },
+    onSuccess: (customerId) => {
+      qc.invalidateQueries({ queryKey: ["customer_addresses", customerId] });
+      toast.success("Address deleted");
+    },
+    onError: (e) => toast.error(e.message),
+  });
+}
