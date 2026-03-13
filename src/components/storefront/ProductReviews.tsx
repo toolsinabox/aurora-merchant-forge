@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Star, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 interface ProductReviewsProps {
@@ -43,6 +45,7 @@ function StarRating({ rating, onRate, interactive = false }: { rating: number; o
 export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
   const { user } = useAuth();
   const [reviews, setReviews] = useState<any[]>([]);
+  const [verifiedBuyers, setVerifiedBuyers] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [rating, setRating] = useState(5);
@@ -58,10 +61,29 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
       .eq("product_id", productId)
       .eq("is_approved", true)
       .order("created_at", { ascending: false });
-    setReviews(data || []);
+    const reviewsData = data || [];
+    setReviews(reviewsData);
+
+    // Check which reviewers are verified buyers
+    const reviewerIds = [...new Set(reviewsData.map((r: any) => r.user_id).filter(Boolean))];
+    if (reviewerIds.length > 0) {
+      // Get customers who placed orders for this product
+      const { data: orderItems } = await supabase
+        .from("order_items")
+        .select("order_id, orders!inner(customer_id, customers!inner(user_id))")
+        .eq("product_id", productId)
+        .eq("store_id", storeId);
+      
+      const buyerUserIds = new Set<string>();
+      (orderItems || []).forEach((item: any) => {
+        const userId = item.orders?.customers?.user_id;
+        if (userId) buyerUserIds.add(userId);
+      });
+      setVerifiedBuyers(buyerUserIds);
+    }
 
     if (user) {
-      const existing = (data || []).find((r: any) => r.user_id === user.id);
+      const existing = reviewsData.find((r: any) => r.user_id === user.id);
       setUserReview(existing || null);
     }
     setLoading(false);
@@ -75,6 +97,13 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
     ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
     : 0;
 
+  // Rating breakdown
+  const ratingCounts = [5, 4, 3, 2, 1].map(star => ({
+    star,
+    count: reviews.filter(r => r.rating === star).length,
+    pct: reviews.length > 0 ? (reviews.filter(r => r.rating === star).length / reviews.length) * 100 : 0,
+  }));
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -84,7 +113,6 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
 
     setSubmitting(true);
     try {
-      // Get customer name
       const { data: custs } = await supabase
         .from("customers")
         .select("name")
@@ -96,7 +124,6 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
         store_id: storeId,
         product_id: productId,
         user_id: user.id,
-        customer_id: custs?.[0] ? undefined : undefined,
         rating,
         title: title || null,
         body: body || null,
@@ -119,7 +146,7 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold">Reviews</h2>
           <div className="flex items-center gap-2 mt-1">
@@ -135,6 +162,19 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
           </Button>
         )}
       </div>
+
+      {/* Rating breakdown */}
+      {reviews.length > 0 && (
+        <div className="space-y-1.5 max-w-xs">
+          {ratingCounts.map(({ star, count, pct }) => (
+            <div key={star} className="flex items-center gap-2 text-sm">
+              <span className="w-6 text-right text-muted-foreground">{star}★</span>
+              <Progress value={pct} className="h-2 flex-1" />
+              <span className="w-6 text-xs text-muted-foreground">{count}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Review form */}
       {showForm && (
@@ -182,21 +222,29 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
         <p className="text-sm text-muted-foreground py-4 text-center">No reviews yet. Be the first!</p>
       ) : (
         <div className="space-y-4">
-          {reviews.map((review: any) => (
-            <div key={review.id} className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <StarRating rating={review.rating} />
-                  <span className="text-sm font-medium">{review.author_name}</span>
+          {reviews.map((review: any) => {
+            const isVerified = verifiedBuyers.has(review.user_id);
+            return (
+              <div key={review.id} className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <StarRating rating={review.rating} />
+                    <span className="text-sm font-medium">{review.author_name}</span>
+                    {isVerified && (
+                      <Badge variant="secondary" className="text-[10px] gap-1 px-1.5 py-0">
+                        <ShieldCheck className="h-3 w-3" /> Verified Purchase
+                      </Badge>
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground">
+                    {new Date(review.created_at).toLocaleDateString()}
+                  </span>
                 </div>
-                <span className="text-xs text-muted-foreground">
-                  {new Date(review.created_at).toLocaleDateString()}
-                </span>
+                {review.title && <p className="font-medium text-sm">{review.title}</p>}
+                {review.body && <p className="text-sm text-muted-foreground">{review.body}</p>}
               </div>
-              {review.title && <p className="font-medium text-sm">{review.title}</p>}
-              {review.body && <p className="text-sm text-muted-foreground">{review.body}</p>}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
