@@ -598,6 +598,7 @@ export default function SettingsPage() {
         fb_pixel_id: brandForm.fb_pixel_id || null,
         google_ads_id: brandForm.google_ads_id || null,
         google_ads_conversion_label: brandForm.google_ads_conversion_label || null,
+        chat_widget_code: brandForm.chat_widget_code || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
