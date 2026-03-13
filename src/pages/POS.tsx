@@ -47,6 +47,13 @@ export default function POS() {
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
   const [voucherLoading, setVoucherLoading] = useState(false);
 
+  // Layby state
+  const [showLayby, setShowLayby] = useState(false);
+  const [laybyDeposit, setLaybyDeposit] = useState("20");
+  const [laybyInstallments, setLaybyInstallments] = useState("4");
+  const [laybyFrequency, setLaybyFrequency] = useState("weekly");
+  const [laybyProcessing, setLaybyProcessing] = useState(false);
+
   // EOD state
   const [showEOD, setShowEOD] = useState(false);
   const [openingFloat, setOpeningFloat] = useState("0");
@@ -237,6 +244,69 @@ export default function POS() {
       toast.success("Register closed successfully");
       setShowEOD(false);
     } catch (err: any) { toast.error(err.message); }
+
+  const createLayby = async () => {
+    if (!storeId || !user || !selectedCustomer || cart.length === 0) return;
+    setLaybyProcessing(true);
+    try {
+      const orderNumber = `LAY-${Date.now().toString(36).toUpperCase()}`;
+      const depositAmount = (Number(laybyDeposit) / 100) * total;
+      const remaining = total - depositAmount;
+      const installCount = Number(laybyInstallments);
+      const installAmount = remaining / installCount;
+
+      const { data: order, error: orderErr } = await supabase.from("orders").insert({
+        store_id: storeId, order_number: orderNumber,
+        customer_id: selectedCustomer.id,
+        subtotal, tax, total, discount: voucherDiscount, shipping: 0,
+        items_count: itemCount, status: "pending",
+        payment_status: "partially_paid", fulfillment_status: "unfulfilled",
+        order_channel: "pos",
+      }).select("id, order_number, total").single();
+      if (orderErr) throw orderErr;
+
+      await supabase.from("order_items").insert(cart.map(i => ({
+        order_id: order.id, store_id: storeId, product_id: i.product_id,
+        title: i.title, sku: i.sku, quantity: i.quantity,
+        unit_price: i.price, total: i.price * i.quantity,
+      })));
+
+      const nextDue = new Date();
+      if (laybyFrequency === "weekly") nextDue.setDate(nextDue.getDate() + 7);
+      else if (laybyFrequency === "fortnightly") nextDue.setDate(nextDue.getDate() + 14);
+      else nextDue.setMonth(nextDue.getMonth() + 1);
+
+      await supabase.from("layby_plans").insert({
+        store_id: storeId, order_id: order.id, customer_id: selectedCustomer.id,
+        total_amount: total, deposit_amount: depositAmount,
+        installments_count: installCount, installment_amount: installAmount,
+        installments_paid: 0, amount_paid: depositAmount,
+        frequency: laybyFrequency, next_due_date: nextDue.toISOString(),
+        status: "active",
+      });
+
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      await supabase.from("order_payments").insert({
+        order_id: order.id, store_id: storeId,
+        amount: depositAmount, payment_method: paymentMethod,
+        recorded_by: authUser?.id || "",
+      });
+
+      const { data: plan } = await supabase.from("layby_plans")
+        .select("id").eq("order_id", order.id).single();
+      if (plan) {
+        await supabase.from("layby_payments").insert({
+          layby_plan_id: plan.id, store_id: storeId,
+          amount: depositAmount, payment_method: paymentMethod,
+        });
+      }
+
+      setCart([]); setSelectedCustomer(null); setAppliedVoucher(null); setVoucherCode("");
+      setShowLayby(false);
+      refetchOrders();
+      toast.success(`Layby created: ${orderNumber} — Deposit $${depositAmount.toFixed(2)}`);
+    } catch (err: any) { toast.error(err.message); }
+    finally { setLaybyProcessing(false); }
   };
 
   return (
@@ -356,9 +426,14 @@ export default function POS() {
                 {appliedVoucher && <div className="flex justify-between text-xs text-primary"><span>Voucher</span><span>-${voucherDiscount.toFixed(2)}</span></div>}
                 <Separator />
                 <div className="flex justify-between font-bold"><span>Total</span><span className="text-lg">${total.toFixed(2)}</span></div>
-                <Button className="w-full h-12 text-lg gap-2" disabled={cart.length === 0} onClick={() => setShowPayment(true)}>
-                  <CreditCard className="h-5 w-5" /> Pay ${total.toFixed(2)}
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button className="h-12 text-sm gap-2" disabled={cart.length === 0} onClick={() => setShowPayment(true)}>
+                    <CreditCard className="h-4 w-4" /> Pay ${total.toFixed(2)}
+                  </Button>
+                  <Button variant="outline" className="h-12 text-sm gap-2" disabled={cart.length === 0 || !selectedCustomer} onClick={() => setShowLayby(true)}>
+                    <Clock className="h-4 w-4" /> Layby
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -544,6 +619,86 @@ export default function POS() {
             <Button variant="outline" onClick={() => setShowEOD(false)}>Cancel</Button>
             <Button onClick={closeRegister} disabled={!actualCash} className="gap-2">
               <CheckCircle className="h-4 w-4" /> Close Register
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Layby Dialog */}
+      <Dialog open={showLayby} onOpenChange={setShowLayby}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Create Layby — ${total.toFixed(2)}</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-muted p-3 rounded-lg text-sm">
+              <p className="font-medium">Customer: {selectedCustomer?.name}</p>
+              <p className="text-muted-foreground">{cart.length} item{cart.length !== 1 ? "s" : ""} — ${total.toFixed(2)}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Deposit (%)</Label>
+                <Select value={laybyDeposit} onValueChange={setLaybyDeposit}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="10">10%</SelectItem>
+                    <SelectItem value="20">20%</SelectItem>
+                    <SelectItem value="25">25%</SelectItem>
+                    <SelectItem value="30">30%</SelectItem>
+                    <SelectItem value="50">50%</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-xs">Installments</Label>
+                <Select value={laybyInstallments} onValueChange={setLaybyInstallments}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="4">4</SelectItem>
+                    <SelectItem value="6">6</SelectItem>
+                    <SelectItem value="8">8</SelectItem>
+                    <SelectItem value="12">12</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Frequency</Label>
+              <Select value={laybyFrequency} onValueChange={setLaybyFrequency}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="fortnightly">Fortnightly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Separator />
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Deposit ({laybyDeposit}%)</span><span className="font-medium">${((Number(laybyDeposit) / 100) * total).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Remaining</span><span>${(total - (Number(laybyDeposit) / 100) * total).toFixed(2)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Per installment ({laybyInstallments}x {laybyFrequency})</span><span>${((total - (Number(laybyDeposit) / 100) * total) / Number(laybyInstallments)).toFixed(2)}</span></div>
+            </div>
+            <div>
+              <Label className="text-xs">Payment Method (Deposit)</Label>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {[
+                  { value: "card", label: "Card", icon: CreditCard },
+                  { value: "cash", label: "Cash", icon: Banknote },
+                  { value: "other", label: "Other", icon: Receipt },
+                ].map(m => (
+                  <Button key={m.value} variant={paymentMethod === m.value ? "default" : "outline"} className="h-10 flex-col gap-0.5" onClick={() => setPaymentMethod(m.value)}>
+                    <m.icon className="h-4 w-4" />
+                    <span className="text-[10px]">{m.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowLayby(false)}>Cancel</Button>
+            <Button onClick={createLayby} disabled={laybyProcessing} className="gap-2">
+              <CheckCircle className="h-4 w-4" /> {laybyProcessing ? "Processing..." : `Take Deposit $${((Number(laybyDeposit) / 100) * total).toFixed(2)}`}
             </Button>
           </DialogFooter>
         </DialogContent>

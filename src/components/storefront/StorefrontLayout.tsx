@@ -11,6 +11,7 @@ import { StorefrontSearch } from "./StorefrontSearch";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { PromoPopup } from "./PromoPopup";
+import { CurrencySwitcher, useCurrency } from "./CurrencySwitcher";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
@@ -30,6 +31,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [categories, setCategories] = useState<any[]>([]);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [bannerText, setBannerText] = useState<string | null>(null);
+  const currencyData = useCurrency(storeId);
 
   useEffect(() => {
     if (!storeSlug) return;
@@ -196,6 +198,8 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
 
             {/* Search + icons */}
             <div className="flex items-center gap-1">
+              {/* Currency Switcher */}
+              {storeId && <CurrencySwitcher currencies={currencyData.currencies} selectedCode={currencyData.selectedCode} onSwitch={currencyData.switchCurrency} />}
               {/* Desktop search */}
               {storeId && !searchOpen && (
                 <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setSearchOpen(true)}>
