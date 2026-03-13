@@ -49,6 +49,8 @@ export default function SettingsPage() {
     banner_text: "",
     description: "",
     logo_url: "",
+    favicon_url: "",
+    ga_tracking_id: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
@@ -76,7 +78,7 @@ export default function SettingsPage() {
     if (!currentStore) return;
     supabase
       .from("stores")
-      .select("primary_color, banner_text, description, logo_url")
+      .select("primary_color, banner_text, description, logo_url, favicon_url, ga_tracking_id")
       .eq("id", currentStore.id)
       .single()
       .then(({ data }) => {
@@ -86,6 +88,8 @@ export default function SettingsPage() {
             banner_text: (data as any).banner_text || "",
             description: (data as any).description || "",
             logo_url: (data as any).logo_url || "",
+            favicon_url: (data as any).favicon_url || "",
+            ga_tracking_id: (data as any).ga_tracking_id || "",
           });
         }
       });
@@ -126,6 +130,8 @@ export default function SettingsPage() {
         banner_text: brandForm.banner_text || null,
         description: brandForm.description || null,
         logo_url: brandForm.logo_url || null,
+        favicon_url: brandForm.favicon_url || null,
+        ga_tracking_id: brandForm.ga_tracking_id || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
@@ -264,6 +270,14 @@ export default function SettingsPage() {
                   <div className="space-y-1">
                     <Label className="text-xs">Logo URL</Label>
                     <Input className="h-8 text-xs" value={brandForm.logo_url} onChange={(e) => setBrandForm({ ...brandForm, logo_url: e.target.value })} placeholder="https://..." />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Favicon URL</Label>
+                    <Input className="h-8 text-xs" value={brandForm.favicon_url} onChange={(e) => setBrandForm({ ...brandForm, favicon_url: e.target.value })} placeholder="https://example.com/favicon.ico" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Analytics Tracking ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.ga_tracking_id} onChange={(e) => setBrandForm({ ...brandForm, ga_tracking_id: e.target.value })} placeholder="G-XXXXXXXXXX" />
                   </div>
                 </div>
                 <div className="space-y-1">

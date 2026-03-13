@@ -69,6 +69,8 @@ import WarehouseDashboard from "./pages/WarehouseDashboard.tsx";
 import PrintCustomerStatement from "./pages/PrintCustomerStatement.tsx";
 import Redirects from "./pages/Redirects.tsx";
 import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
+import PickPack from "./pages/PickPack.tsx";
+import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -110,6 +112,7 @@ const App = () => (
                   <Route path="/track-order" element={<StorefrontTrackOrder />} />
                   <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
+                  <Route path="/contact" element={<StorefrontContact />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
@@ -154,6 +157,7 @@ const App = () => (
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
                   <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
+                  <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -214,6 +218,7 @@ const App = () => (
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
+                  <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
@@ -232,6 +237,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/track-order" element={<StorefrontTrackOrder />} />
                   <Route path="/store/:storeSlug/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/store/:storeSlug/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
+                  <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}

@@ -395,15 +395,16 @@ export default function Inventory() {
                 <TableRow>
                   <TableHead className="text-xs h-8">Product</TableHead>
                   <TableHead className="text-xs h-8">SKU</TableHead>
+                  <TableHead className="text-xs h-8">Bin Location</TableHead>
                   <TableHead className="text-xs h-8 text-right">Stock</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loadingProducts ? (
-                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={4}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={5}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : inventoryItems.length === 0 ? (
-                  <TableRow><TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
                 ) : (
                   inventoryItems.map((p) => {
                     const stock = getVariantStock(p);
@@ -411,6 +412,9 @@ export default function Inventory() {
                       <TableRow key={p.id} className="text-xs">
                         <TableCell className="py-2 font-medium">{p.title}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
+                        <TableCell className="py-2 font-mono text-muted-foreground">
+                          {(inventoryStockData as any[]).find((s: any) => s.product_id === p.id)?.bin_location || "—"}
+                        </TableCell>
                         <TableCell className="py-2 text-right">{stock}</TableCell>
                         <TableCell className="py-2"><StatusBadge status={getStockStatus(stock)} /></TableCell>
                       </TableRow>
