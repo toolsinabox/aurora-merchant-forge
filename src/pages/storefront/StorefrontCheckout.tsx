@@ -472,7 +472,7 @@ export default function StorefrontCheckout() {
               </div>
 
               {/* Shipping Method */}
-              {shippingZones.length > 0 && (
+              {deliveryMethod === "shipping" && shippingZones.length > 0 && (
                 <div className="border rounded-lg p-5 space-y-4">
                   <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h2>
                   <div className="space-y-2">
