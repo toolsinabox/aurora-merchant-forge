@@ -370,7 +370,7 @@ const featureData: FeatureCategory[] = [
       { name: "Editable Kit Components UI", description: "Kit component configuration (components.template.html)", status: "done", notes: "Storefront product detail shows kit components with image, quantity, optional/swappable flags when product is_kit=true" },
       { name: "Product Thumbnails (Grid/List/Box)", description: "Product card layouts (thumbs/product/)", status: "done" },
       { name: "Content Thumbnails", description: "Content page card layout (thumbs/content/)", status: "done", notes: "Blog page uses content thumbnail cards with featured image, title, description, date, and read more arrow" },
-      { name: "Advert Thumbnails (Banner/Carousel/Scroll/Text)", description: "Promotional ad placements (thumbs/advert/)", status: "not_started" },
+      { name: "Advert Thumbnails (Banner/Carousel/Scroll/Text)", description: "Promotional ad placements (thumbs/advert/)", status: "done", notes: "adverts table with CRUD, admin Adverts page with banner/carousel/text/HTML types, 7 placement zones, schedule, storefront AdvertBanner component with auto-rotate carousel, homepage_top and homepage_mid placements" },
       { name: "Product Reviews Display", description: "Star ratings and review text on product page", status: "done" },
       { name: "Product Compare", description: "Side-by-side product comparison", status: "done" },
       { name: "Notify Me (Back in Stock)", description: "Email notification when out-of-stock item returns", status: "done", notes: "back_in_stock_requests table, email form on product page when out of stock" },
