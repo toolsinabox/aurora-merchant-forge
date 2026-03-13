@@ -850,7 +850,7 @@ const featureData: FeatureCategory[] = [
       { name: "Store Onboarding Wizard", description: "Guided setup for new merchants", status: "done" },
       { name: "Custom Subdomain per Store", description: "storename.domain.com routing", status: "done" },
       { name: "Path-Based Storefront (/store/slug)", description: "Storefront accessible via URL path", status: "done" },
-      { name: "Custom Domain per Store", description: "Map custom domains (www.mybrand.com)", status: "not_started" },
+      { name: "Custom Domain per Store", description: "Map custom domains (www.mybrand.com)", status: "partial", notes: "Custom Domain tab on Integrations page with domain input, DNS configuration instructions (CNAME + TXT verification), domain verification flow, SSL certificate auto-provisioning notice; actual DNS verification requires infrastructure setup" },
       { name: "Store Settings (Name, Description, Contact)", description: "Basic store configuration", status: "done" },
       { name: "Store Logo / Branding", description: "Per-store logo and primary color", status: "done" },
       { name: "Store Banner Text", description: "Announcement banner per store", status: "done" },
