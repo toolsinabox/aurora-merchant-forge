@@ -282,6 +282,72 @@ function InventorySettingsTab() {
   );
 }
 
+function CurrencyFormatTab() {
+  const { currentStore } = useAuth();
+  const [symbolPosition, setSymbolPosition] = useState("before");
+  const [decimalPlaces, setDecimalPlaces] = useState("2");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("stores").select("currency_symbol_position, currency_decimal_places").eq("id", currentStore.id).single().then(({ data }) => {
+      if (data) {
+        setSymbolPosition((data as any).currency_symbol_position || "before");
+        setDecimalPlaces(String((data as any).currency_decimal_places ?? 2));
+      }
+    });
+  }, [currentStore]);
+
+  const handleSave = async () => {
+    if (!currentStore) return;
+    setSaving(true);
+    await supabase.from("stores").update({
+      currency_symbol_position: symbolPosition,
+      currency_decimal_places: Number(decimalPlaces) || 2,
+    } as any).eq("id", currentStore.id);
+    setSaving(false);
+    toast.success("Currency format saved");
+  };
+
+  const preview = symbolPosition === "before" ? `$1,234.${decimalPlaces === "0" ? "" : "56".slice(0, Number(decimalPlaces))}` : `1,234.${decimalPlaces === "0" ? "" : "56".slice(0, Number(decimalPlaces))}$`;
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Currency Display Format</CardTitle></CardHeader>
+      <CardContent className="p-4 pt-2 space-y-4">
+        <div className="space-y-1">
+          <Label className="text-xs">Symbol Position</Label>
+          <Select value={symbolPosition} onValueChange={setSymbolPosition}>
+            <SelectTrigger className="h-8 text-xs w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="before" className="text-xs">Before ($100)</SelectItem>
+              <SelectItem value="after" className="text-xs">After (100$)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Decimal Places</Label>
+          <Select value={decimalPlaces} onValueChange={setDecimalPlaces}>
+            <SelectTrigger className="h-8 text-xs w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0" className="text-xs">0 ($100)</SelectItem>
+              <SelectItem value="2" className="text-xs">2 ($100.00)</SelectItem>
+              <SelectItem value="3" className="text-xs">3 ($100.000)</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="p-3 rounded-md border bg-muted/30 text-sm">
+          <span className="text-xs text-muted-foreground">Preview: </span>
+          <span className="font-medium">{preview}</span>
+        </div>
+        <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+          <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save Currency Format"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
   const updateStore = useUpdateStore();
