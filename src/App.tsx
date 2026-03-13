@@ -191,6 +191,8 @@ const App = () => (
                   <Route path="/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
                   <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
                   <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
+                  <Route path="/customers/:id/statement" element={<RequireAuth><PrintCustomerStatement /></RequireAuth>} />
+                  <Route path="/barcode-labels" element={<RequireAuth><PrintBarcodeLabels /></RequireAuth>} />
                   <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
                   <Route path="/coupons" element={<RequireAuth><Coupons /></RequireAuth>} />
                   <Route path="/returns" element={<RequireAuth><Returns /></RequireAuth>} />
