@@ -569,8 +569,10 @@ export default function ImportWizard() {
                             <SelectTrigger className="h-7 text-xs"><SelectValue placeholder="No transform" /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="none" className="text-xs">No transform</SelectItem>
-                              <SelectItem value="lowercase" className="text-xs">Lowercase</SelectItem>
+                              <SelectItem value="lowercase" className="text-xs">lowercase</SelectItem>
                               <SelectItem value="uppercase" className="text-xs">UPPERCASE</SelectItem>
+                              <SelectItem value="capitalize" className="text-xs">Capitalize</SelectItem>
+                              <SelectItem value="trim" className="text-xs">Trim whitespace</SelectItem>
                               <SelectItem value="slug" className="text-xs">URL Slug</SelectItem>
                             </SelectContent>
                           </Select>
