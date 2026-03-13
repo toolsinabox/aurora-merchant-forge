@@ -835,7 +835,7 @@ const featureData: FeatureCategory[] = [
       { name: "Activity Log / Audit Trail", description: "Track who did what and when", status: "done" },
       { name: "Two-Factor Authentication (2FA)", description: "TOTP/SMS 2FA for admin accounts", status: "not_started" },
       { name: "API Key Management", description: "Generate and manage API keys per store", status: "done", notes: "api_keys table with SHA-256 hashing, admin API Keys page with create (name + scopes), copy-once key display, active toggle, revoke" },
-      { name: "Session Management", description: "View and revoke active sessions", status: "not_started" },
+      { name: "Session Management", description: "View and revoke active sessions", status: "done", notes: "Admin Sessions page with current session details (user, browser, OS, token expiry, provider), refresh token, sign out this device, and sign out all devices actions" },
       { name: "Staff Activity Dashboard", description: "See staff login times, actions taken", status: "done", notes: "Admin Staff Activity page with KPI cards (team size, actions 30d, active today, avg/user), per-member breakdown table with action counts, top actions, last active, and recent activity feed from activity_log" },
     ],
   },
