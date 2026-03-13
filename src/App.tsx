@@ -73,8 +73,10 @@ import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
 import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
+import StorefrontStoreFinder from "./pages/storefront/StorefrontStoreFinder.tsx";
 import PrintPaymentReceipt from "./pages/PrintPaymentReceipt.tsx";
 import PrintShippingLabel from "./pages/PrintShippingLabel.tsx";
+import Quotes from "./pages/Quotes.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -119,6 +121,7 @@ const App = () => (
                   <Route path="/contact" element={<StorefrontContact />} />
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/wholesale" element={<StorefrontWholesale />} />
+                  <Route path="/store-finder" element={<StorefrontStoreFinder />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
@@ -165,6 +168,7 @@ const App = () => (
                   <Route path="/_cpanel/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                  <Route path="/_cpanel/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
@@ -229,6 +233,7 @@ const App = () => (
                   <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                  <Route path="/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
@@ -252,6 +257,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
                   <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/store/:storeSlug/wholesale" element={<StorefrontWholesale />} />
+                  <Route path="/store/:storeSlug/store-finder" element={<StorefrontStoreFinder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}

@@ -1069,6 +1069,149 @@ export type Database = {
           },
         ]
       }
+      order_quote_items: {
+        Row: {
+          id: string
+          product_id: string | null
+          quantity: number
+          quote_id: string
+          sku: string | null
+          store_id: string
+          title: string
+          total: number
+          unit_price: number
+          variant_id: string | null
+        }
+        Insert: {
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          quote_id: string
+          sku?: string | null
+          store_id: string
+          title: string
+          total?: number
+          unit_price?: number
+          variant_id?: string | null
+        }
+        Update: {
+          id?: string
+          product_id?: string | null
+          quantity?: number
+          quote_id?: string
+          sku?: string | null
+          store_id?: string
+          title?: string
+          total?: number
+          unit_price?: number
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_quote_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_quote_items_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "order_quotes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_quote_items_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_quotes: {
+        Row: {
+          approved_at: string | null
+          converted_order_id: string | null
+          created_at: string
+          created_by: string | null
+          customer_id: string | null
+          discount: number
+          id: string
+          notes: string | null
+          quote_number: string
+          shipping: number
+          status: string
+          store_id: string
+          subtotal: number
+          tax: number
+          total: number
+          updated_at: string
+          valid_until: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          converted_order_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          discount?: number
+          id?: string
+          notes?: string | null
+          quote_number: string
+          shipping?: number
+          status?: string
+          store_id: string
+          subtotal?: number
+          tax?: number
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          converted_order_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string | null
+          discount?: number
+          id?: string
+          notes?: string | null
+          quote_number?: string
+          shipping?: number
+          status?: string
+          store_id?: string
+          subtotal?: number
+          tax?: number
+          total?: number
+          updated_at?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_quotes_converted_order_id_fkey"
+            columns: ["converted_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_quotes_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_quotes_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_refunds: {
         Row: {
           amount: number
