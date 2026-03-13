@@ -798,6 +798,8 @@ export default function SettingsPage() {
                     }} className="space-y-3">
                       <div><Label className="text-xs">Name</Label><Input name="name" required className="h-8 text-xs" placeholder="e.g. Wholesale" /></div>
                       <div><Label className="text-xs">Discount %</Label><Input name="discount" type="number" step="0.01" className="h-8 text-xs" placeholder="0" /></div>
+                      <div><Label className="text-xs">Credit Terms</Label><Input name="credit_terms" className="h-8 text-xs" placeholder="e.g. Net 30" /></div>
+                      <div><Label className="text-xs">Credit Limit ($)</Label><Input name="credit_limit" type="number" step="0.01" className="h-8 text-xs" placeholder="0" /></div>
                       <div><Label className="text-xs">Description</Label><Input name="description" className="h-8 text-xs" /></div>
                       <Button type="submit" size="sm" className="w-full text-xs" disabled={createCustomerGroup.isPending}>Create Group</Button>
                     </form>
