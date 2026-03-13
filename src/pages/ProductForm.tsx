@@ -425,7 +425,7 @@ export default function ProductForm() {
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo Price</Label>
+                        <FieldLabel label="Promo Price" field="promo_price" />
                         <Input className="h-8 text-xs" type="number" step="0.01" value={form.promo_price} onChange={(e) => update("promo_price", e.target.value)} placeholder="0.00" />
                       </div>
                       <div className="space-y-1">
