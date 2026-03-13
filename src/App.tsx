@@ -24,6 +24,8 @@ import Inventory from "./pages/Inventory.tsx";
 import Orders from "./pages/Orders.tsx";
 import OrderDetail from "./pages/OrderDetail.tsx";
 import PrintInvoice from "./pages/PrintInvoice.tsx";
+import PrintPickList from "./pages/PrintPickList.tsx";
+import PrintPurchaseOrder from "./pages/PrintPurchaseOrder.tsx";
 import Customers from "./pages/Customers.tsx";
 import CustomerDetail from "./pages/CustomerDetail.tsx";
 import Marketing from "./pages/Marketing.tsx";
@@ -114,6 +116,8 @@ const App = () => (
                   <Route path="/_cpanel/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id/print" element={<RequireAuth><PrintInvoice /></RequireAuth>} />
+                  <Route path="/_cpanel/pick-list" element={<RequireAuth><PrintPickList /></RequireAuth>} />
+                  <Route path="/_cpanel/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
                   <Route path="/_cpanel/customers" element={<RequireAuth><Customers /></RequireAuth>} />
                   <Route path="/_cpanel/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
                   <Route path="/_cpanel/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />
@@ -166,6 +170,8 @@ const App = () => (
                   <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
                   <Route path="/orders/:id/print" element={<RequireAuth><PrintInvoice /></RequireAuth>} />
+                  <Route path="/pick-list" element={<RequireAuth><PrintPickList /></RequireAuth>} />
+                  <Route path="/purchase-orders/:id/print" element={<RequireAuth><PrintPurchaseOrder /></RequireAuth>} />
                   <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
                   <Route path="/customers/:id" element={<RequireAuth><CustomerDetail /></RequireAuth>} />
                   <Route path="/marketing" element={<RequireAuth><Marketing /></RequireAuth>} />

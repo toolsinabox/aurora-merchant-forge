@@ -23,6 +23,10 @@ import {
   Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
 } from "lucide-react";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
@@ -63,9 +67,28 @@ export default function OrderDetail() {
   const [newTag, setNewTag] = useState("");
   const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
   const [paymentForm, setPaymentForm] = useState({ amount: "", method: "manual", reference: "", notes: "" });
+  const [creditNoteOpen, setCreditNoteOpen] = useState(false);
+  const [creditForm, setCreditForm] = useState({ amount: "", reason: "", notes: "" });
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: payments = [] } = useOrderPayments(id);
   const createPayment = useCreateOrderPayment();
+
+  // Credit notes
+  const { data: creditNotes = [] } = useQuery({
+    queryKey: ["credit-notes", id],
+    queryFn: async () => {
+      if (!id) return [];
+      const { data } = await supabase
+        .from("credit_notes" as any)
+        .select("*")
+        .eq("order_id", id)
+        .order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!id,
+  });
 
   // Shipment form state
   const [shipForm, setShipForm] = useState({
@@ -596,6 +619,34 @@ export default function OrderDetail() {
             </Card>
 
             {/* Tags */}
+            {/* Credit Notes */}
+            <Card>
+              <CardHeader className="py-3 px-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" /> Credit Notes
+                  <Button size="sm" variant="outline" className="ml-auto h-6 text-xs px-2" onClick={() => setCreditNoteOpen(true)}>
+                    <Plus className="h-3 w-3 mr-1" /> Issue
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 pt-0 space-y-2">
+                {(creditNotes as any[]).length === 0 ? (
+                  <p className="text-xs text-muted-foreground">No credit notes</p>
+                ) : (
+                  (creditNotes as any[]).map((cn: any) => (
+                    <div key={cn.id} className="flex items-center justify-between text-xs border-b pb-1.5">
+                      <div>
+                        <span className="font-mono font-medium">{cn.credit_number}</span>
+                        {cn.reason && <span className="text-muted-foreground ml-2">— {cn.reason}</span>}
+                      </div>
+                      <span className="font-medium text-destructive">-${Number(cn.amount).toFixed(2)}</span>
+                    </div>
+                  ))
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Tags */}
             <Card>
               <CardHeader className="py-3 px-4">
                 <CardTitle className="text-sm flex items-center gap-2"><Tag className="h-4 w-4" /> Tags</CardTitle>
@@ -629,6 +680,49 @@ export default function OrderDetail() {
           </div>
         </div>
       </div>
+
+      {/* Credit Note Dialog */}
+      <Dialog open={creditNoteOpen} onOpenChange={setCreditNoteOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-base">Issue Credit Note</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Amount ($)</Label>
+              <Input type="number" step="0.01" min="0" value={creditForm.amount}
+                onChange={(e) => setCreditForm({ ...creditForm, amount: e.target.value })} className="h-9" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Reason</Label>
+              <Input value={creditForm.reason}
+                onChange={(e) => setCreditForm({ ...creditForm, reason: e.target.value })} className="h-9" placeholder="e.g. Damaged goods" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Notes</Label>
+              <Textarea value={creditForm.notes}
+                onChange={(e) => setCreditForm({ ...creditForm, notes: e.target.value })} className="min-h-[50px] text-sm" />
+            </div>
+            <Button className="w-full" size="sm" disabled={!creditForm.amount || Number(creditForm.amount) <= 0}
+              onClick={async () => {
+                if (!order) return;
+                const creditNumber = `CN-${Date.now().toString(36).toUpperCase()}`;
+                await supabase.from("credit_notes" as any).insert({
+                  store_id: order.store_id,
+                  order_id: order.id,
+                  credit_number: creditNumber,
+                  amount: Number(creditForm.amount),
+                  reason: creditForm.reason || null,
+                  notes: creditForm.notes || null,
+                  issued_by: user?.email || "admin",
+                });
+                queryClient.invalidateQueries({ queryKey: ["credit-notes", id] });
+                toast.success(`Credit note ${creditNumber} issued`);
+                setCreditNoteOpen(false);
+                setCreditForm({ amount: "", reason: "", notes: "" });
+              }}
+            >Issue Credit Note</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

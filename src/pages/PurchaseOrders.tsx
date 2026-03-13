@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Search, ClipboardList } from "lucide-react";
+import { Plus, Trash2, Search, ClipboardList, Printer } from "lucide-react";
 import { format } from "date-fns";
 
 interface POForm {
@@ -217,7 +218,12 @@ export default function PurchaseOrders() {
                     <TableCell className="font-medium">${Number(p.total).toFixed(2)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <div className="flex gap-1">
+                        <Link to={`/purchase-orders/${p.id}/print`}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Print PO"><Printer className="h-3.5 w-3.5" /></Button>
+                        </Link>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

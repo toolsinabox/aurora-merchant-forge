@@ -363,6 +363,63 @@ export type Database = {
           },
         ]
       }
+      credit_notes: {
+        Row: {
+          amount: number
+          created_at: string
+          credit_number: string
+          id: string
+          issued_by: string | null
+          notes: string | null
+          order_id: string
+          reason: string | null
+          status: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          credit_number: string
+          id?: string
+          issued_by?: string | null
+          notes?: string | null
+          order_id: string
+          reason?: string | null
+          status?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          credit_number?: string
+          id?: string
+          issued_by?: string | null
+          notes?: string | null
+          order_id?: string
+          reason?: string | null
+          status?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_notes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_notes_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_groups: {
         Row: {
           created_at: string

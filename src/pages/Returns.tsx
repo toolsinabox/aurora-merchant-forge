@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useReturns, useUpdateReturn } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, RotateCcw } from "lucide-react";
+import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
 
@@ -49,6 +50,25 @@ export default function Returns() {
     setSelected(null);
   };
 
+  // RMA Report stats
+  const rmaStats = useMemo(() => {
+    const all = returns as any[];
+    const totalRefunds = all.reduce((s, r) => s + (Number(r.refund_amount) || 0), 0);
+    const byStatus: Record<string, number> = {};
+    const byReason: Record<string, number> = {};
+    all.forEach(r => {
+      byStatus[r.status] = (byStatus[r.status] || 0) + 1;
+      const reason = (r.reason || "Other").slice(0, 50);
+      byReason[reason] = (byReason[reason] || 0) + 1;
+    });
+    const topReasons = Object.entries(byReason)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    return { total: all.length, totalRefunds, byStatus, topReasons };
+  }, [returns]);
+
+  const [activeTab, setActiveTab] = useState("list");
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -58,6 +78,86 @@ export default function Returns() {
             <p className="text-xs text-muted-foreground">{returns.length} total returns</p>
           </div>
         </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList>
+            <TabsTrigger value="list">Returns List</TabsTrigger>
+            <TabsTrigger value="report">RMA Report</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="report" className="space-y-4">
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <BarChart3 className="h-5 w-5 mx-auto mb-1 text-primary" />
+                  <p className="text-xs text-muted-foreground">Total Returns</p>
+                  <p className="text-xl font-bold">{rmaStats.total}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <DollarSign className="h-5 w-5 mx-auto mb-1 text-destructive" />
+                  <p className="text-xs text-muted-foreground">Total Refunds</p>
+                  <p className="text-xl font-bold">${rmaStats.totalRefunds.toFixed(2)}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <TrendingUp className="h-5 w-5 mx-auto mb-1 text-amber-500" />
+                  <p className="text-xs text-muted-foreground">Pending</p>
+                  <p className="text-xl font-bold">{rmaStats.byStatus["requested"] || 0}</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <AlertTriangle className="h-5 w-5 mx-auto mb-1 text-chart-2" />
+                  <p className="text-xs text-muted-foreground">Refunded</p>
+                  <p className="text-xl font-bold">{(rmaStats.byStatus["refunded"] || 0) + (rmaStats.byStatus["completed"] || 0)}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* By Status */}
+              <Card>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Returns by Status</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {Object.entries(rmaStats.byStatus).map(([status, count]) => (
+                      <div key={status} className="flex items-center justify-between text-sm">
+                        <StatusBadge status={status} />
+                        <span className="font-medium">{count}</span>
+                      </div>
+                    ))}
+                    {Object.keys(rmaStats.byStatus).length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">No data</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Top Reasons */}
+              <Card>
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Top Return Reasons</CardTitle></CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {rmaStats.topReasons.map(([reason, count]) => (
+                      <div key={reason} className="flex items-center justify-between text-sm">
+                        <span className="truncate max-w-[200px]">{reason}</span>
+                        <span className="font-medium">{count}</span>
+                      </div>
+                    ))}
+                    {rmaStats.topReasons.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">No data</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="list">
 
         <Card>
           <CardContent className="p-0">
@@ -121,6 +221,8 @@ export default function Returns() {
             </Table>
           </CardContent>
         </Card>
+        </TabsContent>
+        </Tabs>
       </div>
 
       {/* Detail Dialog */}
