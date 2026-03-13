@@ -169,6 +169,8 @@ export function ProductReviews({ productId, storeId }: ProductReviewsProps) {
       setTitle("");
       setBody("");
       setRating(5);
+      setReviewPhotos([]);
+      setPhotoPreviewUrls([]);
       await loadReviews();
     } catch (err: any) {
       toast.error(err.message || "Failed to submit review");
