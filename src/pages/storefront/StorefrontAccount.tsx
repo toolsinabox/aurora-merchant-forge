@@ -10,14 +10,16 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -83,12 +85,13 @@ export default function StorefrontAccount() {
   const [customer, setCustomer] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [returns, setReturns] = useState<any[]>([]);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses">("orders");
 
   // Return request dialog
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
@@ -97,6 +100,13 @@ export default function StorefrontAccount() {
   const [returnNotes, setReturnNotes] = useState("");
   const [submittingReturn, setSubmittingReturn] = useState(false);
 
+  // Address dialog
+  const [addrOpen, setAddrOpen] = useState(false);
+  const [addrForm, setAddrForm] = useState({
+    label: "Home", first_name: "", last_name: "", company: "",
+    address_line1: "", address_line2: "", city: "", state: "", postal_code: "", country: "AU", phone: "",
+  });
+
   useEffect(() => {
     if (!user) {
       navigate(`${basePath}/login`);
@@ -104,10 +114,10 @@ export default function StorefrontAccount() {
     }
 
     async function load() {
-      // Resolve store
+      let resolvedStoreId = "";
       if (storeSlug) {
         const found = await resolveStoreBySlug(storeSlug, supabase);
-        if (found) setStoreId(found.id);
+        if (found) { setStoreId(found.id); resolvedStoreId = found.id; }
       }
 
       const { data: custs } = await supabase
@@ -120,19 +130,26 @@ export default function StorefrontAccount() {
       setCustomer(cust);
 
       if (cust) {
-        const { data: ords } = await supabase
-          .from("orders")
-          .select("*, order_items(*, products(title, images))")
-          .eq("customer_id", cust.id)
-          .order("created_at", { ascending: false });
-        setOrders(ords || []);
-
-        const { data: rets } = await supabase
-          .from("returns" as any)
-          .select("*, orders(order_number)")
-          .eq("customer_id", cust.id)
-          .order("created_at", { ascending: false });
-        setReturns(rets || []);
+        const [ordsRes, retsRes, addrsRes] = await Promise.all([
+          supabase
+            .from("orders")
+            .select("*, order_items(*, products(title, images))")
+            .eq("customer_id", cust.id)
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("returns" as any)
+            .select("*, orders(order_number)")
+            .eq("customer_id", cust.id)
+            .order("created_at", { ascending: false }),
+          supabase
+            .from("customer_addresses" as any)
+            .select("*")
+            .eq("customer_id", cust.id)
+            .order("created_at", { ascending: false }),
+        ]);
+        setOrders(ordsRes.data || []);
+        setReturns(retsRes.data || []);
+        setAddresses(addrsRes.data || []);
       }
 
       // Load wishlist products
@@ -213,6 +230,34 @@ export default function StorefrontAccount() {
     }
   };
 
+  const handleAddAddress = async () => {
+    if (!addrForm.address_line1.trim()) { toast.error("Address line 1 required"); return; }
+    if (!customer) return;
+    try {
+      const { error } = await supabase.from("customer_addresses" as any).insert({
+        customer_id: customer.id,
+        store_id: storeId || customer.store_id,
+        ...addrForm,
+      });
+      if (error) throw error;
+      toast.success("Address saved");
+      setAddrOpen(false);
+      setAddrForm({ label: "Home", first_name: "", last_name: "", company: "", address_line1: "", address_line2: "", city: "", state: "", postal_code: "", country: "AU", phone: "" });
+      // Refresh addresses
+      const { data } = await supabase.from("customer_addresses" as any).select("*").eq("customer_id", customer.id).order("created_at", { ascending: false });
+      setAddresses(data || []);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
+  const handleDeleteAddress = async (addrId: string) => {
+    const { error } = await supabase.from("customer_addresses" as any).delete().eq("id", addrId);
+    if (error) { toast.error(error.message); return; }
+    setAddresses((prev) => prev.filter((a) => a.id !== addrId));
+    toast.success("Address removed");
+  };
+
   if (!user) return null;
 
   const returnOrderIds = new Set(returns.map((r: any) => r.order_id));
@@ -234,7 +279,6 @@ export default function StorefrontAccount() {
             <p className="text-sm text-muted-foreground">{new Date(selectedOrder.created_at).toLocaleDateString()}</p>
           </div>
 
-          {/* Order Tracker */}
           <Card className="mb-6">
             <CardContent className="p-4">
               <h3 className="text-sm font-medium mb-1">Order Status</h3>
@@ -248,7 +292,6 @@ export default function StorefrontAccount() {
             </CardContent>
           </Card>
 
-          {/* Order Items */}
           <Card className="mb-6">
             <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Items</CardTitle></CardHeader>
             <CardContent className="p-0">
@@ -273,11 +316,10 @@ export default function StorefrontAccount() {
             </CardContent>
           </Card>
 
-          {/* Shipment Tracking */}
           {shipmentsLoading ? (
             <Card><CardContent className="p-4"><Skeleton className="h-16 w-full" /></CardContent></Card>
           ) : shipments.length > 0 && (
-            <Card>
+            <Card className="mb-6">
               <CardHeader className="p-4 pb-2">
                 <CardTitle className="text-sm flex items-center gap-2"><Truck className="h-4 w-4" /> Shipments ({shipments.length})</CardTitle>
               </CardHeader>
@@ -289,28 +331,16 @@ export default function StorefrontAccount() {
                         <span className="text-sm font-semibold">{s.shipment_number}</span>
                         <StatusBadge status={s.status} />
                       </div>
-                      {s.shipped_at && (
-                        <span className="text-xs text-muted-foreground">
-                          Shipped {new Date(s.shipped_at).toLocaleDateString()}
-                        </span>
-                      )}
+                      {s.shipped_at && <span className="text-xs text-muted-foreground">Shipped {new Date(s.shipped_at).toLocaleDateString()}</span>}
                     </div>
-
                     {(s.carrier || s.tracking_number) && (
                       <div className="flex items-center gap-3 text-sm">
-                        {s.carrier && (
-                          <span className="text-muted-foreground">{s.carrier}</span>
-                        )}
+                        {s.carrier && <span className="text-muted-foreground">{s.carrier}</span>}
                         {s.tracking_number && (
                           <span className="flex items-center gap-1 font-mono text-xs">
                             {s.tracking_number}
                             {s.tracking_url && (
-                              <a
-                                href={s.tracking_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary hover:underline inline-flex items-center gap-0.5"
-                              >
+                              <a href={s.tracking_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-0.5">
                                 Track <ExternalLink className="h-3 w-3" />
                               </a>
                             )}
@@ -318,77 +348,21 @@ export default function StorefrontAccount() {
                         )}
                       </div>
                     )}
-
-                    {/* Shipment status timeline */}
-                    <div className="flex items-center gap-1 pt-1">
-                      {[
-                        { key: "pending", label: "Created", icon: Clock },
-                        { key: "shipped", label: "Shipped", icon: Truck },
-                        { key: "in_transit", label: "In Transit", icon: Package },
-                        { key: "delivered", label: "Delivered", icon: CheckCircle2 },
-                      ].map((step, idx, arr) => {
-                        const statusOrder = ["pending", "shipped", "in_transit", "delivered"];
-                        const currentIdx = statusOrder.indexOf(s.status);
-                        const stepIdx = statusOrder.indexOf(step.key);
-                        const isComplete = stepIdx <= currentIdx;
-                        const isCurrent = stepIdx === currentIdx;
-                        return (
-                          <div key={step.key} className="flex items-center">
-                            <div className={`flex flex-col items-center gap-0.5 min-w-[56px] ${isComplete ? "text-primary" : "text-muted-foreground/30"}`}>
-                              <div className={`h-6 w-6 rounded-full flex items-center justify-center ${isCurrent ? "bg-primary text-primary-foreground" : isComplete ? "bg-primary/15" : "bg-muted"}`}>
-                                <step.icon className="h-3 w-3" />
-                              </div>
-                              <span className={`text-[9px] text-center leading-tight ${isCurrent ? "font-semibold" : ""}`}>{step.label}</span>
-                            </div>
-                            {idx < arr.length - 1 && (
-                              <div className={`h-0.5 w-4 mx-0.5 ${stepIdx < currentIdx ? "bg-primary" : "bg-muted"}`} />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Items in this shipment */}
-                    {s.shipment_items && s.shipment_items.length > 0 && (
-                      <div className="text-xs text-muted-foreground pt-1 border-t mt-2">
-                        {s.shipment_items.map((si: any) => (
-                          <div key={si.id} className="flex justify-between py-0.5">
-                            <span>{si.order_items?.title || "Item"}</span>
-                            <span>× {si.quantity}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {s.delivered_at && (
-                      <p className="text-xs text-muted-foreground">
-                        Delivered {new Date(s.delivered_at).toLocaleDateString()}
-                      </p>
-                    )}
+                    {s.delivered_at && <p className="text-xs text-muted-foreground">Delivered {new Date(s.delivered_at).toLocaleDateString()}</p>}
                   </div>
                 ))}
               </CardContent>
             </Card>
           )}
 
-          {/* Order Summary */}
           <Card>
             <CardContent className="p-4 space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>${Number(selectedOrder.subtotal).toFixed(2)}</span></div>
-              {selectedOrder.discount > 0 && (
-                <div className="flex justify-between text-primary"><span>Discount</span><span>-${Number(selectedOrder.discount).toFixed(2)}</span></div>
-              )}
-              {selectedOrder.shipping > 0 && (
-                <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>${Number(selectedOrder.shipping).toFixed(2)}</span></div>
-              )}
-              {selectedOrder.tax > 0 && (
-                <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>${Number(selectedOrder.tax).toFixed(2)}</span></div>
-              )}
+              {selectedOrder.discount > 0 && <div className="flex justify-between text-primary"><span>Discount</span><span>-${Number(selectedOrder.discount).toFixed(2)}</span></div>}
+              {selectedOrder.shipping > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>${Number(selectedOrder.shipping).toFixed(2)}</span></div>}
+              {selectedOrder.tax > 0 && <div className="flex justify-between"><span className="text-muted-foreground">Tax</span><span>${Number(selectedOrder.tax).toFixed(2)}</span></div>}
               <Separator />
-              <div className="flex justify-between font-semibold text-base">
-                <span>Total</span>
-                <span>${Number(selectedOrder.total).toFixed(2)}</span>
-              </div>
+              <div className="flex justify-between font-semibold text-base"><span>Total</span><span>${Number(selectedOrder.total).toFixed(2)}</span></div>
               <div className="flex gap-2 pt-1">
                 <StatusBadge status={selectedOrder.payment_status} />
                 <StatusBadge status={selectedOrder.fulfillment_status} />
@@ -411,7 +385,6 @@ export default function StorefrontAccount() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Profile */}
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2"><User className="h-4 w-4" /> Profile</CardTitle>
@@ -433,19 +406,18 @@ export default function StorefrontAccount() {
             </CardContent>
           </Card>
 
-          {/* Tabs */}
           <div className="lg:col-span-2 space-y-4">
-            {/* Tab bar */}
-            <div className="flex gap-1 border-b">
+            <div className="flex gap-1 border-b overflow-x-auto">
               {([
                 { key: "orders", label: "Orders", icon: Package, count: orders.length },
+                { key: "addresses", label: "Addresses", icon: MapPin, count: addresses.length },
                 { key: "wishlist", label: "Wishlist", icon: Heart, count: wishlistProducts.length },
                 { key: "returns", label: "Returns", icon: RotateCcw, count: returns.length },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap ${
                     activeTab === tab.key ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -489,6 +461,74 @@ export default function StorefrontAccount() {
                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
                           </div>
                         </button>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Addresses Tab */}
+            {activeTab === "addresses" && (
+              <Card>
+                <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                  <CardTitle className="text-sm">My Addresses</CardTitle>
+                  <Dialog open={addrOpen} onOpenChange={setAddrOpen}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline" className="text-xs h-7 gap-1"><Plus className="h-3 w-3" /> Add</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader><DialogTitle className="text-base">Add Address</DialogTitle></DialogHeader>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><Label className="text-xs">Label</Label><Input className="h-9" value={addrForm.label} onChange={(e) => setAddrForm({ ...addrForm, label: e.target.value })} /></div>
+                          <div><Label className="text-xs">Company</Label><Input className="h-9" value={addrForm.company} onChange={(e) => setAddrForm({ ...addrForm, company: e.target.value })} /></div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><Label className="text-xs">First Name</Label><Input className="h-9" value={addrForm.first_name} onChange={(e) => setAddrForm({ ...addrForm, first_name: e.target.value })} /></div>
+                          <div><Label className="text-xs">Last Name</Label><Input className="h-9" value={addrForm.last_name} onChange={(e) => setAddrForm({ ...addrForm, last_name: e.target.value })} /></div>
+                        </div>
+                        <div><Label className="text-xs">Address Line 1 *</Label><Input className="h-9" value={addrForm.address_line1} onChange={(e) => setAddrForm({ ...addrForm, address_line1: e.target.value })} /></div>
+                        <div><Label className="text-xs">Address Line 2</Label><Input className="h-9" value={addrForm.address_line2} onChange={(e) => setAddrForm({ ...addrForm, address_line2: e.target.value })} /></div>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div><Label className="text-xs">City</Label><Input className="h-9" value={addrForm.city} onChange={(e) => setAddrForm({ ...addrForm, city: e.target.value })} /></div>
+                          <div><Label className="text-xs">State</Label><Input className="h-9" value={addrForm.state} onChange={(e) => setAddrForm({ ...addrForm, state: e.target.value })} /></div>
+                          <div><Label className="text-xs">Postal Code</Label><Input className="h-9" value={addrForm.postal_code} onChange={(e) => setAddrForm({ ...addrForm, postal_code: e.target.value })} /></div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><Label className="text-xs">Country</Label><Input className="h-9" value={addrForm.country} onChange={(e) => setAddrForm({ ...addrForm, country: e.target.value })} /></div>
+                          <div><Label className="text-xs">Phone</Label><Input className="h-9" value={addrForm.phone} onChange={(e) => setAddrForm({ ...addrForm, phone: e.target.value })} /></div>
+                        </div>
+                        <Button className="w-full" onClick={handleAddAddress}>Save Address</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  {addresses.length === 0 ? (
+                    <div className="text-center py-8">
+                      <MapPin className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+                      <p className="text-sm text-muted-foreground">No saved addresses.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {addresses.map((addr: any) => (
+                        <div key={addr.id} className="border rounded-lg p-3 text-sm relative group">
+                          <Badge variant="outline" className="text-[10px] mb-1">{addr.label}</Badge>
+                          <p className="font-medium">{[addr.first_name, addr.last_name].filter(Boolean).join(" ") || "—"}</p>
+                          {addr.company && <p className="text-muted-foreground text-xs">{addr.company}</p>}
+                          <p className="text-xs">{addr.address_line1}</p>
+                          {addr.address_line2 && <p className="text-xs">{addr.address_line2}</p>}
+                          <p className="text-xs">{[addr.city, addr.state, addr.postal_code].filter(Boolean).join(", ")}</p>
+                          <p className="text-xs text-muted-foreground">{addr.country}</p>
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-6 w-6 absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-destructive"
+                            onClick={() => handleDeleteAddress(addr.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       ))}
                     </div>
                   )}
