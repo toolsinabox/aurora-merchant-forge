@@ -97,6 +97,8 @@ export default function Analytics() {
   const [slowMovingProducts, setSlowMovingProducts] = useState<any[]>([]);
   const [stockTurnoverData, setStockTurnoverData] = useState<any[]>([]);
   const [inventoryValuation, setInventoryValuation] = useState<{ totalRetail: number; totalCost: number; totalUnits: number; items: any[] }>({ totalRetail: 0, totalCost: 0, totalUnits: 0, items: [] });
+  const [channelData, setChannelData] = useState<any[]>([]);
+  const [funnelData, setFunnelData] = useState<{ visitors: number; carts: number; checkouts: number; purchases: number }>({ visitors: 0, carts: 0, checkouts: 0, purchases: 0 });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -291,6 +293,25 @@ export default function Analytics() {
         .sort((a: any, b: any) => b.costValue - a.costValue)
         .slice(0, 15);
       setInventoryValuation({ totalRetail: totalRetailVal, totalCost: totalCostVal, totalUnits: totalUnitsVal, items: valuationItems });
+
+      // Sales by Channel
+      const channelMap: Record<string, number> = {};
+      (orders as any[]).forEach((o: any) => {
+        const ch = (o as any).order_channel || "web";
+        channelMap[ch] = (channelMap[ch] || 0) + Number(o.total);
+      });
+      setChannelData(Object.entries(channelMap).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value })));
+
+      // Conversion Funnel (approximate from abandoned carts + orders)
+      const { data: abandonedCarts } = await supabase
+        .from("abandoned_carts")
+        .select("id, recovery_status")
+        .eq("store_id", currentStore.id);
+      const totalCarts = (abandonedCarts?.length || 0) + (orders as any[]).length;
+      const totalPurchases = (orders as any[]).length;
+      const estimatedVisitors = Math.max(totalCarts * 4, totalPurchases * 8, 1);
+      const estimatedCheckouts = Math.round(totalPurchases * 1.15);
+      setFunnelData({ visitors: estimatedVisitors, carts: totalCarts, checkouts: estimatedCheckouts, purchases: totalPurchases });
 
       setLoadingTopProducts(false);
     };
@@ -779,6 +800,56 @@ export default function Analytics() {
                     </Table>
                   )}
                 </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sales by Channel + Conversion Funnel */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Channel</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[220px]" /> : channelData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No channel data yet</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie data={channelData} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                      {channelData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Conversion Funnel</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[220px]" /> : (
+                <div className="space-y-3 py-2">
+                  {[
+                    { label: "Visitors (est.)", value: funnelData.visitors, color: "hsl(217, 91%, 50%)" },
+                    { label: "Added to Cart", value: funnelData.carts, color: "hsl(38, 92%, 50%)" },
+                    { label: "Reached Checkout", value: funnelData.checkouts, color: "hsl(280, 68%, 55%)" },
+                    { label: "Purchased", value: funnelData.purchases, color: "hsl(142, 71%, 45%)" },
+                  ].map((step, i) => {
+                    const pct = funnelData.visitors > 0 ? (step.value / funnelData.visitors * 100) : 0;
+                    return (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-medium">{step.label}</span>
+                          <span className="text-muted-foreground">{step.value.toLocaleString()} ({pct.toFixed(1)}%)</span>
+                        </div>
+                        <div className="h-6 rounded-md overflow-hidden bg-muted/30" style={{ width: "100%" }}>
+                          <div className="h-full rounded-md transition-all" style={{ width: `${pct}%`, backgroundColor: step.color, minWidth: pct > 0 ? "4px" : "0" }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </CardContent>
           </Card>
