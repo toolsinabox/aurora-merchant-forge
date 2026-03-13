@@ -2555,8 +2555,11 @@ export type Database = {
           logo_url: string | null
           min_order_amount: number
           name: string
+          notification_prefs: Json | null
           owner_id: string
           primary_color: string | null
+          seo_description_global: string | null
+          seo_title_global: string | null
           slug: string | null
           social_links: Json | null
           subscription_tier: string
@@ -2578,8 +2581,11 @@ export type Database = {
           logo_url?: string | null
           min_order_amount?: number
           name: string
+          notification_prefs?: Json | null
           owner_id: string
           primary_color?: string | null
+          seo_description_global?: string | null
+          seo_title_global?: string | null
           slug?: string | null
           social_links?: Json | null
           subscription_tier?: string
@@ -2601,8 +2607,11 @@ export type Database = {
           logo_url?: string | null
           min_order_amount?: number
           name?: string
+          notification_prefs?: Json | null
           owner_id?: string
           primary_color?: string | null
+          seo_description_global?: string | null
+          seo_title_global?: string | null
           slug?: string | null
           social_links?: Json | null
           subscription_tier?: string
