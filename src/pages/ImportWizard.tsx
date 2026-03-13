@@ -142,7 +142,7 @@ export default function ImportWizard() {
       const autoMap: FieldMapping = {};
       parsed.headers.forEach((h) => {
         const normalized = h.toLowerCase().replace(/[^a-z0-9]/g, "_");
-        const match = PRODUCT_FIELDS.find((f) =>
+        const match = ACTIVE_FIELDS.find((f) =>
           f.key === normalized || f.label.toLowerCase().replace(/[^a-z0-9]/g, "_") === normalized
           || f.key.includes(normalized) || normalized.includes(f.key)
         );
