@@ -594,6 +594,8 @@ export default function SettingsPage() {
         ga_tracking_id: brandForm.ga_tracking_id || null,
         gtm_container_id: brandForm.gtm_container_id || null,
         fb_pixel_id: brandForm.fb_pixel_id || null,
+        google_ads_id: brandForm.google_ads_id || null,
+        google_ads_conversion_label: brandForm.google_ads_conversion_label || null,
       } as any)
       .eq("id", currentStore.id);
     setBrandSaving(false);
