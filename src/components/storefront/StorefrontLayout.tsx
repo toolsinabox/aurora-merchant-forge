@@ -260,6 +260,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       </footer>
 
       <CookieConsentBanner />
+      <PromoPopup basePath={basePath} storeName={storeName} />
     </div>
   );
 }
