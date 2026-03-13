@@ -15,6 +15,8 @@ import { Upload, ArrowLeft, ArrowRight, Check, AlertTriangle, FileSpreadsheet, S
 import { useNavigate } from "react-router-dom";
 import { useImportTemplates, useCreateImportTemplate, useDeleteImportTemplate } from "@/hooks/use-data";
 
+type ImportEntity = "products" | "orders";
+
 // Maropost-aligned product fields
 const PRODUCT_FIELDS = [
   { key: "title", label: "Name *", group: "Basic" },
@@ -66,6 +68,23 @@ const PRODUCT_FIELDS = [
   { key: "misc3", label: "Misc 3", group: "Custom" },
   { key: "misc4", label: "Misc 4", group: "Custom" },
   { key: "misc5", label: "Misc 5", group: "Custom" },
+];
+
+const ORDER_FIELDS = [
+  { key: "order_number", label: "Order Number *", group: "Basic" },
+  { key: "status", label: "Status", group: "Basic" },
+  { key: "payment_status", label: "Payment Status", group: "Basic" },
+  { key: "fulfillment_status", label: "Fulfillment Status", group: "Basic" },
+  { key: "subtotal", label: "Subtotal", group: "Financial" },
+  { key: "tax", label: "Tax", group: "Financial" },
+  { key: "shipping", label: "Shipping", group: "Financial" },
+  { key: "discount", label: "Discount", group: "Financial" },
+  { key: "total", label: "Total", group: "Financial" },
+  { key: "notes", label: "Notes", group: "Details" },
+  { key: "shipping_address", label: "Shipping Address", group: "Details" },
+  { key: "billing_address", label: "Billing Address", group: "Details" },
+  { key: "tags", label: "Tags", group: "Details" },
+  { key: "customer_email", label: "Customer Email (lookup)", group: "Customer" },
 ];
 
 type FieldMapping = Record<string, { source: string; static_value?: string; transform?: string }>;
