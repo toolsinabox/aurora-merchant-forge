@@ -302,7 +302,7 @@ const featureData: FeatureCategory[] = [
       { name: "Product Listing Page (Category)", description: "Category/collection product listing (category.template.html)", status: "done" },
       { name: "Product Detail Page", description: "Full product page with images, options, reviews (products/template.html)", status: "done" },
       { name: "Products Landing Page (/products)", description: "All-products page listing all categories", status: "done" },
-      { name: "Search Results Page", description: "Search results template (search_results.template.html)", status: "partial", notes: "Basic search exists" },
+      { name: "Search Results Page", description: "Search results template (search_results.template.html)", status: "done", notes: "Product search with filters, sorting, and pagination on /products" },
       { name: "Shopping Cart Page", description: "View cart page (shopping_cart.template.html)", status: "done" },
       { name: "One-Page Checkout", description: "Single-page checkout flow (onepage.template.html)", status: "done" },
       { name: "Checkout — Shipping Options", description: "Shipping method selection (shipping_options.template.html)", status: "done", notes: "Shipping zone radio selection with free-above threshold display" },
