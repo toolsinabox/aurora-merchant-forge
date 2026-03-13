@@ -51,15 +51,15 @@ export default function AbandonedCarts() {
 
   const markEmailSent = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("abandoned_carts")
-        .update({ recovery_status: "email_sent", recovery_email_sent_at: new Date().toISOString() })
-        .eq("id", id);
-      if (error) throw error;
+      // Trigger recovery email via edge function
+      const { error: fnErr } = await supabase.functions.invoke("abandoned-cart-email", {
+        body: { cart_id: id, store_id: currentStore?.id },
+      });
+      if (fnErr) throw fnErr;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["abandoned_carts"] });
-      toast.success("Marked as recovery email sent");
+      toast.success("Recovery email sent");
     },
   });
 

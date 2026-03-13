@@ -65,6 +65,13 @@ export default function StorefrontGiftVouchers() {
       } as any);
 
       if (error) throw error;
+      // Send gift voucher email to recipient
+      const { data: inserted } = await supabase.from("gift_vouchers").select("id").eq("code", code).eq("store_id", storeId).maybeSingle();
+      if (inserted?.id) {
+        supabase.functions.invoke("gift-voucher-email", {
+          body: { voucher_id: inserted.id, store_id: storeId },
+        }).catch(() => {});
+      }
       setVoucherCode(code);
       setCompleted(true);
       toast.success("Gift voucher purchased!");

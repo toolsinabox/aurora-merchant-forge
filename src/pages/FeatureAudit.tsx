@@ -666,7 +666,7 @@ const featureData: FeatureCategory[] = [
       { name: "Abandoned Cart Tracking", description: "Track and store abandoned shopping sessions", status: "done" },
       { name: "Abandoned Cart List (Admin)", description: "Admin view of all abandoned carts", status: "done", notes: "Full admin page with KPIs, filters, recovery actions" },
       { name: "Abandoned Cart Customer Info", description: "Track email/customer linked to abandoned cart", status: "done" },
-      { name: "Abandoned Cart Recovery Email", description: "Automated recovery email with cart contents", status: "not_started" },
+      { name: "Abandoned Cart Recovery Email", description: "Automated recovery email with cart contents", status: "done", notes: "abandoned-cart-email edge function triggered from admin Send Recovery Email button, queues styled email with cart items" },
       { name: "Abandoned Cart Recovery Status", description: "Track whether cart was recovered or lost", status: "done" },
       { name: "Abandoned Cart Recovery Stats", description: "Dashboard metrics: recovery rate, revenue recovered", status: "done", notes: "KPI cards: total carts, potential revenue, pending, recovery rate" },
       { name: "Multi-Step Recovery Sequences", description: "Send multiple follow-up emails over time", status: "not_started" },
