@@ -603,6 +603,24 @@ export default function SettingsPage() {
     else toast.success("Branding saved");
   };
 
+  // SMTP / Email configuration
+  const [smtpForm, setSmtpForm] = useState<any>({
+    host: "", port: "587", username: "", password: "", from_name: "", from_email: "", encryption: "tls",
+  });
+  const [smtpSaving, setSmtpSaving] = useState(false);
+
+  const handleSaveSmtp = async () => {
+    if (!currentStore) return;
+    setSmtpSaving(true);
+    const { error } = await supabase
+      .from("stores")
+      .update({ smtp_config: smtpForm } as any)
+      .eq("id", currentStore.id);
+    setSmtpSaving(false);
+    if (error) toast.error(error.message);
+    else toast.success("Email settings saved");
+  };
+
   const [taxOpen, setTaxOpen] = useState(false);
   const [newTax, setNewTax] = useState({ name: "", region: "", rate: "" });
   const [shipOpen, setShipOpen] = useState(false);
