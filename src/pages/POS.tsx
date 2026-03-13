@@ -244,6 +244,69 @@ export default function POS() {
       toast.success("Register closed successfully");
       setShowEOD(false);
     } catch (err: any) { toast.error(err.message); }
+
+  const createLayby = async () => {
+    if (!storeId || !user || !selectedCustomer || cart.length === 0) return;
+    setLaybyProcessing(true);
+    try {
+      const orderNumber = `LAY-${Date.now().toString(36).toUpperCase()}`;
+      const depositAmount = (Number(laybyDeposit) / 100) * total;
+      const remaining = total - depositAmount;
+      const installCount = Number(laybyInstallments);
+      const installAmount = remaining / installCount;
+
+      const { data: order, error: orderErr } = await supabase.from("orders").insert({
+        store_id: storeId, order_number: orderNumber,
+        customer_id: selectedCustomer.id,
+        subtotal, tax, total, discount: voucherDiscount, shipping: 0,
+        items_count: itemCount, status: "pending",
+        payment_status: "partially_paid", fulfillment_status: "unfulfilled",
+        order_channel: "pos",
+      }).select("id, order_number, total").single();
+      if (orderErr) throw orderErr;
+
+      await supabase.from("order_items").insert(cart.map(i => ({
+        order_id: order.id, store_id: storeId, product_id: i.product_id,
+        title: i.title, sku: i.sku, quantity: i.quantity,
+        unit_price: i.price, total: i.price * i.quantity,
+      })));
+
+      const nextDue = new Date();
+      if (laybyFrequency === "weekly") nextDue.setDate(nextDue.getDate() + 7);
+      else if (laybyFrequency === "fortnightly") nextDue.setDate(nextDue.getDate() + 14);
+      else nextDue.setMonth(nextDue.getMonth() + 1);
+
+      await supabase.from("layby_plans").insert({
+        store_id: storeId, order_id: order.id, customer_id: selectedCustomer.id,
+        total_amount: total, deposit_amount: depositAmount,
+        installments_count: installCount, installment_amount: installAmount,
+        installments_paid: 0, amount_paid: depositAmount,
+        frequency: laybyFrequency, next_due_date: nextDue.toISOString(),
+        status: "active",
+      });
+
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      await supabase.from("order_payments").insert({
+        order_id: order.id, store_id: storeId,
+        amount: depositAmount, payment_method: paymentMethod,
+        recorded_by: authUser?.id || "",
+      });
+
+      const { data: plan } = await supabase.from("layby_plans")
+        .select("id").eq("order_id", order.id).single();
+      if (plan) {
+        await supabase.from("layby_payments").insert({
+          layby_plan_id: plan.id, store_id: storeId,
+          amount: depositAmount, payment_method: paymentMethod,
+        });
+      }
+
+      setCart([]); setSelectedCustomer(null); setAppliedVoucher(null); setVoucherCode("");
+      setShowLayby(false);
+      refetchOrders();
+      toast.success(`Layby created: ${orderNumber} — Deposit $${depositAmount.toFixed(2)}`);
+    } catch (err: any) { toast.error(err.message); }
+    finally { setLaybyProcessing(false); }
   };
 
   return (
