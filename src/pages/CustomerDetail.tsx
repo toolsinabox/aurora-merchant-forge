@@ -215,6 +215,7 @@ export default function CustomerDetail() {
       segment: customer.segment,
       tags: (customer.tags || []).join(", "),
       customer_group_id: (customer as any).customer_group_id || "",
+      logo_url: (customer as any).logo_url || "",
     });
     setEditing(true);
   };
