@@ -377,7 +377,7 @@ const featureData: FeatureCategory[] = [
       { name: "Recently Viewed Products", description: "Track and display recently viewed items", status: "done", notes: "localStorage-based tracking on product detail page" },
       { name: "Product Quick View", description: "Quick view popup without navigating away", status: "not_started" },
       { name: "Shipping Calculator on Product Page", description: "Estimate shipping cost on product page", status: "not_started" },
-      { name: "Product Tabs (Description/Specs/Reviews)", description: "Tabbed content on product page", status: "partial" },
+      { name: "Product Tabs (Description/Specs/Reviews)", description: "Tabbed content on product page", status: "done", notes: "Tabs for Description, Features, Specs, Shipping, Warranty, Reviews" },
     ],
   },
 
