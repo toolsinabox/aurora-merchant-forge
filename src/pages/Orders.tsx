@@ -9,7 +9,7 @@ import { useOrders } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Download, Copy, CheckSquare } from "lucide-react";
+import { Search, Download, Copy, CheckSquare, Printer } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreateOrderDialog } from "@/components/orders/CreateOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
