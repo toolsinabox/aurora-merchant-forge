@@ -171,7 +171,7 @@ const featureData: FeatureCategory[] = [
       { name: "Stock by Variant", description: "Track inventory per variant within each warehouse", status: "done" },
       { name: "Stock Transfer Between Warehouses", description: "Transfer stock from one location to another", status: "done", notes: "Transfer dialog with source/destination locations" },
       { name: "Purchase Orders (PO Creation)", description: "Create purchase orders to suppliers", status: "done", notes: "Full PO CRUD with supplier linking" },
-      { name: "Purchase Order Receiving", description: "Receive stock against purchase orders, partial receipts", status: "partial", notes: "Status workflow exists, item-level receiving not yet" },
+      { name: "Purchase Order Receiving", description: "Receive stock against purchase orders, partial receipts", status: "done", notes: "Item-level receiving dialog with per-item quantity input, auto-updates PO status to partial/received, and updates inventory stock" },
       { name: "Purchase Order Status Workflow", description: "Draft → Sent → Partial → Received → Closed", status: "done" },
       { name: "Stock Count / Stocktake", description: "Physical stock count reconciliation", status: "done", notes: "Stocktake page with create, count items against expected quantities, and complete workflow" },
       { name: "Backorder Management", description: "Manage products on backorder, auto-allocate when stock arrives", status: "partial", notes: "Preorder quantity field enables pre-ordering when stock is 0" },
