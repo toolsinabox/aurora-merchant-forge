@@ -1,9 +1,12 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProducts, useOrders, useCustomers } from "@/hooks/use-data";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DollarSign, ShoppingCart, TrendingUp, Users, Package } from "lucide-react";
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -47,7 +50,6 @@ function getPaymentBreakdown(orders: any[]) {
 }
 
 function getTopProducts(orders: any[], products: any[]) {
-  // Use products with highest prices as proxy since we don't have item-level data in this query
   return products
     .filter((p) => p.status === "active")
     .sort((a, b) => b.price - a.price)
