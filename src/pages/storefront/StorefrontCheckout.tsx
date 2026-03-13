@@ -104,14 +104,18 @@ export default function StorefrontCheckout() {
           const bal = (credits as any[]).reduce((s: number, t: any) => s + (t.type === "credit" ? Number(t.amount) : -Number(t.amount)), 0);
           setStoreCreditBalance(Math.max(0, bal));
         }
-        // Check if customer group is tax exempt
+        // Check if customer group is tax exempt and has credit terms
         if ((c as any).customer_group_id) {
           const { data: grp } = await supabase
             .from("customer_groups" as any)
-            .select("is_tax_exempt")
+            .select("is_tax_exempt, credit_terms, credit_limit")
             .eq("id", (c as any).customer_group_id)
             .maybeSingle();
           if (grp && (grp as any).is_tax_exempt) setIsTaxExempt(true);
+          if (grp && (grp as any).credit_terms) {
+            setCanPayOnAccount(true);
+            setCreditTerms((grp as any).credit_terms);
+          }
         }
         const { data: addrs } = await supabase
           .from("customer_addresses" as any)
