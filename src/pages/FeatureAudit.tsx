@@ -888,7 +888,7 @@ const featureData: FeatureCategory[] = [
     category: "API & Developer Tools",
     icon: <Code className="h-5 w-5" />,
     features: [
-      { name: "RESTful API (Products, Orders, Customers)", description: "CRUD API for core entities", status: "partial", notes: "Internal Supabase SDK, not public REST API" },
+      { name: "RESTful API (Products, Orders, Customers)", description: "CRUD API for core entities", status: "done", notes: "rest-api edge function with API key auth (x-api-key header), GET/POST/PUT/DELETE for products, orders, customers, inventory, categories, coupons; pagination, search, status filters, scope-based access control" },
       { name: "API Authentication (API Keys)", description: "Authenticate API requests with store keys", status: "done", notes: "api_keys table with scoped keys, SHA-256 hashed storage, prefix display" },
       { name: "API Rate Limiting", description: "Throttle API requests per key", status: "done", notes: "api_rate_limits table tracking per-key request counts per time window, rate_limit column on api_keys (default 1000 req/hour)" },
       { name: "Webhook API", description: "Register and manage webhooks", status: "done", notes: "webhooks table with full CRUD, admin Webhooks page with 12 event types, signing secret, active toggle" },
