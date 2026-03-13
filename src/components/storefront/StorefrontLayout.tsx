@@ -156,6 +156,12 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                   </>
                 )}
               </nav>
+              {storeId && (
+                <div className="mt-4">
+                  <h3 className="font-bold text-sm mb-2">Newsletter</h3>
+                  <NewsletterSignup storeId={storeId} />
+                </div>
+              )}
             </div>
           </div>
           <div className="border-t pt-6 text-center text-xs text-muted-foreground">
