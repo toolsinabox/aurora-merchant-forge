@@ -581,7 +581,7 @@ export default function ImportWizard() {
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-xs">
                   <AlertTriangle className="h-4 w-4 text-amber-500" />
-                  <span>This will create {csvData.rows.length} new products. Existing products with matching SKUs will NOT be updated — duplicates may be created.</span>
+                  <span>This will create {csvData.rows.length} new {entityType}. Existing records will NOT be updated — duplicates may be created.</span>
                 </div>
               </CardContent>
             </Card>
