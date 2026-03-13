@@ -790,7 +790,7 @@ const featureData: FeatureCategory[] = [
       { name: "Conditional Tags ([?condition?]...[/?condition?])", description: "Conditional rendering based on field values", status: "done" },
       { name: "Format Pipes (|rw_upper, |rw_money, etc.)", description: "18+ format filters for output transformation", status: "done" },
       { name: "Nested Iterators", description: "Iterators within iterators", status: "done" },
-      { name: "Template Includes", description: "Include sub-templates within templates", status: "partial" },
+      { name: "Template Includes", description: "Include sub-templates within templates", status: "done", notes: "[!include slug!] syntax with recursive resolution up to 5 levels deep, includes map passed via context.includes" },
       { name: "Thumblist Tags", description: "Product/content listing thumbnails", status: "done", notes: "[%thumblist%]...[%/thumblist%] block iterator in template engine for product thumbnail listings with title, image, price, slug fields" },
       { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "done", notes: "[%advert%]...[%/advert%] block tags in template engine using adverts context array with image_url, link_url, title, subtitle, button_text fields" },
       { name: "AJAX Partial Rendering", description: "Reload template includes without full page refresh", status: "not_started" },
