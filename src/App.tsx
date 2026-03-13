@@ -293,8 +293,10 @@ const App = () => (
                   <Route path="/affiliates" element={<RequireAuth><Affiliates /></RequireAuth>} />
                   <Route path="/currencies" element={<RequireAuth><Currencies /></RequireAuth>} />
                   <Route path="/addons" element={<RequireAuth><Addons /></RequireAuth>} />
-                  <Route path="/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
-                  <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+                   <Route path="/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
+                   <Route path="/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
+                   <Route path="/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
