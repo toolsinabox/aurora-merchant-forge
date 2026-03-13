@@ -235,7 +235,7 @@ const featureData: FeatureCategory[] = [
       { name: "Square Payment Integration", description: "Square payment processing", status: "not_started" },
       { name: "eWAY Payment Gateway", description: "eWAY (Australia) payment gateway", status: "not_started" },
       { name: "Braintree Integration", description: "Braintree (PayPal) payment processing", status: "not_started" },
-      { name: "Manual / Offline Payments", description: "Record manual payments (bank transfer, check, cash)", status: "not_started" },
+      { name: "Manual / Offline Payments", description: "Record manual payments (bank transfer, check, cash)", status: "done", notes: "order_payments table with record dialog on order detail, payment history display" },
       { name: "Payment Refunds", description: "Process full or partial refunds", status: "not_started" },
       { name: "Payment Receipts / Confirmation", description: "Generate payment receipts", status: "not_started" },
       { name: "Saved Payment Methods", description: "Store card details for repeat purchases (tokenized)", status: "not_started" },
