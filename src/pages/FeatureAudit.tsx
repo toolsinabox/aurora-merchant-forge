@@ -752,7 +752,7 @@ const featureData: FeatureCategory[] = [
       { name: "Stock Turnover Report", description: "Inventory turnover rate analysis", status: "not_started" },
       { name: "Abandoned Cart Report", description: "Abandoned cart stats and recovery metrics", status: "not_started" },
       { name: "Tax Report / BAS Summary", description: "Tax collected summary for accounting", status: "not_started" },
-      { name: "Coupon Usage Report", description: "Coupon redemption and revenue impact", status: "not_started" },
+      { name: "Coupon Usage Report", description: "Coupon redemption and revenue impact", status: "done", notes: "Coupon usage table on Analytics page showing code, discount, uses" },
       { name: "Google Analytics Integration", description: "GA4 tracking code integration", status: "not_started" },
       { name: "Custom Report Builder", description: "Build custom reports with filters and date ranges", status: "not_started" },
       { name: "Scheduled Report Emails", description: "Auto-send reports by email on schedule", status: "not_started" },
