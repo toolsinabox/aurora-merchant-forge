@@ -44,6 +44,7 @@ import PurchaseOrders from "./pages/PurchaseOrders.tsx";
 import ShippingZones from "./pages/ShippingZones.tsx";
 import TaxRates from "./pages/TaxRates.tsx";
 import StockAdjustments from "./pages/StockAdjustments.tsx";
+import AbandonedCarts from "./pages/AbandonedCarts.tsx";
 import StorefrontWishlist from "./pages/storefront/StorefrontWishlist.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
@@ -122,6 +123,7 @@ const App = () => (
                   <Route path="/shipping-zones" element={<RequireAuth><ShippingZones /></RequireAuth>} />
                   <Route path="/tax-rates" element={<RequireAuth><TaxRates /></RequireAuth>} />
                   <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
+                  <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
                   {/* Public Storefront (path-based) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />

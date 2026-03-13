@@ -213,6 +213,12 @@ export default function Onboarding() {
                     <SelectItem value="EUR" className="text-xs">EUR (€)</SelectItem>
                     <SelectItem value="GBP" className="text-xs">GBP (£)</SelectItem>
                     <SelectItem value="CAD" className="text-xs">CAD (C$)</SelectItem>
+                    <SelectItem value="AUD" className="text-xs">AUD (A$)</SelectItem>
+                    <SelectItem value="NZD" className="text-xs">NZD (NZ$)</SelectItem>
+                    <SelectItem value="ZAR" className="text-xs">ZAR (R)</SelectItem>
+                    <SelectItem value="SGD" className="text-xs">SGD (S$)</SelectItem>
+                    <SelectItem value="JPY" className="text-xs">JPY (¥)</SelectItem>
+                    <SelectItem value="INR" className="text-xs">INR (₹)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -221,11 +227,19 @@ export default function Onboarding() {
                 <Select value={form.timezone} onValueChange={(v) => setForm({ ...form, timezone: v })}>
                   <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="America/New_York" className="text-xs">Eastern</SelectItem>
-                    <SelectItem value="America/Chicago" className="text-xs">Central</SelectItem>
-                    <SelectItem value="America/Denver" className="text-xs">Mountain</SelectItem>
-                    <SelectItem value="America/Los_Angeles" className="text-xs">Pacific</SelectItem>
-                    <SelectItem value="Europe/London" className="text-xs">London</SelectItem>
+                    <SelectItem value="America/New_York" className="text-xs">Eastern (US)</SelectItem>
+                    <SelectItem value="America/Chicago" className="text-xs">Central (US)</SelectItem>
+                    <SelectItem value="America/Denver" className="text-xs">Mountain (US)</SelectItem>
+                    <SelectItem value="America/Los_Angeles" className="text-xs">Pacific (US)</SelectItem>
+                    <SelectItem value="Europe/London" className="text-xs">London (GMT)</SelectItem>
+                    <SelectItem value="Europe/Berlin" className="text-xs">Berlin (CET)</SelectItem>
+                    <SelectItem value="Australia/Sydney" className="text-xs">Sydney (AEST)</SelectItem>
+                    <SelectItem value="Australia/Perth" className="text-xs">Perth (AWST)</SelectItem>
+                    <SelectItem value="Pacific/Auckland" className="text-xs">Auckland (NZST)</SelectItem>
+                    <SelectItem value="Africa/Johannesburg" className="text-xs">Johannesburg (SAST)</SelectItem>
+                    <SelectItem value="Asia/Singapore" className="text-xs">Singapore (SGT)</SelectItem>
+                    <SelectItem value="Asia/Tokyo" className="text-xs">Tokyo (JST)</SelectItem>
+                    <SelectItem value="Asia/Kolkata" className="text-xs">India (IST)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

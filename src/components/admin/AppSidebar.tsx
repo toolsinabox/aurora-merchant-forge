@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
-  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History,
+  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -33,6 +33,7 @@ const salesNav = [
   { title: "Orders", url: "/orders", icon: Package },
   { title: "Returns", url: "/returns", icon: RotateCcw },
   { title: "Customers", url: "/customers", icon: Users },
+  { title: "Abandoned Carts", url: "/abandoned-carts", icon: ShoppingCart },
 ];
 
 const marketingNav = [
