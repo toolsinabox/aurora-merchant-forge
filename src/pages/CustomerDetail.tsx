@@ -394,6 +394,12 @@ export default function CustomerDetail() {
                       </div>
                     )}
                     {customer.notes && <p className="text-xs text-muted-foreground mt-2 bg-muted/50 rounded p-2">{customer.notes}</p>}
+                    {(customer as any).logo_url && (
+                      <div className="mt-2">
+                        <Label className="text-[10px] text-muted-foreground">Dropship Logo</Label>
+                        <img src={(customer as any).logo_url} alt="Customer logo" className="h-12 mt-1 rounded border object-contain" />
+                      </div>
+                    )}
                   </>
                 )}
               </CardContent>
