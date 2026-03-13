@@ -106,6 +106,7 @@ export default function Templates() {
     template_type: "content_block",
     context_type: "product",
     content: "",
+    custom_css: "",
     is_active: true,
   });
 
@@ -117,11 +118,12 @@ export default function Templates() {
         template_type: template.template_type || "content_block",
         context_type: template.context_type || "product",
         content: template.content || "",
+        custom_css: template.custom_css || "",
         is_active: template.is_active !== false,
       });
       setEditing(template);
     } else {
-      setForm({ name: "", slug: "", template_type: "content_block", context_type: "product", content: "", is_active: true });
+      setForm({ name: "", slug: "", template_type: "content_block", context_type: "product", content: "", custom_css: "", is_active: true });
       setEditing("new");
     }
     setEditorTab("edit");
@@ -370,6 +372,7 @@ export default function Templates() {
                     <div className="flex items-center justify-between border-b px-4 py-2">
                       <TabsList className="h-8">
                         <TabsTrigger value="edit" className="text-xs gap-1 h-7 px-3"><Code2 className="h-3 w-3" /> Editor</TabsTrigger>
+                        <TabsTrigger value="css" className="text-xs gap-1 h-7 px-3"><FileCode2 className="h-3 w-3" /> CSS</TabsTrigger>
                         <TabsTrigger value="preview" className="text-xs gap-1 h-7 px-3"><Eye className="h-3 w-3" /> Preview</TabsTrigger>
                         <TabsTrigger value="output" className="text-xs gap-1 h-7 px-3"><Braces className="h-3 w-3" /> HTML Output</TabsTrigger>
                       </TabsList>
@@ -384,9 +387,21 @@ export default function Templates() {
                       />
                     </TabsContent>
 
+                    <TabsContent value="css" className="m-0 p-0">
+                      <Textarea
+                        className="min-h-[500px] border-0 rounded-none font-mono text-xs leading-relaxed resize-none focus-visible:ring-0"
+                        placeholder={`.product-card {\n  border: 1px solid #e5e7eb;\n  border-radius: 8px;\n  padding: 16px;\n}\n\n.product-card h2 {\n  font-size: 18px;\n  font-weight: 700;\n}`}
+                        value={form.custom_css}
+                        onChange={(e) => setForm((p) => ({ ...p, custom_css: e.target.value }))}
+                      />
+                    </TabsContent>
+
                     <TabsContent value="preview" className="m-0 p-4">
                       {previewHtml ? (
-                        <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                        <>
+                          {form.custom_css && <style dangerouslySetInnerHTML={{ __html: form.custom_css }} />}
+                          <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                        </>
                       ) : (
                         <p className="text-xs text-muted-foreground text-center py-12">Enter template content to see a preview.</p>
                       )}

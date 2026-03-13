@@ -13,17 +13,18 @@ interface RenderedTemplateProps {
 
 /**
  * Fetches active B@SE templates from the store and renders them with the provided context.
- * Can filter by slug, template_type, or context_type.
+ * Supports per-template custom CSS injection via the custom_css column.
  */
 export function RenderedTemplate({ storeId, slug, templateType, contextType, context, className }: RenderedTemplateProps) {
   const [html, setHtml] = useState<string[]>([]);
+  const [css, setCss] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       let query = supabase
         .from("store_templates" as any)
-        .select("content, slug, name")
+        .select("content, slug, name, custom_css")
         .eq("store_id", storeId)
         .eq("is_active", true);
 
@@ -38,7 +39,9 @@ export function RenderedTemplate({ storeId, slug, templateType, contextType, con
       }
 
       const rendered = (data as any[]).map((t: any) => renderTemplate(t.content || "", context));
+      const styles = (data as any[]).map((t: any) => t.custom_css || "").filter(Boolean);
       setHtml(rendered);
+      setCss(styles);
       setLoading(false);
     }
     if (storeId) load();
@@ -48,6 +51,9 @@ export function RenderedTemplate({ storeId, slug, templateType, contextType, con
 
   return (
     <>
+      {css.length > 0 && (
+        <style dangerouslySetInnerHTML={{ __html: css.join("\n") }} />
+      )}
       {html.map((content, idx) => (
         <div
           key={idx}
@@ -57,36 +63,4 @@ export function RenderedTemplate({ storeId, slug, templateType, contextType, con
       ))}
     </>
   );
-}
-
-/**
- * Hook to fetch and render a single template by slug.
- */
-export function useRenderedTemplate(storeId: string | undefined, slug: string, context: TemplateContext) {
-  const [html, setHtml] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function load() {
-      if (!storeId || !slug) { setLoading(false); return; }
-      const { data, error } = await supabase
-        .from("store_templates" as any)
-        .select("content")
-        .eq("store_id", storeId)
-        .eq("slug", slug)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (error || !data) {
-        setLoading(false);
-        return;
-      }
-
-      setHtml(renderTemplate((data as any).content || "", context));
-      setLoading(false);
-    }
-    load();
-  }, [storeId, slug, context]);
-
-  return { html, loading };
 }

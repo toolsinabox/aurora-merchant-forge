@@ -3327,9 +3327,67 @@ export type Database = {
           },
         ]
       }
+      shipping_rules: {
+        Row: {
+          condition_operator: string
+          condition_type: string
+          condition_value: number
+          created_at: string
+          id: string
+          is_active: boolean
+          message: string | null
+          rule_type: string
+          shipping_zone_id: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          condition_operator?: string
+          condition_type?: string
+          condition_value?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          message?: string | null
+          rule_type?: string
+          shipping_zone_id: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          condition_operator?: string
+          condition_type?: string
+          condition_value?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          message?: string | null
+          rule_type?: string
+          shipping_zone_id?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_rules_shipping_zone_id_fkey"
+            columns: ["shipping_zone_id"]
+            isOneToOne: false
+            referencedRelation: "shipping_zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipping_rules_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipping_zones: {
         Row: {
           created_at: string
+          cubic_divisor: number | null
           flat_rate: number
           free_above: number | null
           id: string
@@ -3341,6 +3399,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cubic_divisor?: number | null
           flat_rate?: number
           free_above?: number | null
           id?: string
@@ -3352,6 +3411,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cubic_divisor?: number | null
           flat_rate?: number
           free_above?: number | null
           id?: string
@@ -3588,6 +3648,7 @@ export type Database = {
           content: string
           context_type: string
           created_at: string
+          custom_css: string | null
           id: string
           is_active: boolean
           name: string
@@ -3600,6 +3661,7 @@ export type Database = {
           content?: string
           context_type?: string
           created_at?: string
+          custom_css?: string | null
           id?: string
           is_active?: boolean
           name: string
@@ -3612,6 +3674,7 @@ export type Database = {
           content?: string
           context_type?: string
           created_at?: string
+          custom_css?: string | null
           id?: string
           is_active?: boolean
           name?: string
