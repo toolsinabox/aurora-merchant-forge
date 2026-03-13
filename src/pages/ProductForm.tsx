@@ -370,7 +370,7 @@ export default function ProductForm() {
                       <Textarea className="text-xs min-h-[80px]" value={form.features} onChange={(e) => update("features", e.target.value)} placeholder="Key features (one per line)" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Specifications</Label>
+                      <FieldLabel label="Specifications" field="specifications" />
                       <Textarea className="text-xs min-h-[80px]" value={form.specifications} onChange={(e) => update("specifications", e.target.value)} placeholder="Technical specifications" />
                     </div>
                     <div className="space-y-1">
