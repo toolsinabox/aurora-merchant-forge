@@ -49,6 +49,8 @@ const contentNav = [
 ];
 
 const systemNav = [
+  { title: "Shipping Zones", url: "/shipping-zones", icon: Truck },
+  { title: "Tax Rates", url: "/tax-rates", icon: Percent },
   { title: "Activity Log", url: "/activity-log", icon: ClipboardList },
   { title: "Feature Audit", url: "/feature-audit", icon: ClipboardCheck },
   { title: "Settings", url: "/settings", icon: Settings },
