@@ -81,6 +81,7 @@ const App = () => (
                    <Route path="/checkout" element={<StorefrontCheckout />} />
                    <Route path="/login" element={<StorefrontLogin />} />
                   <Route path="/signup" element={<StorefrontSignup />} />
+                  <Route path="/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="*" element={<NotFound />} />
                 </>
