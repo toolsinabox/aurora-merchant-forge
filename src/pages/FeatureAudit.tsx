@@ -905,9 +905,9 @@ const featureData: FeatureCategory[] = [
     category: "Third-Party Integrations",
     icon: <Link className="h-5 w-5" />,
     features: [
-      { name: "Xero Accounting", description: "Auto-sync invoices and payments to Xero", status: "partial", notes: "Connection config on Accounting page + Integrations page; actual sync requires Xero OAuth credentials" },
-      { name: "MYOB Accounting", description: "Sync to MYOB AccountRight", status: "partial", notes: "Connection config on Accounting page + Integrations page; actual sync requires MYOB credentials" },
-      { name: "QuickBooks Online", description: "Sync to QuickBooks", status: "partial", notes: "Connection config on Accounting page + Integrations page; actual sync requires QuickBooks OAuth credentials" },
+      { name: "Xero Accounting", description: "Auto-sync invoices and payments to Xero", status: "done", notes: "xero-sync edge function with sync_invoices (creates ACCREC invoices with line items), sync_payments (records payments against invoices), get_accounts; supports Xero, MYOB, and QuickBooks via unified endpoint" },
+      { name: "MYOB Accounting", description: "Sync to MYOB AccountRight", status: "done", notes: "xero-sync edge function handles MYOB via company_file_uri with Sale/Invoice/Item API; config on Integrations page" },
+      { name: "QuickBooks Online", description: "Sync to QuickBooks", status: "done", notes: "xero-sync edge function handles QuickBooks via v3 Invoice API with realm_id; config on Integrations page" },
       { name: "Unleashed Inventory", description: "Advanced inventory management via Unleashed", status: "partial", notes: "Connection config UI on Integrations page with API ID and API Key fields; actual sync requires Unleashed credentials" },
       { name: "ShipStation", description: "Shipping label and order management", status: "done", notes: "shipstation-sync edge function with export_orders (creates ShipStation orders with address parsing, line items), import_tracking (fetches shipments, updates order_shipments), get_rates (carrier rate quotes); config on Integrations page" },
       { name: "Starshipit", description: "AU/NZ shipping automation", status: "partial", notes: "Connection config UI on Integrations page; edge function not yet built" },
