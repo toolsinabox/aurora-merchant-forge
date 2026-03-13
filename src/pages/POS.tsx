@@ -47,6 +47,13 @@ export default function POS() {
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
   const [voucherLoading, setVoucherLoading] = useState(false);
 
+  // Layby state
+  const [showLayby, setShowLayby] = useState(false);
+  const [laybyDeposit, setLaybyDeposit] = useState("20");
+  const [laybyInstallments, setLaybyInstallments] = useState("4");
+  const [laybyFrequency, setLaybyFrequency] = useState("weekly");
+  const [laybyProcessing, setLaybyProcessing] = useState(false);
+
   // EOD state
   const [showEOD, setShowEOD] = useState(false);
   const [openingFloat, setOpeningFloat] = useState("0");
