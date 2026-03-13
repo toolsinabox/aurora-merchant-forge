@@ -528,7 +528,7 @@ export default function ProductForm() {
                       <Switch checked={form.tax_free} onCheckedChange={(v) => update("tax_free", v)} />
                     </div>
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Price is Tax Inclusive</Label>
+                      <FieldLabel label="Price is Tax Inclusive" field="tax_inclusive" />
                       <Switch checked={form.tax_inclusive} onCheckedChange={(v) => update("tax_inclusive", v)} />
                     </div>
                   </CardContent>
