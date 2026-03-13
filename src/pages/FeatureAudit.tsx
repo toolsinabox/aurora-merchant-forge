@@ -595,7 +595,7 @@ const featureData: FeatureCategory[] = [
       { name: "Invoice PDF", description: "Printable tax invoice document", status: "done", notes: "Print-friendly invoice page with browser print" },
       { name: "Packing Slip PDF", description: "Printable packing slip for warehouse", status: "done", notes: "Dedicated packing slip page without prices" },
       { name: "Pick List PDF", description: "Warehouse pick list document", status: "done", notes: "Printable pick list page with aggregated items and per-order breakdown" },
-      { name: "Shipping Label", description: "Printable shipping labels", status: "not_started" },
+      { name: "Shipping Label", description: "Printable shipping labels", status: "done", notes: "Printable shipping label page with from/to addresses, order info, and tracking number" },
       { name: "Quote Document PDF", description: "Printable quote/estimate document", status: "not_started" },
       { name: "Credit Note PDF", description: "Printable credit note document", status: "done", notes: "Credit notes issued and displayed on order detail" },
       { name: "Purchase Order PDF", description: "Printable PO for suppliers", status: "done", notes: "Print-friendly PO page with supplier, items, and totals" },
