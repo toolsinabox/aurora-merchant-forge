@@ -109,6 +109,54 @@ export default function CustomerDetail() {
               <Button size="sm" variant="outline" className="text-xs" onClick={() => navigate(`/customers/${id}/statement`)}>
                 <FileText className="h-3 w-3 mr-1" />Statement
               </Button>
+              <Dialog open={mergeOpen} onOpenChange={setMergeOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-xs"><Merge className="h-3 w-3 mr-1" />Merge</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-sm">
+                  <DialogHeader><DialogTitle className="text-sm">Merge Customer</DialogTitle></DialogHeader>
+                  <p className="text-xs text-muted-foreground">Find the duplicate customer to merge into <strong>{customer.name}</strong>. Orders and data from the duplicate will be moved here, and the duplicate will be deleted.</p>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input className="h-8 text-xs" placeholder="Search by email..." value={mergeEmail} onChange={(e) => { setMergeEmail(e.target.value); setMergeTarget(null); }} />
+                      <Button size="sm" className="text-xs shrink-0" onClick={async () => {
+                        if (!mergeEmail) return;
+                        const { data } = await supabase.from("customers").select("id, name, email, total_orders, total_spent").eq("email", mergeEmail).neq("id", customer.id).limit(1).maybeSingle();
+                        if (data) setMergeTarget(data);
+                        else toast.error("No matching customer found");
+                      }}>Find</Button>
+                    </div>
+                    {mergeTarget && (
+                      <Card>
+                        <CardContent className="p-3 space-y-1">
+                          <p className="text-sm font-medium">{mergeTarget.name}</p>
+                          <p className="text-xs text-muted-foreground">{mergeTarget.email}</p>
+                          <p className="text-xs">{mergeTarget.total_orders} orders · ${Number(mergeTarget.total_spent).toFixed(2)} spent</p>
+                          <Button size="sm" variant="destructive" className="w-full text-xs mt-2" disabled={merging} onClick={async () => {
+                            setMerging(true);
+                            // Move orders to this customer
+                            await supabase.from("orders").update({ customer_id: customer.id }).eq("customer_id", mergeTarget.id);
+                            // Update totals
+                            await supabase.from("customers").update({
+                              total_orders: customer.total_orders + mergeTarget.total_orders,
+                              total_spent: Number(customer.total_spent) + Number(mergeTarget.total_spent),
+                            }).eq("id", customer.id);
+                            // Delete duplicate
+                            await supabase.from("customers").delete().eq("id", mergeTarget.id);
+                            qc.invalidateQueries({ queryKey: ["customer", id] });
+                            qc.invalidateQueries({ queryKey: ["customers"] });
+                            toast.success(`Merged ${mergeTarget.name} into ${customer.name}`);
+                            setMergeOpen(false);
+                            setMergeTarget(null);
+                            setMergeEmail("");
+                            setMerging(false);
+                          }}>{merging ? "Merging..." : "Merge & Delete Duplicate"}</Button>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                </DialogContent>
+              </Dialog>
               <Button size="sm" variant="outline" className="text-xs" onClick={startEdit}>Edit</Button>
             </div>
           )}
