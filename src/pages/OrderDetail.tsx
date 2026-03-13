@@ -328,6 +328,8 @@ export default function OrderDetail() {
                     </CardContent>
                   </Card>
                 )}
+              </DialogContent>
+            </Dialog>
             <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="text-xs gap-1"><Truck className="h-3.5 w-3.5" /> Create Shipment</Button>
