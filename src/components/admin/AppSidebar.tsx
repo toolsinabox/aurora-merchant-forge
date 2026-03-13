@@ -39,6 +39,7 @@ const marketingNav = [
 ];
 
 const systemNav = [
+  { title: "Templates", url: "/templates", icon: Code2 },
   { title: "Activity Log", url: "/activity-log", icon: ClipboardList },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
