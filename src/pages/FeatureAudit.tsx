@@ -239,7 +239,7 @@ const featureData: FeatureCategory[] = [
       { name: "Payment Refunds", description: "Process full or partial refunds", status: "done", notes: "Refund dialog on order detail page with amount, reason, and auto-updates payment status to refunded" },
       { name: "Payment Receipts / Confirmation", description: "Generate payment receipts", status: "done", notes: "Printable payment receipt page accessible from payment history on order detail" },
       { name: "Saved Payment Methods", description: "Store card details for repeat purchases (tokenized)", status: "not_started" },
-      { name: "Pay Order from Account", description: "Customer can pay outstanding orders from their account page", status: "not_started", notes: "Neto has pay_order templates" },
+      { name: "Pay Order from Account", description: "Customer can pay outstanding orders from their account page", status: "done", notes: "Pay button on storefront account order detail for unpaid orders, records payment and updates status" },
       { name: "Layby / Lay-Away", description: "Installment payment plans managed in-platform", status: "not_started" },
       { name: "Account Credit / Store Credit", description: "Customer account credit balance for future purchases", status: "not_started" },
     ],
