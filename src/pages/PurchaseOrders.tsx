@@ -45,6 +45,11 @@ export default function PurchaseOrders() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<POForm>({ ...emptyForm });
   const [search, setSearch] = useState("");
+  const [receiveOpen, setReceiveOpen] = useState(false);
+  const [receivePO, setReceivePO] = useState<any>(null);
+  const [poItems, setPOItems] = useState<any[]>([]);
+  const [receiveQtys, setReceiveQtys] = useState<Record<string, number>>({});
+  const [loadingItems, setLoadingItems] = useState(false);
 
   const { data: pos = [], isLoading } = useQuery({
     queryKey: ["purchase_orders", currentStore?.id],
