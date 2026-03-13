@@ -749,7 +749,7 @@ const featureData: FeatureCategory[] = [
       { name: "Profit Margin Report", description: "Revenue minus cost analysis", status: "done", notes: "Profit margin table on Analytics page showing revenue, cost, profit, margin% by product" },
       { name: "Inventory Value Report", description: "Total stock value across all locations", status: "done", notes: "Retail value, cost value, and potential profit KPIs on Inventory page" },
       { name: "Slow-Moving Stock Report", description: "Products with low sales velocity", status: "done", notes: "Slow-moving stock table on Analytics page showing products with ≤2 units sold" },
-      { name: "Stock Turnover Report", description: "Inventory turnover rate analysis", status: "not_started" },
+      { name: "Stock Turnover Report", description: "Inventory turnover rate analysis", status: "done", notes: "Turnover rate table on Analytics page showing stock, units sold, and turnover rate per product" },
       { name: "Abandoned Cart Report", description: "Abandoned cart stats and recovery metrics", status: "done", notes: "KPI cards and table on Abandoned Carts admin page" },
       { name: "Tax Report / BAS Summary", description: "Tax collected summary for accounting", status: "done", notes: "Tax report on Analytics page with total tax, taxed orders, and monthly bar chart" },
       { name: "Coupon Usage Report", description: "Coupon redemption and revenue impact", status: "done", notes: "Coupon usage table on Analytics page showing code, discount, uses" },
