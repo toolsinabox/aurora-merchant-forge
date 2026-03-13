@@ -25,7 +25,7 @@ type SpecFilter = Record<string, string[]>;
 
 const PAGE_SIZES = [12, 24, 48];
 
-function ProductCard({ p, basePath, store }: { p: any; basePath: string; store: any }) {
+function ProductCard({ p, basePath, store, onQuickView }: { p: any; basePath: string; store: any; onQuickView: (product: any) => void }) {
   const { items: compareItems, addItem: addCompare, removeItem: removeCompare, isComparing } = useCompare();
   const { addItem } = useCart();
   const { toggleItem, isWishlisted } = useWishlist();
