@@ -741,7 +741,7 @@ const featureData: FeatureCategory[] = [
       { name: "Orders Over Time Chart", description: "Order count trend chart", status: "done", notes: "Bar chart on Analytics page" },
       { name: "Top Selling Products Report", description: "Products ranked by units sold / revenue", status: "done", notes: "Real order_items aggregation on Analytics page showing units and revenue" },
       { name: "Top Customers Report", description: "Customers ranked by total spent", status: "done", notes: "Top 10 customers by total_spent on Analytics page" },
-      { name: "Sales by Category Report", description: "Revenue breakdown by product category", status: "not_started" },
+      { name: "Sales by Category Report", description: "Revenue breakdown by product category", status: "done", notes: "Pie chart on Analytics page from order_items joined to product categories" },
       { name: "Sales by Channel Report", description: "Revenue by channel (web, eBay, POS, etc.)", status: "not_started" },
       { name: "Customer Acquisition Report", description: "New vs returning customer metrics", status: "not_started" },
       { name: "Conversion Rate / Funnel Analytics", description: "Visitor → Cart → Checkout → Purchase funnel", status: "not_started" },
