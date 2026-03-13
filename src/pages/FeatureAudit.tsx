@@ -830,7 +830,7 @@ const featureData: FeatureCategory[] = [
       { name: "Forgot / Reset Password", description: "Password recovery flow", status: "done" },
       { name: "User Roles (Owner/Admin/Staff)", description: "Role-based access control per store", status: "done" },
       { name: "Platform Admin Role", description: "Super-admin platform-wide role", status: "done" },
-      { name: "Role-Based Permissions", description: "Granular permissions per role (view/edit/delete)", status: "partial" },
+      { name: "Role-Based Permissions", description: "Granular permissions per role (view/edit/delete)", status: "done", notes: "role_permissions table with per-role/per-resource CRUD matrix, admin Permissions page with owner/admin/staff roles, 19 resources, save/load" },
       { name: "Multi-Store Staff Access", description: "Staff can access multiple stores", status: "partial" },
       { name: "Activity Log / Audit Trail", description: "Track who did what and when", status: "done" },
       { name: "Two-Factor Authentication (2FA)", description: "TOTP/SMS 2FA for admin accounts", status: "not_started" },
