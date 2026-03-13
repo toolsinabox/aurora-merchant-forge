@@ -83,8 +83,47 @@ export default function Analytics() {
   const { data: products = [], isLoading: lp } = useProducts();
   const { data: orders = [], isLoading: lo } = useOrders();
   const { data: customers = [], isLoading: lc } = useCustomers();
+  const { currentStore } = useAuth();
   const [range, setRange] = useState("30");
   const loading = lo || lp || lc;
+
+  // Top selling products from order_items
+  const [topSellingProducts, setTopSellingProducts] = useState<any[]>([]);
+  const [loadingTopProducts, setLoadingTopProducts] = useState(true);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    const fetchTopSelling = async () => {
+      setLoadingTopProducts(true);
+      const { data: items } = await supabase
+        .from("order_items")
+        .select("product_id, title, quantity, total")
+        .eq("store_id", currentStore.id);
+      
+      const productMap: Record<string, { title: string; units: number; revenue: number }> = {};
+      (items || []).forEach((item: any) => {
+        const key = item.product_id || item.title;
+        if (!productMap[key]) productMap[key] = { title: item.title, units: 0, revenue: 0 };
+        productMap[key].units += item.quantity;
+        productMap[key].revenue += Number(item.total);
+      });
+      
+      const sorted = Object.values(productMap)
+        .sort((a, b) => b.revenue - a.revenue)
+        .slice(0, 10);
+      setTopSellingProducts(sorted);
+      setLoadingTopProducts(false);
+    };
+    fetchTopSelling();
+  }, [currentStore]);
+
+  // Top customers
+  const topCustomers = useMemo(() => 
+    [...customers]
+      .sort((a: any, b: any) => Number(b.total_spent) - Number(a.total_spent))
+      .slice(0, 10),
+    [customers]
+  );
 
   const days = parseInt(range);
   const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - days);
