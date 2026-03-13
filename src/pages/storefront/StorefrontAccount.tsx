@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
@@ -155,9 +155,21 @@ export default function StorefrontAccount() {
     navigate(basePath || "/");
   };
 
-  const viewOrderDetail = (order: any) => {
+  // Load shipments when viewing order detail
+  const [shipments, setShipments] = useState<any[]>([]);
+  const [shipmentsLoading, setShipmentsLoading] = useState(false);
+
+  const viewOrderDetail = async (order: any) => {
     setSelectedOrder(order);
     setOrderItems(order.order_items || []);
+    setShipmentsLoading(true);
+    const { data } = await supabase
+      .from("order_shipments" as any)
+      .select("*, shipment_items(*, order_items:order_item_id(title, sku))")
+      .eq("order_id", order.id)
+      .order("created_at", { ascending: false });
+    setShipments(data || []);
+    setShipmentsLoading(false);
   };
 
   const handleReturnRequest = async () => {
@@ -260,6 +272,104 @@ export default function StorefrontAccount() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Shipment Tracking */}
+          {shipmentsLoading ? (
+            <Card><CardContent className="p-4"><Skeleton className="h-16 w-full" /></CardContent></Card>
+          ) : shipments.length > 0 && (
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><Truck className="h-4 w-4" /> Shipments ({shipments.length})</CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-0 space-y-3">
+                {shipments.map((s: any) => (
+                  <div key={s.id} className="border rounded-lg p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold">{s.shipment_number}</span>
+                        <StatusBadge status={s.status} />
+                      </div>
+                      {s.shipped_at && (
+                        <span className="text-xs text-muted-foreground">
+                          Shipped {new Date(s.shipped_at).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+
+                    {(s.carrier || s.tracking_number) && (
+                      <div className="flex items-center gap-3 text-sm">
+                        {s.carrier && (
+                          <span className="text-muted-foreground">{s.carrier}</span>
+                        )}
+                        {s.tracking_number && (
+                          <span className="flex items-center gap-1 font-mono text-xs">
+                            {s.tracking_number}
+                            {s.tracking_url && (
+                              <a
+                                href={s.tracking_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline inline-flex items-center gap-0.5"
+                              >
+                                Track <ExternalLink className="h-3 w-3" />
+                              </a>
+                            )}
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Shipment status timeline */}
+                    <div className="flex items-center gap-1 pt-1">
+                      {[
+                        { key: "pending", label: "Created", icon: Clock },
+                        { key: "shipped", label: "Shipped", icon: Truck },
+                        { key: "in_transit", label: "In Transit", icon: Package },
+                        { key: "delivered", label: "Delivered", icon: CheckCircle2 },
+                      ].map((step, idx, arr) => {
+                        const statusOrder = ["pending", "shipped", "in_transit", "delivered"];
+                        const currentIdx = statusOrder.indexOf(s.status);
+                        const stepIdx = statusOrder.indexOf(step.key);
+                        const isComplete = stepIdx <= currentIdx;
+                        const isCurrent = stepIdx === currentIdx;
+                        return (
+                          <div key={step.key} className="flex items-center">
+                            <div className={`flex flex-col items-center gap-0.5 min-w-[56px] ${isComplete ? "text-primary" : "text-muted-foreground/30"}`}>
+                              <div className={`h-6 w-6 rounded-full flex items-center justify-center ${isCurrent ? "bg-primary text-primary-foreground" : isComplete ? "bg-primary/15" : "bg-muted"}`}>
+                                <step.icon className="h-3 w-3" />
+                              </div>
+                              <span className={`text-[9px] text-center leading-tight ${isCurrent ? "font-semibold" : ""}`}>{step.label}</span>
+                            </div>
+                            {idx < arr.length - 1 && (
+                              <div className={`h-0.5 w-4 mx-0.5 ${stepIdx < currentIdx ? "bg-primary" : "bg-muted"}`} />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Items in this shipment */}
+                    {s.shipment_items && s.shipment_items.length > 0 && (
+                      <div className="text-xs text-muted-foreground pt-1 border-t mt-2">
+                        {s.shipment_items.map((si: any) => (
+                          <div key={si.id} className="flex justify-between py-0.5">
+                            <span>{si.order_items?.title || "Item"}</span>
+                            <span>× {si.quantity}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {s.delivered_at && (
+                      <p className="text-xs text-muted-foreground">
+                        Delivered {new Date(s.delivered_at).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Order Summary */}
           <Card>
