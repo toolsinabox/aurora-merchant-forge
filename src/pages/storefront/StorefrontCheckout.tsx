@@ -6,11 +6,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 
 interface AppliedCoupon {
@@ -41,6 +42,7 @@ export default function StorefrontCheckout() {
     address: "", city: "", zip: "", country: "",
     notes: "",
   });
+  const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -54,12 +56,34 @@ export default function StorefrontCheckout() {
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
+        // Load saved addresses
+        const { data: addrs } = await supabase
+          .from("customer_addresses" as any)
+          .select("*")
+          .eq("customer_id", c.id)
+          .order("is_default_shipping", { ascending: false });
+        if (addrs && addrs.length > 0) {
+          setSavedAddresses(addrs);
+          const def = addrs.find((a: any) => a.is_default_shipping) || addrs[0];
+          applyAddress(def);
+        }
       } else {
         setForm((prev) => ({ ...prev, email: user!.email || prev.email }));
       }
     }
     prefill();
   }, [user]);
+
+  const applyAddress = (addr: any) => {
+    setForm((prev) => ({
+      ...prev,
+      address: [addr.address_line1, addr.address_line2].filter(Boolean).join(", "),
+      city: addr.city || "",
+      zip: addr.postal_code || "",
+      country: addr.country || "",
+      phone: addr.phone || prev.phone,
+    }));
+  };
 
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
@@ -248,7 +272,27 @@ export default function StorefrontCheckout() {
 
               {/* Shipping */}
               <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Shipping Address</h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold">Shipping Address</h2>
+                  {savedAddresses.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                      <Select onValueChange={(id) => {
+                        const addr = savedAddresses.find((a: any) => a.id === id);
+                        if (addr) applyAddress(addr);
+                      }}>
+                        <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Use saved address" /></SelectTrigger>
+                        <SelectContent>
+                          {savedAddresses.map((a: any) => (
+                            <SelectItem key={a.id} value={a.id} className="text-xs">
+                              {a.label || `${a.address_line1}, ${a.city}`}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
                 <div className="space-y-1.5">
                   <Label>Address</Label>
                   <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" />
