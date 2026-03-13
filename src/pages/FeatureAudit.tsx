@@ -288,7 +288,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Auto-Registration on Purchase", description: "Automatically create customer account on first purchase", status: "not_started" },
       { name: "Customer Merge", description: "Merge duplicate customer records", status: "not_started" },
       { name: "Customer Export", description: "Export customers to CSV", status: "done", notes: "CSV download on admin customers page" },
-      { name: "Customer Import", description: "Bulk import customers from CSV", status: "not_started" },
+      { name: "Customer Import", description: "Bulk import customers from CSV", status: "done", notes: "CSV import on Customers page with name/email/phone/segment/tags columns" },
       { name: "Customer Lifetime Value (CLV)", description: "Calculated CLV metric per customer", status: "done", notes: "CLV and avg days between orders on customer detail stats card" },
     ],
   },
