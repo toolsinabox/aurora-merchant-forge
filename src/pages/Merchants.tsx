@@ -174,7 +174,9 @@ export default function Merchants() {
                             <span className="text-muted-foreground">—</span>
                           )}
                         </TableCell>
+                      </TableRow>
                     ))
+
                   )}
                 </TableBody>
               </Table>
