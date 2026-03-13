@@ -50,6 +50,8 @@ export default function StorefrontCheckout() {
 
   // Delivery method
   const [deliveryMethod, setDeliveryMethod] = useState<"shipping" | "pickup">("shipping");
+  const [splitShipping, setSplitShipping] = useState(false);
+  const [itemAddresses, setItemAddresses] = useState<Record<string, { address: string; city: string; zip: string; country: string }>>({}); 
 
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
