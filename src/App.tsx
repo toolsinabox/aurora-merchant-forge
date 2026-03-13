@@ -96,6 +96,7 @@ import POS from "./pages/POS.tsx";
 import Affiliates from "./pages/Affiliates.tsx";
 import Currencies from "./pages/Currencies.tsx";
 import Addons from "./pages/Addons.tsx";
+import ApiDocs from "./pages/ApiDocs.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
