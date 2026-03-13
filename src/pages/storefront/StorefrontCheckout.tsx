@@ -187,6 +187,37 @@ export default function StorefrontCheckout() {
     setCouponCode("");
   };
 
+  const applyVoucher = async () => {
+    const code = voucherCode.trim().toUpperCase();
+    if (!code) return;
+    setVoucherLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("gift_vouchers")
+        .select("id, code, balance, is_active, expires_at")
+        .eq("code", code)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) { toast.error("Invalid voucher code"); return; }
+      const v = data as any;
+      if (v.expires_at && new Date(v.expires_at) < new Date()) { toast.error("This voucher has expired"); return; }
+      if (Number(v.balance) <= 0) { toast.error("This voucher has no remaining balance"); return; }
+      const amountUsed = Math.min(Number(v.balance), totalBeforeVoucher);
+      setAppliedVoucher({ id: v.id, code: v.code, balance: Number(v.balance), amountUsed });
+      toast.success(`Voucher applied! $${amountUsed.toFixed(2)} credit`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to apply voucher");
+    } finally {
+      setVoucherLoading(false);
+    }
+  };
+
+  const removeVoucher = () => {
+    setAppliedVoucher(null);
+    setVoucherCode("");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
