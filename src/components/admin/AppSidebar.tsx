@@ -72,6 +72,7 @@ const systemNav = [
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
+  { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
 ];
