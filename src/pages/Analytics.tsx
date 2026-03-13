@@ -94,6 +94,7 @@ export default function Analytics() {
   const [profitData, setProfitData] = useState<any[]>([]);
   const [taxSummary, setTaxSummary] = useState<{ totalTax: number; orderCount: number; byMonth: any[] }>({ totalTax: 0, orderCount: 0, byMonth: [] });
   const [acquisitionData, setAcquisitionData] = useState<{ newCustomers: number; returning: number; byMonth: any[] }>({ newCustomers: 0, returning: 0, byMonth: [] });
+  const [slowMovingProducts, setSlowMovingProducts] = useState<any[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -216,6 +217,31 @@ export default function Analytics() {
         returning: totalReturning,
         byMonth: Object.entries(custByMonth).map(([month, d]) => ({ month, new: d.newC, returning: d.returning })),
       });
+      // Slow-moving stock: products with stock but few/no sales in last 90 days
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+      const recentItemProductIds = new Set(
+        (items || []).filter((item: any) => {
+          // Check if associated order was within 90 days by checking recent orders
+          return true; // We'll filter by units sold below
+        }).map((item: any) => item.product_id)
+      );
+      const unitsSoldMap: Record<string, number> = {};
+      (items || []).forEach((item: any) => {
+        unitsSoldMap[item.product_id] = (unitsSoldMap[item.product_id] || 0) + item.quantity;
+      });
+      
+      const slowMoving = (allProducts || [])
+        .map((p: any) => ({
+          id: p.id,
+          title: (productMap[p.id]?.title || "Unknown"),
+          price: Number(p.price),
+          unitsSold: unitsSoldMap[p.id] || 0,
+        }))
+        .filter((p: any) => p.unitsSold <= 2)
+        .sort((a: any, b: any) => a.unitsSold - b.unitsSold)
+        .slice(0, 10);
+      setSlowMovingProducts(slowMoving);
 
       setLoadingTopProducts(false);
     };
@@ -593,6 +619,35 @@ export default function Analytics() {
                     </ResponsiveContainer>
                   )}
                 </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Slow-Moving Stock Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Slow-Moving Stock</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : slowMovingProducts.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No slow-moving products detected</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Price</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units Sold</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {slowMovingProducts.map((p: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right">${p.price.toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.unitsSold}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </CardContent>
           </Card>

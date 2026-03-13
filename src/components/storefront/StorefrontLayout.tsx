@@ -1,6 +1,6 @@
 import { ReactNode, useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ShoppingBag, Menu, User, Store, Search, Heart } from "lucide-react";
+import { ShoppingBag, Menu, User, Store, Search, Heart, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -26,6 +26,8 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [searchOpen, setSearchOpen] = useState(false);
   const [storeId, setStoreId] = useState<string>("");
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<any[]>([]);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!storeSlug) return;
@@ -33,9 +35,17 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       if (s) {
         setStoreId(s.id);
         if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
+        // Load categories for mega menu
+        supabase.from("categories").select("id, name, slug, parent_id, sort_order")
+          .eq("store_id", s.id).order("sort_order").then(({ data }) => {
+            setCategories(data || []);
+          });
       }
     });
   }, [storeSlug]);
+
+  const parentCategories = categories.filter(c => !c.parent_id);
+  const getChildren = (parentId: string) => categories.filter(c => c.parent_id === parentId);
 
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
@@ -78,6 +88,45 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 <Link to={`${basePath}/products`} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   All Products
                 </Link>
+                {/* Mega Menu */}
+                {parentCategories.length > 0 && (
+                  <div className="relative" onMouseEnter={() => setMegaMenuOpen(true)} onMouseLeave={() => setMegaMenuOpen(false)}>
+                    <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                      Categories <ChevronDown className="h-3 w-3" />
+                    </button>
+                    {megaMenuOpen && (
+                      <div className="absolute top-full left-0 pt-2 z-50">
+                        <div className="bg-background border rounded-lg shadow-lg p-4 min-w-[400px] grid grid-cols-2 gap-4">
+                          {parentCategories.slice(0, 8).map(cat => (
+                            <div key={cat.id}>
+                              <Link
+                                to={`${basePath}/products?category=${cat.slug}`}
+                                className="text-sm font-semibold hover:text-primary transition-colors"
+                                onClick={() => setMegaMenuOpen(false)}
+                              >
+                                {cat.name}
+                              </Link>
+                              {getChildren(cat.id).length > 0 && (
+                                <div className="mt-1 space-y-0.5">
+                                  {getChildren(cat.id).slice(0, 5).map(child => (
+                                    <Link
+                                      key={child.id}
+                                      to={`${basePath}/products?category=${child.slug}`}
+                                      className="block text-xs text-muted-foreground hover:text-foreground transition-colors"
+                                      onClick={() => setMegaMenuOpen(false)}
+                                    >
+                                      {child.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </nav>
             </div>
 

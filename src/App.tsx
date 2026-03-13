@@ -63,6 +63,9 @@ import StorefrontCompare from "./pages/storefront/StorefrontCompare.tsx";
 import StorefrontContentPage from "./pages/storefront/StorefrontContentPage.tsx";
 import StorefrontTrackOrder from "./pages/storefront/StorefrontTrackOrder.tsx";
 import StorefrontBlog from "./pages/storefront/StorefrontBlog.tsx";
+import StorefrontGiftVouchers from "./pages/storefront/StorefrontGiftVouchers.tsx";
+import PrintGiftVoucher from "./pages/PrintGiftVoucher.tsx";
+import WarehouseDashboard from "./pages/WarehouseDashboard.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -102,6 +105,8 @@ const App = () => (
                   <Route path="/page/:pageSlug" element={<StorefrontContentPage />} />
                   <Route path="/blog" element={<StorefrontBlog />} />
                   <Route path="/track-order" element={<StorefrontTrackOrder />} />
+                  <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
+                  <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
@@ -142,6 +147,7 @@ const App = () => (
                   <Route path="/_cpanel/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/_cpanel/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
+                  <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -198,6 +204,7 @@ const App = () => (
                   <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
+                  <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
@@ -214,6 +221,8 @@ const App = () => (
                   <Route path="/store/:storeSlug/page/:pageSlug" element={<StorefrontContentPage />} />
                   <Route path="/store/:storeSlug/blog" element={<StorefrontBlog />} />
                   <Route path="/store/:storeSlug/track-order" element={<StorefrontTrackOrder />} />
+                  <Route path="/store/:storeSlug/gift-vouchers" element={<StorefrontGiftVouchers />} />
+                  <Route path="/store/:storeSlug/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}
