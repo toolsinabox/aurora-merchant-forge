@@ -28,7 +28,6 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
   const [categories, setCategories] = useState<any[]>([]);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
-  const [socialLinks, setSocialLinks] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!storeSlug) return;
