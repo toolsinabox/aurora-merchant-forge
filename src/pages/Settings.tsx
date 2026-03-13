@@ -23,6 +23,123 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 
+const GATEWAY_TYPES = [
+  { type: "stripe", name: "Stripe", fields: ["publishable_key", "secret_key"] },
+  { type: "paypal", name: "PayPal", fields: ["client_id", "client_secret"] },
+  { type: "square", name: "Square", fields: ["application_id", "access_token"] },
+  { type: "eway", name: "eWAY", fields: ["api_key", "password"] },
+  { type: "braintree", name: "Braintree", fields: ["merchant_id", "public_key", "private_key"] },
+  { type: "bank_transfer", name: "Bank Transfer", fields: ["bank_name", "account_name", "bsb", "account_number"] },
+  { type: "afterpay", name: "Afterpay / Zip Pay", fields: ["merchant_id", "secret_key"] },
+];
+
+function PaymentGatewaysTab() {
+  const { currentStore } = useAuth();
+  const [gateways, setGateways] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase.from("payment_gateways" as any).select("*").eq("store_id", currentStore.id).order("sort_order")
+      .then(({ data }) => { setGateways(data || []); setLoading(false); });
+  }, [currentStore]);
+
+  const initGateway = async (gt: typeof GATEWAY_TYPES[0]) => {
+    if (!currentStore) return;
+    const config: Record<string, string> = {};
+    gt.fields.forEach(f => { config[f] = ""; });
+    const { data, error } = await supabase.from("payment_gateways" as any).insert({
+      store_id: currentStore.id, gateway_type: gt.type, display_name: gt.name, config,
+    }).select().single();
+    if (error) { toast.error(error.message); return; }
+    setGateways([...gateways, data]);
+    toast.success(`${gt.name} added`);
+  };
+
+  const updateGateway = async (id: string, updates: any) => {
+    await supabase.from("payment_gateways" as any).update({ ...updates, updated_at: new Date().toISOString() }).eq("id", id);
+    setGateways(gateways.map(g => g.id === id ? { ...g, ...updates } : g));
+  };
+
+  const removeGateway = async (id: string) => {
+    await supabase.from("payment_gateways" as any).delete().eq("id", id);
+    setGateways(gateways.filter(g => g.id !== id));
+    toast.success("Gateway removed");
+  };
+
+  const configured = gateways.map(g => g.gateway_type);
+  const available = GATEWAY_TYPES.filter(gt => !configured.includes(gt.type));
+
+  return (
+    <div className="space-y-3">
+      <Card>
+        <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+          <CardTitle className="text-sm flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payment Gateways</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {loading ? <Skeleton className="h-20 w-full" /> : gateways.length === 0 ? (
+            <p className="text-xs text-muted-foreground py-4 text-center">No payment gateways configured. Add one below.</p>
+          ) : gateways.map((gw: any) => {
+            const gtDef = GATEWAY_TYPES.find(g => g.type === gw.gateway_type);
+            return (
+              <Card key={gw.id} className="border">
+                <CardContent className="p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{gw.display_name}</span>
+                      <Badge variant={gw.is_enabled ? "default" : "outline"} className="text-[10px]">{gw.is_enabled ? "Enabled" : "Disabled"}</Badge>
+                      {gw.is_test_mode && <Badge variant="secondary" className="text-[10px]">Test Mode</Badge>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Switch checked={gw.is_enabled} onCheckedChange={(v) => updateGateway(gw.id, { is_enabled: v })} />
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeGateway(gw.id)}><Trash2 className="h-3 w-3" /></Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Label className="text-[10px] text-muted-foreground">Test Mode</Label>
+                    <Switch checked={gw.is_test_mode} onCheckedChange={(v) => updateGateway(gw.id, { is_test_mode: v })} />
+                  </div>
+                  {gtDef && (
+                    <div className="grid grid-cols-2 gap-2">
+                      {gtDef.fields.map(field => (
+                        <div key={field} className="space-y-0.5">
+                          <Label className="text-[10px] capitalize">{field.replace(/_/g, " ")}</Label>
+                          <Input
+                            className="h-7 text-xs font-mono"
+                            type={field.includes("secret") || field.includes("private") || field.includes("password") ? "password" : "text"}
+                            value={(gw.config as any)?.[field] || ""}
+                            onChange={(e) => {
+                              const newConfig = { ...gw.config, [field]: e.target.value };
+                              updateGateway(gw.id, { config: newConfig });
+                            }}
+                            placeholder={`Enter ${field.replace(/_/g, " ")}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+          {available.length > 0 && (
+            <div>
+              <p className="text-xs text-muted-foreground mb-2">Add a payment gateway:</p>
+              <div className="flex flex-wrap gap-1.5">
+                {available.map(gt => (
+                  <Button key={gt.type} variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => initGateway(gt)}>
+                    <Plus className="h-3 w-3" /> {gt.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 function WholesaleApplicationsTab() {
   const { currentStore } = useAuth();
   const [apps, setApps] = useState<any[]>([]);
