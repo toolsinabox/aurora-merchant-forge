@@ -347,6 +347,41 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
+              {/* Billing Address */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold">Billing Address</h2>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="billing_same"
+                    checked={form.billing_same}
+                    onCheckedChange={(checked) => update("billing_same", checked ? "true" : "false")}
+                  />
+                  <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
+                </div>
+                {!form.billing_same && (
+                  <>
+                    <div className="space-y-1.5">
+                      <Label>Address</Label>
+                      <Input value={form.billing_address} onChange={(e) => update("billing_address", e.target.value)} className="h-10" />
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>City</Label>
+                        <Input value={form.billing_city} onChange={(e) => update("billing_city", e.target.value)} className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>ZIP Code</Label>
+                        <Input value={form.billing_zip} onChange={(e) => update("billing_zip", e.target.value)} className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Country</Label>
+                        <Input value={form.billing_country} onChange={(e) => update("billing_country", e.target.value)} className="h-10" />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
               {/* Shipping Method */}
               {shippingZones.length > 0 && (
                 <div className="border rounded-lg p-5 space-y-4">
