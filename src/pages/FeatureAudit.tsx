@@ -569,7 +569,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Follow-Up Email", description: "Post-delivery follow-up / review request", status: "done", notes: "order-follow-up edge function sends review request email with order items and CTA" },
       { name: "Payment Confirmation Email", description: "Receipt email on successful payment", status: "done", notes: "payment-email edge function sends styled payment receipt with amount, method, order details on admin payment recording" },
       { name: "Customer Registration Email", description: "Welcome email on customer signup", status: "done", notes: "welcome-email edge function sends branded welcome email with account benefits list on storefront signup" },
-      { name: "Customer Auto-Registration Email", description: "Auto-created account credentials email", status: "not_started" },
+      { name: "Customer Auto-Registration Email", description: "Auto-created account credentials email", status: "done", notes: "auto-registration-email edge function sends credentials email with temp password and account benefits for guest checkout auto-accounts" },
       { name: "Password Reset Email", description: "Password reset link email", status: "partial" },
       { name: "Abandoned Cart Email", description: "Reminder email for abandoned carts", status: "done", notes: "abandoned-cart-email edge function sends recovery email with cart items, total, and CTA button, updates recovery_status" },
       { name: "Wishlist Reminder Email", description: "Periodic wishlist item reminder", status: "done", notes: "wishlist-reminder edge function sends personalized emails with saved items to all customers" },
