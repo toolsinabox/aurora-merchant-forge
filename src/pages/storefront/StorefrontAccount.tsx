@@ -91,8 +91,9 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
+  const [quotes, setQuotes] = useState<any[]>([]);
 
   // Edit profile state
   const [editingProfile, setEditingProfile] = useState(false);
