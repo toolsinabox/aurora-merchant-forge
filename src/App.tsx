@@ -124,6 +124,7 @@ const App = () => (
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/wholesale" element={<StorefrontWholesale />} />
                   <Route path="/store-finder" element={<StorefrontStoreFinder />} />
+                  <Route path="/forgot-username" element={<StorefrontForgotUsername />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
