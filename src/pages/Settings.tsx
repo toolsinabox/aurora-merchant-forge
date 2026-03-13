@@ -543,7 +543,12 @@ export default function SettingsPage() {
             ga_tracking_id: (data as any).ga_tracking_id || "",
             gtm_container_id: (data as any).gtm_container_id || "",
             fb_pixel_id: (data as any).fb_pixel_id || "",
+            google_ads_id: (data as any).google_ads_id || "",
+            google_ads_conversion_label: (data as any).google_ads_conversion_label || "",
           });
+          if ((data as any).smtp_config) {
+            setSmtpForm({ ...(data as any).smtp_config });
+          }
         }
       });
 
