@@ -55,6 +55,7 @@ const marketingNav = [
 
 const contentNav = [
   { title: "Content Pages", url: `${prefix}/content-pages`, icon: FileText },
+  { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
   { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
 ];
