@@ -498,6 +498,8 @@ export default function SettingsPage() {
     ga_tracking_id: "",
     gtm_container_id: "",
     fb_pixel_id: "",
+    google_ads_id: "",
+    google_ads_conversion_label: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
