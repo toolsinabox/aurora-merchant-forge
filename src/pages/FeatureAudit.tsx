@@ -794,7 +794,7 @@ const featureData: FeatureCategory[] = [
       { name: "Thumblist Tags", description: "Product/content listing thumbnails", status: "done", notes: "[%thumblist%]...[%/thumblist%] block iterator in template engine for product thumbnail listings with title, image, price, slug fields" },
       { name: "Advert Tags", description: "Promotional advertisement placement tags", status: "done", notes: "[%advert%]...[%/advert%] block tags in template engine using adverts context array with image_url, link_url, title, subtitle, button_text fields" },
       { name: "AJAX Partial Rendering", description: "Reload template includes without full page refresh", status: "not_started" },
-      { name: "Custom CSS per Template", description: "Template-specific CSS injection", status: "not_started" },
+      { name: "Custom CSS per Template", description: "Template-specific CSS injection", status: "done", notes: "custom_css column on store_templates, CSS tab in template editor with live preview, RenderedTemplate component injects per-template <style> blocks" },
       { name: "Theme System (Multiple Themes)", description: "Install and switch between different themes", status: "not_started" },
       { name: "Theme Info File (netothemeinfo.txt)", description: "Theme metadata: name, version, description", status: "not_started" },
     ],
