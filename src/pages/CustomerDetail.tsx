@@ -32,6 +32,10 @@ export default function CustomerDetail() {
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "" });
   const [addrOpen, setAddrOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
+  const [mergeEmail, setMergeEmail] = useState("");
+  const [mergeTarget, setMergeTarget] = useState<any>(null);
+  const [merging, setMerging] = useState(false);
   const [addrForm, setAddrForm] = useState({
     label: "Home", first_name: "", last_name: "", company: "",
     address_line1: "", address_line2: "", city: "", state: "", postal_code: "", country: "AU", phone: "",
