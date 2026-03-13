@@ -203,6 +203,7 @@ export default function StorefrontCheckout() {
           payment_status: "pending",
           notes: form.notes || null,
           shipping_address: shippingAddr,
+          billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
         } as any)
         .select()
