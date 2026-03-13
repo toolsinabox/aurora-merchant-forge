@@ -488,8 +488,8 @@ const featureData: FeatureCategory[] = [
     features: [
       { name: "Store Default Currency", description: "Configure store base currency", status: "done" },
       { name: "Currency Display Format", description: "Format currency symbol and decimals", status: "done", notes: "Currency format settings on Inventory tab in Settings with symbol position (before/after) and decimal places (0/2/3) stored on stores table" },
-      { name: "Multi-Currency Support (GetCurrency / AddCurrency)", description: "Add/manage multiple currencies via API", status: "not_started", notes: "Neto has full Currency API" },
-      { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "not_started" },
+      { name: "Multi-Currency Support (GetCurrency / AddCurrency)", description: "Add/manage multiple currencies via API", status: "done", notes: "currencies table with per-store currency CRUD; admin /currencies page with code, name, symbol, exchange rate, default/active toggles; quick-select for 8 common currencies (AUD, USD, EUR, GBP, NZD, CAD, JPY, SGD)" },
+      { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "done", notes: "Inline editable exchange rate per currency on admin Currencies page; rates stored as numeric relative to base/default currency" },
       { name: "Currency Switcher (Storefront)", description: "Customer can switch display currency on storefront", status: "not_started" },
       { name: "Currency-Specific Pricing", description: "Set prices in each supported currency", status: "not_started" },
       { name: "Multi-Language Support", description: "Translate storefront content into multiple languages", status: "not_started" },
