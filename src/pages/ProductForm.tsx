@@ -932,7 +932,7 @@ export default function ProductForm() {
                     </Select>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Tags</Label>
+                    <FieldLabel label="Tags" field="tags" />
                     <Input className="h-8 text-xs" value={form.tags} onChange={(e) => update("tags", e.target.value)} placeholder="Comma separated tags" />
                   </div>
                   <div className="space-y-1">
