@@ -257,6 +257,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
                   <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/store/:storeSlug/wholesale" element={<StorefrontWholesale />} />
+                  <Route path="/store/:storeSlug/store-finder" element={<StorefrontStoreFinder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}
