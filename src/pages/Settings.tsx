@@ -303,6 +303,10 @@ export default function SettingsPage() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="checkout" className="space-y-3">
+            <CheckoutSettings />
+          </TabsContent>
+
           <TabsContent value="theme" className="space-y-3">
             <Card>
               <CardHeader className="p-4 pb-2">

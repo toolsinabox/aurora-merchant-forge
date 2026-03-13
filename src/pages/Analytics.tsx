@@ -680,6 +680,37 @@ export default function Analytics() {
               )}
             </CardContent>
           </Card>
+
+          {/* Stock Turnover Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Stock Turnover</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : stockTurnoverData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No turnover data available</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Stock</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units Sold</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Turnover Rate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {stockTurnoverData.map((p: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.stock}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.unitsSold}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{p.turnoverRate}×</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AdminLayout>
