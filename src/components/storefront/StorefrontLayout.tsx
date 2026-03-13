@@ -10,6 +10,7 @@ import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { StorefrontSearch } from "./StorefrontSearch";
 import { NewsletterSignup } from "./NewsletterSignup";
 import { CookieConsentBanner } from "./CookieConsentBanner";
+import { PromoPopup } from "./PromoPopup";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
