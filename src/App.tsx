@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { CompareProvider } from "@/contexts/CompareContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RequirePlatformAdmin } from "@/components/auth/RequirePlatformAdmin";
 import { getSubdomainSlug } from "@/lib/subdomain";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
@@ -30,7 +31,6 @@ import SettingsPage from "./pages/Settings.tsx";
 import Coupons from "./pages/Coupons.tsx";
 import Returns from "./pages/Returns.tsx";
 import Reviews from "./pages/Reviews.tsx";
-import Merchants from "./pages/Merchants.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
 import ActivityLog from "./pages/ActivityLog.tsx";
 import ImportWizard from "./pages/ImportWizard.tsx";
@@ -58,6 +58,10 @@ import StorefrontCompare from "./pages/storefront/StorefrontCompare.tsx";
 import StorefrontContentPage from "./pages/storefront/StorefrontContentPage.tsx";
 import StorefrontTrackOrder from "./pages/storefront/StorefrontTrackOrder.tsx";
 import StorefrontBlog from "./pages/storefront/StorefrontBlog.tsx";
+// Platform admin pages
+import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
+import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
+import PlatformMerchants from "./pages/platform/PlatformMerchants.tsx";
 const queryClient = new QueryClient();
 
 // Check if we're on a store subdomain
@@ -100,6 +104,13 @@ const App = () => (
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+
+                  {/* Platform Admin Routes */}
+                  <Route path="/admin/login" element={<PlatformLogin />} />
+                  <Route path="/admin/dashboard" element={<RequirePlatformAdmin><PlatformDashboard /></RequirePlatformAdmin>} />
+                  <Route path="/admin/merchants" element={<RequirePlatformAdmin><PlatformMerchants /></RequirePlatformAdmin>} />
+
+                  {/* Merchant Routes */}
                   <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
                   <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
                   <Route path="/products" element={<RequireAuth><Products /></RequireAuth>} />
@@ -116,7 +127,6 @@ const App = () => (
                   <Route path="/returns" element={<RequireAuth><Returns /></RequireAuth>} />
                   <Route path="/reviews" element={<RequireAuth><Reviews /></RequireAuth>} />
                   <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
-                  <Route path="/merchants" element={<RequireAuth><Merchants /></RequireAuth>} />
                   <Route path="/activity-log" element={<RequireAuth><ActivityLog /></RequireAuth>} />
                   <Route path="/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />

@@ -2071,12 +2071,15 @@ export type Database = {
           currency: string
           description: string | null
           id: string
+          is_suspended: boolean
           logo_url: string | null
           name: string
           owner_id: string
           primary_color: string | null
           slug: string | null
           social_links: Json | null
+          subscription_tier: string
+          suspended_reason: string | null
           timezone: string
           updated_at: string
         }
@@ -2087,12 +2090,15 @@ export type Database = {
           currency?: string
           description?: string | null
           id?: string
+          is_suspended?: boolean
           logo_url?: string | null
           name: string
           owner_id: string
           primary_color?: string | null
           slug?: string | null
           social_links?: Json | null
+          subscription_tier?: string
+          suspended_reason?: string | null
           timezone?: string
           updated_at?: string
         }
@@ -2103,12 +2109,15 @@ export type Database = {
           currency?: string
           description?: string | null
           id?: string
+          is_suspended?: boolean
           logo_url?: string | null
           name?: string
           owner_id?: string
           primary_color?: string | null
           slug?: string | null
           social_links?: Json | null
+          subscription_tier?: string
+          suspended_reason?: string | null
           timezone?: string
           updated_at?: string
         }
