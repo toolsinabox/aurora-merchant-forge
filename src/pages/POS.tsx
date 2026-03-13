@@ -61,6 +61,34 @@ export default function POS() {
   const [actualCash, setActualCash] = useState("");
   const [eodNotes, setEodNotes] = useState("");
   const [currentSession, setCurrentSession] = useState<any>(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [offlineQueue, setOfflineQueue] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("pos_offline_queue") || "[]"); } catch { return []; }
+  });
+
+  // Offline detection
+  useState(() => {
+    const goOffline = () => { setIsOffline(true); toast.warning("Offline mode active — sales will be queued"); };
+    const goOnline = () => { setIsOffline(false); toast.success("Back online — syncing queued sales..."); };
+    window.addEventListener("offline", goOffline);
+    window.addEventListener("online", goOnline);
+    return () => { window.removeEventListener("offline", goOffline); window.removeEventListener("online", goOnline); };
+  });
+
+  // Cash drawer command via print
+  const openCashDrawer = () => {
+    const win = window.open("", "_blank", "width=1,height=1");
+    if (win) {
+      // ESC/POS command to open cash drawer (pin 2): 0x1B 0x70 0x00 0x19 0xFA
+      win.document.write("<pre style='font-size:0'>\x1Bp\x00\x19\xFA</pre>");
+      win.document.close();
+      win.print();
+      setTimeout(() => win.close(), 500);
+      toast.success("Cash drawer opened");
+    } else {
+      toast.error("Unable to open cash drawer — allow popups");
+    }
+  };
 
   // Load registers
   const { data: registers = [] } = useQuery({
