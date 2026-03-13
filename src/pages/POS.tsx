@@ -373,9 +373,24 @@ export default function POS() {
               </Select>
             )}
           </div>
-          <Button variant="outline" size="sm" onClick={() => setShowEOD(true)} className="gap-2">
-            <Clock className="h-4 w-4" /> End of Day
-          </Button>
+          <div className="flex items-center gap-2">
+            {isOffline && (
+              <Badge variant="destructive" className="gap-1 animate-pulse">
+                <WifiOff className="h-3 w-3" /> Offline ({offlineQueue.length} queued)
+              </Badge>
+            )}
+            {!isOffline && offlineQueue.length > 0 && (
+              <Badge variant="secondary" className="gap-1">
+                <Wifi className="h-3 w-3" /> Syncing {offlineQueue.length}...
+              </Badge>
+            )}
+            <Button variant="outline" size="sm" onClick={openCashDrawer} className="gap-2">
+              <DollarSign className="h-4 w-4" /> Open Drawer
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setShowEOD(true)} className="gap-2">
+              <Clock className="h-4 w-4" /> End of Day
+            </Button>
+          </div>
         </div>
 
         <TabsContent value="sale">
