@@ -402,3 +402,154 @@ export default function Returns() {
     </AdminLayout>
   );
 }
+
+function DisputesTab() {
+  const { currentStore } = useAuth();
+  const queryClient = useQueryClient();
+  const [selectedDispute, setSelectedDispute] = useState<any>(null);
+  const [disputeNotes, setDisputeNotes] = useState("");
+  const [resolution, setResolution] = useState("");
+
+  const { data: disputes = [], isLoading } = useQuery({
+    queryKey: ["warranty_disputes", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase
+        .from("warranty_disputes" as any)
+        .select("*, orders(order_number), customers(name), products(title)")
+        .eq("store_id", currentStore.id)
+        .order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+
+  const updateDispute = useMutation({
+    mutationFn: async ({ id, status, admin_notes, resolution: res }: any) => {
+      const update: any = { status, admin_notes };
+      if (res) update.resolution = res;
+      if (status === "resolved" || status === "closed") update.resolved_at = new Date().toISOString();
+      const { error } = await supabase.from("warranty_disputes" as any).update(update).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["warranty_disputes"] });
+      toast.success("Dispute updated");
+      setSelectedDispute(null);
+    },
+  });
+
+  const statusColor = (s: string) => {
+    if (s === "open") return "secondary";
+    if (s === "in_review") return "outline";
+    if (s === "resolved") return "default";
+    return "destructive";
+  };
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-xs h-8">Order</TableHead>
+              <TableHead className="text-xs h-8">Customer</TableHead>
+              <TableHead className="text-xs h-8">Product</TableHead>
+              <TableHead className="text-xs h-8">Type</TableHead>
+              <TableHead className="text-xs h-8">Reason</TableHead>
+              <TableHead className="text-xs h-8">Status</TableHead>
+              <TableHead className="text-xs h-8">Date</TableHead>
+              <TableHead className="text-xs h-8"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+            ) : disputes.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">
+                  <ShieldAlert className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                  No warranty disputes yet.
+                </TableCell>
+              </TableRow>
+            ) : (
+              disputes.map((d: any) => (
+                <TableRow key={d.id} className="text-xs">
+                  <TableCell className="py-2 font-medium">{d.orders?.order_number || "—"}</TableCell>
+                  <TableCell className="py-2">{d.customers?.name || "—"}</TableCell>
+                  <TableCell className="py-2 max-w-[150px] truncate">{d.products?.title || "—"}</TableCell>
+                  <TableCell className="py-2 capitalize">{d.dispute_type}</TableCell>
+                  <TableCell className="py-2 max-w-[150px] truncate">{d.reason}</TableCell>
+                  <TableCell className="py-2"><Badge variant={statusColor(d.status)} className="text-[10px] capitalize">{d.status.replace("_", " ")}</Badge></TableCell>
+                  <TableCell className="py-2 text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell className="py-2">
+                    <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => {
+                      setSelectedDispute(d);
+                      setDisputeNotes(d.admin_notes || "");
+                      setResolution(d.resolution || "");
+                    }}>Manage</Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+
+      <Dialog open={!!selectedDispute} onOpenChange={(o) => !o && setSelectedDispute(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="text-base">Warranty Dispute</DialogTitle></DialogHeader>
+          {selectedDispute && (
+            <div className="space-y-4">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between"><span className="text-muted-foreground">Order</span><span className="font-medium">{selectedDispute.orders?.order_number || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Customer</span><span>{selectedDispute.customers?.name || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Product</span><span className="max-w-[200px] truncate">{selectedDispute.products?.title || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Type</span><Badge variant="outline" className="text-[10px] capitalize">{selectedDispute.dispute_type}</Badge></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Status</span><Badge variant={statusColor(selectedDispute.status)} className="text-[10px] capitalize">{selectedDispute.status.replace("_", " ")}</Badge></div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Customer Reason</Label>
+                <p className="text-sm bg-muted/50 rounded-md p-3">{selectedDispute.reason}</p>
+              </div>
+              {selectedDispute.description && (
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Description</Label>
+                  <p className="text-sm bg-muted/50 rounded-md p-3">{selectedDispute.description}</p>
+                </div>
+              )}
+              <div className="space-y-1.5">
+                <Label className="text-xs">Resolution</Label>
+                <Textarea value={resolution} onChange={(e) => setResolution(e.target.value)} placeholder="Describe the resolution..." className="min-h-[50px] text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Admin Notes</Label>
+                <Textarea value={disputeNotes} onChange={(e) => setDisputeNotes(e.target.value)} placeholder="Internal notes..." className="min-h-[50px] text-sm" />
+              </div>
+              <div className="flex gap-2">
+                {selectedDispute.status === "open" && (
+                  <Button size="sm" className="flex-1 text-xs" onClick={() => updateDispute.mutate({ id: selectedDispute.id, status: "in_review", admin_notes: disputeNotes, resolution })}>
+                    Start Review
+                  </Button>
+                )}
+                {["open", "in_review"].includes(selectedDispute.status) && (
+                  <Button size="sm" className="flex-1 text-xs" onClick={() => updateDispute.mutate({ id: selectedDispute.id, status: "resolved", admin_notes: disputeNotes, resolution })}>
+                    Resolve
+                  </Button>
+                )}
+                {["open", "in_review"].includes(selectedDispute.status) && (
+                  <Button size="sm" variant="destructive" className="text-xs" onClick={() => updateDispute.mutate({ id: selectedDispute.id, status: "closed", admin_notes: disputeNotes, resolution })}>
+                    Close
+                  </Button>
+                )}
+                <Button size="sm" variant="outline" className="text-xs" onClick={() => updateDispute.mutate({ id: selectedDispute.id, status: selectedDispute.status, admin_notes: disputeNotes, resolution })}>
+                  Save Notes
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </Card>
+  );
+}
