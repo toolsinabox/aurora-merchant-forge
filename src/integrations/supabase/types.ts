@@ -374,6 +374,7 @@ export type Database = {
       }
       categories: {
         Row: {
+          auto_rules: Json | null
           created_at: string
           description: string | null
           id: string
@@ -388,6 +389,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          auto_rules?: Json | null
           created_at?: string
           description?: string | null
           id?: string
@@ -402,6 +404,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          auto_rules?: Json | null
           created_at?: string
           description?: string | null
           id?: string
@@ -1509,6 +1512,112 @@ export type Database = {
           },
           {
             foreignKeyName: "layby_plans_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_points: {
+        Row: {
+          balance: number
+          created_at: string
+          customer_id: string
+          id: string
+          lifetime_earned: number
+          lifetime_redeemed: number
+          store_id: string
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          lifetime_earned?: number
+          lifetime_redeemed?: number
+          store_id: string
+          tier?: string
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          lifetime_earned?: number
+          lifetime_redeemed?: number
+          store_id?: string
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_points_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_points_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_transactions: {
+        Row: {
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          order_id: string | null
+          points: number
+          store_id: string
+          transaction_type: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          points: number
+          store_id: string
+          transaction_type?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          points?: number
+          store_id?: string
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_transactions_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -3203,6 +3312,62 @@ export type Database = {
           },
         ]
       }
+      scheduled_exports: {
+        Row: {
+          created_at: string
+          email_to: string | null
+          entity_type: string
+          fields: string[] | null
+          filters: Json | null
+          frequency: string
+          id: string
+          is_active: boolean
+          last_run_at: string | null
+          name: string
+          next_run_at: string | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email_to?: string | null
+          entity_type?: string
+          fields?: string[] | null
+          filters?: Json | null
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          last_run_at?: string | null
+          name: string
+          next_run_at?: string | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email_to?: string | null
+          entity_type?: string
+          fields?: string[] | null
+          filters?: Json | null
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          last_run_at?: string | null
+          name?: string
+          next_run_at?: string | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_exports_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       serial_numbers: {
         Row: {
           created_at: string
@@ -3783,6 +3948,7 @@ export type Database = {
           id: string
           is_suspended: boolean
           logo_url: string | null
+          loyalty_config: Json | null
           min_order_amount: number
           name: string
           notification_prefs: Json | null
@@ -3822,6 +3988,7 @@ export type Database = {
           id?: string
           is_suspended?: boolean
           logo_url?: string | null
+          loyalty_config?: Json | null
           min_order_amount?: number
           name: string
           notification_prefs?: Json | null
@@ -3861,6 +4028,7 @@ export type Database = {
           id?: string
           is_suspended?: boolean
           logo_url?: string | null
+          loyalty_config?: Json | null
           min_order_amount?: number
           name?: string
           notification_prefs?: Json | null
