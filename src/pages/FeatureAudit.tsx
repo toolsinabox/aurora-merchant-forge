@@ -150,7 +150,7 @@ const featureData: FeatureCategory[] = [
       { name: "Canonical URL", description: "Set canonical URL to prevent duplicate content", status: "done", notes: "SEOHead adds <link rel=canonical> on product pages" },
       { name: "Open Graph Tags", description: "OG title/description/image for social sharing", status: "done", notes: "SEOHead component sets OG meta tags dynamically on product detail pages" },
       { name: "Structured Data (JSON-LD Product)", description: "Schema.org Product markup for rich results", status: "done", notes: "SEOHead injects JSON-LD with product name, price, availability, brand, aggregateRating" },
-      { name: "XML Sitemap Generation", description: "Auto-generated sitemap.xml for products/categories", status: "not_started" },
+      { name: "XML Sitemap Generation", description: "Auto-generated sitemap.xml for products/categories", status: "done", notes: "Edge function generates sitemap.xml with products, categories, and content pages" },
       { name: "301 Redirect Manager", description: "Manage URL redirects when slugs change", status: "not_started" },
       { name: "Google Shopping Feed", description: "Product data feed for Google Merchant Center", status: "not_started", notes: "Neto has built-in Google Shopping integration" },
     ],
