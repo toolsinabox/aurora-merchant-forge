@@ -564,6 +564,38 @@ export default function Analytics() {
               )}
             </CardContent>
           </Card>
+           {/* Customer Acquisition Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Customer Acquisition</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">New Customers</p>
+                      <p className="text-lg font-bold">{acquisitionData.newCustomers}</p>
+                    </div>
+                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                      <p className="text-xs text-muted-foreground">Returning</p>
+                      <p className="text-lg font-bold">{acquisitionData.returning}</p>
+                    </div>
+                  </div>
+                  {acquisitionData.byMonth.length > 0 && (
+                    <ResponsiveContainer width="100%" height={140}>
+                      <BarChart data={acquisitionData.byMonth}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} />
+                        <Bar dataKey="new" name="New" fill="hsl(217, 91%, 50%)" radius={[2, 2, 0, 0]} stackId="a" />
+                        <Bar dataKey="returning" name="Returning" fill="hsl(142, 71%, 45%)" radius={[2, 2, 0, 0]} stackId="a" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </AdminLayout>

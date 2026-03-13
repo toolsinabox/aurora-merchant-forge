@@ -48,6 +48,7 @@ import PurchaseOrders from "./pages/PurchaseOrders.tsx";
 import ShippingZones from "./pages/ShippingZones.tsx";
 import TaxRates from "./pages/TaxRates.tsx";
 import StockAdjustments from "./pages/StockAdjustments.tsx";
+import Stocktake from "./pages/Stocktake.tsx";
 import AbandonedCarts from "./pages/AbandonedCarts.tsx";
 import StorefrontWishlist from "./pages/storefront/StorefrontWishlist.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
