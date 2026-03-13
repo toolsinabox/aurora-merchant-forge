@@ -14,6 +14,7 @@ export default function Sessions() {
   const { user, signOut } = useAuth();
   const [currentSession, setCurrentSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [show2FA, setShow2FA] = useState(false);
 
   const load = async () => {
     const { data } = await supabase.auth.getSession();
