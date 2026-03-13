@@ -303,7 +303,7 @@ export default function ProductForm() {
                       <Input className="h-8 text-xs" value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Product title" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Subtitle</Label>
+                      <FieldLabel label="Subtitle" field="subtitle" />
                       <Input className="h-8 text-xs" value={form.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="Product subtitle" />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
