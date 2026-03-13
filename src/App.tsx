@@ -88,6 +88,7 @@ const App = () => (
                   <Route path="/wishlist" element={<StorefrontWishlist />} />
                   <Route path="/account" element={<StorefrontAccount />} />
                   <Route path="/page/:pageSlug" element={<StorefrontContentPage />} />
+                  <Route path="/blog" element={<StorefrontBlog />} />
                   <Route path="/track-order" element={<StorefrontTrackOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
