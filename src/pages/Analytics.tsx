@@ -150,6 +150,52 @@ export default function Analytics() {
         .order("used_count", { ascending: false });
       setCouponStats((coupons || []).filter((c: any) => c.used_count > 0));
 
+      // Profit margin report: revenue vs cost from order_items joined with products
+      const { data: allProducts } = await supabase
+        .from("products")
+        .select("id, cost_price, price")
+        .eq("store_id", currentStore.id);
+      const costMap: Record<string, number> = {};
+      (allProducts || []).forEach((p: any) => { costMap[p.id] = Number(p.cost_price) || 0; });
+
+      const profitByProduct: Record<string, { title: string; revenue: number; cost: number; profit: number; units: number }> = {};
+      (items || []).forEach((item: any) => {
+        const key = item.product_id || item.title;
+        if (!profitByProduct[key]) profitByProduct[key] = { title: item.title, revenue: 0, cost: 0, profit: 0, units: 0 };
+        const rev = Number(item.total);
+        const cost = (costMap[item.product_id] || 0) * item.quantity;
+        profitByProduct[key].revenue += rev;
+        profitByProduct[key].cost += cost;
+        profitByProduct[key].profit += rev - cost;
+        profitByProduct[key].units += item.quantity;
+      });
+      setProfitData(
+        Object.values(profitByProduct)
+          .filter(p => p.revenue > 0)
+          .sort((a, b) => b.profit - a.profit)
+          .slice(0, 10)
+          .map(p => ({ ...p, margin: p.revenue > 0 ? Math.round(p.profit / p.revenue * 100) : 0 }))
+      );
+
+      // Tax summary from orders
+      const taxByMonth: Record<string, number> = {};
+      let totalTax = 0;
+      let taxOrderCount = 0;
+      (orders as any[]).forEach((o: any) => {
+        const tax = Number(o.tax) || 0;
+        if (tax > 0) {
+          totalTax += tax;
+          taxOrderCount++;
+          const month = new Date(o.created_at).toLocaleDateString("en-US", { year: "numeric", month: "short" });
+          taxByMonth[month] = (taxByMonth[month] || 0) + tax;
+        }
+      });
+      setTaxSummary({
+        totalTax,
+        orderCount: taxOrderCount,
+        byMonth: Object.entries(taxByMonth).map(([month, amount]) => ({ month, amount: Math.round(amount * 100) / 100 })),
+      });
+
       setLoadingTopProducts(false);
     };
     fetchData();
