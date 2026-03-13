@@ -218,7 +218,7 @@ const featureData: FeatureCategory[] = [
       { name: "Order Export (CSV/XML)", description: "Bulk export orders in various formats", status: "partial", notes: "Export wizard exists" },
       { name: "Order Import", description: "Bulk import orders from CSV/XML", status: "not_started" },
       { name: "Order Tags / Flags", description: "Tag or flag orders for internal workflows", status: "not_started" },
-      { name: "Batch Order Processing", description: "Bulk update status, print labels for multiple orders", status: "not_started" },
+      { name: "Batch Order Processing", description: "Bulk update status, print labels for multiple orders", status: "partial", notes: "Bulk status update implemented" },
       { name: "Order Fraud Detection Flags", description: "Automated fraud scoring and risk flags on orders", status: "not_started" },
     ],
   },
