@@ -127,7 +127,7 @@ export function AppSidebar() {
   const collapsed = state === "collapsed";
   const location = useLocation();
   const currentPath = location.pathname;
-  const { currentStore } = useAuth();
+  const { currentStore, availableStores, switchStore } = useAuth();
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -137,10 +137,22 @@ export function AppSidebar() {
             <Store className="h-4 w-4 text-primary-foreground" />
           </div>
           {!collapsed && (
-            <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold text-sidebar-foreground truncate">
-                {currentStore?.name || "Commerce Cloud"}
-              </span>
+            <div className="flex flex-col min-w-0 flex-1">
+              {availableStores.length > 1 ? (
+                <select
+                  value={currentStore?.id || ""}
+                  onChange={(e) => switchStore(e.target.value)}
+                  className="text-sm font-semibold text-sidebar-foreground bg-transparent border-none outline-none cursor-pointer truncate p-0 -ml-0.5"
+                >
+                  {availableStores.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              ) : (
+                <span className="text-sm font-semibold text-sidebar-foreground truncate">
+                  {currentStore?.name || "Commerce Cloud"}
+                </span>
+              )}
               <span className="text-2xs text-sidebar-foreground/50">Commerce Cloud</span>
             </div>
           )}
