@@ -438,7 +438,7 @@ const featureData: FeatureCategory[] = [
       { name: "Real-Time Carrier Rates (StarTrack)", description: "Live rates from StarTrack", status: "not_started" },
       { name: "Real-Time Carrier Rates (Fastway/Aramex)", description: "Live courier rates from Aramex/Fastway", status: "not_started" },
       { name: "Real-Time Carrier Rates (UPS/FedEx/DHL)", description: "International carrier rate integration", status: "not_started" },
-      { name: "Shipping Label Printing", description: "Print carrier-specific shipping labels", status: "not_started" },
+      { name: "Shipping Label Printing", description: "Print carrier-specific shipping labels", status: "done", notes: "PrintShippingLabel page with from/to addresses, order info, tracking barcode, carrier name; accessible from order detail shipments" },
       { name: "Shipping Tracking Emails", description: "Automated tracking notification emails to customers", status: "done", notes: "shipment-email edge function sends tracking email with carrier, tracking number, and URL on shipment creation" },
       { name: "Click & Collect / Pickup in Store", description: "In-store pickup option at checkout", status: "done", notes: "Delivery method toggle: Ship vs Click & Collect with free shipping for pickup" },
       { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "done", notes: "Auto-routes order items to preferred dropship suppliers on order creation, groups by supplier, fires dropship-notification edge function per supplier" },
