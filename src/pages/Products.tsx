@@ -301,6 +301,14 @@ export default function Products() {
             </Table>
           </CardContent>
         </Card>
+
+        <BulkEditDialog
+          open={bulkEditOpen}
+          onOpenChange={setBulkEditOpen}
+          selectedIds={selected}
+          products={products}
+          onComplete={() => setSelected([])}
+        />
       </div>
     </AdminLayout>
   );
