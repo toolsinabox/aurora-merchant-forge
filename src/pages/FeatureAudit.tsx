@@ -1049,7 +1049,7 @@ export default function FeatureAudit() {
                         <div className="flex items-center gap-3">
                           <div className="hidden sm:flex items-center gap-1.5 text-xs">
                             <span className="text-primary">{catDone}✓</span>
-                            <span className="text-yellow-600">{catPartial}◐</span>
+                            <span className="text-accent-foreground">{catPartial}◐</span>
                             <span className="text-muted-foreground">{cat.features.length - catDone - catPartial}○</span>
                           </div>
                           <div className="w-20">
