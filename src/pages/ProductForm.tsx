@@ -439,7 +439,7 @@ export default function ProductForm() {
                         <Input className="h-8 text-xs" type="datetime-local" value={form.promo_start} onChange={(e) => update("promo_start", e.target.value)} />
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-xs">Promo End</Label>
+                        <FieldLabel label="Promo End" field="promo_end" />
                         <Input className="h-8 text-xs" type="datetime-local" value={form.promo_end} onChange={(e) => update("promo_end", e.target.value)} />
                       </div>
                     </div>
