@@ -503,6 +503,101 @@ export default function Inventory() {
             </Table>
           </CardContent>
         </Card>
+          </TabsContent>
+
+          {/* Serial Numbers Tab */}
+          <TabsContent value="serials" className="space-y-3">
+            <div className="flex items-center justify-end">
+              <Dialog open={serialOpen} onOpenChange={setSerialOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Serial</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader><DialogTitle className="text-sm">Add Serial Number</DialogTitle></DialogHeader>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <Label className="text-xs">Product</Label>
+                      <Select value={newSerial.productId} onValueChange={(v) => setNewSerial({ ...newSerial, productId: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select product" /></SelectTrigger>
+                        <SelectContent>
+                          {products.map((p) => <SelectItem key={p.id} value={p.id} className="text-xs">{p.title}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Serial Number</Label>
+                      <Input className="h-8 text-xs font-mono" value={newSerial.serialNumber} onChange={(e) => setNewSerial({ ...newSerial, serialNumber: e.target.value })} placeholder="SN-001234" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Location (optional)</Label>
+                      <Select value={newSerial.locationId} onValueChange={(v) => setNewSerial({ ...newSerial, locationId: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select location" /></SelectTrigger>
+                        <SelectContent>
+                          {locations.map((l) => <SelectItem key={l.id} value={l.id} className="text-xs">{l.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Notes</Label>
+                      <Input className="h-8 text-xs" value={newSerial.notes} onChange={(e) => setNewSerial({ ...newSerial, notes: e.target.value })} placeholder="Optional notes" />
+                    </div>
+                    <Button size="sm" className="w-full text-xs" onClick={() => addSerial.mutate()} disabled={addSerial.isPending}>
+                      {addSerial.isPending ? "Adding..." : "Add Serial Number"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Serial Number</TableHead>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8">Location</TableHead>
+                      <TableHead className="text-xs h-8">Status</TableHead>
+                      <TableHead className="text-xs h-8">Notes</TableHead>
+                      <TableHead className="text-xs h-8">Added</TableHead>
+                      <TableHead className="text-xs h-8 w-10"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loadingSerials ? (
+                      Array.from({ length: 3 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                    ) : (serialNumbers as any[]).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                          <Hash className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                          No serial numbers tracked yet.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (serialNumbers as any[]).map((sn: any) => (
+                        <TableRow key={sn.id} className="text-xs">
+                          <TableCell className="py-2 font-mono font-medium">{sn.serial_number}</TableCell>
+                          <TableCell className="py-2">{sn.product?.title || "—"}</TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{sn.location?.name || "—"}</TableCell>
+                          <TableCell className="py-2">
+                            <Badge variant={sn.status === "available" ? "default" : sn.status === "sold" ? "secondary" : "destructive"} className="text-[10px] capitalize">{sn.status}</Badge>
+                          </TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{sn.notes || "—"}</TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{format(new Date(sn.created_at), "MMM d, yyyy")}</TableCell>
+                          <TableCell className="py-2">
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteSerial.mutate(sn.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </AdminLayout>
   );
