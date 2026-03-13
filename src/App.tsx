@@ -92,6 +92,7 @@ import Sessions from "./pages/Sessions.tsx";
 import EmailTemplates from "./pages/EmailTemplates.tsx";
 import LoyaltyProgram from "./pages/LoyaltyProgram.tsx";
 import ReportBuilder from "./pages/ReportBuilder.tsx";
+import POS from "./pages/POS.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -278,6 +279,7 @@ const App = () => (
                   <Route path="/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
                   <Route path="/loyalty" element={<RequireAuth><LoyaltyProgram /></RequireAuth>} />
                   <Route path="/report-builder" element={<RequireAuth><ReportBuilder /></RequireAuth>} />
+                  <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

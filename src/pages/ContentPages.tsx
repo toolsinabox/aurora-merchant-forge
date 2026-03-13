@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -187,7 +188,7 @@ export default function ContentPages() {
                 </div>
                 <div>
                   <Label>Content</Label>
-                  <Textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={10} placeholder="Page content (HTML or Markdown)" />
+                  <RichTextEditor content={form.content} onChange={(html) => setForm({ ...form, content: html })} />
                 </div>
                 <div className="border-t pt-3 space-y-3">
                   <p className="text-sm font-medium text-muted-foreground">SEO</p>

@@ -191,6 +191,7 @@ export type Database = {
           key_prefix: string
           last_used_at: string | null
           name: string
+          rate_limit: number | null
           scopes: string[]
           store_id: string
           updated_at: string
@@ -205,6 +206,7 @@ export type Database = {
           key_prefix: string
           last_used_at?: string | null
           name: string
+          rate_limit?: number | null
           scopes?: string[]
           store_id: string
           updated_at?: string
@@ -219,6 +221,7 @@ export type Database = {
           key_prefix?: string
           last_used_at?: string | null
           name?: string
+          rate_limit?: number | null
           scopes?: string[]
           store_id?: string
           updated_at?: string
@@ -226,6 +229,45 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "api_keys_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_rate_limits: {
+        Row: {
+          api_key_id: string
+          id: string
+          request_count: number
+          store_id: string
+          window_start: string
+        }
+        Insert: {
+          api_key_id: string
+          id?: string
+          request_count?: number
+          store_id: string
+          window_start?: string
+        }
+        Update: {
+          api_key_id?: string
+          id?: string
+          request_count?: number
+          store_id?: string
+          window_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_rate_limits_api_key_id_fkey"
+            columns: ["api_key_id"]
+            isOneToOne: false
+            referencedRelation: "api_keys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "api_rate_limits_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -3634,6 +3676,81 @@ export type Database = {
           },
           {
             foreignKeyName: "stock_adjustments_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stockist_listings: {
+        Row: {
+          address: string | null
+          business_name: string
+          city: string | null
+          country: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          is_active: boolean
+          is_approved: boolean
+          latitude: number | null
+          longitude: number | null
+          phone: string | null
+          postcode: string | null
+          state: string | null
+          store_id: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          business_name: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          phone?: string | null
+          postcode?: string | null
+          state?: string | null
+          store_id: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          business_name?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          is_active?: boolean
+          is_approved?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          phone?: string | null
+          postcode?: string | null
+          state?: string | null
+          store_id?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stockist_listings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stockist_listings_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
