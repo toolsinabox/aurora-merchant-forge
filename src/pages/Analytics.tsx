@@ -283,23 +283,65 @@ export default function Analytics() {
           </CardContent>
         </Card>
 
-        {/* Top products */}
-        {topProds.length > 0 && (
+        {/* Top Selling Products */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <Card>
-            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Top Products by Price</CardTitle></CardHeader>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Top Selling Products</CardTitle></CardHeader>
             <CardContent className="p-4 pt-0">
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={topProds} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 13%, 88%)" strokeOpacity={0.3} />
-                  <XAxis type="number" tick={{ fontSize: 10 }} stroke="hsl(220, 10%, 46%)" tickFormatter={(v) => `$${v}`} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(220, 10%, 46%)" width={120} />
-                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Price"]} />
-                  <Bar dataKey="price" fill="hsl(217, 91%, 50%)" radius={[0, 3, 3, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : topSellingProducts.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No sales data yet</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {topSellingProducts.map((p, i) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium truncate max-w-[200px]">{p.title}</TableCell>
+                        <TableCell className="py-1.5 text-right">{p.units}</TableCell>
+                        <TableCell className="py-1.5 text-right font-medium">${p.revenue.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </CardContent>
           </Card>
-        )}
+
+          {/* Top Customers */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Top Customers</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {lc ? <Skeleton className="h-[200px]" /> : topCustomers.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No customer data yet</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Customer</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Total Spent</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {topCustomers.map((c: any) => (
+                      <TableRow key={c.id} className="text-xs">
+                        <TableCell className="py-1.5 font-medium truncate max-w-[200px]">{c.name}</TableCell>
+                        <TableCell className="py-1.5 text-right">{c.total_orders}</TableCell>
+                        <TableCell className="py-1.5 text-right font-medium">${Number(c.total_spent).toLocaleString()}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AdminLayout>
   );
