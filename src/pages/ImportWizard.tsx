@@ -245,8 +245,77 @@ export default function ImportWizard() {
     toast.success(`Import complete: ${success} orders created, ${errors.length} errors`);
   };
 
+  const handleImportReviews = async () => {
+    if (!currentStore || !user) return;
+    setImporting(true);
+    const errors: { row: number; error: string }[] = [];
+    let success = 0;
+
+    for (let i = 0; i < csvData.rows.length; i++) {
+      const row = csvData.rows[i];
+      const review: any = { store_id: currentStore.id, user_id: user.id };
+
+      for (const [fieldKey, mapping] of Object.entries(mappings)) {
+        if (fieldKey === "product_sku") continue;
+        if (mapping.source === "__static__") {
+          review[fieldKey] = staticValues[fieldKey] || mapping.static_value || "";
+        } else {
+          const colIndex = csvData.headers.indexOf(mapping.source);
+          if (colIndex >= 0) review[fieldKey] = row[colIndex] || "";
+        }
+      }
+
+      // Lookup product by SKU
+      const skuMapping = mappings["product_sku"];
+      if (skuMapping) {
+        let sku = "";
+        if (skuMapping.source === "__static__") sku = staticValues["product_sku"] || "";
+        else {
+          const colIndex = csvData.headers.indexOf(skuMapping.source);
+          sku = colIndex >= 0 ? row[colIndex] || "" : "";
+        }
+        if (sku) {
+          const { data: prods } = await supabase
+            .from("products")
+            .select("id")
+            .eq("store_id", currentStore.id)
+            .eq("sku", sku)
+            .limit(1);
+          if (prods && prods.length > 0) review.product_id = prods[0].id;
+          else { errors.push({ row: i + 2, error: `Product SKU not found: ${sku}` }); continue; }
+        } else { errors.push({ row: i + 2, error: "Missing product SKU" }); continue; }
+      } else { errors.push({ row: i + 2, error: "No product SKU mapping" }); continue; }
+
+      review.rating = Math.min(5, Math.max(1, parseInt(review.rating) || 5));
+      if (!review.author_name) review.author_name = "Imported Review";
+      review.is_approved = review.is_approved === "true" || review.is_approved === "1" || review.is_approved === "yes" || review.is_approved === true;
+
+      try {
+        const { error } = await supabase.from("product_reviews").insert(review);
+        if (error) throw error;
+        success++;
+      } catch (err: any) {
+        errors.push({ row: i + 2, error: err.message });
+      }
+    }
+
+    await supabase.from("import_logs" as any).insert({
+      store_id: currentStore.id, user_id: user.id, entity_type: "reviews",
+      file_name: fileName, total_rows: csvData.rows.length,
+      success_count: success, error_count: errors.length,
+      errors: errors as any, status: errors.length === 0 ? "completed" : "completed_with_errors",
+      completed_at: new Date().toISOString(),
+    });
+
+    setResults({ success, errors });
+    setImporting(false);
+    setStep(3);
+    toast.success(`Import complete: ${success} reviews created, ${errors.length} errors`);
+  };
+
   const handleImport = async () => {
     if (entityType === "orders") return handleImportOrders();
+    if (entityType === "reviews") return handleImportReviews();
     if (!currentStore || !user) return;
     setImporting(true);
     const errors: { row: number; error: string }[] = [];
