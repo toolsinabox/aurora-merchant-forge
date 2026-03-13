@@ -170,7 +170,6 @@ export default function StorefrontAccount() {
         setVouchers(vouchersRes.data || []);
         setQuotes(quotesRes.data || []);
       }
-      }
 
       // Load wishlist products
       if (wishlistItems.length > 0) {
