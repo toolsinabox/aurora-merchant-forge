@@ -25,6 +25,7 @@ export interface TemplateContext {
   store?: Record<string, any>;
   order?: Record<string, any>;
   customer?: Record<string, any>;
+  includes?: Record<string, string>;
 }
 
 // Format pipes
