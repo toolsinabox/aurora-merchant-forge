@@ -36,6 +36,7 @@ import ActivityLog from "./pages/ActivityLog.tsx";
 import ImportWizard from "./pages/ImportWizard.tsx";
 import ExportWizard from "./pages/ExportWizard.tsx";
 import Templates from "./pages/Templates.tsx";
+import FeatureAudit from "./pages/FeatureAudit.tsx";
 import StorefrontHome from "./pages/storefront/StorefrontHome.tsx";
 import StorefrontProducts from "./pages/storefront/StorefrontProducts.tsx";
 import StorefrontProductDetail from "./pages/storefront/StorefrontProductDetail.tsx";
