@@ -850,6 +850,14 @@ export default function ProductForm() {
                 <ProductAddonsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
               </TabsContent>
 
+              {/* KIT COMPONENTS TAB */}
+              {form.is_kit && (
+                <TabsContent value="kit" className="mt-0 space-y-3">
+                  <KitComponentsTab productId={isEdit ? id! : ""} isEdit={isEdit} />
+                </TabsContent>
+              )}
+              </TabsContent>
+
               {/* SEO TAB */}
               <TabsContent value="seo" className="mt-0 space-y-3">
                 <Card>
