@@ -773,7 +773,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Import (CSV)", description: "Bulk import customers from CSV", status: "done", notes: "CSV import button on Customers page with name/email/phone/segment/tags mapping" },
       { name: "Customer Export (CSV)", description: "Bulk export customers to CSV", status: "done", notes: "Export button on customers page with filtered CSV download" },
       { name: "Order Export (CSV/XML)", description: "Export orders for accounting/analytics", status: "partial" },
-      { name: "Category Import / Export", description: "Bulk manage categories via CSV", status: "not_started" },
+      { name: "Category Import / Export", description: "Bulk manage categories via CSV", status: "done", notes: "Categories tab in Export Wizard with name, slug, description, hierarchy, and SEO fields" },
       { name: "Image Bulk Upload (ZIP)", description: "Upload multiple product images via ZIP file", status: "not_started" },
       { name: "Scheduled Auto-Exports", description: "Automated exports on schedule (e.g., nightly order export)", status: "not_started" },
       { name: "Data Transformations on Import", description: "Transform data during import (case, math, concatenate)", status: "partial" },

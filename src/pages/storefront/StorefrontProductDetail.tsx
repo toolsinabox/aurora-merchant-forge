@@ -422,7 +422,7 @@ export default function StorefrontProductDetail() {
             })()}
 
             {/* Back in Stock Notification - show when out of stock */}
-            {!product.poa && (currentVariant ? currentVariant.stock <= 0 : (product.track_inventory && product.status === "active")) && !notifySubmitted && (
+            {!product.poa && (currentVariant ? (currentVariant.stock <= 0 && !(product.preorder_quantity > 0)) : (product.track_inventory && product.status === "active")) && !notifySubmitted && (
               <div className="border rounded-lg p-4 bg-muted/30 space-y-2">
                 <p className="text-sm font-medium flex items-center gap-1.5"><Bell className="h-4 w-4" /> Notify me when back in stock</p>
                 <div className="flex gap-2">
