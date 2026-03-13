@@ -707,7 +707,7 @@ const featureData: FeatureCategory[] = [
       { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number or Tax ID", status: "done", notes: "Client-side ABN validation with weighted checksum algorithm on wholesale registration form" },
       { name: "Quote / RFQ Workflow", description: "Request for quote → Admin pricing → Customer approval → Order", status: "not_started" },
       { name: "Bulk/Quick Order Form", description: "Enter multiple SKUs and quantities on single form", status: "done", notes: "Storefront /quick-order page with SKU lookup, quantity entry, and add-all-to-cart" },
-      { name: "Restricted Product Visibility", description: "Show/hide products or categories by customer group", status: "not_started" },
+      { name: "Restricted Product Visibility", description: "Show/hide products or categories by customer group", status: "done", notes: "visibility_groups UUID[] column on products table; null = visible to all, array of customer_group IDs restricts to those groups" },
       { name: "Account Payment (Pay on Account)", description: "Allow B2B customers to pay on their account balance", status: "not_started" },
     ],
   },
