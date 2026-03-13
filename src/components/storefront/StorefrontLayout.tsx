@@ -12,6 +12,7 @@ import { NewsletterSignup } from "./NewsletterSignup";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { PromoPopup } from "./PromoPopup";
 import { CurrencySwitcher, useCurrency } from "./CurrencySwitcher";
+import { LanguageSwitcher, useLanguage, LanguageProvider } from "./LanguageSwitcher";
 import { supabase } from "@/integrations/supabase/client";
 
 interface StorefrontLayoutProps {
