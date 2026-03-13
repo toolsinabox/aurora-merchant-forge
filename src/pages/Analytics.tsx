@@ -96,6 +96,7 @@ export default function Analytics() {
   const [acquisitionData, setAcquisitionData] = useState<{ newCustomers: number; returning: number; byMonth: any[] }>({ newCustomers: 0, returning: 0, byMonth: [] });
   const [slowMovingProducts, setSlowMovingProducts] = useState<any[]>([]);
   const [stockTurnoverData, setStockTurnoverData] = useState<any[]>([]);
+  const [inventoryValuation, setInventoryValuation] = useState<{ totalRetail: number; totalCost: number; totalUnits: number; items: any[] }>({ totalRetail: 0, totalCost: 0, totalUnits: 0, items: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
