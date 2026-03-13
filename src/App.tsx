@@ -118,6 +118,7 @@ const App = () => (
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/contact" element={<StorefrontContact />} />
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
+                  <Route path="/wholesale" element={<StorefrontWholesale />} />
 
                   {/* Merchant Control Panel (/_cpanel) */}
                   <Route path="/_cpanel" element={<Login />} />
