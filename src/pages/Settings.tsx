@@ -740,6 +740,14 @@ export default function SettingsPage() {
                     <Label className="text-xs">Google Analytics Tracking ID</Label>
                     <Input className="h-8 text-xs" value={brandForm.ga_tracking_id} onChange={(e) => setBrandForm({ ...brandForm, ga_tracking_id: e.target.value })} placeholder="G-XXXXXXXXXX" />
                   </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Google Tag Manager Container ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.gtm_container_id} onChange={(e) => setBrandForm({ ...brandForm, gtm_container_id: e.target.value })} placeholder="GTM-XXXXXXX" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Facebook / Meta Pixel ID</Label>
+                    <Input className="h-8 text-xs" value={brandForm.fb_pixel_id} onChange={(e) => setBrandForm({ ...brandForm, fb_pixel_id: e.target.value })} placeholder="1234567890" />
+                  </div>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">Banner Text</Label>
