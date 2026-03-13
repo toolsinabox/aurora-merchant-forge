@@ -311,7 +311,7 @@ const featureData: FeatureCategory[] = [
       { name: "Checkout — Voucher/Coupon Redemption", description: "Coupon code entry (redeem_vouchers.template.html)", status: "done", notes: "Coupon apply/remove at checkout" },
       { name: "Checkout — Gift Voucher Message", description: "Gift voucher message entry (voucher_msg.template.html)", status: "not_started" },
       { name: "Checkout — Upsell Page", description: "Pre-checkout upsells (upsell.template.html)", status: "not_started" },
-      { name: "Checkout — Error Handling", description: "Cart error display (cart.error.html)", status: "not_started" },
+      { name: "Checkout — Error Handling", description: "Cart error display (cart.error.html)", status: "done", notes: "Validation toasts for missing fields, billing address, and empty cart checks" },
       { name: "Invoice / Thank You Page", description: "Post-checkout success page (invoice.template.html)", status: "done", notes: "Enhanced thank you page with order number, total, and View Orders link" },
       { name: "Quote Invoice Page", description: "Post-quote success page (quote_invoice.template.html)", status: "not_started" },
       { name: "Empty Cart Page", description: "Display when cart is empty (empty.template.html)", status: "done", notes: "Empty state with icon and continue shopping link" },
