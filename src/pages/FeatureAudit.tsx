@@ -706,7 +706,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax-Exempt B2B Customers", description: "Exclude tax for registered wholesale customers", status: "done", notes: "is_tax_exempt flag on customer_groups, checkout skips tax calculation" },
       { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number or Tax ID", status: "not_started" },
       { name: "Quote / RFQ Workflow", description: "Request for quote → Admin pricing → Customer approval → Order", status: "not_started" },
-      { name: "Bulk/Quick Order Form", description: "Enter multiple SKUs and quantities on single form", status: "not_started" },
+      { name: "Bulk/Quick Order Form", description: "Enter multiple SKUs and quantities on single form", status: "done", notes: "Storefront /quick-order page with SKU lookup, quantity entry, and add-all-to-cart" },
       { name: "Restricted Product Visibility", description: "Show/hide products or categories by customer group", status: "not_started" },
       { name: "Account Payment (Pay on Account)", description: "Allow B2B customers to pay on their account balance", status: "not_started" },
     ],
