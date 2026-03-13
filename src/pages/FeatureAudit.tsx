@@ -487,7 +487,7 @@ const featureData: FeatureCategory[] = [
     icon: <DollarSign className="h-5 w-5" />,
     features: [
       { name: "Store Default Currency", description: "Configure store base currency", status: "done" },
-      { name: "Currency Display Format", description: "Format currency symbol and decimals", status: "partial" },
+      { name: "Currency Display Format", description: "Format currency symbol and decimals", status: "done", notes: "Currency format settings on Inventory tab in Settings with symbol position (before/after) and decimal places (0/2/3) stored on stores table" },
       { name: "Multi-Currency Support (GetCurrency / AddCurrency)", description: "Add/manage multiple currencies via API", status: "not_started", notes: "Neto has full Currency API" },
       { name: "Exchange Rate Management", description: "Set or auto-update exchange rates", status: "not_started" },
       { name: "Currency Switcher (Storefront)", description: "Customer can switch display currency on storefront", status: "not_started" },
