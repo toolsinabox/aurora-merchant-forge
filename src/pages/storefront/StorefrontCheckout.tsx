@@ -31,6 +31,7 @@ export default function StorefrontCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [orderTotal, setOrderTotal] = useState(0);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
@@ -212,6 +213,7 @@ export default function StorefrontCheckout() {
       }
 
       setOrderNumber(orderNum);
+      setOrderTotal(finalTotal);
       setCompleted(true);
       clearCart();
     } catch (err: any) {
@@ -224,14 +226,23 @@ export default function StorefrontCheckout() {
   if (completed) {
     return (
       <StorefrontLayout>
-        <div className="max-w-lg mx-auto px-4 py-24 text-center">
-          <div className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mx-auto mb-5">
-            <Check className="h-8 w-8 text-success" />
+        <div className="max-w-lg mx-auto px-4 py-16 text-center">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
+            <Check className="h-8 w-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold mb-2">Order Placed!</h1>
-          <p className="text-muted-foreground mb-1">Thank you for your order.</p>
-          <p className="text-sm font-medium mb-6">Order number: <span className="font-mono">{orderNumber}</span></p>
-          <Button onClick={() => navigate(basePath || "/")}>Continue Shopping</Button>
+          <h1 className="text-2xl font-bold mb-2">Thank You for Your Order!</h1>
+          <p className="text-muted-foreground mb-1">Your order has been placed successfully.</p>
+          <p className="text-sm font-medium mb-2">
+            Order number: <span className="font-mono bg-muted px-2 py-0.5 rounded">{orderNumber}</span>
+          </p>
+          <p className="text-sm text-muted-foreground mb-1">Total: <span className="font-semibold text-foreground">${orderTotal.toFixed(2)}</span></p>
+          {form.email && (
+            <p className="text-xs text-muted-foreground mb-6">A confirmation will be sent to <span className="font-medium">{form.email}</span></p>
+          )}
+          <div className="flex gap-3 justify-center">
+            {user && <Button variant="outline" onClick={() => navigate(`${basePath}/account`)}>View Orders</Button>}
+            <Button onClick={() => navigate(basePath || "/")}>Continue Shopping</Button>
+          </div>
         </div>
       </StorefrontLayout>
     );
