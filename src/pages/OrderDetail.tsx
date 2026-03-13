@@ -20,7 +20,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
-  Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign,
+  Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
 } from "lucide-react";
 import { useState } from "react";
 import {
