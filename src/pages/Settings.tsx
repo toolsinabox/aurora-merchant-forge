@@ -843,6 +843,10 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="wholesale" className="space-y-3">
+            <WholesaleApplicationsTab />
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
