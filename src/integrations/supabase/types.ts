@@ -517,6 +517,63 @@ export type Database = {
           },
         ]
       }
+      content_reviews: {
+        Row: {
+          author_name: string
+          body: string | null
+          content_page_id: string
+          created_at: string
+          id: string
+          is_approved: boolean
+          rating: number
+          store_id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          author_name?: string
+          body?: string | null
+          content_page_id: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          rating?: number
+          store_id: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          body?: string | null
+          content_page_id?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          rating?: number
+          store_id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reviews_content_page_id_fkey"
+            columns: ["content_page_id"]
+            isOneToOne: false
+            referencedRelation: "content_pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reviews_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupons: {
         Row: {
           applies_to: string | null
@@ -1955,6 +2012,53 @@ export type Database = {
           },
           {
             foreignKeyName: "orders_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_gateways: {
+        Row: {
+          config: Json
+          created_at: string
+          display_name: string
+          gateway_type: string
+          id: string
+          is_enabled: boolean
+          is_test_mode: boolean
+          sort_order: number
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          display_name: string
+          gateway_type: string
+          id?: string
+          is_enabled?: boolean
+          is_test_mode?: boolean
+          sort_order?: number
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          display_name?: string
+          gateway_type?: string
+          id?: string
+          is_enabled?: boolean
+          is_test_mode?: boolean
+          sort_order?: number
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_gateways_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -3454,6 +3558,8 @@ export type Database = {
           name: string
           notification_prefs: Json | null
           owner_id: string
+          plan: string
+          plan_limits: Json
           primary_color: string | null
           seo_description_global: string | null
           seo_title_global: string | null
@@ -3486,6 +3592,8 @@ export type Database = {
           name: string
           notification_prefs?: Json | null
           owner_id: string
+          plan?: string
+          plan_limits?: Json
           primary_color?: string | null
           seo_description_global?: string | null
           seo_title_global?: string | null
@@ -3518,6 +3626,8 @@ export type Database = {
           name?: string
           notification_prefs?: Json | null
           owner_id?: string
+          plan?: string
+          plan_limits?: Json
           primary_color?: string | null
           seo_description_global?: string | null
           seo_title_global?: string | null

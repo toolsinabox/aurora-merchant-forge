@@ -8,12 +8,21 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Store, ExternalLink, Ban, CheckCircle2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Search, Store, ExternalLink, Ban, CheckCircle2, Settings2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+
+const PLAN_DEFAULTS: Record<string, any> = {
+  free: { products: 50, orders_per_month: 100, staff: 2, storage_mb: 500 },
+  basic: { products: 500, orders_per_month: 1000, staff: 5, storage_mb: 2000 },
+  pro: { products: 5000, orders_per_month: 10000, staff: 20, storage_mb: 10000 },
+  enterprise: { products: -1, orders_per_month: -1, staff: -1, storage_mb: 50000 },
+};
 
 const TIERS = ["free", "basic", "pro", "enterprise"] as const;
 
@@ -53,6 +62,20 @@ export default function PlatformMerchants() {
     (s.contact_email || "").toLowerCase().includes(search.toLowerCase()) ||
     (s.slug || "").toLowerCase().includes(search.toLowerCase())
   );
+
+  const [planStore, setPlanStore] = useState<any>(null);
+  const [planLimits, setPlanLimits] = useState<any>({});
+
+  const openPlanEditor = (store: any) => {
+    setPlanStore(store);
+    setPlanLimits(store.plan_limits || PLAN_DEFAULTS[store.plan || "free"] || PLAN_DEFAULTS.free);
+  };
+
+  const savePlanLimits = () => {
+    if (!planStore) return;
+    updateStore.mutate({ id: planStore.id, updates: { plan_limits: planLimits } });
+    setPlanStore(null);
+  };
 
   return (
     <PlatformLayout>
@@ -123,19 +146,24 @@ export default function PlatformMerchants() {
                           ) : <span className="text-muted-foreground">—</span>}
                         </TableCell>
                         <TableCell>
-                          <Select
-                            value={s.subscription_tier || "free"}
-                            onValueChange={(val) => updateStore.mutate({ id: s.id, updates: { subscription_tier: val } })}
-                          >
-                            <SelectTrigger className="h-7 w-24 text-2xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIERS.map((t) => (
-                                <SelectItem key={t} value={t} className="text-xs capitalize">{t}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div className="flex items-center gap-1">
+                            <Select
+                              value={s.subscription_tier || "free"}
+                              onValueChange={(val) => updateStore.mutate({ id: s.id, updates: { subscription_tier: val, plan: val, plan_limits: PLAN_DEFAULTS[val] || PLAN_DEFAULTS.free } })}
+                            >
+                              <SelectTrigger className="h-7 w-24 text-2xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {TIERS.map((t) => (
+                                  <SelectItem key={t} value={t} className="text-xs capitalize">{t}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openPlanEditor(s)} title="Edit plan limits">
+                              <Settings2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </TableCell>
                         <TableCell>
                           {s.is_suspended ? (
@@ -187,6 +215,28 @@ export default function PlatformMerchants() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Plan Limits Editor */}
+      <Dialog open={!!planStore} onOpenChange={(v) => { if (!v) setPlanStore(null); }}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Plan Limits: {planStore?.name}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground">Set -1 for unlimited</p>
+            {["products", "orders_per_month", "staff", "storage_mb"].map(field => (
+              <div key={field} className="space-y-1">
+                <Label className="text-xs capitalize">{field.replace(/_/g, " ")}</Label>
+                <Input
+                  className="h-8 text-xs"
+                  type="number"
+                  value={planLimits[field] ?? ""}
+                  onChange={(e) => setPlanLimits({ ...planLimits, [field]: parseInt(e.target.value) || 0 })}
+                />
+              </div>
+            ))}
+            <Button size="sm" className="w-full text-xs" onClick={savePlanLimits}>Save Limits</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </PlatformLayout>
   );
 }
