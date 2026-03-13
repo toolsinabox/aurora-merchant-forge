@@ -171,11 +171,24 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
               )}
             </div>
           </div>
+          {/* Social Links */}
+          {Object.keys(socialLinks).length > 0 && (
+            <div className="flex justify-center gap-4 mb-6">
+              {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Facebook</a>}
+              {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Instagram</a>}
+              {socialLinks.twitter && <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Twitter</a>}
+              {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">YouTube</a>}
+              {socialLinks.tiktok && <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">TikTok</a>}
+              {socialLinks.linkedin && <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">LinkedIn</a>}
+            </div>
+          )}
           <div className="border-t pt-6 text-center text-xs text-muted-foreground">
             © {new Date().getFullYear()} {storeName || "Store"}. All rights reserved.
           </div>
         </div>
       </footer>
+
+      <CookieConsentBanner />
     </div>
   );
 }
