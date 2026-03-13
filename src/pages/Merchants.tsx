@@ -110,7 +110,8 @@ export default function Merchants() {
                      <TableHead>Slug</TableHead>
                      <TableHead>Joined</TableHead>
                      <TableHead className="w-10"></TableHead>
-                </TableHeader>
+                   </TableRow>
+                 </TableHeader>
                 <TableBody>
                   {isLoading ? (
                     Array.from({ length: 5 }).map((_, i) => (
