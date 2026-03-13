@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProducts, useDeleteProducts, useUpdateProduct, useCategories } from "@/hooks/use-data";
-import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2 } from "lucide-react";
+import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { BulkEditDialog } from "@/components/products/BulkEditDialog";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
@@ -69,6 +70,7 @@ export default function Products() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selected, setSelected] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = products.filter((p) => {
@@ -215,6 +217,9 @@ export default function Products() {
                         </DropdownMenuSubContent>
                       </DropdownMenuSub>
                       <DropdownMenuItem className="text-xs" onClick={handleExport}>Export Selected</DropdownMenuItem>
+                      <DropdownMenuItem className="text-xs gap-1" onClick={() => setBulkEditOpen(true)}>
+                        <Pencil className="h-3 w-3" /> Bulk Edit
+                      </DropdownMenuItem>
                       <DropdownMenuItem className="text-xs text-destructive" onClick={handleBulkDelete}>
                         <Trash2 className="h-3 w-3 mr-1" /> Delete Selected
                       </DropdownMenuItem>
@@ -296,6 +301,14 @@ export default function Products() {
             </Table>
           </CardContent>
         </Card>
+
+        <BulkEditDialog
+          open={bulkEditOpen}
+          onOpenChange={setBulkEditOpen}
+          selectedIds={selected}
+          products={products}
+          onComplete={() => setSelected([])}
+        />
       </div>
     </AdminLayout>
   );
