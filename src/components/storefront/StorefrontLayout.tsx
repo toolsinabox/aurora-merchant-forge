@@ -31,6 +31,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [categories, setCategories] = useState<any[]>([]);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [bannerText, setBannerText] = useState<string | null>(null);
+  const currencyData = useCurrency(storeId);
 
   useEffect(() => {
     if (!storeSlug) return;
