@@ -285,6 +285,7 @@ const App = () => (
                   <Route path="/pos" element={<RequireAuth><POS /></RequireAuth>} />
                   <Route path="/affiliates" element={<RequireAuth><Affiliates /></RequireAuth>} />
                   <Route path="/currencies" element={<RequireAuth><Currencies /></RequireAuth>} />
+                  <Route path="/addons" element={<RequireAuth><Addons /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
