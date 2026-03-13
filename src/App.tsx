@@ -63,6 +63,8 @@ import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
 import PlatformMerchants from "./pages/platform/PlatformMerchants.tsx";
 import PlatformSettings from "./pages/platform/PlatformSettings.tsx";
+import PlatformCustomers from "./pages/platform/PlatformCustomers.tsx";
+import PlatformAnalytics from "./pages/platform/PlatformAnalytics.tsx";
 const queryClient = new QueryClient();
 
 // Check if we're on a store subdomain
@@ -111,6 +113,8 @@ const App = () => (
                   <Route path="/admin/dashboard" element={<RequirePlatformAdmin><PlatformDashboard /></RequirePlatformAdmin>} />
                   <Route path="/admin/merchants" element={<RequirePlatformAdmin><PlatformMerchants /></RequirePlatformAdmin>} />
                   <Route path="/admin/settings" element={<RequirePlatformAdmin><PlatformSettings /></RequirePlatformAdmin>} />
+                  <Route path="/admin/customers" element={<RequirePlatformAdmin><PlatformCustomers /></RequirePlatformAdmin>} />
+                  <Route path="/admin/analytics" element={<RequirePlatformAdmin><PlatformAnalytics /></RequirePlatformAdmin>} />
 
                   {/* Merchant Routes */}
                   <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
