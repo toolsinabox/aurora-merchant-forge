@@ -49,8 +49,12 @@ export default function StorefrontCheckout() {
   const [shippingCost, setShippingCost] = useState(0);
 
   useEffect(() => {
-    if (!user) return;
-    async function prefill() {
+    async function loadData() {
+      // Load shipping zones (public)
+      const { data: zones } = await supabase.from("shipping_zones").select("*").order("name");
+      if (zones && zones.length > 0) setShippingZones(zones);
+
+      if (!user) return;
       const { data: custs } = await supabase.from("customers").select("*").eq("user_id", user!.id).limit(1);
       const c = custs?.[0];
       if (c) {
@@ -60,7 +64,6 @@ export default function StorefrontCheckout() {
           email: c.email || user!.email || prev.email,
           phone: c.phone || prev.phone,
         }));
-        // Load saved addresses
         const { data: addrs } = await supabase
           .from("customer_addresses" as any)
           .select("*")
@@ -75,7 +78,7 @@ export default function StorefrontCheckout() {
         setForm((prev) => ({ ...prev, email: user!.email || prev.email }));
       }
     }
-    prefill();
+    loadData();
   }, [user]);
 
   const applyAddress = (addr: any) => {
