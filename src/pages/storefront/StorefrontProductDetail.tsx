@@ -250,29 +250,38 @@ export default function StorefrontProductDetail() {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{product.title}</h1>
               {product.subtitle && <p className="text-muted-foreground mt-1">{product.subtitle}</p>}
               
-              <div className="flex items-baseline gap-3 mt-3">
-                <span className="text-2xl font-bold">${Number(finalPrice).toFixed(2)}</span>
-                {promoActive && (
-                  <>
-                    <span className="text-lg text-muted-foreground line-through">${Number(price).toFixed(2)}</span>
-                    <Badge variant="destructive" className="text-xs">
-                      {Math.round((1 - Number(product.promo_price) / Number(price)) * 100)}% OFF
-                    </Badge>
-                  </>
-                )}
-                {!promoActive && product.compare_at_price && product.compare_at_price > finalPrice && (
-                  <>
-                    <span className="text-lg text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
-                    <span className="text-sm font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
-                      {Math.round((1 - Number(finalPrice) / Number(product.compare_at_price)) * 100)}% OFF
-                    </span>
-                  </>
-                )}
-              </div>
-              {promoActive && product.promo_end && (
-                <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> Sale ends {new Date(product.promo_end).toLocaleDateString()}
-                </p>
+              {product.poa ? (
+                <div className="mt-3">
+                  <span className="text-xl font-semibold text-primary">Contact for Price</span>
+                  <p className="text-sm text-muted-foreground mt-1">This product is available on application. Please contact us for pricing.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-3 mt-3">
+                    <span className="text-2xl font-bold">${Number(finalPrice).toFixed(2)}</span>
+                    {promoActive && (
+                      <>
+                        <span className="text-lg text-muted-foreground line-through">${Number(price).toFixed(2)}</span>
+                        <Badge variant="destructive" className="text-xs">
+                          {Math.round((1 - Number(product.promo_price) / Number(price)) * 100)}% OFF
+                        </Badge>
+                      </>
+                    )}
+                    {!promoActive && product.compare_at_price && product.compare_at_price > finalPrice && (
+                      <>
+                        <span className="text-lg text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
+                        <span className="text-sm font-semibold text-destructive bg-destructive/10 px-2 py-0.5 rounded">
+                          {Math.round((1 - Number(finalPrice) / Number(product.compare_at_price)) * 100)}% OFF
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {promoActive && product.promo_end && (
+                    <p className="text-xs text-destructive mt-1 flex items-center gap-1">
+                      <Clock className="h-3 w-3" /> Sale ends {new Date(product.promo_end).toLocaleDateString()}
+                    </p>
+                  )}
+                </>
               )}
               {applicableTier && (
                 <p className="text-xs text-primary mt-1">Bulk price applied: {applicableTier.tier_name} (min {applicableTier.min_quantity} units)</p>
@@ -346,25 +355,32 @@ export default function StorefrontProductDetail() {
               </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button
-                className="flex-1 h-12 text-base font-medium gap-2"
-                onClick={handleAddToCart}
-                disabled={currentVariant && currentVariant.stock <= 0}
-              >
-                {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
-              </Button>
-              {store && (
+            {!product.poa && (
+              <div className="flex gap-3">
                 <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
-                  onClick={() => toggleItem(product.id, store.id)}
+                  className="flex-1 h-12 text-base font-medium gap-2"
+                  onClick={handleAddToCart}
+                  disabled={currentVariant && currentVariant.stock <= 0}
                 >
-                  <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                  {added ? <><Check className="h-5 w-5" /> Added!</> : <><ShoppingBag className="h-5 w-5" /> Add to Cart — ${(Number(finalPrice) * quantity).toFixed(2)}</>}
                 </Button>
-              )}
-            </div>
+                {store && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className={`h-12 w-12 ${wishlisted ? "text-destructive border-destructive/30" : ""}`}
+                    onClick={() => toggleItem(product.id, store.id)}
+                  >
+                    <Heart className={`h-5 w-5 ${wishlisted ? "fill-current" : ""}`} />
+                  </Button>
+                )}
+              </div>
+            )}
+            {product.poa && (
+              <Button variant="outline" className="w-full h-12" onClick={() => window.location.href = `mailto:${store?.contact_email || ''}`}>
+                Contact Us for Pricing
+              </Button>
+            )}
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 pt-2">

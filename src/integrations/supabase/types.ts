@@ -1539,6 +1539,7 @@ export type Database = {
           misc4: string | null
           misc5: string | null
           model_number: string | null
+          poa: boolean | null
           preorder_quantity: number | null
           price: number
           product_subtype: string | null
@@ -1599,6 +1600,7 @@ export type Database = {
           misc4?: string | null
           misc5?: string | null
           model_number?: string | null
+          poa?: boolean | null
           preorder_quantity?: number | null
           price?: number
           product_subtype?: string | null
@@ -1659,6 +1661,7 @@ export type Database = {
           misc4?: string | null
           misc5?: string | null
           model_number?: string | null
+          poa?: boolean | null
           preorder_quantity?: number | null
           price?: number
           product_subtype?: string | null
