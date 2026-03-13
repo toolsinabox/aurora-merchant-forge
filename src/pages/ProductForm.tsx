@@ -857,7 +857,7 @@ export default function ProductForm() {
                       <p className="text-2xs text-muted-foreground">{form.seo_description.length}/160 characters</p>
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Meta Keywords</Label>
+                      <FieldLabel label="Meta Keywords" field="seo_keywords" />
                       <Input className="h-8 text-xs" value={form.seo_keywords} onChange={(e) => update("seo_keywords", e.target.value)} placeholder="Comma-separated keywords" />
                     </div>
                     <div className="space-y-1">
