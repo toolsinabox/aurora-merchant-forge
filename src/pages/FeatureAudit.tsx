@@ -814,7 +814,7 @@ const featureData: FeatureCategory[] = [
       { name: "Layout Style (Wide/Boxed)", description: "Overall layout width setting", status: "done" },
       { name: "Heading Font / Body Font", description: "Font family selection", status: "done" },
       { name: "Responsive / Mobile Design", description: "Mobile-responsive storefront", status: "done" },
-      { name: "Favicon Upload", description: "Custom favicon per store", status: "not_started" },
+      { name: "Favicon Upload", description: "Custom favicon per store", status: "done", notes: "Favicon URL field in store settings, dynamically injected into storefront" },
       { name: "Logo Upload", description: "Store logo upload and display", status: "done" },
       { name: "Mega Menu Navigation", description: "Category-based mega dropdown menu", status: "done", notes: "Hover-triggered mega menu in storefront header showing parent categories with children in grid layout" },
       { name: "Breadcrumb Navigation", description: "Breadcrumb trail on product/category pages", status: "done", notes: "Breadcrumbs on product detail page (Home > Products > Product)" },
