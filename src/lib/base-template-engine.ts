@@ -20,6 +20,7 @@ export interface TemplateContext {
   upsells?: Record<string, any>[];
   free_gifts?: Record<string, any>[];
   adverts?: Record<string, any>[];
+  thumblist?: Record<string, any>[];
   shipping?: Record<string, any>;
   store?: Record<string, any>;
   order?: Record<string, any>;
