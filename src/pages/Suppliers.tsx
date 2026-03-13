@@ -1,0 +1,201 @@
+import { useState } from "react";
+import { AdminLayout } from "@/components/admin/AdminLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Plus, Building, Trash2, Pencil, Truck, Search } from "lucide-react";
+
+interface SupplierForm {
+  name: string;
+  contact_name: string;
+  email: string;
+  phone: string;
+  address: string;
+  website: string;
+  notes: string;
+  lead_time_days: number;
+  payment_terms: string;
+  is_dropship: boolean;
+  is_active: boolean;
+}
+
+const emptyForm: SupplierForm = {
+  name: "", contact_name: "", email: "", phone: "", address: "",
+  website: "", notes: "", lead_time_days: 0, payment_terms: "", is_dropship: false, is_active: true,
+};
+
+export default function Suppliers() {
+  const { currentStore } = useAuth();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState<SupplierForm>(emptyForm);
+  const [search, setSearch] = useState("");
+
+  const { data: suppliers = [], isLoading } = useQuery({
+    queryKey: ["suppliers", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data, error } = await supabase
+        .from("suppliers")
+        .select("*")
+        .eq("store_id", currentStore.id)
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!currentStore,
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      if (!currentStore) throw new Error("No store");
+      const payload = { ...form, store_id: currentStore.id };
+      if (editId) {
+        const { error } = await supabase.from("suppliers").update(payload).eq("id", editId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("suppliers").insert(payload);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
+      toast.success(editId ? "Supplier updated" : "Supplier created");
+      setOpen(false);
+      setForm(emptyForm);
+      setEditId(null);
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("suppliers").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["suppliers"] });
+      toast.success("Supplier deleted");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const openEdit = (s: any) => {
+    setEditId(s.id);
+    setForm({
+      name: s.name, contact_name: s.contact_name || "", email: s.email || "",
+      phone: s.phone || "", address: s.address || "", website: s.website || "",
+      notes: s.notes || "", lead_time_days: s.lead_time_days || 0,
+      payment_terms: s.payment_terms || "", is_dropship: s.is_dropship || false, is_active: s.is_active,
+    });
+    setOpen(true);
+  };
+
+  const filtered = suppliers.filter((s: any) =>
+    s.name.toLowerCase().includes(search.toLowerCase()) ||
+    (s.email || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Suppliers</h1>
+            <p className="text-sm text-muted-foreground">{suppliers.length} suppliers</p>
+          </div>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(emptyForm); setEditId(null); } }}>
+            <DialogTrigger asChild>
+              <Button size="sm"><Plus className="h-4 w-4 mr-1" />Add Supplier</Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{editId ? "Edit" : "New"} Supplier</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-2">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Company Name *</Label><Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} /></div>
+                  <div><Label>Contact Name</Label><Input value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Email</Label><Input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
+                  <div><Label>Phone</Label><Input value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
+                </div>
+                <div><Label>Address</Label><Input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} /></div>
+                <div><Label>Website</Label><Input value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Lead Time (days)</Label><Input type="number" value={form.lead_time_days} onChange={e => setForm({ ...form, lead_time_days: Number(e.target.value) })} /></div>
+                  <div><Label>Payment Terms</Label><Input placeholder="Net 30" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} /></div>
+                </div>
+                <div><Label>Notes</Label><Textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} /></div>
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2"><Switch checked={form.is_dropship} onCheckedChange={v => setForm({ ...form, is_dropship: v })} /><Label>Dropship Supplier</Label></div>
+                  <div className="flex items-center gap-2"><Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} /><Label>Active</Label></div>
+                </div>
+                <Button onClick={() => saveMutation.mutate()} disabled={!form.name || saveMutation.isPending}>
+                  {saveMutation.isPending ? "Saving..." : editId ? "Update Supplier" : "Create Supplier"}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search suppliers..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        </div>
+
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Supplier</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Lead Time</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-20"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                ) : filtered.length === 0 ? (
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No suppliers found</TableCell></TableRow>
+                ) : filtered.map((s: any) => (
+                  <TableRow key={s.id}>
+                    <TableCell className="font-medium">{s.name}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{s.contact_name || "—"}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{s.email || "—"}</TableCell>
+                    <TableCell className="text-sm">{s.lead_time_days ? `${s.lead_time_days} days` : "—"}</TableCell>
+                    <TableCell>{s.is_dropship ? <Badge variant="secondary"><Truck className="h-3 w-3 mr-1" />Dropship</Badge> : <Badge variant="outline">Standard</Badge>}</TableCell>
+                    <TableCell><Badge variant={s.is_active ? "default" : "outline"}>{s.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(s)}><Pencil className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(s.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
+  );
+}
