@@ -243,6 +243,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/store/:storeSlug/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
+                  <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="*" element={<NotFound />} />
                 </>
               )}
