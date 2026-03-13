@@ -857,7 +857,7 @@ const featureData: FeatureCategory[] = [
       { name: "Platform Merchant Directory", description: "Admin view of all merchants on platform", status: "done" },
       { name: "Platform-Level Analytics", description: "Cross-store metrics for platform admin", status: "done", notes: "Revenue, orders, AOV, products, top stores by revenue, customer spend distribution charts" },
       { name: "Store Suspension / Deactivation", description: "Admin can suspend a merchant store", status: "done", notes: "Suspend/reactivate toggle on platform merchants page with is_suspended flag" },
-      { name: "Store Plan / Subscription Management", description: "SaaS plan tiers and billing", status: "not_started" },
+      { name: "Store Plan / Subscription Management", description: "SaaS plan tiers and billing", status: "done", notes: "plan and plan_limits columns on stores table, platform merchants page with tier selector that auto-sets plan limits (products, orders/month, staff, storage), plan limits editor dialog per store" },
     ],
   },
 
