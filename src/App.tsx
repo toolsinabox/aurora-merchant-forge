@@ -247,6 +247,8 @@ const App = () => (
                   <Route path="/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/quotes/:id/print" element={<RequireAuth><PrintQuote /></RequireAuth>} />
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
+                  <Route path="/webhooks" element={<RequireAuth><Webhooks /></RequireAuth>} />
+                  <Route path="/media" element={<RequireAuth><MediaLibrary /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
