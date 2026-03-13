@@ -128,6 +128,7 @@ export function AppSidebar() {
         <NavGroup label="Catalog" items={catalogNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="Sales" items={salesNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="Marketing" items={marketingNav} collapsed={collapsed} currentPath={currentPath} />
+        <NavGroup label="Content" items={contentNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="System" items={systemNav} collapsed={collapsed} currentPath={currentPath} />
       </SidebarContent>
 
