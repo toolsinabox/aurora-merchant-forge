@@ -227,6 +227,47 @@ export type Database = {
           },
         ]
       }
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_read: boolean
+          message: string
+          name: string
+          store_id: string
+          subject: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_read?: boolean
+          message: string
+          name: string
+          store_id: string
+          subject?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          name?: string
+          store_id?: string
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_submissions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_pages: {
         Row: {
           content: string | null
@@ -752,6 +793,7 @@ export type Database = {
       }
       inventory_stock: {
         Row: {
+          bin_location: string | null
           created_at: string
           id: string
           location_id: string
@@ -763,6 +805,7 @@ export type Database = {
           variant_id: string | null
         }
         Insert: {
+          bin_location?: string | null
           created_at?: string
           id?: string
           location_id: string
@@ -774,6 +817,7 @@ export type Database = {
           variant_id?: string | null
         }
         Update: {
+          bin_location?: string | null
           created_at?: string
           id?: string
           location_id?: string
@@ -2503,6 +2547,8 @@ export type Database = {
           created_at: string
           currency: string
           description: string | null
+          favicon_url: string | null
+          ga_tracking_id: string | null
           id: string
           is_suspended: boolean
           logo_url: string | null
@@ -2522,6 +2568,8 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string | null
+          favicon_url?: string | null
+          ga_tracking_id?: string | null
           id?: string
           is_suspended?: boolean
           logo_url?: string | null
@@ -2541,6 +2589,8 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string | null
+          favicon_url?: string | null
+          ga_tracking_id?: string | null
           id?: string
           is_suspended?: boolean
           logo_url?: string | null
