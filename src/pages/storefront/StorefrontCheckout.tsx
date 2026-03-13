@@ -163,6 +163,8 @@ export default function StorefrontCheckout() {
     e.preventDefault();
     if (items.length === 0) return;
     if (!form.name || !form.email) { toast.error("Name and email are required"); return; }
+    if (!form.address || !form.city) { toast.error("Shipping address is required"); return; }
+    if (!form.billing_same && (!form.billing_address || !form.billing_city)) { toast.error("Billing address is required"); return; }
 
     setSubmitting(true);
     try {
