@@ -146,18 +146,24 @@ export default function PlatformMerchants() {
                           ) : <span className="text-muted-foreground">—</span>}
                         </TableCell>
                         <TableCell>
-                          <Select
-                            value={s.subscription_tier || "free"}
-                            onValueChange={(val) => updateStore.mutate({ id: s.id, updates: { subscription_tier: val } })}
-                          >
-                            <SelectTrigger className="h-7 w-24 text-2xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {TIERS.map((t) => (
-                                <SelectItem key={t} value={t} className="text-xs capitalize">{t}</SelectItem>
-                              ))}
-                            </SelectContent>
+                          <div className="flex items-center gap-1">
+                            <Select
+                              value={s.subscription_tier || "free"}
+                              onValueChange={(val) => updateStore.mutate({ id: s.id, updates: { subscription_tier: val, plan: val, plan_limits: PLAN_DEFAULTS[val] || PLAN_DEFAULTS.free } })}
+                            >
+                              <SelectTrigger className="h-7 w-24 text-2xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {TIERS.map((t) => (
+                                  <SelectItem key={t} value={t} className="text-xs capitalize">{t}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openPlanEditor(s)} title="Edit plan limits">
+                              <Settings2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                           </Select>
                         </TableCell>
                         <TableCell>
