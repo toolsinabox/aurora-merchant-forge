@@ -104,6 +104,13 @@ const App = () => (
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+
+                  {/* Platform Admin Routes */}
+                  <Route path="/admin/login" element={<PlatformLogin />} />
+                  <Route path="/admin/dashboard" element={<RequirePlatformAdmin><PlatformDashboard /></RequirePlatformAdmin>} />
+                  <Route path="/admin/merchants" element={<RequirePlatformAdmin><PlatformMerchants /></RequirePlatformAdmin>} />
+
+                  {/* Merchant Routes */}
                   <Route path="/onboarding" element={<RequireAuth><Onboarding /></RequireAuth>} />
                   <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
                   <Route path="/products" element={<RequireAuth><Products /></RequireAuth>} />
@@ -120,7 +127,6 @@ const App = () => (
                   <Route path="/returns" element={<RequireAuth><Returns /></RequireAuth>} />
                   <Route path="/reviews" element={<RequireAuth><Reviews /></RequireAuth>} />
                   <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
-                  <Route path="/merchants" element={<RequireAuth><Merchants /></RequireAuth>} />
                   <Route path="/activity-log" element={<RequireAuth><ActivityLog /></RequireAuth>} />
                   <Route path="/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
