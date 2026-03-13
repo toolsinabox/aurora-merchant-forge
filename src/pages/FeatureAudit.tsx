@@ -702,7 +702,7 @@ const featureData: FeatureCategory[] = [
       { name: "Wholesale Approval Workflow", description: "Admin reviews and approves wholesale applicants", status: "done", notes: "Wholesale Applications tab in Settings page with approve/reject actions, status badges, and customer group assignment" },
       { name: "Credit Terms (Net 7/14/30/60/90)", description: "Allow B2B customers to order on credit", status: "done", notes: "credit_terms and credit_limit fields on customer_groups, manageable in Settings" },
       { name: "Credit Limit per Customer", description: "Set maximum credit balance per customer", status: "done", notes: "credit_limit numeric field on customer_groups table, editable in Settings" },
-      { name: "Order Minimum for Wholesale", description: "Minimum order value/quantity for wholesale customers", status: "not_started" },
+      { name: "Order Minimum for Wholesale", description: "Minimum order value/quantity for wholesale customers", status: "done", notes: "min_order_amount on customer_groups, enforced at checkout with toast error" },
       { name: "Tax-Exempt B2B Customers", description: "Exclude tax for registered wholesale customers", status: "done", notes: "is_tax_exempt flag on customer_groups, checkout skips tax calculation" },
       { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number or Tax ID", status: "done", notes: "Client-side ABN validation with weighted checksum algorithm on wholesale registration form" },
       { name: "Quote / RFQ Workflow", description: "Request for quote → Admin pricing → Customer approval → Order", status: "not_started" },
