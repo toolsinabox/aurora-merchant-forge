@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
-  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion,
+  Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail, Puzzle, Book,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
@@ -66,6 +66,7 @@ const systemNav = [
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
+  { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "API Keys", url: `${prefix}/api-keys`, icon: Key },
   { title: "API Docs", url: `${prefix}/api-docs`, icon: Book },

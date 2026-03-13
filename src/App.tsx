@@ -99,6 +99,7 @@ import Addons from "./pages/Addons.tsx";
 import ApiDocs from "./pages/ApiDocs.tsx";
 import PrintReturnLabel from "./pages/PrintReturnLabel.tsx";
 import AccountingIntegration from "./pages/AccountingIntegration.tsx";
+import Integrations from "./pages/Integrations.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -210,6 +211,7 @@ const App = () => (
                    <Route path="/_cpanel/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
                    <Route path="/_cpanel/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
                    <Route path="/_cpanel/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -296,6 +298,7 @@ const App = () => (
                    <Route path="/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
                    <Route path="/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
                    <Route path="/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
