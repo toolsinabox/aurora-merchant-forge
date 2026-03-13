@@ -136,7 +136,7 @@ export default function StorefrontAccount() {
       setCustomer(cust);
 
       if (cust) {
-        const [ordsRes, retsRes, addrsRes] = await Promise.all([
+        const [ordsRes, retsRes, addrsRes, vouchersRes] = await Promise.all([
           supabase
             .from("orders")
             .select("*, order_items(*, products(title, images))")
@@ -152,10 +152,16 @@ export default function StorefrontAccount() {
             .select("*")
             .eq("customer_id", cust.id)
             .order("created_at", { ascending: false }),
+          supabase
+            .from("gift_vouchers")
+            .select("*")
+            .or(`purchased_by.eq.${user!.id},recipient_email.eq.${cust.email || ""}`)
+            .order("created_at", { ascending: false }),
         ]);
         setOrders(ordsRes.data || []);
         setReturns(retsRes.data || []);
         setAddresses(addrsRes.data || []);
+        setVouchers(vouchersRes.data || []);
       }
 
       // Load wishlist products

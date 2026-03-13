@@ -56,7 +56,7 @@ export default function PrintShippingLabel() {
         <div className="label-section label-from">
           <strong>FROM:</strong><br />
           {storeName}<br />
-          {currentStore?.contact_email || ""}
+          {(currentStore as any)?.contact_email || ""}
         </div>
 
         {/* To */}
