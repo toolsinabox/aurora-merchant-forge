@@ -82,6 +82,7 @@ export default function OrderDetail() {
 
   const currentNotes = notes !== null ? notes : ((order as any).notes || "");
   const orderItems = (order as any).order_items || [];
+  const orderTags: string[] = (order as any).tags || [];
 
   const handleStatusChange = async (field: string, value: string) => {
     await updateOrder.mutateAsync({ id: order.id, [field]: value } as any);
@@ -91,6 +92,36 @@ export default function OrderDetail() {
       title: `${field.replace("_", " ")} changed`,
       description: `Changed to "${value}"`,
     });
+  };
+
+  const handleAddTag = () => {
+    if (!newTag.trim() || orderTags.includes(newTag.trim())) return;
+    updateOrder.mutate({ id: order.id, tags: [...orderTags, newTag.trim()] } as any);
+    setNewTag("");
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    updateOrder.mutate({ id: order.id, tags: orderTags.filter(t => t !== tag) } as any);
+  };
+
+  const handleRecordPayment = async () => {
+    const amount = parseFloat(paymentForm.amount);
+    if (!amount || amount <= 0) return;
+    await createPayment.mutateAsync({
+      order_id: order.id,
+      amount,
+      payment_method: paymentForm.method,
+      reference: paymentForm.reference || undefined,
+      notes: paymentForm.notes || undefined,
+    });
+    await createTimelineEvent.mutateAsync({
+      order_id: order.id,
+      event_type: "payment",
+      title: "Payment recorded",
+      description: `$${amount.toFixed(2)} via ${paymentForm.method}${paymentForm.reference ? ` (${paymentForm.reference})` : ""}`,
+    });
+    setPaymentDialogOpen(false);
+    setPaymentForm({ amount: "", method: "manual", reference: "", notes: "" });
   };
 
   const handleCreateShipment = async () => {
