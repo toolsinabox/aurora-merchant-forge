@@ -218,7 +218,13 @@ export default function PurchaseOrders() {
                     <TableCell className="font-medium">${Number(p.total).toFixed(2)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      <div className="flex gap-1">
+                        <Link to={`/purchase-orders/${p.id}/print`}>
+                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Print PO"><Printer className="h-3.5 w-3.5" /></Button>
+                        </Link>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      </div>
+                    </TableCell>
                     </TableCell>
                   </TableRow>
                 ))}
