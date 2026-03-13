@@ -500,6 +500,7 @@ export default function SettingsPage() {
     fb_pixel_id: "",
     google_ads_id: "",
     google_ads_conversion_label: "",
+    chat_widget_code: "",
   });
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
