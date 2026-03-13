@@ -154,6 +154,13 @@ export default function CustomerDetail() {
                     <div className="flex items-center gap-2 text-xs"><Mail className="h-3.5 w-3.5 text-muted-foreground" /> {customer.email || "—"}</div>
                     <div className="flex items-center gap-2 text-xs"><Phone className="h-3.5 w-3.5 text-muted-foreground" /> {customer.phone || "—"}</div>
                     <div className="flex items-center gap-2 text-xs"><Calendar className="h-3.5 w-3.5 text-muted-foreground" /> Joined {new Date(customer.created_at).toLocaleDateString()}</div>
+                    {(customer as any).customer_group_id && (customerGroups as any[]).length > 0 && (
+                      <div className="flex items-center gap-2 text-xs mt-1">
+                        <Badge variant="outline" className="text-[10px]">
+                          {(customerGroups as any[]).find((g: any) => g.id === (customer as any).customer_group_id)?.name || "Group"}
+                        </Badge>
+                      </div>
+                    )}
                     {customer.tags && customer.tags.length > 0 && (
                       <div className="flex items-center gap-1 flex-wrap mt-1">
                         <Tag className="h-3 w-3 text-muted-foreground" />
