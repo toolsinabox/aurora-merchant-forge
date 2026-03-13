@@ -32,9 +32,27 @@ export default function StorefrontWholesale() {
     resolveStoreBySlug(storeSlug, supabase).then((s) => s && setStore(s));
   }, [storeSlug]);
 
+  const validateABN = (abn: string): boolean => {
+    if (!abn) return true; // optional field
+    const cleaned = abn.replace(/\s/g, "");
+    if (!/^\d{11}$/.test(cleaned)) return false;
+    const weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
+    const digits = cleaned.split("").map(Number);
+    digits[0] -= 1;
+    const sum = digits.reduce((acc, d, i) => acc + d * weights[i], 0);
+    return sum % 89 === 0;
+  };
+
+  const [abnError, setAbnError] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!store || !form.business_name || !form.contact_name || !form.email) return;
+    if (form.abn_tax_id && !validateABN(form.abn_tax_id)) {
+      setAbnError("Please enter a valid 11-digit Australian Business Number");
+      return;
+    }
+    setAbnError("");
     setSubmitting(true);
     const { error } = await supabase.from("wholesale_applications" as any).insert({
       store_id: store.id,
