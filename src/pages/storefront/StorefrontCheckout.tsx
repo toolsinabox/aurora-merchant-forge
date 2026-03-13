@@ -31,6 +31,7 @@ export default function StorefrontCheckout() {
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
+  const [orderTotal, setOrderTotal] = useState(0);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
