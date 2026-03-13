@@ -15,8 +15,93 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Wallet } from "lucide-react";
+
+function StoreCreditCard({ customerId, storeId }: { customerId: string; storeId: string }) {
+  const qc = useQueryClient();
+  const [amount, setAmount] = useState("");
+  const [desc, setDesc] = useState("");
+  const [type, setType] = useState<"credit" | "debit">("credit");
+
+  const { data: transactions = [] } = useQuery({
+    queryKey: ["store_credits", customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("store_credit_transactions" as any)
+        .select("*")
+        .eq("customer_id", customerId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const balance = (transactions as any[]).reduce((sum: number, t: any) => {
+    return sum + (t.type === "credit" ? Number(t.amount) : -Number(t.amount));
+  }, 0);
+
+  const addCredit = useMutation({
+    mutationFn: async () => {
+      const amt = Number(amount);
+      if (!amt || amt <= 0) throw new Error("Enter a valid amount");
+      const { error } = await supabase.from("store_credit_transactions" as any).insert({
+        customer_id: customerId,
+        store_id: storeId,
+        amount: amt,
+        type,
+        description: desc || (type === "credit" ? "Manual credit" : "Manual debit"),
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["store_credits", customerId] });
+      toast.success(`Store credit ${type} added`);
+      setAmount("");
+      setDesc("");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+        <CardTitle className="text-sm flex items-center gap-1.5"><Wallet className="h-4 w-4" /> Store Credit</CardTitle>
+        <Badge variant={balance > 0 ? "default" : "outline"} className="text-xs">${balance.toFixed(2)}</Badge>
+      </CardHeader>
+      <CardContent className="p-4 pt-2 space-y-3">
+        <div className="flex gap-2">
+          <Select value={type} onValueChange={(v: any) => setType(v)}>
+            <SelectTrigger className="h-7 w-20 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="credit" className="text-xs">Credit</SelectItem>
+              <SelectItem value="debit" className="text-xs">Debit</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input className="h-7 text-xs w-20" type="number" step="0.01" min="0" placeholder="$0.00" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <Input className="h-7 text-xs flex-1" placeholder="Description" value={desc} onChange={(e) => setDesc(e.target.value)} />
+          <Button size="sm" variant="outline" className="h-7 text-xs px-2" disabled={addCredit.isPending} onClick={() => addCredit.mutate()}>Add</Button>
+        </div>
+        {(transactions as any[]).length > 0 && (
+          <div className="max-h-32 overflow-y-auto space-y-1">
+            {(transactions as any[]).slice(0, 10).map((t: any) => (
+              <div key={t.id} className="flex justify-between text-xs py-1 border-b last:border-0">
+                <div>
+                  <span className={t.type === "credit" ? "text-primary" : "text-destructive"}>
+                    {t.type === "credit" ? "+" : "-"}${Number(t.amount).toFixed(2)}
+                  </span>
+                  <span className="text-muted-foreground ml-2">{t.description}</span>
+                </div>
+                <span className="text-muted-foreground">{new Date(t.created_at).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function CustomerDetail() {
   const { id } = useParams();

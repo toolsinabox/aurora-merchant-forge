@@ -852,6 +852,12 @@ export default function StorefrontCheckout() {
                       <span>-${voucherAmount.toFixed(2)}</span>
                     </div>
                   )}
+                  {storeCreditAmount > 0 && (
+                    <div className="flex justify-between text-primary">
+                      <span>Store Credit</span>
+                      <span>-${storeCreditAmount.toFixed(2)}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between font-semibold text-lg">
                   <span>Total</span>

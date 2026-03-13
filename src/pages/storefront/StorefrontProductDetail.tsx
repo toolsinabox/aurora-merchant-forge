@@ -598,6 +598,13 @@ export default function StorefrontProductDetail() {
           </div>
         )}
 
+        {/* Child Products (non-variant children via product_relations) */}
+        {(() => {
+          const rels = (crossSells.length > 0 ? [] : []).length; // placeholder
+          const childProducts = (relatedProducts.length >= 0 ? [] : []) as any[]; // will be populated
+          return null; // Rendered via separate section below
+        })()}
+
         {/* Cross-sells / Related Products */}
         {allRelated.length > 0 && (
           <div className="mt-12">
