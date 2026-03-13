@@ -689,6 +689,46 @@ export default function StorefrontAccount() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Vouchers Tab */}
+            {activeTab === "vouchers" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">My Gift Vouchers</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {vouchers.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <Gift className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+                      <p className="text-sm text-muted-foreground">No gift vouchers.</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Code</TableHead>
+                          <TableHead className="text-xs">Value</TableHead>
+                          <TableHead className="text-xs">Balance</TableHead>
+                          <TableHead className="text-xs">Status</TableHead>
+                          <TableHead className="text-xs">Expires</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {vouchers.map((v: any) => (
+                          <TableRow key={v.id} className="text-sm">
+                            <TableCell className="font-mono text-xs">{v.code}</TableCell>
+                            <TableCell>${Number(v.initial_value).toFixed(2)}</TableCell>
+                            <TableCell className="font-medium">${Number(v.balance).toFixed(2)}</TableCell>
+                            <TableCell><StatusBadge status={v.is_active ? "active" : "inactive"} /></TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{v.expires_at ? new Date(v.expires_at).toLocaleDateString() : "Never"}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
