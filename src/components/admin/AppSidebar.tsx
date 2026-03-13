@@ -39,6 +39,7 @@ const salesNav = [
   { title: "Customers", url: `${prefix}/customers`, icon: Users },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Warehouse", url: `${prefix}/warehouse`, icon: Warehouse },
+  { title: "Pick & Pack", url: `${prefix}/pick-pack`, icon: ClipboardCopy },
 ];
 
 const marketingNav = [

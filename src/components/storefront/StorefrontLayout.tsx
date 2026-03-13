@@ -40,6 +40,24 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
           .eq("store_id", s.id).order("sort_order").then(({ data }) => {
             setCategories(data || []);
           });
+        // Inject GA tracking if configured
+        const gaId = (s as any).ga_tracking_id;
+        if (gaId && !document.querySelector(`script[src*="gtag"]`)) {
+          const script = document.createElement("script");
+          script.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+          script.async = true;
+          document.head.appendChild(script);
+          const inline = document.createElement("script");
+          inline.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`;
+          document.head.appendChild(inline);
+        }
+        // Inject favicon if configured
+        const faviconUrl = (s as any).favicon_url;
+        if (faviconUrl) {
+          let link = document.querySelector("link[rel='icon']") as HTMLLinkElement;
+          if (!link) { link = document.createElement("link"); link.rel = "icon"; document.head.appendChild(link); }
+          link.href = faviconUrl;
+        }
       }
     });
   }, [storeSlug]);
