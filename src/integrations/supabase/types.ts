@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      abandoned_carts: {
+        Row: {
+          abandoned_at: string
+          cart_items: Json
+          cart_total: number
+          created_at: string
+          customer_id: string | null
+          email: string | null
+          id: string
+          recovered_at: string | null
+          recovery_email_sent_at: string | null
+          recovery_status: string
+          store_id: string
+        }
+        Insert: {
+          abandoned_at?: string
+          cart_items?: Json
+          cart_total?: number
+          created_at?: string
+          customer_id?: string | null
+          email?: string | null
+          id?: string
+          recovered_at?: string | null
+          recovery_email_sent_at?: string | null
+          recovery_status?: string
+          store_id: string
+        }
+        Update: {
+          abandoned_at?: string
+          cart_items?: Json
+          cart_total?: number
+          created_at?: string
+          customer_id?: string | null
+          email?: string | null
+          id?: string
+          recovered_at?: string | null
+          recovery_email_sent_at?: string | null
+          recovery_status?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abandoned_carts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "abandoned_carts_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activity_log: {
         Row: {
           action: string
@@ -427,6 +484,65 @@ export type Database = {
             columns: ["variant_id"]
             isOneToOne: false
             referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketing_campaigns: {
+        Row: {
+          audience_segment: string | null
+          audience_tags: string[] | null
+          campaign_type: string
+          content: string | null
+          created_at: string
+          id: string
+          name: string
+          scheduled_at: string | null
+          sent_at: string | null
+          stats: Json | null
+          status: string
+          store_id: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          audience_segment?: string | null
+          audience_tags?: string[] | null
+          campaign_type?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          scheduled_at?: string | null
+          sent_at?: string | null
+          stats?: Json | null
+          status?: string
+          store_id: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          audience_segment?: string | null
+          audience_tags?: string[] | null
+          campaign_type?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          scheduled_at?: string | null
+          sent_at?: string | null
+          stats?: Json | null
+          status?: string
+          store_id?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketing_campaigns_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
             referencedColumns: ["id"]
           },
         ]
