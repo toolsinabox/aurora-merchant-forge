@@ -340,6 +340,54 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
+              {/* Shipping Method */}
+              {shippingZones.length > 0 && (
+                <div className="border rounded-lg p-5 space-y-4">
+                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h2>
+                  <div className="space-y-2">
+                    {shippingZones.map((zone) => {
+                      const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
+                      return (
+                        <label
+                          key={zone.id}
+                          className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                            selectedZone === zone.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="radio"
+                              name="shipping_zone"
+                              value={zone.id}
+                              checked={selectedZone === zone.id}
+                              onChange={() => handleZoneChange(zone.id)}
+                              className="accent-primary"
+                            />
+                            <div>
+                              <p className="text-sm font-medium">{zone.name}</p>
+                              <p className="text-xs text-muted-foreground">{zone.regions}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            {isFree ? (
+                              <div>
+                                <span className="text-sm font-medium text-primary">Free</span>
+                                <p className="text-2xs text-muted-foreground line-through">${Number(zone.flat_rate).toFixed(2)}</p>
+                              </div>
+                            ) : (
+                              <span className="text-sm font-medium">${Number(zone.flat_rate).toFixed(2)}</span>
+                            )}
+                            {zone.free_above && !isFree && (
+                              <p className="text-2xs text-muted-foreground">Free over ${Number(zone.free_above).toFixed(0)}</p>
+                            )}
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
