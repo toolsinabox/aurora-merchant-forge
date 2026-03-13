@@ -104,6 +104,16 @@ export default function StorefrontProductDetail() {
           const { data: related } = await query;
           setRelatedProducts(related || []);
         }
+
+        // Load kit components if product is a kit
+        if (prodRes.data?.is_kit) {
+          const { data: kitData } = await supabase
+            .from("kit_components" as any)
+            .select("*, component:component_product_id(id, title, price, images, sku)")
+            .eq("kit_product_id", productId)
+            .order("sort_order");
+          setKitComponents(kitData || []);
+        }
       }
       setLoading(false);
     }
