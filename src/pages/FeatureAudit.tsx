@@ -856,7 +856,7 @@ const featureData: FeatureCategory[] = [
       { name: "Store Banner Text", description: "Announcement banner per store", status: "done" },
       { name: "Platform Merchant Directory", description: "Admin view of all merchants on platform", status: "done" },
       { name: "Platform-Level Analytics", description: "Cross-store metrics for platform admin", status: "done", notes: "Revenue, orders, AOV, products, top stores by revenue, customer spend distribution charts" },
-      { name: "Store Suspension / Deactivation", description: "Admin can suspend a merchant store", status: "not_started" },
+      { name: "Store Suspension / Deactivation", description: "Admin can suspend a merchant store", status: "done", notes: "Suspend/reactivate toggle on platform merchants page with is_suspended flag" },
       { name: "Store Plan / Subscription Management", description: "SaaS plan tiers and billing", status: "not_started" },
     ],
   },
