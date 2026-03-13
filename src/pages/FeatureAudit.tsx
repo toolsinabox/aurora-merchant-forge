@@ -457,7 +457,7 @@ const featureData: FeatureCategory[] = [
       { name: "Tax-Free Products", description: "Mark individual products as tax exempt", status: "done" },
       { name: "Tax-Inclusive Pricing", description: "Display prices inclusive of tax", status: "done" },
       { name: "Tax-Exclusive Pricing", description: "Display prices exclusive of tax, add at checkout", status: "done", notes: "Product detail shows 'ex. tax' or 'inc. tax' label based on product tax_inclusive flag, checkout adds tax to subtotal for non-exempt customers" },
-      { name: "GST / VAT Handling", description: "Australian GST or European VAT calculation", status: "not_started" },
+      { name: "GST / VAT Handling", description: "Australian GST or European VAT calculation", status: "done", notes: "tax_mode column on stores (standard/gst/vat), selectable in Settings Tax tab, checkout displays correct tax label (Tax/GST/VAT) and exempt label" },
       { name: "Tax-Exempt Customers", description: "Mark B2B customers as tax exempt", status: "done", notes: "is_tax_exempt on customer_groups, applied at checkout to skip tax" },
       { name: "Tax Reporting / BAS Report", description: "Tax summary reports for accounting", status: "not_started" },
       { name: "Auto Tax Calculation by Address", description: "Calculate tax based on shipping destination", status: "not_started" },
