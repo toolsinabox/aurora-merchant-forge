@@ -443,7 +443,7 @@ const featureData: FeatureCategory[] = [
       { name: "Click & Collect / Pickup in Store", description: "In-store pickup option at checkout", status: "done", notes: "Delivery method toggle: Ship vs Click & Collect with free shipping for pickup" },
       { name: "Dropship Routing", description: "Auto-route orders to dropship suppliers", status: "not_started", notes: "Neto has dropship system with emails" },
       { name: "Dropship Notifications", description: "Automated dropship supplier email notifications", status: "not_started" },
-      { name: "Delivery Date Estimation", description: "Estimated delivery date on checkout", status: "not_started" },
+      { name: "Delivery Date Estimation", description: "Estimated delivery date on checkout", status: "done", notes: "3-7 business day estimate shown after selecting shipping zone at checkout" },
       { name: "Shipping Rules / Restrictions", description: "Restrict shipping methods by product, location, weight", status: "not_started" },
     ],
   },
