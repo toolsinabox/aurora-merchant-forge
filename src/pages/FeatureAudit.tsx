@@ -744,7 +744,7 @@ const featureData: FeatureCategory[] = [
       { name: "Sales by Category Report", description: "Revenue breakdown by product category", status: "done", notes: "Pie chart on Analytics page from order_items joined to product categories" },
       { name: "Sales by Channel Report", description: "Revenue by channel (web, eBay, POS, etc.)", status: "done", notes: "order_channel column on orders table, pie chart on Analytics page showing revenue breakdown by channel" },
       { name: "Customer Acquisition Report", description: "New vs returning customer metrics", status: "done", notes: "New vs returning customer breakdown with stacked bar chart by month on Analytics page" },
-      { name: "Conversion Rate / Funnel Analytics", description: "Visitor → Cart → Checkout → Purchase funnel", status: "not_started" },
+      { name: "Conversion Rate / Funnel Analytics", description: "Visitor → Cart → Checkout → Purchase funnel", status: "done", notes: "Horizontal bar funnel on Analytics page showing estimated visitors, carts (from abandoned_carts + orders), checkouts, and purchases with percentages" },
       { name: "Average Order Value (AOV) Trend", description: "Track AOV over time", status: "done", notes: "Line chart on Analytics page" },
       { name: "Profit Margin Report", description: "Revenue minus cost analysis", status: "done", notes: "Profit margin table on Analytics page showing revenue, cost, profit, margin% by product" },
       { name: "Inventory Value Report", description: "Total stock value across all locations", status: "done", notes: "Retail value, cost value, and potential profit KPIs on Inventory page" },
