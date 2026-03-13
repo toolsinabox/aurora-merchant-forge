@@ -362,7 +362,7 @@ export default function ProductForm() {
                       <Textarea className="text-xs min-h-[100px]" value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Full product description" />
                     </div>
                     <div className="space-y-1">
-                      <Label className="text-xs">Short Description</Label>
+                      <FieldLabel label="Short Description" field="short_description" />
                       <Textarea className="text-xs min-h-[60px]" value={form.short_description} onChange={(e) => update("short_description", e.target.value)} placeholder="Brief summary for listings" />
                     </div>
                     <div className="space-y-1">
