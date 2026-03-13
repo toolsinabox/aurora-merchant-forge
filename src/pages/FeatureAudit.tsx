@@ -653,7 +653,7 @@ const featureData: FeatureCategory[] = [
       { name: "Batch Printing (Labels + Slips)", description: "Print multiple shipping labels and packing slips", status: "done", notes: "Bulk action bar on orders list with Print Packing Slips, Print Labels, and Print Invoices buttons for selected orders" },
       { name: "Warehouse Dashboard", description: "Overview of pending picks, packs, and dispatches", status: "done", notes: "Admin warehouse page with KPI cards (awaiting pick, items to pick, processing, shipped), recent shipments, low stock alerts" },
       { name: "Multi-Warehouse Order Routing", description: "Route order items to nearest/best warehouse", status: "not_started" },
-      { name: "Stock Count / Stocktake Mode", description: "In-warehouse stock counting with barcode scanning", status: "not_started" },
+      { name: "Stock Count / Stocktake Mode", description: "In-warehouse stock counting with barcode scanning", status: "done", notes: "Full stocktake page with create/view stocktakes, per-product count entry, variance highlighting, and finalize with stock adjustment" },
       { name: "Goods Receipt / Inbound", description: "Receive inventory shipments against POs", status: "done", notes: "Item-level receiving dialog on Purchase Orders page with per-item quantity input, inventory stock updates, and auto PO status progression" },
     ],
   },
