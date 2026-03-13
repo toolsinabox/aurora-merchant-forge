@@ -482,7 +482,7 @@ export default function ExportWizard() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Export Data</h1>
-            <p className="text-muted-foreground text-sm">Export products or orders as CSV</p>
+            <p className="text-muted-foreground text-sm">Export products, orders, or categories as CSV</p>
           </div>
         </div>
 
@@ -490,12 +490,16 @@ export default function ExportWizard() {
           <TabsList>
             <TabsTrigger value="products" className="gap-1.5"><Package className="h-4 w-4" /> Products</TabsTrigger>
             <TabsTrigger value="orders" className="gap-1.5"><ShoppingCart className="h-4 w-4" /> Orders</TabsTrigger>
+            <TabsTrigger value="categories" className="gap-1.5"><Package className="h-4 w-4" /> Categories</TabsTrigger>
           </TabsList>
           <TabsContent value="products">
             <ProductExportTab />
           </TabsContent>
           <TabsContent value="orders">
             <OrderExportTab />
+          </TabsContent>
+          <TabsContent value="categories">
+            <CategoryExportTab />
           </TabsContent>
         </Tabs>
       </div>
