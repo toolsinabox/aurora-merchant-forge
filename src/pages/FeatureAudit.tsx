@@ -134,7 +134,7 @@ const featureData: FeatureCategory[] = [
       { name: "Product Relations — Related", description: "General related products", status: "done" },
       { name: "Child Products", description: "Parent-child product hierarchy (non-variant children)", status: "partial", notes: "Variants exist but not full child-product hierarchy" },
       { name: "Editable Kit Components", description: "Components within an editable bundle that customers configure", status: "partial" },
-      { name: "Product Addons / Custom Options", description: "Customizable fields (text engraving, color picker, file upload)", status: "not_started", notes: "Maropost Commerce Product Options add-on" },
+      { name: "Product Addons / Custom Options", description: "Customizable fields (text engraving, color picker, file upload)", status: "done", notes: "product_addons table with CRUD, Addons tab on ProductForm with text/textarea/select/checkbox/color/file types, price adjustments, required flag, sort order" },
     ],
   },
 
