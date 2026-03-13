@@ -16,6 +16,7 @@ import { ImageLightbox } from "@/components/storefront/ImageLightbox";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { RenderedTemplate } from "@/components/storefront/RenderedTemplate";
+import { SEOHead } from "@/components/storefront/SEOHead";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
 import type { TemplateContext } from "@/lib/base-template-engine";
 
