@@ -244,6 +244,7 @@ export default function POS() {
       toast.success("Register closed successfully");
       setShowEOD(false);
     } catch (err: any) { toast.error(err.message); }
+  };
 
   const createLayby = async () => {
     if (!storeId || !user || !selectedCustomer || cart.length === 0) return;
