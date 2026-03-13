@@ -443,6 +443,7 @@ export default function ImportWizard() {
                     <SelectContent>
                       <SelectItem value="products" className="text-xs">Products</SelectItem>
                       <SelectItem value="orders" className="text-xs">Orders</SelectItem>
+                      <SelectItem value="reviews" className="text-xs">Reviews</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
