@@ -286,7 +286,7 @@ const featureData: FeatureCategory[] = [
       { name: "Customer Logo Upload (Dropship)", description: "B2B customers upload their logo for dropship labels", status: "not_started", notes: "Neto has logos templates" },
       { name: "Wholesale Registration", description: "Separate wholesale registration form with approval workflow", status: "done", notes: "Storefront /wholesale page and wholesale_applications table" },
       { name: "Customer Auto-Registration on Purchase", description: "Automatically create customer account on first purchase", status: "done", notes: "Checkout auto-creates customer record if no existing record found for email" },
-      { name: "Customer Merge", description: "Merge duplicate customer records", status: "not_started" },
+      { name: "Customer Merge", description: "Merge duplicate customer records", status: "done", notes: "Merge dialog on customer detail page - search by email, preview duplicate, transfer orders, delete duplicate" },
       { name: "Customer Export", description: "Export customers to CSV", status: "done", notes: "CSV download on admin customers page" },
       { name: "Customer Import", description: "Bulk import customers from CSV", status: "done", notes: "CSV import on Customers page with name/email/phone/segment/tags columns" },
       { name: "Customer Lifetime Value (CLV)", description: "Calculated CLV metric per customer", status: "done", notes: "CLV and avg days between orders on customer detail stats card" },
