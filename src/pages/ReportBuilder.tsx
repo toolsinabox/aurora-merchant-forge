@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useData } from "@/hooks/use-data";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { BarChart3, Download, Play, Filter, Calendar } from "lucide-react";
@@ -23,7 +22,8 @@ const ENTITY_OPTIONS = [
 ];
 
 export default function ReportBuilder() {
-  const { storeId } = useAuth();
+  const { currentStore } = useAuth();
+  const storeId = currentStore?.id;
   const [entity, setEntity] = useState("orders");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
@@ -40,13 +40,10 @@ export default function ReportBuilder() {
     try {
       const fields = selectedFields.length > 0 ? selectedFields.join(",") : "*";
       let query = supabase.from(entity as any).select(fields).eq("store_id", storeId);
-
       if (dateFrom) query = query.gte("created_at", dateFrom);
       if (dateTo) query = query.lte("created_at", dateTo + "T23:59:59");
       if (statusFilter) query = query.eq("status", statusFilter);
-
       query = query.order("created_at", { ascending: false }).limit(500);
-
       const { data, error } = await query;
       if (error) throw error;
       setResults(data || []);
@@ -72,7 +69,6 @@ export default function ReportBuilder() {
         }).join(",")
       ),
     ].join("\n");
-
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -83,9 +79,7 @@ export default function ReportBuilder() {
   };
 
   const toggleField = (field: string) => {
-    setSelectedFields(prev =>
-      prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]
-    );
+    setSelectedFields(prev => prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]);
   };
 
   const columns = results && results.length > 0 ? Object.keys(results[0]) : [];
@@ -93,18 +87,15 @@ export default function ReportBuilder() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">Report Builder</h1>
-            <p className="text-sm text-muted-foreground">Build custom reports with filters and date ranges</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Report Builder</h1>
+          <p className="text-sm text-muted-foreground">Build custom reports with filters and date ranges</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Config Panel */}
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm flex items-center gap-2"><Filter className="h-4 w-4" /> Report Config</CardTitle>
+              <CardTitle className="text-sm flex items-center gap-2"><Filter className="h-4 w-4" /> Config</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -112,56 +103,40 @@ export default function ReportBuilder() {
                 <Select value={entity} onValueChange={(v) => { setEntity(v); setSelectedFields([]); setResults(null); }}>
                   <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {ENTITY_OPTIONS.map(e => (
-                      <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
-                    ))}
+                    {ENTITY_OPTIONS.map(e => <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
-
               <div>
                 <Label className="text-xs flex items-center gap-1"><Calendar className="h-3 w-3" /> Date From</Label>
                 <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="h-9" />
               </div>
-
               <div>
                 <Label className="text-xs">Date To</Label>
                 <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="h-9" />
               </div>
-
               <div>
                 <Label className="text-xs">Status Filter</Label>
                 <Input placeholder="e.g. completed" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="h-9" />
               </div>
-
               <div>
                 <Label className="text-xs">Fields ({selectedFields.length || "all"})</Label>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {entityConfig?.fields.map(f => (
-                    <Badge
-                      key={f}
-                      variant={selectedFields.includes(f) ? "default" : "outline"}
-                      className="text-[10px] cursor-pointer"
-                      onClick={() => toggleField(f)}
-                    >
-                      {f}
-                    </Badge>
+                    <Badge key={f} variant={selectedFields.includes(f) ? "default" : "outline"} className="text-[10px] cursor-pointer" onClick={() => toggleField(f)}>{f}</Badge>
                   ))}
                 </div>
               </div>
-
               <Button onClick={runReport} disabled={loading} className="w-full gap-2">
                 <Play className="h-4 w-4" /> {loading ? "Running..." : "Run Report"}
               </Button>
             </CardContent>
           </Card>
 
-          {/* Results Panel */}
           <Card className="lg:col-span-3">
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="text-sm flex items-center gap-2">
-                <BarChart3 className="h-4 w-4" />
-                Results {results && <Badge variant="secondary" className="text-[10px]">{results.length} rows</Badge>}
+                <BarChart3 className="h-4 w-4" /> Results {results && <Badge variant="secondary" className="text-[10px]">{results.length} rows</Badge>}
               </CardTitle>
               {results && results.length > 0 && (
                 <Button size="sm" variant="outline" onClick={exportCsv} className="gap-1 h-7 text-xs">
@@ -176,15 +151,13 @@ export default function ReportBuilder() {
                   <p className="text-sm">Configure your report and click Run</p>
                 </div>
               ) : results.length === 0 ? (
-                <p className="text-center py-16 text-sm text-muted-foreground">No results for this query</p>
+                <p className="text-center py-16 text-sm text-muted-foreground">No results</p>
               ) : (
                 <div className="overflow-x-auto max-h-[600px]">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        {columns.map(col => (
-                          <TableHead key={col} className="text-xs whitespace-nowrap">{col}</TableHead>
-                        ))}
+                        {columns.map(col => <TableHead key={col} className="text-xs whitespace-nowrap">{col}</TableHead>)}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -201,9 +174,7 @@ export default function ReportBuilder() {
                       ))}
                     </TableBody>
                   </Table>
-                  {results.length > 100 && (
-                    <p className="text-xs text-muted-foreground text-center mt-2">Showing first 100 of {results.length} rows</p>
-                  )}
+                  {results.length > 100 && <p className="text-xs text-muted-foreground text-center mt-2">Showing first 100 of {results.length}</p>}
                 </div>
               )}
             </CardContent>
