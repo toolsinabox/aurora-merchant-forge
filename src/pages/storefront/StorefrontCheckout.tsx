@@ -151,7 +151,20 @@ export default function StorefrontCheckout() {
     }));
   };
 
-  const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
+  const update = (field: string, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    // Auto-calculate tax by address region/country
+    if ((field === "city" || field === "country" || field === "zip") && allTaxRates.length > 1) {
+      const newForm = { ...form, [field]: value };
+      const regionMatch = allTaxRates.find((r: any) =>
+        (r.region && newForm.city && newForm.city.toLowerCase().includes(r.region.toLowerCase())) ||
+        (r.country && newForm.country && newForm.country.toLowerCase() === r.country.toLowerCase())
+      );
+      if (regionMatch) {
+        setTaxRate(Number(regionMatch.rate) / 100);
+      }
+    }
+  };
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);

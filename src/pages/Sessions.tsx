@@ -180,8 +180,17 @@ export default function Sessions() {
               </div>
               <Button variant="outline" size="sm" onClick={async () => { await signOut(); window.location.href = "/login"; }}>Sign Out</Button>
             </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <p className="text-sm font-medium">Two-Factor Authentication (2FA)</p>
+                <p className="text-xs text-muted-foreground">Add TOTP authenticator app for extra security</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setShow2FA(true)}>Configure</Button>
+            </div>
           </CardContent>
         </Card>
+
+        <TwoFactorSetup open={show2FA} onOpenChange={setShow2FA} />
       </div>
     </AdminLayout>
   );
