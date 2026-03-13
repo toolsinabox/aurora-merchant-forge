@@ -173,7 +173,7 @@ const featureData: FeatureCategory[] = [
       { name: "Purchase Orders (PO Creation)", description: "Create purchase orders to suppliers", status: "done", notes: "Full PO CRUD with supplier linking" },
       { name: "Purchase Order Receiving", description: "Receive stock against purchase orders, partial receipts", status: "partial", notes: "Status workflow exists, item-level receiving not yet" },
       { name: "Purchase Order Status Workflow", description: "Draft → Sent → Partial → Received → Closed", status: "done" },
-      { name: "Stock Count / Stocktake", description: "Physical stock count reconciliation", status: "not_started" },
+      { name: "Stock Count / Stocktake", description: "Physical stock count reconciliation", status: "done", notes: "Stocktake page with create, count items against expected quantities, and complete workflow" },
       { name: "Backorder Management", description: "Manage products on backorder, auto-allocate when stock arrives", status: "not_started" },
       { name: "Preorder Management", description: "Accept preorders before stock arrives", status: "not_started" },
       { name: "Batch / Lot Tracking", description: "Track products by batch or lot number", status: "not_started" },
