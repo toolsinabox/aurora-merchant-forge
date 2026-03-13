@@ -503,6 +503,13 @@ export default function StorefrontProducts() {
           </div>
         </div>
       </div>
+      <ProductQuickView
+        product={quickViewProduct}
+        open={!!quickViewProduct}
+        onOpenChange={(open) => { if (!open) setQuickViewProduct(null); }}
+        basePath={basePath}
+        storeId={store?.id}
+      />
     </StorefrontLayout>
   );
 }
