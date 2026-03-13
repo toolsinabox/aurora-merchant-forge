@@ -133,7 +133,7 @@ const featureData: FeatureCategory[] = [
       { name: "Product Relations — Accessories", description: "Recommended accessories / add-ons", status: "done" },
       { name: "Product Relations — Related", description: "General related products", status: "done" },
       { name: "Child Products", description: "Parent-child product hierarchy (non-variant children)", status: "done", notes: "Child/accessory products from product_relations displayed as 'Included Components' grid on storefront product detail page" },
-      { name: "Editable Kit Components", description: "Components within an editable bundle that customers configure", status: "partial" },
+      { name: "Editable Kit Components", description: "Components within an editable bundle that customers configure", status: "done", notes: "kit_components table with CRUD admin tab on ProductForm (visible when is_kit=true), storefront product detail shows kit components with image, qty, optional/swappable flags, and price" },
       { name: "Product Addons / Custom Options", description: "Customizable fields (text engraving, color picker, file upload)", status: "done", notes: "product_addons table with CRUD, Addons tab on ProductForm with text/textarea/select/checkbox/color/file types, price adjustments, required flag, sort order" },
     ],
   },
