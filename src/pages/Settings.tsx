@@ -198,10 +198,16 @@ export default function SettingsPage() {
                     <Select value={storeForm.currency} onValueChange={(v) => setStoreForm({ ...storeForm, currency: v })}>
                       <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="USD" className="text-xs">USD</SelectItem>
-                        <SelectItem value="EUR" className="text-xs">EUR</SelectItem>
-                        <SelectItem value="GBP" className="text-xs">GBP</SelectItem>
-                        <SelectItem value="CAD" className="text-xs">CAD</SelectItem>
+                        <SelectItem value="USD" className="text-xs">USD ($)</SelectItem>
+                        <SelectItem value="EUR" className="text-xs">EUR (€)</SelectItem>
+                        <SelectItem value="GBP" className="text-xs">GBP (£)</SelectItem>
+                        <SelectItem value="CAD" className="text-xs">CAD (C$)</SelectItem>
+                        <SelectItem value="AUD" className="text-xs">AUD (A$)</SelectItem>
+                        <SelectItem value="NZD" className="text-xs">NZD (NZ$)</SelectItem>
+                        <SelectItem value="ZAR" className="text-xs">ZAR (R)</SelectItem>
+                        <SelectItem value="SGD" className="text-xs">SGD (S$)</SelectItem>
+                        <SelectItem value="JPY" className="text-xs">JPY (¥)</SelectItem>
+                        <SelectItem value="INR" className="text-xs">INR (₹)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
