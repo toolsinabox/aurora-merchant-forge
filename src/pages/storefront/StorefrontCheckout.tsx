@@ -64,12 +64,16 @@ export default function StorefrontCheckout() {
   const [shippingCost, setShippingCost] = useState(0);
   const [isTaxExempt, setIsTaxExempt] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
+  const [taxMode, setTaxMode] = useState("standard");
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
   const [storeCreditBalance, setStoreCreditBalance] = useState(0);
   const [useStoreCredit, setUseStoreCredit] = useState(false);
   const [customerId, setCustomerId] = useState<string | null>(null);
+  const [canPayOnAccount, setCanPayOnAccount] = useState(false);
+  const [payOnAccount, setPayOnAccount] = useState(false);
+  const [creditTerms, setCreditTerms] = useState("");
 
   useEffect(() => {
     async function loadData() {
