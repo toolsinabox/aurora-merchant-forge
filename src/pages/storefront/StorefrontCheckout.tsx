@@ -825,9 +825,25 @@ export default function StorefrontCheckout() {
                     </div>
                     {useStoreCredit && <span className="text-xs font-medium text-primary">-${storeCreditAmount.toFixed(2)}</span>}
                   </div>
-                )}
+                 )}
 
-                <Separator />
+                 {/* Pay on Account (B2B) */}
+                 {canPayOnAccount && (
+                   <div className="flex items-center justify-between bg-muted/50 rounded-md px-3 py-2">
+                     <div className="flex items-center gap-2 text-sm">
+                       <Checkbox
+                         id="pay_on_account"
+                         checked={payOnAccount}
+                         onCheckedChange={(checked) => setPayOnAccount(!!checked)}
+                       />
+                       <label htmlFor="pay_on_account" className="text-xs cursor-pointer">
+                         Pay on Account ({creditTerms})
+                       </label>
+                     </div>
+                   </div>
+                 )}
+
+                 <Separator />
 
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
