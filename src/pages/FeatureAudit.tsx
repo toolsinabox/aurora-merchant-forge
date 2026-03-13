@@ -576,7 +576,7 @@ const featureData: FeatureCategory[] = [
       { name: "Gift Voucher Email", description: "Gift voucher delivery to recipient", status: "done", notes: "gift-voucher-email edge function sends branded email with code, value, message to recipient on admin and storefront voucher creation" },
       { name: "Back in Stock / Notify Me Email", description: "Notification when product is restocked", status: "done", notes: "back-in-stock-email edge function notifies customers from back_in_stock_requests table when product is restocked, marks requests as notified" },
       { name: "Customer Statement Email", description: "Account statement with transaction history", status: "not_started" },
-      { name: "Dispute/Warranty Emails", description: "Emails for dispute raised, updated, resolved", status: "not_started" },
+      { name: "Dispute/Warranty Emails", description: "Emails for dispute raised, updated, resolved", status: "done", notes: "dispute-email edge function sends customer and admin notifications with dispute details, status badge, and order/product info" },
       { name: "Dropship Notification Email", description: "Emails to dropship suppliers for new orders", status: "done", notes: "dropship-notification edge function sends supplier email with order items and shipping address" },
       { name: "Import Notification Email", description: "Email with login details on customer import", status: "not_started" },
       { name: "Contact Form Email", description: "Email sent to admin when contact form submitted", status: "done", notes: "contact-email edge function queues admin notification with contact details in email_queue table" },
