@@ -552,7 +552,7 @@ const featureData: FeatureCategory[] = [
       { name: "Newsletter Subscription", description: "Newsletter signup form and mailing list", status: "done", notes: "Email signup in storefront footer with newsletter_subscribers table" },
       { name: "Popup / Slide-In Promotions", description: "On-site promotional popups", status: "done", notes: "PromoPopup component with 3s delay, dismiss persistence in localStorage, signup CTA" },
       { name: "Referral / Loyalty Program", description: "Points-based loyalty or referral rewards", status: "not_started" },
-      { name: "Google Ads Integration", description: "Conversion tracking and remarketing for Google Ads", status: "not_started" },
+      { name: "Google Ads Integration", description: "Conversion tracking and remarketing for Google Ads", status: "done", notes: "google_ads_id and google_ads_conversion_label on stores table, gtag.js dynamically injected in storefront, configurable in Settings Branding tab" },
       { name: "Facebook Pixel Integration", description: "Meta/Facebook pixel for conversion tracking", status: "done", notes: "fb_pixel_id on stores table, Meta Pixel injected in storefront layout, configurable in Settings Branding tab" },
       { name: "Affiliate Program", description: "Affiliate tracking with commission management", status: "not_started" },
     ],
