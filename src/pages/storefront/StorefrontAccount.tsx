@@ -520,6 +520,7 @@ export default function StorefrontAccount() {
                 { key: "vouchers", label: "Vouchers", icon: Gift, count: vouchers.length },
                 { key: "quotes", label: "Quotes", icon: FileQuestion, count: quotes.length },
                 { key: "disputes", label: "Disputes", icon: ShieldAlert, count: disputes.length },
+                { key: "files", label: "Files", icon: FileText, count: customerFiles.length },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
