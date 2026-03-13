@@ -97,6 +97,8 @@ import Affiliates from "./pages/Affiliates.tsx";
 import Currencies from "./pages/Currencies.tsx";
 import Addons from "./pages/Addons.tsx";
 import ApiDocs from "./pages/ApiDocs.tsx";
+import PrintReturnLabel from "./pages/PrintReturnLabel.tsx";
+import AccountingIntegration from "./pages/AccountingIntegration.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
