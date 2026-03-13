@@ -95,7 +95,17 @@ export default function StorefrontCheckout() {
   const update = (field: string, value: string) => setForm((prev) => ({ ...prev, [field]: value }));
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
-  const finalTotal = Math.max(0, totalPrice - discountAmount);
+  const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
+  const finalTotal = subtotalAfterDiscount + shippingCost;
+
+  const handleZoneChange = (zoneId: string) => {
+    setSelectedZone(zoneId);
+    const zone = shippingZones.find((z) => z.id === zoneId);
+    if (zone) {
+      const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
+      setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+    }
+  };
 
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
