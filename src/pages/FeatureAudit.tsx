@@ -875,7 +875,7 @@ const featureData: FeatureCategory[] = [
       { name: "Email / SMTP Configuration", description: "Configure outgoing email settings", status: "not_started" },
       { name: "Notification Preferences", description: "Configure which notifications to receive", status: "done", notes: "Notifications tab in Settings with toggles for new order, low stock, new customer, return request, contact form, review submitted" },
       { name: "Checkout Settings", description: "Guest checkout, minimum order, checkout fields", status: "done", notes: "Checkout tab in Settings with guest checkout toggle and min order amount, enforced at checkout" },
-      { name: "Inventory Settings", description: "Default low stock threshold, backorder rules", status: "partial" },
+      { name: "Inventory Settings", description: "Default low stock threshold, backorder rules", status: "done", notes: "Inventory tab in Settings with default_low_stock_threshold stored on stores table" },
       { name: "SEO Settings (Global)", description: "Site-wide meta tags, sitemap settings", status: "done", notes: "SEO tab in Settings with global meta title (60 chars) and meta description (160 chars) stored on stores table" },
       { name: "Social Media Links", description: "Store social media profile links", status: "done", notes: "social_links JSONB field on stores table, displayed in storefront footer" },
       { name: "Cookie/Privacy Consent Banner", description: "GDPR/Privacy cookie consent management", status: "done", notes: "Cookie consent banner with Accept/Decline, localStorage persistence" },
