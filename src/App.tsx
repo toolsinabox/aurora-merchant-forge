@@ -97,6 +97,8 @@ import Affiliates from "./pages/Affiliates.tsx";
 import Currencies from "./pages/Currencies.tsx";
 import Addons from "./pages/Addons.tsx";
 import ApiDocs from "./pages/ApiDocs.tsx";
+import PrintReturnLabel from "./pages/PrintReturnLabel.tsx";
+import AccountingIntegration from "./pages/AccountingIntegration.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -204,7 +206,11 @@ const App = () => (
                   <Route path="/_cpanel/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
                   <Route path="/_cpanel/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
                   <Route path="/_cpanel/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
-                  <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+                   <Route path="/_cpanel/addons" element={<RequireAuth><Addons /></RequireAuth>} />
+                   <Route path="/_cpanel/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
+                   <Route path="/_cpanel/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
+                   <Route path="/_cpanel/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
                 </>
@@ -287,8 +293,10 @@ const App = () => (
                   <Route path="/affiliates" element={<RequireAuth><Affiliates /></RequireAuth>} />
                   <Route path="/currencies" element={<RequireAuth><Currencies /></RequireAuth>} />
                   <Route path="/addons" element={<RequireAuth><Addons /></RequireAuth>} />
-                  <Route path="/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
-                  <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
+                   <Route path="/api-docs" element={<RequireAuth><ApiDocs /></RequireAuth>} />
+                   <Route path="/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
+                   <Route path="/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
+                   <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
                   <Route path="/store/:storeSlug" element={<StorefrontHome />} />
