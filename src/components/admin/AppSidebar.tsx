@@ -48,6 +48,7 @@ const salesNav = [
 
 const marketingNav = [
   { title: "Campaigns", url: `${prefix}/marketing`, icon: Megaphone },
+  { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
   { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
