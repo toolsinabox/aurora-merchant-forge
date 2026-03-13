@@ -832,6 +832,134 @@ export default function StorefrontAccount() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Disputes Tab */}
+            {activeTab === "disputes" && (
+              <Card>
+                <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                  <CardTitle className="text-base flex items-center gap-2"><ShieldAlert className="h-4 w-4" /> Warranty Disputes</CardTitle>
+                  <Dialog open={disputeOpen} onOpenChange={setDisputeOpen}>
+                    <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => setDisputeOpen(true)}>
+                      <Plus className="h-3 w-3" /> New Dispute
+                    </Button>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader><DialogTitle>Submit Warranty Dispute</DialogTitle></DialogHeader>
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-xs">Order</Label>
+                          <Select value={disputeForm.order_id} onValueChange={async (v) => {
+                            setDisputeForm({ ...disputeForm, order_id: v, product_id: "" });
+                            const { data } = await supabase.from("order_items").select("product_id, title").eq("order_id", v);
+                            setDisputeProducts(data || []);
+                          }}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select order" /></SelectTrigger>
+                            <SelectContent>
+                              {orders.map((o: any) => <SelectItem key={o.id} value={o.id} className="text-xs">#{o.order_number}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {disputeProducts.length > 0 && (
+                          <div>
+                            <Label className="text-xs">Product</Label>
+                            <Select value={disputeForm.product_id} onValueChange={(v) => setDisputeForm({ ...disputeForm, product_id: v })}>
+                              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select product" /></SelectTrigger>
+                              <SelectContent>
+                                {disputeProducts.filter((p: any) => p.product_id).map((p: any) => <SelectItem key={p.product_id} value={p.product_id} className="text-xs">{p.title}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        <div>
+                          <Label className="text-xs">Dispute Type</Label>
+                          <Select value={disputeForm.dispute_type} onValueChange={(v) => setDisputeForm({ ...disputeForm, dispute_type: v })}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="refund" className="text-xs">Refund</SelectItem>
+                              <SelectItem value="repair" className="text-xs">Repair</SelectItem>
+                              <SelectItem value="replace" className="text-xs">Replace</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Reason</Label>
+                          <Select value={disputeForm.reason} onValueChange={(v) => setDisputeForm({ ...disputeForm, reason: v })}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select reason" /></SelectTrigger>
+                            <SelectContent>
+                              {["Product defective on arrival", "Product broke within warranty period", "Product not as described", "Missing parts or accessories", "Performance issues", "Safety concern", "Other"].map((r) => (
+                                <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Description</Label>
+                          <Textarea value={disputeForm.description} onChange={(e) => setDisputeForm({ ...disputeForm, description: e.target.value })} placeholder="Describe the issue in detail..." className="min-h-[60px] text-xs" />
+                        </div>
+                        <Button size="sm" className="w-full text-xs" disabled={submittingDispute || !disputeForm.reason || !disputeForm.order_id} onClick={async () => {
+                          if (!storeId || !customer) return;
+                          setSubmittingDispute(true);
+                          try {
+                            const { error } = await supabase.from("warranty_disputes" as any).insert({
+                              store_id: storeId,
+                              order_id: disputeForm.order_id,
+                              customer_id: customer.id,
+                              product_id: disputeForm.product_id || null,
+                              dispute_type: disputeForm.dispute_type,
+                              reason: disputeForm.reason,
+                              description: disputeForm.description || null,
+                            });
+                            if (error) throw error;
+                            toast.success("Warranty dispute submitted");
+                            setDisputeOpen(false);
+                            setDisputeForm({ order_id: "", product_id: "", dispute_type: "refund", reason: "", description: "" });
+                            // Reload disputes
+                            const { data } = await supabase.from("warranty_disputes" as any).select("*, orders(order_number), products(title)").eq("customer_id", customer.id).order("created_at", { ascending: false });
+                            setDisputes(data || []);
+                          } catch (err: any) {
+                            toast.error(err.message);
+                          } finally {
+                            setSubmittingDispute(false);
+                          }
+                        }}>
+                          {submittingDispute ? "Submitting..." : "Submit Dispute"}
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {disputes.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <ShieldAlert className="h-8 w-8 mx-auto mb-2 text-muted-foreground/30" />
+                      <p className="text-sm text-muted-foreground">No warranty disputes</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs">Order</TableHead>
+                          <TableHead className="text-xs">Product</TableHead>
+                          <TableHead className="text-xs">Type</TableHead>
+                          <TableHead className="text-xs">Status</TableHead>
+                          <TableHead className="text-xs">Date</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {disputes.map((d: any) => (
+                          <TableRow key={d.id} className="text-sm">
+                            <TableCell className="font-mono text-xs">#{d.orders?.order_number || "—"}</TableCell>
+                            <TableCell className="text-xs max-w-[150px] truncate">{d.products?.title || "—"}</TableCell>
+                            <TableCell className="text-xs capitalize">{d.dispute_type}</TableCell>
+                            <TableCell><Badge variant={d.status === "resolved" ? "default" : d.status === "closed" ? "destructive" : "secondary"} className="text-[10px] capitalize">{d.status.replace("_", " ")}</Badge></TableCell>
+                            <TableCell className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
