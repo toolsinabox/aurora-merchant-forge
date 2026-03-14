@@ -624,18 +624,32 @@ export default function POS() {
                 {cart.length === 0 ? (
                   <p className="text-xs text-muted-foreground text-center py-8">Tap a product to add</p>
                 ) : cart.map(item => (
-                  <div key={item.product_id} className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium truncate">{item.title}</p>
-                      <p className="text-[10px] text-muted-foreground">${item.price.toFixed(2)} each</p>
+                  <div key={item.product_id} className="p-2 bg-muted/50 rounded-md space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium truncate">{item.title}</p>
+                        <p className="text-[10px] text-muted-foreground">${item.price.toFixed(2)} each</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, -1)}><Minus className="h-3 w-3" /></Button>
+                        <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, 1)}><Plus className="h-3 w-3" /></Button>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={() => removeItem(item.product_id)}><Trash2 className="h-3 w-3" /></Button>
+                      </div>
+                      <span className="text-xs font-bold w-14 text-right">${getItemTotal(item).toFixed(2)}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, -1)}><Minus className="h-3 w-3" /></Button>
-                      <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, 1)}><Plus className="h-3 w-3" /></Button>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={() => removeItem(item.product_id)}><Trash2 className="h-3 w-3" /></Button>
+                      {item.discount_value ? (
+                        <Badge variant="secondary" className="text-2xs gap-0.5 cursor-pointer" onClick={() => setCart(prev => prev.map(i => i.product_id === item.product_id ? { ...i, discount_value: undefined, discount_type: undefined } : i))}>
+                          {item.discount_type === "percent" ? `${item.discount_value}% off` : `$${item.discount_value} off`}
+                          <X className="h-2.5 w-2.5 ml-0.5" />
+                        </Badge>
+                      ) : (
+                        <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5 text-muted-foreground" onClick={() => { setDiscountDialogItem(item.product_id); setDiscountType("percent"); setDiscountVal(""); }}>
+                          + Discount
+                        </Button>
+                      )}
                     </div>
-                    <span className="text-xs font-bold w-14 text-right">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
