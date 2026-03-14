@@ -13,6 +13,7 @@ interface ImportRequest {
   store_domain?: string;
   api_key?: string;
   migration_job_id?: string;
+  dry_run?: boolean;
 }
 
 serve(async (req) => {
