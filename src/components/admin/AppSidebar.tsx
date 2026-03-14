@@ -56,6 +56,7 @@ const salesNav = [
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
   { title: "Credit Notes", url: `${prefix}/credit-notes`, icon: FileText },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
+  { title: "Order Holds", url: `${prefix}/order-holds`, icon: Shield },
   { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
