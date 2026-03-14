@@ -134,6 +134,8 @@ const systemNav = [
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
   { title: "Custom Fields", url: `${prefix}/custom-fields`, icon: FormInput },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
+  { title: "Maropost Migration", url: `${prefix}/maropost-migration`, icon: ArrowLeftRight },
+  { title: "Transfer Audit", url: `${prefix}/maropost-transfer-audit`, icon: ClipboardCheck },
   { title: "Go-Live Checklist", url: `${prefix}/go-live`, icon: Sparkles },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
