@@ -7740,7 +7740,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "COGS Report", description: "Cost of Goods Sold report using product cost prices", status: "done", notes: "Analytics page Profit Margin by Product section shows COGS per product using cost_price × quantity" },
       { name: "Gross Profit Report", description: "Revenue minus COGS per product/category/period", status: "done", notes: "Analytics page Profit Margin table with revenue, cost, profit, and margin % per product" },
-      { name: "Sell-Through Rate Report", description: "Percentage of inventory sold in a period", status: "not_started" },
+      { name: "Sell-Through Rate Report", description: "Percentage of inventory sold in a period", status: "done", notes: "InventoryReports sell-through tab with units sold ÷ (sold + on hand)" },
       { name: "ABC Analysis (Inventory)", description: "Classify products by revenue contribution (A/B/C tiers)", status: "done", notes: "InventoryReports ABC tab" },
       { name: "Dead Stock Report", description: "Products with zero sales in configurable period", status: "done", notes: "InventoryReports dead stock tab" },
       { name: "Customer Lifetime Value (CLV)", description: "Calculate and display customer LTV", status: "partial", notes: "total_spent tracked" },
