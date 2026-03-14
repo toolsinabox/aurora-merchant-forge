@@ -68,7 +68,7 @@ const IMPORT_ACTION_MAP: Record<string, string> = {
   suppliers: "import_suppliers", warehouses: "import_warehouses",
   shipping: "import_shipping", rma: "import_rma",
   templates: "import_theme_css", payments: "import_orders",
-  currency: "import_currencies",
+  currency: "import_currencies", redirects: "import_redirects",
 };
 
 const ITEMS_PER_PAGE = 20; // Maropost API has response size limits, products especially need small pages
