@@ -109,6 +109,8 @@ export default function Analytics() {
   const [salesByGroup, setSalesByGroup] = useState<{ group: string; orders: number; revenue: number }[]>([]);
   const [salesByStaff, setSalesByStaff] = useState<{ staffName: string; orders: number; revenue: number }[]>([]);
   const [discountUsage, setDiscountUsage] = useState<{ code: string; usedCount: number; revenue: number; discountTotal: number }[]>([]);
+  const [topSearches, setTopSearches] = useState<{ query: string; count: number; avgResults: number }[]>([]);
+  const [zeroResultSearches, setZeroResultSearches] = useState<{ query: string; count: number }[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
