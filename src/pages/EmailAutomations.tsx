@@ -228,9 +228,16 @@ export default function EmailAutomations() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Delay (hours after trigger)</Label>
-              <Input type="number" value={form.delay_hours} onChange={e => setForm(f => ({ ...f, delay_hours: e.target.value }))} min={0} />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Delay (hours after trigger)</Label>
+                <Input type="number" value={form.delay_hours} onChange={e => setForm(f => ({ ...f, delay_hours: e.target.value }))} min={0} />
+              </div>
+              <div>
+                <Label>Step # (for multi-email series)</Label>
+                <Input type="number" value={form.step_number} onChange={e => setForm(f => ({ ...f, step_number: e.target.value }))} min={1} max={10} />
+                <p className="text-[10px] text-muted-foreground mt-0.5">Step 1 = first email, Step 2 = second, etc.</p>
+              </div>
             </div>
             <div>
               <Label>Email Subject</Label>
