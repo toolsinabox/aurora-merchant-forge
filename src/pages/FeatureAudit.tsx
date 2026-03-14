@@ -9053,10 +9053,10 @@ const advancedCouponFeatures: FeatureCategory[] = [
       { name: "Coupon Start Date", description: "Coupon active from future date", status: "done", notes: "starts_at" },
       { name: "Coupon Product Restrictions", description: "Limit coupon to specific products", status: "done", notes: "product_ids" },
       { name: "Coupon Category Restrictions", description: "Limit coupon to specific categories", status: "done", notes: "category_ids" },
-      { name: "Coupon Customer Group Restriction", description: "Limit coupon to specific customer groups", status: "partial" },
+      { name: "Coupon Customer Group Restriction", description: "Limit coupon to specific customer groups", status: "done", notes: "applies_to field with customer_group option on coupons" },
       { name: "Auto-Generate Unique Codes", description: "Bulk generate unique coupon codes", status: "not_started" },
       { name: "Coupon Stacking Rules", description: "Allow/disallow stacking multiple coupons", status: "not_started" },
-      { name: "Coupon Analytics / Usage Report", description: "Track coupon usage and revenue impact", status: "partial" },
+      { name: "Coupon Analytics / Usage Report", description: "Track coupon usage and revenue impact", status: "done", notes: "Coupons page shows used_count per coupon, Analytics page includes coupon revenue impact" },
     ],
   },
 ];
