@@ -43,6 +43,7 @@ const salesNav = [
   { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
   { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
+  { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
   { title: "Customers", url: `${prefix}/customers`, icon: Users },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
