@@ -91,6 +91,7 @@ export default function StorefrontCheckout() {
   const [canPayOnAccount, setCanPayOnAccount] = useState(false);
   const [payOnAccount, setPayOnAccount] = useState(false);
   const [creditTerms, setCreditTerms] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
 
   useEffect(() => {
@@ -444,8 +445,9 @@ export default function StorefrontCheckout() {
           shipping: actualShipping,
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
-          payment_status: payOnAccount ? "pending" : "pending",
+          payment_status: payOnAccount ? "pending" : paymentMethod === "cod" ? "pending" : "pending",
           notes: [
+            paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
             form.company ? `[Company: ${form.company}]` : null,
@@ -954,9 +956,24 @@ export default function StorefrontCheckout() {
                        </label>
                      </div>
                    </div>
-                 )}
+                   )}
 
-                 <Separator />
+                   {/* Payment Method */}
+                   <div className="space-y-2 bg-muted/50 rounded-md p-3">
+                     <p className="text-xs font-medium">Payment Method</p>
+                     <div className="flex gap-3">
+                       <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                         <input type="radio" name="payment_method" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} className="accent-primary" />
+                         Credit/Debit Card
+                       </label>
+                       <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                         <input type="radio" name="payment_method" value="cod" checked={paymentMethod === "cod"} onChange={() => setPaymentMethod("cod")} className="accent-primary" />
+                         Cash on Delivery
+                       </label>
+                     </div>
+                   </div>
+
+                   <Separator />
 
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">

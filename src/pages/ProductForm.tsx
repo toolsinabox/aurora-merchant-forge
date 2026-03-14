@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDeleteVariant, useCreateVariant, useProductShipping, useUpsertProductShipping, useProductSpecifics, useCreateProductSpecific, useDeleteProductSpecific, useProductPricingTiers, useCreatePricingTier, useDeletePricingTier, useProductRelations, useCreateProductRelation, useDeleteProductRelation, useProducts } from "@/hooks/use-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -76,6 +77,7 @@ export default function ProductForm() {
     is_bought: false, is_sold: true, is_inventoried: true,
     tax_free: false, tax_inclusive: false,
     is_kit: false, editable_bundle: false, virtual_product: false,
+    dangerous_goods: false, oversized_item: false, temperature_sensitive: false,
     auto_url_update: true,
     warranty: "", availability_description: "",
     reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
@@ -125,6 +127,9 @@ export default function ProductForm() {
         tax_free: (existing as any).tax_free ?? false, tax_inclusive: (existing as any).tax_inclusive ?? false,
         is_kit: (existing as any).is_kit ?? false, editable_bundle: (existing as any).editable_bundle ?? false,
         virtual_product: (existing as any).virtual_product ?? false,
+        dangerous_goods: (existing as any).dangerous_goods ?? false,
+        oversized_item: (existing as any).oversized_item ?? false,
+        temperature_sensitive: (existing as any).temperature_sensitive ?? false,
         auto_url_update: (existing as any).auto_url_update ?? true,
         warranty: (existing as any).warranty || "", availability_description: (existing as any).availability_description || "",
         reorder_quantity: (existing as any).reorder_quantity?.toString() || "0",
@@ -215,6 +220,9 @@ export default function ProductForm() {
       is_kit: form.is_kit,
       editable_bundle: form.editable_bundle,
       virtual_product: form.virtual_product,
+      dangerous_goods: form.dangerous_goods,
+      oversized_item: form.oversized_item,
+      temperature_sensitive: form.temperature_sensitive,
       auto_url_update: form.auto_url_update,
       warranty: form.warranty || null,
       availability_description: form.availability_description || null,
@@ -880,6 +888,20 @@ export default function ProductForm() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Virtual Product (Allow Oversell)</Label>
                       <Switch checked={form.virtual_product} onCheckedChange={(v) => update("virtual_product", v)} />
+                    </div>
+                    <Separator className="my-2" />
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Handling Flags</p>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs text-destructive">⚠ Dangerous Goods</Label>
+                      <Switch checked={form.dangerous_goods} onCheckedChange={(v) => update("dangerous_goods", v)} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">📦 Oversized Item</Label>
+                      <Switch checked={form.oversized_item} onCheckedChange={(v) => update("oversized_item", v)} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">🌡 Temperature Sensitive</Label>
+                      <Switch checked={form.temperature_sensitive} onCheckedChange={(v) => update("temperature_sensitive", v)} />
                     </div>
                   </CardContent>
                 </Card>
