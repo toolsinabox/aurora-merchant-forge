@@ -94,11 +94,29 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files" | "preferences" | "account">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [disputes, setDisputes] = useState<any[]>([]);
   const [customerFiles, setCustomerFiles] = useState<any[]>([]);
+
+  // Communication preferences
+  const [commPrefs, setCommPrefs] = useState({
+    order_updates: true,
+    shipping_notifications: true,
+    promotional_emails: false,
+    newsletter: false,
+    sms_notifications: false,
+    review_requests: true,
+    back_in_stock: true,
+    price_drop_alerts: false,
+  });
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
+  // Account deletion
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   // Dispute form state
   const [disputeOpen, setDisputeOpen] = useState(false);
