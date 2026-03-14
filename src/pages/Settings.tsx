@@ -857,6 +857,7 @@ export default function SettingsPage() {
             <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
             <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
             <TabsTrigger value="fulfillment" className="text-xs h-7">Fulfillment</TabsTrigger>
+            <TabsTrigger value="scripts" className="text-xs h-7">Scripts</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
@@ -1495,6 +1496,51 @@ export default function SettingsPage() {
           {/* Fulfillment Rules Tab */}
           <TabsContent value="fulfillment">
             <FulfillmentRulesTab />
+          </TabsContent>
+
+          {/* Custom Scripts Tab */}
+          <TabsContent value="scripts">
+            {(() => {
+              const [headScripts, setHeadScripts] = useState(localStorage.getItem("custom_head_scripts") || "");
+              const [bodyScripts, setBodyScripts] = useState(localStorage.getItem("custom_body_scripts") || "");
+              return (
+                <Card>
+                  <CardHeader className="p-4 pb-2">
+                    <CardTitle className="text-sm">Custom JavaScript Injection</CardTitle>
+                    <p className="text-xs text-muted-foreground">Add custom JavaScript to your storefront. Use for analytics, chat widgets, or tracking pixels.</p>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium">Head Scripts (loaded before page renders)</Label>
+                      <Textarea
+                        value={headScripts}
+                        onChange={e => setHeadScripts(e.target.value)}
+                        placeholder={"<!-- Google Tag Manager -->\n<script>...</script>"}
+                        className="font-mono text-xs min-h-[120px]"
+                      />
+                      <p className="text-[10px] text-muted-foreground">Placed in the &lt;head&gt; section. Good for analytics, GTM, meta pixels.</p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-medium">Body Scripts (loaded after page renders)</Label>
+                      <Textarea
+                        value={bodyScripts}
+                        onChange={e => setBodyScripts(e.target.value)}
+                        placeholder={"<!-- Chat widget -->\n<script>...</script>"}
+                        className="font-mono text-xs min-h-[120px]"
+                      />
+                      <p className="text-[10px] text-muted-foreground">Placed before &lt;/body&gt;. Good for chat widgets, intercom, hotjar.</p>
+                    </div>
+                    <Button size="sm" className="gap-1.5" onClick={() => {
+                      localStorage.setItem("custom_head_scripts", headScripts);
+                      localStorage.setItem("custom_body_scripts", bodyScripts);
+                      toast.success("Custom scripts saved");
+                    }}>
+                      <Save className="h-3.5 w-3.5" /> Save Scripts
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })()}
           </TabsContent>
         </Tabs>
       </div>

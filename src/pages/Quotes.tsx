@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Plus, FileText, ArrowRight, Printer } from "lucide-react";
+import { Plus, FileText, ArrowRight, Printer, Copy, BookTemplate } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
@@ -31,6 +31,11 @@ export default function Quotes() {
     items: [{ title: "", quantity: 1, unit_price: 0 }],
   });
   const [creating, setCreating] = useState(false);
+  const [templates, setTemplates] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("quote_templates") || "[]"); } catch { return []; }
+  });
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateName, setTemplateName] = useState("");
 
   const fetchQuotes = async () => {
     if (!currentStore) return;
@@ -164,10 +169,59 @@ export default function Quotes() {
             <h1 className="text-lg font-semibold">Quotes</h1>
             <p className="text-xs text-muted-foreground">Create and manage customer quotes</p>
           </div>
-          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="gap-1.5"><Plus className="h-4 w-4" /> New Quote</Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Dialog open={templateOpen} onOpenChange={setTemplateOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs"><Copy className="h-3.5 w-3.5" /> Templates</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader><DialogTitle>Quote Templates</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <div className="flex gap-2">
+                    <Input value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder="Template name..." className="h-8 text-xs flex-1" />
+                    <Button size="sm" className="text-xs" disabled={!templateName.trim() || form.items.every(i => !i.title)} onClick={() => {
+                      const tpl = { id: crypto.randomUUID(), name: templateName, items: form.items.filter(i => i.title), notes: form.notes, valid_days: form.valid_days, createdAt: new Date().toISOString() };
+                      const updated = [...templates, tpl];
+                      setTemplates(updated);
+                      localStorage.setItem("quote_templates", JSON.stringify(updated));
+                      setTemplateName("");
+                      toast.success(`Template "${tpl.name}" saved`);
+                    }}>Save Current</Button>
+                  </div>
+                  {templates.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-4">No templates yet. Fill in quote items above, then save as template.</p>
+                  ) : (
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {templates.map(tpl => (
+                        <div key={tpl.id} className="flex items-center justify-between p-2 border rounded-md">
+                          <div>
+                            <p className="text-xs font-medium">{tpl.name}</p>
+                            <p className="text-[10px] text-muted-foreground">{tpl.items.length} item(s) · {tpl.valid_days} days valid</p>
+                          </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" className="text-xs h-6 px-2" onClick={() => {
+                              setForm({ ...form, items: tpl.items.map((i: any) => ({ ...i })), notes: tpl.notes || form.notes, valid_days: tpl.valid_days || form.valid_days });
+                              setTemplateOpen(false);
+                              toast.success(`Template "${tpl.name}" loaded`);
+                            }}>Use</Button>
+                            <Button size="sm" variant="ghost" className="text-xs h-6 px-2 text-destructive" onClick={() => {
+                              const updated = templates.filter(t => t.id !== tpl.id);
+                              setTemplates(updated);
+                              localStorage.setItem("quote_templates", JSON.stringify(updated));
+                              toast.success("Template deleted");
+                            }}>✕</Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="gap-1.5"><Plus className="h-4 w-4" /> New Quote</Button>
+              </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Quote</DialogTitle></DialogHeader>
               <div className="space-y-4">
@@ -216,6 +270,7 @@ export default function Quotes() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         <Card>
