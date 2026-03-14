@@ -993,7 +993,7 @@ export default function FeatureAudit() {
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Not Started</p>
-              <p className="text-2xl font-bold text-muted-foreground">{stats.not_started}</p>
+              <p className="text-lg font-bold text-muted-foreground">{stats.not_started}</p>
             </CardContent>
           </Card>
           <Card>
