@@ -7909,7 +7909,7 @@ const checkoutDeepFeatures: FeatureCategory[] = [
       { name: "Minimum Order Enforcement", description: "Block checkout below minimum order value", status: "partial" },
       { name: "Cart Reservation / Timer", description: "Reserve stock for X minutes while in checkout", status: "not_started" },
       { name: "Express Checkout (Saved Details)", description: "One-click checkout for returning customers", status: "not_started" },
-      { name: "Checkout Upsell/Cross-Sell", description: "Show related products during checkout", status: "not_started" },
+      { name: "Checkout Upsell/Cross-Sell", description: "Show related products during checkout", status: "done", notes: "StorefrontCheckout upsellProducts section with add-to-cart from related products" },
       { name: "Checkout Progress Indicator", description: "Visual progress bar showing checkout steps", status: "partial" },
       { name: "Order Confirmation Page", description: "Thank you page with order summary and next steps", status: "done" },
       { name: "Order Confirmation Email", description: "Auto-send order confirmation email", status: "done", notes: "order-email-trigger function" },
