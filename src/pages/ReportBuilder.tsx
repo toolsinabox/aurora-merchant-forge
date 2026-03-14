@@ -101,7 +101,7 @@ export default function ReportBuilder() {
               <div>
                 <Label className="text-xs">Entity</Label>
                 <Select value={entity} onValueChange={(v) => { setEntity(v); setSelectedFields([]); setResults(null); }}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {ENTITY_OPTIONS.map(e => <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>)}
                   </SelectContent>
