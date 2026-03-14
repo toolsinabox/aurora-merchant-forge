@@ -223,6 +223,7 @@ const App = () => (
                    <Route path="/_cpanel/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
                    <Route path="/_cpanel/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
                    <Route path="/_cpanel/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
+                   <Route path="/_cpanel/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
                    <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
