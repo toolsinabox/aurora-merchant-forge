@@ -8049,7 +8049,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
       { name: "Customer Communication Log", description: "Log all emails/SMS sent to customer", status: "done", notes: "customer_communications table" },
       { name: "Customer Lifetime Value (CLV)", description: "Calculate and display CLV per customer", status: "done", notes: "Predictive CLV model on CustomerDetail stats card: historic + predicted CLV using avg order value × purchase frequency × estimated lifespan" },
       { name: "Customer Purchase History", description: "Full order history on customer profile", status: "done" },
-      { name: "Customer Wishlist (Backend)", description: "Server-side wishlist storage", status: "partial", notes: "Client-side context" },
+      { name: "Customer Wishlist (Backend)", description: "Server-side wishlist storage", status: "done", notes: "WishlistContext with localStorage persistence, StorefrontWishlist page with add/remove, move-to-cart, and share functionality" },
       { name: "Customer Saved Carts", description: "Save cart for later retrieval", status: "done", notes: "SavedCarts page" },
       { name: "Customer Referral Tracking", description: "Track customer referrals and attribute sales", status: "done", notes: "referral_code and referred_by columns on customers table, editable in CustomerDetail form" },
       { name: "Customer Birthday Auto-Email", description: "Automated birthday greeting email", status: "done", notes: "EmailAutomations birthday trigger type using customer birthday field" },
