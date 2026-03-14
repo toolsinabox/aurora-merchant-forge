@@ -686,7 +686,6 @@ serve(async (req) => {
               custom_css: tpl.custom_css || null,
               is_active: true,
             } as any, { onConflict: "store_id,slug" }).catch(() => {
-              // If upsert fails, try insert
               return supabase.from("store_templates").insert({
                 store_id,
                 slug: tpl.slug,
@@ -703,6 +702,46 @@ serve(async (req) => {
       } catch (err: any) {
         failed++;
         errors.push(`Theme: ${err.message}`);
+      }
+    }
+
+    // ── IMPORT CURRENCIES ──
+    else if (action === "import_currencies") {
+      const items = source_data?.Currency || source_data || [];
+      const currencies = Array.isArray(items) ? items : [items];
+
+      for (const c of currencies) {
+        try {
+          const currCode = c.CurrencyCode || c.Code || "AUD";
+          // Store currencies in the store settings or currencies table
+          const { data: existing } = await supabase
+            .from("currencies")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("code", currCode)
+            .maybeSingle();
+
+          const currData = {
+            store_id,
+            code: currCode,
+            name: c.CurrencyName || c.Name || currCode,
+            symbol: c.CurrencySymbol || c.Symbol || "$",
+            exchange_rate: parseFloat(c.ExchangeRate) || 1,
+            is_default: c.IsDefault === "True" || c.DefaultCurrency === "True",
+            is_active: c.Active !== "False",
+          };
+
+          if (existing) {
+            await supabase.from("currencies").update(currData).eq("id", existing.id);
+          } else {
+            const { error } = await supabase.from("currencies").insert(currData);
+            if (error) throw error;
+          }
+          imported++;
+        } catch (err: any) {
+          failed++;
+          errors.push(`Currency ${c.CurrencyCode || c.Code}: ${err.message}`);
+        }
       }
     }
 
