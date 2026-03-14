@@ -285,6 +285,7 @@ export default function ProductForm() {
           actual_width: parseFloat(shipping.actual_width) || 0,
           actual_height: parseFloat(shipping.actual_height) || 0,
           requires_packaging: shipping.requires_packaging,
+          free_shipping: shipping.free_shipping,
           shipping_category: shipping.shipping_category || null,
           flat_rate_charge: shipping.flat_rate_charge ? parseFloat(shipping.flat_rate_charge) : null,
           selling_unit: shipping.selling_unit || null,
