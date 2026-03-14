@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap, ShoppingBag, UserPlus } from "lucide-react";
+import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap, ShoppingBag, UserPlus, Tag } from "lucide-react";
 import { format } from "date-fns";
 
 const RULE_TYPES = [
