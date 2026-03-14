@@ -552,6 +552,7 @@ export default function CustomerDetail() {
                       </Select>
                     </div>
                     <div><Label className="text-xs">Credit Limit ($)</Label><Input className="h-8 text-xs" type="number" min="0" step="0.01" value={(editForm as any).credit_limit ?? ""} onChange={(e) => setEditForm({ ...editForm, credit_limit: e.target.value ? Number(e.target.value) : null } as any)} placeholder="No limit" /></div>
+                    <div><Label className="text-xs">ABN / VAT Number</Label><Input className="h-8 text-xs" value={(editForm as any).abn_vat_number || ""} onChange={(e) => setEditForm({ ...editForm, abn_vat_number: e.target.value } as any)} placeholder="e.g. 12345678901" /></div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 text-xs" onClick={saveEdit}><Save className="h-3 w-3 mr-1" />Save</Button>
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditing(false)}>Cancel</Button>
