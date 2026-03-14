@@ -359,7 +359,7 @@ export default function Subscriptions() {
                             </Button>
                           )}
                           {(s.status === "active" || s.status === "paused") && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Cancel" onClick={() => { if (confirm("Cancel this subscription?")) updateStatus.mutate({ id: s.id, status: "cancelled" }); }}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Cancel" onClick={() => { setCancellingSubId(s.id); setCancelReason(""); setCancelDialogOpen(true); }}>
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           )}
