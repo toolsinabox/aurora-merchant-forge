@@ -228,6 +228,12 @@ export default function Orders() {
                 {bulkProcessing ? "Updating..." : "Apply"}
               </Button>
               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>Clear</Button>
+              <div className="flex items-center gap-1">
+                <Input className="h-7 w-28 text-xs" placeholder="Add tag..." value={bulkTagInput} onChange={e => setBulkTagInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleBulkAddTag()} />
+                <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleBulkAddTag} disabled={!bulkTagInput.trim() || bulkProcessing}>
+                  <Tag className="h-3 w-3" /> Tag
+                </Button>
+              </div>
               <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap gap-1">
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
