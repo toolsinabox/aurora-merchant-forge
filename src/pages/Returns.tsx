@@ -422,9 +422,27 @@ export default function Returns() {
                   </>
                 )}
                 {selected.status === "approved" && (
-                  <Button size="sm" className="flex-1 text-xs" onClick={() => handleUpdate("refunded")}>
-                    Mark Refunded
-                  </Button>
+                  <>
+                    <Button size="sm" className="flex-1 text-xs" onClick={() => handleUpdate("refunded")}>
+                      Mark Refunded
+                    </Button>
+                    <Button size="sm" variant="secondary" className="flex-1 text-xs gap-1" onClick={async () => {
+                      if (!currentStore || !selected.customer_id) { toast.error("Customer required for store credit"); return; }
+                      const amt = Number(refundAmount) || 0;
+                      if (amt <= 0) { toast.error("Set a refund amount first"); return; }
+                      await supabase.from("store_credit_transactions" as any).insert({
+                        customer_id: selected.customer_id,
+                        store_id: currentStore.id,
+                        amount: amt,
+                        type: "credit",
+                        description: `Return refund — ${selected.orders?.order_number || selected.id}`,
+                      });
+                      handleUpdate("refunded");
+                      toast.success(`$${amt.toFixed(2)} issued as store credit`);
+                    }}>
+                      <Gift className="h-3 w-3" /> Refund to Credit
+                    </Button>
+                  </>
                 )}
                 {selected.status === "refunded" && (
                   <Button size="sm" className="flex-1 text-xs" onClick={() => handleUpdate("completed")}>
