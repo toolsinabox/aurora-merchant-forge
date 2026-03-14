@@ -81,6 +81,7 @@ export default function ProductForm() {
     reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
     scheduled_publish_at: "", scheduled_unpublish_at: "",
+    video_url: "",
   });
 
   const [shipping, setShipping] = useState({
