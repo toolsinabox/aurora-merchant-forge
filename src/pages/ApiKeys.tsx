@@ -156,6 +156,11 @@ export default function ApiKeys() {
                       ))}
                     </div>
                   </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">IP Whitelist <span className="text-muted-foreground">(optional)</span></Label>
+                    <Input className="h-8 text-xs" value={form.ip_whitelist} onChange={(e) => setForm({ ...form, ip_whitelist: e.target.value })} placeholder="1.2.3.4, 10.0.0.0/24 (comma-separated)" />
+                    <p className="text-[10px] text-muted-foreground">Leave empty to allow all IPs. Supports CIDR notation.</p>
+                  </div>
                   <Button size="sm" className="w-full text-xs" onClick={() => create.mutate()} disabled={create.isPending}>
                     {create.isPending ? "Creating..." : "Create Key"}
                   </Button>
