@@ -4121,8 +4121,10 @@ export type Database = {
           body: string | null
           created_at: string
           customer_id: string | null
+          helpful_count: number
           id: string
           is_approved: boolean
+          not_helpful_count: number
           product_id: string
           rating: number
           review_photos: string[] | null
@@ -4138,8 +4140,10 @@ export type Database = {
           body?: string | null
           created_at?: string
           customer_id?: string | null
+          helpful_count?: number
           id?: string
           is_approved?: boolean
+          not_helpful_count?: number
           product_id: string
           rating: number
           review_photos?: string[] | null
@@ -4155,8 +4159,10 @@ export type Database = {
           body?: string | null
           created_at?: string
           customer_id?: string | null
+          helpful_count?: number
           id?: string
           is_approved?: boolean
+          not_helpful_count?: number
           product_id?: string
           rating?: number
           review_photos?: string[] | null
