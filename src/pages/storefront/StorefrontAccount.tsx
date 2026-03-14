@@ -614,6 +614,8 @@ export default function StorefrontAccount() {
                 { key: "quotes", label: "Quotes", icon: FileQuestion, count: quotes.length },
                 { key: "disputes", label: "Disputes", icon: ShieldAlert, count: disputes.length },
                 { key: "files", label: "Files", icon: FileText, count: customerFiles.length },
+                { key: "preferences", label: "Preferences", icon: Bell, count: 0 },
+                { key: "account", label: "Account", icon: UserX, count: 0 },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
