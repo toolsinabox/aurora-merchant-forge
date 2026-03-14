@@ -54,19 +54,46 @@ serve(async (req) => {
       const items = source_data?.Item || source_data || [];
       const products = Array.isArray(items) ? items : [items];
 
+      // Helper to download and re-host an image to Supabase Storage
+      const rehostImage = async (imageUrl: string, productSlug: string, index: number): Promise<string> => {
+        try {
+          if (!imageUrl || imageUrl.startsWith("data:")) return imageUrl;
+          const fullUrl = imageUrl.startsWith("http") ? imageUrl : `https:${imageUrl}`;
+          const response = await fetch(fullUrl);
+          if (!response.ok) return fullUrl; // Fallback to original URL
+          const blob = await response.blob();
+          const ext = fullUrl.split(".").pop()?.split("?")[0]?.toLowerCase() || "jpg";
+          const path = `${store_id}/${productSlug}/${index}.${ext}`;
+          const { error: uploadErr } = await supabase.storage
+            .from("product-images")
+            .upload(path, blob, { contentType: blob.type || "image/jpeg", upsert: true });
+          if (uploadErr) return fullUrl;
+          const { data: publicUrl } = supabase.storage.from("product-images").getPublicUrl(path);
+          return publicUrl.publicUrl;
+        } catch {
+          return imageUrl; // Fallback to original
+        }
+      };
+
       for (const p of products) {
         try {
-          // Build images array from Maropost Images field
+          // Build images array - download and re-host to our storage
           let imagesArr: string[] = [];
+          const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
+
           if (p.Images) {
             const imgs = Array.isArray(p.Images) ? p.Images : [p.Images];
-            for (const img of imgs) {
+            for (let i = 0; i < imgs.length; i++) {
+              const img = imgs[i];
               const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL;
-              if (url) imagesArr.push(url);
+              if (url) {
+                const rehostedUrl = await rehostImage(url, slug, i);
+                imagesArr.push(rehostedUrl);
+              }
             }
           }
 
-          const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
+          // slug already computed above for image paths
 
           const productData: Record<string, any> = {
             store_id,
@@ -263,9 +290,34 @@ serve(async (req) => {
       const items = source_data?.Customer || source_data || [];
       const customers = Array.isArray(items) ? items : [items];
 
+      // First: auto-create customer groups from unique UserGroup values
+      const groupMap: Record<string, string> = {};
+      const uniqueGroups = [...new Set(customers.map((c: any) => c.UserGroup).filter(Boolean))];
+      for (const groupName of uniqueGroups) {
+        try {
+          const { data: existing } = await supabase
+            .from("customer_groups")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("name", groupName as string)
+            .maybeSingle();
+
+          if (existing) {
+            groupMap[groupName as string] = existing.id;
+          } else {
+            const { data: created } = await supabase
+              .from("customer_groups")
+              .insert({ store_id, name: groupName as string })
+              .select("id")
+              .single();
+            if (created) groupMap[groupName as string] = created.id;
+          }
+        } catch { /* ignore group creation errors */ }
+      }
+
       for (const c of customers) {
         try {
-          const custData = {
+          const custData: Record<string, any> = {
             store_id,
             name: `${c.Name || ""} ${c.Surname || ""}`.trim() || c.Username || "Unknown",
             email: c.EmailAddress || c.Email || null,
@@ -276,6 +328,10 @@ serve(async (req) => {
             credit_limit: parseFloat(c.CreditLimit) || null,
             tags: c.UserGroup ? [c.UserGroup] : [],
           };
+          // Link to customer group if found
+          if (c.UserGroup && groupMap[c.UserGroup]) {
+            custData.customer_group_id = groupMap[c.UserGroup];
+          }
 
           const { data: inserted, error } = await supabase
             .from("customers").insert(custData).select("id").single();
