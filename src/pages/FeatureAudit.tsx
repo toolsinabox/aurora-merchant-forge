@@ -9395,7 +9395,7 @@ const productRelationFeatures: FeatureCategory[] = [
       { name: "Upsell Products", description: "Higher-value alternative suggestions", status: "done" },
       { name: "Frequently Bought Together", description: "Bundle suggestions based on order history", status: "not_started" },
       { name: "Accessories / Add-Ons", description: "Optional add-on products for main product", status: "done", notes: "product_addons" },
-      { name: "Required Accessories", description: "Mandatory add-ons auto-added to cart", status: "partial" },
+      { name: "Required Accessories", description: "Mandatory add-ons auto-added to cart", status: "done", notes: "product_addons with is_required flag, auto-added to cart when main product added" },
       { name: "Product Comparison Group", description: "Group products for side-by-side comparison", status: "done", notes: "CompareContext" },
       { name: "Substitute / Alternative Products", description: "Suggest alternatives when out of stock", status: "not_started" },
       { name: "Warranty Product Link", description: "Link warranty products to eligible items", status: "not_started" },
