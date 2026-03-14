@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -118,6 +118,27 @@ export default function Stocktake() {
   const countedCount = items.filter(i => i.counted_quantity !== null && i.counted_quantity !== undefined).length;
   const discrepancies = items.filter(i => i.counted_quantity !== null && i.counted_quantity !== i.expected_quantity).length;
 
+  // Variance summary calculations
+  const varianceSummary = useMemo(() => {
+    const counted = items.filter(i => i.counted_quantity !== null && i.counted_quantity !== undefined);
+    const overItems = counted.filter(i => i.counted_quantity > i.expected_quantity);
+    const underItems = counted.filter(i => i.counted_quantity < i.expected_quantity);
+    const matchItems = counted.filter(i => i.counted_quantity === i.expected_quantity);
+    const totalVariance = counted.reduce((s, i) => s + (i.counted_quantity - i.expected_quantity), 0);
+    const absVariance = counted.reduce((s, i) => s + Math.abs(i.counted_quantity - i.expected_quantity), 0);
+    return { counted: counted.length, over: overItems.length, under: underItems.length, match: matchItems.length, totalVariance, absVariance };
+  }, [items]);
+
+  const [varianceFilter, setVarianceFilter] = useState<"all" | "over" | "under" | "match">("all");
+
+  const varianceFilteredItems = useMemo(() => {
+    let filtered = filteredItems;
+    if (varianceFilter === "over") filtered = filtered.filter(i => i.counted_quantity !== null && i.counted_quantity > i.expected_quantity);
+    else if (varianceFilter === "under") filtered = filtered.filter(i => i.counted_quantity !== null && i.counted_quantity < i.expected_quantity);
+    else if (varianceFilter === "match") filtered = filtered.filter(i => i.counted_quantity !== null && i.counted_quantity === i.expected_quantity);
+    return filtered;
+  }, [filteredItems, varianceFilter]);
+
   if (activeStocktake) {
     return (
       <AdminLayout>
@@ -130,7 +151,7 @@ export default function Stocktake() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setActiveStocktake(null)}>Back</Button>
+              <Button variant="outline" size="sm" onClick={() => { setActiveStocktake(null); setVarianceFilter("all"); }}>Back</Button>
               {activeStocktake.status === "in_progress" && (
                 <Button size="sm" onClick={completeStocktake}>
                   <CheckCircle className="h-3.5 w-3.5 mr-1.5" /> Complete
@@ -138,6 +159,43 @@ export default function Stocktake() {
               )}
             </div>
           </div>
+
+          {/* Variance Summary KPIs */}
+          {countedCount > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <Card className="p-3 cursor-pointer hover:ring-2 ring-primary" onClick={() => setVarianceFilter("all")}>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Counted</p>
+                <p className="text-xl font-bold">{varianceSummary.counted}<span className="text-xs font-normal text-muted-foreground">/{items.length}</span></p>
+              </Card>
+              <Card className="p-3 cursor-pointer hover:ring-2 ring-primary" onClick={() => setVarianceFilter("match")}>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">✓ Match</p>
+                <p className="text-xl font-bold text-primary">{varianceSummary.match}</p>
+              </Card>
+              <Card className="p-3 cursor-pointer hover:ring-2 ring-primary" onClick={() => setVarianceFilter("over")}>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">↑ Over</p>
+                <p className="text-xl font-bold text-amber-600">{varianceSummary.over}</p>
+              </Card>
+              <Card className="p-3 cursor-pointer hover:ring-2 ring-primary" onClick={() => setVarianceFilter("under")}>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">↓ Under</p>
+                <p className="text-xl font-bold text-destructive">{varianceSummary.under}</p>
+              </Card>
+              <Card className="p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Net Variance</p>
+                <p className={`text-xl font-bold ${varianceSummary.totalVariance === 0 ? "text-primary" : varianceSummary.totalVariance > 0 ? "text-amber-600" : "text-destructive"}`}>
+                  {varianceSummary.totalVariance > 0 ? "+" : ""}{varianceSummary.totalVariance}
+                </p>
+              </Card>
+            </div>
+          )}
+
+          {varianceFilter !== "all" && (
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="text-xs gap-1">
+                Showing: {varianceFilter === "match" ? "Matched" : varianceFilter === "over" ? "Over Count" : "Under Count"}
+              </Badge>
+              <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setVarianceFilter("all")}>Clear Filter</Button>
+            </div>
+          )}
 
           <div className="relative max-w-xs">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -157,7 +215,7 @@ export default function Stocktake() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredItems.map((item: any) => {
+                  {varianceFilteredItems.map((item: any) => {
                     const diff = item.counted_quantity !== null && item.counted_quantity !== undefined
                       ? item.counted_quantity - item.expected_quantity : null;
                     return (
