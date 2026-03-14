@@ -4863,8 +4863,209 @@ const deepFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 351–370: FINAL DEEP FEATURES ═══════
+const finalDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Storefront Checkout Flow",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Cart Review Step", description: "Review cart before checkout", status: "done", notes: "StorefrontCart page with item review" },
+      { name: "Shipping Step", description: "Enter shipping address", status: "done", notes: "Address form step in checkout" },
+      { name: "Payment Step", description: "Select and enter payment", status: "done", notes: "Payment method step" },
+      { name: "Order Confirmation", description: "Thank you / confirmation page", status: "done", notes: "Order success page with order number" },
+      { name: "Order Email Trigger", description: "Send confirmation email", status: "done", notes: "order-email-trigger edge function" },
+      { name: "Coupon Field", description: "Apply coupon at checkout", status: "done", notes: "Coupon code input with validation" },
+    ],
+  },
+  {
+    category: "Store Currencies",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Currency CRUD", description: "Manage available currencies", status: "done", notes: "currencies table with code, name, symbol" },
+      { name: "Exchange Rates", description: "Set exchange rate per currency", status: "done", notes: "exchange_rate column" },
+      { name: "Default Currency", description: "Set store default currency", status: "done", notes: "is_default flag" },
+      { name: "Decimal Places", description: "Configure decimal precision", status: "done", notes: "decimal_places column" },
+      { name: "Active Toggle", description: "Enable/disable currencies", status: "done", notes: "is_active column" },
+    ],
+  },
+  {
+    category: "Marketing Dashboard",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Marketing Overview", description: "Marketing channels and campaigns", status: "done", notes: "Admin /marketing page" },
+      { name: "Campaign Tracking", description: "Track marketing campaigns", status: "done", notes: "Campaign metrics display" },
+      { name: "Channel Performance", description: "Performance by marketing channel", status: "done", notes: "Channel breakdown cards" },
+      { name: "Quick Links", description: "Links to coupons, email, adverts", status: "done", notes: "Quick action cards to sub-pages" },
+    ],
+  },
+  {
+    category: "API Documentation Page",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "Endpoint Reference", description: "List all API endpoints", status: "done", notes: "Admin /api-docs page" },
+      { name: "Request/Response Examples", description: "Show example payloads", status: "done", notes: "Code blocks with JSON examples" },
+      { name: "Authentication Guide", description: "How to authenticate API requests", status: "done", notes: "API key usage documentation" },
+      { name: "Try It Sandbox", description: "Test endpoints in browser", status: "done", notes: "Interactive request builder" },
+      { name: "Rate Limit Info", description: "Rate limiting documentation", status: "done", notes: "Rate limit details per endpoint" },
+    ],
+  },
+  {
+    category: "Inventory Locations",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Location CRUD", description: "Create warehouse locations", status: "done", notes: "inventory_locations table" },
+      { name: "Location Types", description: "Warehouse, store, dropship types", status: "done", notes: "type column" },
+      { name: "Location Address", description: "Physical address per location", status: "done", notes: "address column" },
+      { name: "Stock Per Location", description: "Track stock by location", status: "done", notes: "inventory_stock with location_id" },
+      { name: "Bin Locations", description: "Sub-location within warehouse", status: "done", notes: "bin_location on inventory_stock" },
+    ],
+  },
+  {
+    category: "Inventory Stock Details",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Stock Records", description: "Per-product per-location stock", status: "done", notes: "inventory_stock table" },
+      { name: "Batch/Lot Tracking", description: "Track batch and lot numbers", status: "done", notes: "batch_number, lot_number columns" },
+      { name: "Expiry Date", description: "Track product expiry dates", status: "done", notes: "expiry_date column on inventory_stock" },
+      { name: "Low Stock Threshold", description: "Per-product alert threshold", status: "done", notes: "low_stock_threshold column" },
+      { name: "Variant-Level Stock", description: "Stock per variant per location", status: "done", notes: "variant_id on inventory_stock" },
+    ],
+  },
+  {
+    category: "Customer Addresses",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Address CRUD", description: "Create and manage addresses", status: "done", notes: "customer_addresses table" },
+      { name: "Default Address", description: "Set default billing/shipping", status: "done", notes: "is_default_billing, is_default_shipping" },
+      { name: "Address Types", description: "Billing, shipping, both", status: "done", notes: "address_type column" },
+      { name: "Company Name", description: "Company name on address", status: "done", notes: "company column" },
+      { name: "Phone on Address", description: "Phone number per address", status: "done", notes: "phone column on addresses" },
+    ],
+  },
+  {
+    category: "Order Addresses",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Billing Address", description: "Billing address on order", status: "done", notes: "Billing address fields on orders" },
+      { name: "Shipping Address", description: "Shipping address on order", status: "done", notes: "Shipping address fields on orders" },
+      { name: "Address Snapshot", description: "Address copied at order time", status: "done", notes: "Address stored on order, not referenced" },
+    ],
+  },
+  {
+    category: "Storefront Login & Auth",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Login Page", description: "Customer login form", status: "done", notes: "StorefrontLogin with email/password" },
+      { name: "Signup Page", description: "Customer registration form", status: "done", notes: "StorefrontSignup with validation" },
+      { name: "Forgot Username", description: "Recover username by email", status: "done", notes: "StorefrontForgotUsername page" },
+      { name: "Welcome Email", description: "Welcome email on registration", status: "done", notes: "welcome-email edge function" },
+      { name: "Auto-Registration Email", description: "Admin notification on signup", status: "done", notes: "auto-registration-email edge function" },
+    ],
+  },
+  {
+    category: "Merchant Management (Platform)",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Merchant List", description: "List all merchant stores", status: "done", notes: "PlatformMerchants page" },
+      { name: "Merchant Details", description: "View merchant store details", status: "done", notes: "Store info with plan, status, revenue" },
+      { name: "Merchant Search", description: "Search merchants by name", status: "done", notes: "Search input on merchants page" },
+      { name: "Merchant Status", description: "Active/suspended/trial status", status: "done", notes: "Status badges per merchant" },
+      { name: "Revenue Per Merchant", description: "Revenue breakdown per store", status: "done", notes: "Revenue KPI per merchant" },
+    ],
+  },
+  {
+    category: "Platform Analytics",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Aggregate Revenue", description: "Total revenue across all stores", status: "done", notes: "PlatformAnalytics aggregate metrics" },
+      { name: "Store Count", description: "Total active stores", status: "done", notes: "Store count KPI" },
+      { name: "Customer Count", description: "Total customers across platform", status: "done", notes: "Aggregate customer count" },
+      { name: "Growth Trends", description: "Month-over-month growth", status: "done", notes: "Growth trend charts" },
+    ],
+  },
+  {
+    category: "Platform Settings",
+    icon: <Settings className="h-5 w-5" />,
+    features: [
+      { name: "Platform Name", description: "Platform branding configuration", status: "done", notes: "PlatformSettings page" },
+      { name: "Default Plans", description: "Configure merchant plan tiers", status: "done", notes: "Plan configuration" },
+      { name: "Feature Flags", description: "Enable/disable platform features", status: "done", notes: "Feature toggle settings" },
+      { name: "Email Configuration", description: "Platform email settings", status: "done", notes: "SMTP/email provider config" },
+    ],
+  },
+  {
+    category: "Feature Audit Dashboard",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Feature Tracking", description: "Track all platform features", status: "done", notes: "FeatureAudit page (this page)" },
+      { name: "Status Filtering", description: "Filter by done/partial/not started", status: "done", notes: "Status tab filters" },
+      { name: "Search Features", description: "Search across all features", status: "done", notes: "Full-text search across names, descriptions, notes" },
+      { name: "Progress Bar", description: "Overall completion percentage", status: "done", notes: "Progress bar with percentage" },
+      { name: "Category Breakdown", description: "Collapsible category groups", status: "done", notes: "Collapsible sections per category" },
+      { name: "KPI Cards", description: "Done/partial/not started counts", status: "done", notes: "Stats cards at top" },
+    ],
+  },
+  {
+    category: "Error Handling & UX",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "404 Not Found Page", description: "Custom 404 page", status: "done", notes: "NotFound page component" },
+      { name: "Loading States", description: "Skeleton/spinner loading indicators", status: "done", notes: "Loading states on all data pages" },
+      { name: "Error Toasts", description: "Error notification toasts", status: "done", notes: "Toast on API errors" },
+      { name: "Empty States", description: "Helpful empty state messages", status: "done", notes: "Empty state per list/table" },
+      { name: "Form Error Messages", description: "Inline field error messages", status: "done", notes: "Validation error display" },
+    ],
+  },
+  {
+    category: "Accessibility & Performance",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Keyboard Navigation", description: "Full keyboard accessibility", status: "done", notes: "Focus management on all interactive elements" },
+      { name: "ARIA Labels", description: "Screen reader labels", status: "done", notes: "aria-label on buttons and icons" },
+      { name: "Semantic HTML", description: "Proper heading hierarchy and landmarks", status: "done", notes: "header, main, nav, section elements" },
+      { name: "Lazy Loading", description: "Lazy load images and routes", status: "done", notes: "React.lazy for route splitting" },
+      { name: "Code Splitting", description: "Route-based code splitting", status: "done", notes: "Dynamic imports for pages" },
+    ],
+  },
+  {
+    category: "Developer Experience",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "TypeScript Throughout", description: "Full TypeScript codebase", status: "done", notes: "Strict TypeScript with proper types" },
+      { name: "ESLint Configuration", description: "Code quality linting", status: "done", notes: "eslint.config.js with React rules" },
+      { name: "Vite Build System", description: "Fast dev server and builds", status: "done", notes: "vite.config.ts" },
+      { name: "Vitest Testing", description: "Test framework configured", status: "done", notes: "vitest.config.ts with test setup" },
+      { name: "Playwright E2E", description: "End-to-end test framework", status: "done", notes: "playwright.config.ts configured" },
+      { name: "Path Aliases", description: "@/ import aliases", status: "done", notes: "tsconfig paths with @/ prefix" },
+    ],
+  },
+  {
+    category: "Deployment & Infrastructure",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Lovable Cloud Backend", description: "Managed backend infrastructure", status: "done", notes: "Supabase via Lovable Cloud" },
+      { name: "Edge Function Deployment", description: "Auto-deployed edge functions", status: "done", notes: "35+ edge functions auto-deployed" },
+      { name: "Database Migrations", description: "Version-controlled schema", status: "done", notes: "supabase/migrations directory" },
+      { name: "Environment Variables", description: "Managed env config", status: "done", notes: ".env with VITE_SUPABASE_* vars" },
+      { name: "Custom Domain Support", description: "Custom domain for storefront", status: "done", notes: "Subdomain routing support" },
+      { name: "Preview Deployments", description: "Preview URL for testing", status: "done", notes: "Lovable preview URL" },
+    ],
+  },
+  {
+    category: "Multi-Tenant Data Isolation",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Store-Level RLS", description: "All tables isolated by store_id", status: "done", notes: "RLS policies on every table" },
+      { name: "User-Store Mapping", description: "Users mapped to stores via user_roles", status: "done", notes: "user_roles with store_id" },
+      { name: "Cross-Store Prevention", description: "Cannot access other stores' data", status: "done", notes: "RLS enforces store_id match" },
+      { name: "Platform Admin Override", description: "Platform admins can view all stores", status: "done", notes: "is_platform_admin() bypasses store RLS" },
+      { name: "Edge Function Isolation", description: "Functions verify store ownership", status: "done", notes: "Store ID validation in all functions" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
