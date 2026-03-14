@@ -198,7 +198,7 @@ export default function WarehouseDashboard() {
           <Card>
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 text-orange-500" /> Low Stock Alert
+                <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Low Stock Alert
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
