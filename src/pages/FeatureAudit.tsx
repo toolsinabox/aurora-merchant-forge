@@ -8288,9 +8288,9 @@ const accountingIntFeatures: FeatureCategory[] = [
     icon: <Banknote className="h-5 w-5" />,
     features: [
       { name: "Xero Integration (Invoices)", description: "Push invoices to Xero automatically", status: "done", notes: "xero-sync function" },
-      { name: "Xero Integration (Payments)", description: "Sync payment receipts to Xero", status: "partial" },
+      { name: "Xero Integration (Payments)", description: "Sync payment receipts to Xero", status: "done", notes: "Code-complete: xero-sync edge function with sync_payment. Activates with Xero credentials" },
       { name: "Xero Integration (Inventory)", description: "Sync inventory levels with Xero", status: "not_started" },
-      { name: "Xero Integration (Contacts)", description: "Sync customers as Xero contacts", status: "partial" },
+      { name: "Xero Integration (Contacts)", description: "Sync customers as Xero contacts", status: "done", notes: "Code-complete: xero-sync edge function with sync_contact. Activates with Xero credentials" },
       { name: "MYOB Integration", description: "Sync orders/invoices to MYOB", status: "not_started" },
       { name: "QuickBooks Integration", description: "Sync with QuickBooks Online", status: "not_started" },
       { name: "Sage Integration", description: "Sync with Sage accounting", status: "not_started" },
