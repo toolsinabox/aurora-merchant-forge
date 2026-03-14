@@ -40,12 +40,15 @@ function downloadCSV(data: any[], filename: string) {
 export default function Customers() {
   const navigate = useNavigate();
   const { data: customers = [], isLoading } = useCustomers();
+  const createCustomer = useCreateCustomer();
   const { currentStore } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [segFilter, setSegFilter] = useState("all");
   const [importing, setImporting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({ name: "", email: "", phone: "", segment: "new" });
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || (c.email || "").toLowerCase().includes(search.toLowerCase());
