@@ -307,7 +307,13 @@ export default function MaropostMigration() {
 
         for (let i = 0; i < sourceItems.length; i += batchSize) {
           const batch = sourceItems.slice(i, i + batchSize);
-          addLog(`  Processing batch ${Math.floor(i / batchSize) + 1} (${batch.length} items)...`);
+          const batchNum = Math.floor(i / batchSize) + 1;
+          const totalBatches = Math.ceil(sourceItems.length / batchSize);
+          const batchPct = Math.round((batchNum / totalBatches) * 100);
+          addLog(`  Processing batch ${batchNum}/${totalBatches} (${batch.length} items)...`);
+
+          // Update per-entity progress
+          setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, batchProgress: batchPct } : e));
 
           const importAction = IMPORT_ACTION_MAP[entity.entity];
           // Wrap data in expected format
@@ -323,6 +329,7 @@ export default function MaropostMigration() {
               store_id: sid,
               source_data: { [dataKey]: batch },
               migration_job_id: migrationJobId,
+              dry_run: dryRun,
             },
           });
 
