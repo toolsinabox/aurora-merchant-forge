@@ -53,6 +53,47 @@ export default function Customers() {
   const [newCustomer, setNewCustomer] = useState({ name: "", email: "", phone: "", segment: "new" });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [selectedForMerge, setSelectedForMerge] = useState<string[]>([]);
+  const [showMerge, setShowMerge] = useState(false);
+  const [merging, setMerging] = useState(false);
+  const [primaryId, setPrimaryId] = useState<string>("");
+
+  const toggleMergeSelection = (id: string) => {
+    setSelectedForMerge(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const handleMerge = async () => {
+    if (!primaryId || selectedForMerge.length < 2 || !currentStore) return;
+    setMerging(true);
+    try {
+      const secondaryIds = selectedForMerge.filter(id => id !== primaryId);
+      // Reassign orders from secondary customers to primary
+      for (const secId of secondaryIds) {
+        await supabase.from("orders").update({ customer_id: primaryId } as any).eq("customer_id", secId).eq("store_id", currentStore.id);
+      }
+      // Sum up totals from secondary customers
+      const secondaryCustomers = customers.filter(c => secondaryIds.includes(c.id));
+      const primaryCustomer = customers.find(c => c.id === primaryId);
+      if (primaryCustomer) {
+        const totalOrders = secondaryCustomers.reduce((s, c) => s + c.total_orders, primaryCustomer.total_orders);
+        const totalSpent = secondaryCustomers.reduce((s, c) => s + Number(c.total_spent), Number(primaryCustomer.total_spent));
+        await supabase.from("customers").update({ total_orders: totalOrders, total_spent: totalSpent } as any).eq("id", primaryId);
+      }
+      // Delete secondary customers
+      for (const secId of secondaryIds) {
+        await supabase.from("customers").delete().eq("id", secId);
+      }
+      toast.success(`Merged ${secondaryIds.length} customers into primary record`);
+      setSelectedForMerge([]);
+      setShowMerge(false);
+      setPrimaryId("");
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message || "Merge failed");
+    } finally {
+      setMerging(false);
+    }
+  };
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || (c.email || "").toLowerCase().includes(search.toLowerCase());
