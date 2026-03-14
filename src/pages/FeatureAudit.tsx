@@ -15,7 +15,7 @@ import {
   CheckCircle, Circle, Clock, Search, BarChart3, Package, ShoppingCart,
   Users, Truck, Settings, Globe, Megaphone, CreditCard, FileText,
   Layers, Shield, Zap, Database, Store, Palette, Mail, Boxes,
-  Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift,
+  Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift, Sparkles, Puzzle, UserPlus,
   ChevronDown, MapPin, Warehouse, PenTool, FileCode, Link, Image,
   AlertTriangle, DollarSign, Percent, Printer, Share2, Code,
   LayoutDashboard, Bell, Upload, Download, UserCheck, Key, Eye,
