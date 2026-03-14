@@ -7824,8 +7824,8 @@ const posDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "POS Product Grid", description: "Touch-friendly product grid with categories and search", status: "done", notes: "POS page" },
       { name: "POS Barcode Scanning", description: "Scan barcodes to add products to POS cart", status: "done" },
-      { name: "POS Customer Lookup", description: "Search and attach customer to POS sale", status: "partial" },
-      { name: "POS Discount Application", description: "Apply line-item or cart-level discounts in POS", status: "partial" },
+      { name: "POS Customer Lookup", description: "Search and attach customer to POS sale", status: "done", notes: "Customer search by name/email/phone in POS cart panel with dropdown results, selected customer displayed with clear button, attached to order on sale completion" },
+      { name: "POS Discount Application", description: "Apply line-item or cart-level discounts in POS", status: "done", notes: "Per-item discount button with percent/fixed toggle, discount dialog, applied discount badge with remove, total discount shown in cart summary" },
       { name: "POS Cash Drawer Integration", description: "Open cash drawer on cash payment via hardware API", status: "not_started" },
       { name: "POS Receipt Printer", description: "Print receipts to thermal receipt printer", status: "not_started" },
       { name: "POS Card Terminal Integration", description: "Connect to EFTPOS/card terminal for tap-to-pay", status: "not_started" },
