@@ -11,12 +11,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
-interface OrderNotification {
+interface Notification {
   id: string;
-  order_number: string;
-  total: number;
+  type: "order" | "customer" | "review";
+  title: string;
+  detail: string;
   created_at: string;
   read: boolean;
+  link: string;
 }
 
 export function NotificationBell() {
