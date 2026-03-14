@@ -150,12 +150,12 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                     <span className="font-bold">{storeName || "Store"}</span>
                   </div>
                   <nav className="flex flex-col gap-1 p-3">
-                    <Link to={basePath || "/"} className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
-                    <Link to={`${basePath}/products`} className="text-sm font-medium hover:text-primary transition-colors">All Products</Link>
+                    <Link to={basePath || "/"} className="text-sm font-medium hover:text-primary hover:bg-muted rounded-md px-3 py-2 transition-colors">Home</Link>
+                    <Link to={`${basePath}/products`} className="text-sm font-medium hover:text-primary hover:bg-muted rounded-md px-3 py-2 transition-colors">All Products</Link>
                     {user ? (
-                      <Link to={`${basePath}/account`} className="text-sm font-medium hover:text-primary transition-colors">My Account</Link>
+                      <Link to={`${basePath}/account`} className="text-sm font-medium hover:text-primary hover:bg-muted rounded-md px-3 py-2 transition-colors">My Account</Link>
                     ) : (
-                      <Link to={`${basePath}/login`} className="text-sm font-medium hover:text-primary transition-colors">Sign In</Link>
+                      <Link to={`${basePath}/login`} className="text-sm font-medium hover:text-primary hover:bg-muted rounded-md px-3 py-2 transition-colors">Sign In</Link>
                     )}
                   </nav>
                 </SheetContent>
