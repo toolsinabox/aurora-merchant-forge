@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface ImportRequest {
-  action: string; // import_products, import_categories, import_customers, import_orders, import_content, import_vouchers, import_suppliers, import_warehouses, import_rma, import_shipping, import_templates, import_theme_css
+  action: string;
   store_id: string;
   source_data: any;
   store_domain?: string;
@@ -37,7 +37,6 @@ serve(async (req) => {
     let failed = 0;
     const errors: string[] = [];
 
-    // Helper to log each entity mapping
     const logEntity = async (entityType: string, sourceId: string, targetId: string) => {
       if (migration_job_id) {
         await supabase.from("migration_entity_logs").insert({
@@ -46,7 +45,7 @@ serve(async (req) => {
           source_id: sourceId,
           target_id: targetId,
           status: "success",
-        } as any);
+        } as any).catch(() => {});
       }
     };
 
@@ -57,10 +56,22 @@ serve(async (req) => {
 
       for (const p of products) {
         try {
-          const productData = {
+          // Build images array from Maropost Images field
+          let imagesArr: string[] = [];
+          if (p.Images) {
+            const imgs = Array.isArray(p.Images) ? p.Images : [p.Images];
+            for (const img of imgs) {
+              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL;
+              if (url) imagesArr.push(url);
+            }
+          }
+
+          const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
+
+          const productData: Record<string, any> = {
             store_id,
-            name: p.Name || p.Model || "Untitled Product",
-            slug: (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+            title: p.Name || p.Model || "Untitled Product",
+            slug,
             sku: p.ParentSKU || p.Model || null,
             barcode: p.Barcode || null,
             brand: p.Brand || null,
@@ -70,119 +81,119 @@ serve(async (req) => {
             compare_at_price: parseFloat(p.RRP) || null,
             cost_price: parseFloat(p.CostPrice) || null,
             promo_price: parseFloat(p.PromotionPrice) || null,
-            weight: parseFloat(p.ShippingWeight) || null,
             status: p.IsActive === "True" ? "active" : "draft",
             is_active: p.IsActive === "True",
             seo_title: p.SEOPageTitle || null,
             seo_description: p.SEOMetaDescription || null,
-            tags: p.Tags ? (Array.isArray(p.Tags) ? p.Tags : p.Tags.split(",").map((t: string) => t.trim())) : [],
+            tags: p.Tags ? (Array.isArray(p.Tags) ? p.Tags : String(p.Tags).split(",").map((t: string) => t.trim()).filter(Boolean)) : [],
+            images: imagesArr,
             features: p.Features || null,
             specifications: p.Specifications || null,
             warranty: p.Warranty || null,
             search_keywords: p.SearchKeywords || null,
-            tax_category: p.TaxCategory || null,
-            is_taxable: p.TaxFreeItem !== "True",
-            sort_order: parseInt(p.SortOrder) || 0,
+            tax_free: p.TaxFreeItem === "True",
+            tax_inclusive: p.TaxInclusive === "True",
             custom_label: p.CustomLabel || null,
             subtitle: p.SubType || null,
+            model_number: p.Model || null,
           };
 
-          const { data: inserted, error: insertErr } = await supabase
-            .from("products")
-            .upsert(productData as any, { onConflict: "store_id,slug" })
-            .select("id")
-            .single();
+          // Check if product with same SKU exists
+          let productId: string;
+          if (p.ParentSKU) {
+            const { data: existing } = await supabase
+              .from("products")
+              .select("id")
+              .eq("store_id", store_id)
+              .eq("sku", p.ParentSKU)
+              .maybeSingle();
 
-          if (insertErr) throw insertErr;
-          const productId = inserted.id;
+            if (existing) {
+              await supabase.from("products").update(productData).eq("id", existing.id);
+              productId = existing.id;
+            } else {
+              const { data: inserted, error: insertErr } = await supabase
+                .from("products").insert(productData).select("id").single();
+              if (insertErr) throw insertErr;
+              productId = inserted.id;
+            }
+          } else {
+            const { data: inserted, error: insertErr } = await supabase
+              .from("products").insert(productData).select("id").single();
+            if (insertErr) throw insertErr;
+            productId = inserted.id;
+          }
 
           // Import product shipping dimensions
-          if (p.ShippingLength || p.ShippingWidth || p.ShippingHeight) {
+          if (p.ShippingLength || p.ShippingWidth || p.ShippingHeight || p.ShippingWeight) {
             await supabase.from("product_shipping").upsert({
               product_id: productId,
               store_id,
-              length: parseFloat(p.ShippingLength) || null,
-              width: parseFloat(p.ShippingWidth) || null,
-              height: parseFloat(p.ShippingHeight) || null,
-              weight: parseFloat(p.ShippingWeight) || null,
-              cubic_weight: parseFloat(p.CubicWeight) || null,
-            } as any, { onConflict: "product_id" });
+              shipping_length: parseFloat(p.ShippingLength) || null,
+              shipping_width: parseFloat(p.ShippingWidth) || null,
+              shipping_height: parseFloat(p.ShippingHeight) || null,
+              shipping_weight: parseFloat(p.ShippingWeight) || null,
+              shipping_cubic: parseFloat(p.CubicWeight) || null,
+              actual_length: parseFloat(p.ItemLength) || null,
+              actual_width: parseFloat(p.ItemWidth) || null,
+              actual_height: parseFloat(p.ItemHeight) || null,
+            } as any, { onConflict: "product_id" }).catch(() => {});
           }
 
-          // Import product images
-          if (p.Images?.length) {
-            const images = Array.isArray(p.Images) ? p.Images : [p.Images];
-            for (let i = 0; i < images.length; i++) {
-              const img = images[i];
-              const imageUrl = typeof img === "string" ? img : img?.URL || img?.ThumbURL;
-              if (imageUrl) {
-                await supabase.from("product_images").insert({
-                  product_id: productId,
-                  store_id,
-                  url: imageUrl,
-                  alt_text: p.Name || "",
-                  sort_order: i,
-                  is_primary: i === 0,
-                } as any);
+          // Import pricing tiers
+          if (p.PriceGroups) {
+            const pgRoot = Array.isArray(p.PriceGroups) ? p.PriceGroups : [p.PriceGroups];
+            for (const pgItem of pgRoot) {
+              const groups = pgItem?.PriceGroup ? (Array.isArray(pgItem.PriceGroup) ? pgItem.PriceGroup : [pgItem.PriceGroup]) : [];
+              for (const pg of groups) {
+                if (parseFloat(pg.Price) > 0) {
+                  await supabase.from("product_pricing_tiers").insert({
+                    product_id: productId,
+                    store_id,
+                    tier_name: pg.Group || "Default",
+                    min_quantity: parseInt(pg.MinimumQuantity) || 1,
+                    price: parseFloat(pg.Price) || 0,
+                    user_group: pg.Group || null,
+                  } as any).catch(() => {});
+                }
               }
             }
           }
 
-          // Import pricing tiers
-          if (p.PriceGroups?.length) {
-            const groups = Array.isArray(p.PriceGroups) ? p.PriceGroups : [p.PriceGroups];
-            for (const pg of groups) {
-              await supabase.from("product_pricing_tiers").insert({
-                product_id: productId,
-                store_id,
-                group_name: pg.Group || "Default",
-                min_quantity: parseInt(pg.MinQuantity) || 1,
-                price: parseFloat(pg.Price) || 0,
-              } as any);
-            }
-          }
-
           // Import variants
-          if (p.VariantInventory?.length) {
+          if (p.VariantInventory) {
             const variants = Array.isArray(p.VariantInventory) ? p.VariantInventory : [p.VariantInventory];
             for (const v of variants) {
-              await supabase.from("product_variants").insert({
-                product_id: productId,
-                store_id,
-                sku: v.SKU || null,
-                name: v.VariationName || v.SKU || "Variant",
-                price: parseFloat(v.DefaultPrice) || null,
-                stock_quantity: parseInt(v.Quantity) || 0,
-                is_active: true,
-              } as any);
+              if (v && v.SKU) {
+                await supabase.from("product_variants").insert({
+                  product_id: productId,
+                  store_id,
+                  sku: v.SKU || null,
+                  name: v.VariationName || v.SKU || "Variant",
+                  price: parseFloat(v.DefaultPrice) || null,
+                  stock: parseInt(v.Quantity) || 0,
+                } as any).catch(() => {});
+              }
             }
           }
 
-          // Import cross-sell / up-sell relations
-          if (p.CrossSellProducts || p.UpsellProducts) {
-            // Store as JSON for later resolution (product IDs need mapping)
-            await supabase.from("product_relations").upsert({
-              product_id: productId,
-              store_id,
-              cross_sell_skus: p.CrossSellProducts || null,
-              upsell_skus: p.UpsellProducts || null,
-            } as any, { onConflict: "product_id" }).catch(() => {});
-          }
-
-          // Import item specifics as product_specifics
-          if (p.ItemSpecifics?.length) {
-            const specs = Array.isArray(p.ItemSpecifics) ? p.ItemSpecifics : [p.ItemSpecifics];
-            for (const spec of specs) {
-              await supabase.from("product_specifics").insert({
-                product_id: productId,
-                store_id,
-                name: spec.Name || spec.Label || "Spec",
-                value: spec.Value || "",
-              } as any).catch(() => {});
+          // Import item specifics
+          if (p.ItemSpecifics) {
+            const specsRoot = Array.isArray(p.ItemSpecifics) ? p.ItemSpecifics : [p.ItemSpecifics];
+            for (const specItem of specsRoot) {
+              const spec = specItem?.ItemSpecific || specItem;
+              if (spec && typeof spec === "object" && spec.Name && spec.Value) {
+                await supabase.from("product_specifics").insert({
+                  product_id: productId,
+                  store_id,
+                  name: spec.Name || spec.Label || "Spec",
+                  value: spec.Value || "",
+                } as any).catch(() => {});
+              }
             }
           }
 
-          await logEntity("product", p.ID || p.ParentSKU, productId);
+          await logEntity("product", p.ID || p.ParentSKU || slug, productId);
           imported++;
         } catch (err: any) {
           failed++;
@@ -196,29 +207,42 @@ serve(async (req) => {
       const items = source_data?.Category || source_data || [];
       const categories = Array.isArray(items) ? items : [items];
 
-      // First pass: create all categories
       const idMap: Record<string, string> = {};
       for (const c of categories) {
         try {
+          const slug = (c.CategoryReference || c.CategoryName || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `cat-${Date.now()}`;
+
+          // Check if exists by slug
+          const { data: existing } = await supabase
+            .from("categories")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("slug", slug)
+            .maybeSingle();
+
           const catData = {
             store_id,
             name: c.CategoryName || "Untitled",
-            slug: (c.CategoryReference || c.CategoryName || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            slug,
             description: c.Description || c.ShortDescription || null,
             sort_order: parseInt(c.SortOrder) || 0,
             seo_title: c.SEOPageTitle || null,
             seo_description: c.SEOMetaDescription || null,
           };
 
-          const { data: inserted, error } = await supabase
-            .from("categories")
-            .upsert(catData as any, { onConflict: "store_id,slug" })
-            .select("id")
-            .single();
+          let catId: string;
+          if (existing) {
+            await supabase.from("categories").update(catData).eq("id", existing.id);
+            catId = existing.id;
+          } else {
+            const { data: inserted, error } = await supabase
+              .from("categories").insert(catData).select("id").single();
+            if (error) throw error;
+            catId = inserted.id;
+          }
 
-          if (error) throw error;
-          idMap[c.CategoryID] = inserted.id;
-          await logEntity("category", c.CategoryID, inserted.id);
+          idMap[c.CategoryID] = catId;
+          await logEntity("category", c.CategoryID, catId);
           imported++;
         } catch (err: any) {
           failed++;
@@ -229,7 +253,7 @@ serve(async (req) => {
       // Second pass: link parent/child
       for (const c of categories) {
         if (c.ParentCategoryID && c.ParentCategoryID !== "0" && idMap[c.CategoryID] && idMap[c.ParentCategoryID]) {
-          await supabase.from("categories").update({ parent_id: idMap[c.ParentCategoryID] } as any).eq("id", idMap[c.CategoryID]);
+          await supabase.from("categories").update({ parent_id: idMap[c.ParentCategoryID] }).eq("id", idMap[c.CategoryID]).catch(() => {});
         }
       }
     }
@@ -254,11 +278,7 @@ serve(async (req) => {
           };
 
           const { data: inserted, error } = await supabase
-            .from("customers")
-            .insert(custData as any)
-            .select("id")
-            .single();
-
+            .from("customers").insert(custData).select("id").single();
           if (error) throw error;
 
           // Import addresses
@@ -267,31 +287,33 @@ serve(async (req) => {
             if (addr) {
               const addresses = Array.isArray(addr) ? addr : [addr];
               for (const a of addresses) {
-                await supabase.from("customer_addresses").insert({
-                  customer_id: inserted.id,
-                  store_id,
-                  address_type: addrType === "BillingAddress" ? "billing" : "shipping",
-                  first_name: a.FirstName || c.Name || "",
-                  last_name: a.LastName || c.Surname || "",
-                  company: a.Company || c.CompanyName || null,
-                  address_1: a.StreetAddress1 || a.Address1 || "",
-                  address_2: a.StreetAddress2 || a.Address2 || null,
-                  city: a.City || "",
-                  state: a.State || "",
-                  postcode: a.PostCode || "",
-                  country: a.Country || "AU",
-                  phone: a.Phone || c.Phone || null,
-                  is_default: true,
-                } as any).catch(() => {});
+                if (a && (a.StreetAddress1 || a.Address1 || a.City)) {
+                  await supabase.from("customer_addresses").insert({
+                    customer_id: inserted.id,
+                    store_id,
+                    address_type: addrType === "BillingAddress" ? "billing" : "shipping",
+                    first_name: a.FirstName || c.Name || "",
+                    last_name: a.LastName || c.Surname || "",
+                    company: a.Company || c.CompanyName || null,
+                    address_1: a.StreetAddress1 || a.Address1 || "",
+                    address_2: a.StreetAddress2 || a.Address2 || null,
+                    city: a.City || "",
+                    state: a.State || "",
+                    postcode: a.PostCode || "",
+                    country: a.Country || "AU",
+                    phone: a.Phone || c.Phone || null,
+                    is_default: true,
+                  }).catch(() => {});
+                }
               }
             }
           }
 
-          await logEntity("customer", c.Username || c.Email, inserted.id);
+          await logEntity("customer", c.Username || c.EmailAddress || c.Email, inserted.id);
           imported++;
         } catch (err: any) {
           failed++;
-          errors.push(`Customer ${c.Username || c.Email}: ${err.message}`);
+          errors.push(`Customer ${c.Username || c.EmailAddress}: ${err.message}`);
         }
       }
     }
@@ -310,27 +332,30 @@ serve(async (req) => {
 
       for (const o of orders) {
         try {
-          const orderData = {
+          const grandTotal = parseFloat(o.GrandTotal) || 0;
+          const taxTotal = parseFloat(o.TaxTotal) || 0;
+          const shippingTotal = parseFloat(o.ShippingTotal) || 0;
+          const discountTotal = parseFloat(o.DiscountTotal) || 0;
+
+          const orderData: Record<string, any> = {
             store_id,
             order_number: `MP-${o.OrderID}`,
             status: statusMap[o.Status] || "pending",
-            subtotal: parseFloat(o.GrandTotal) - parseFloat(o.TaxTotal || "0") - parseFloat(o.ShippingTotal || "0"),
-            tax: parseFloat(o.TaxTotal) || 0,
-            shipping_cost: parseFloat(o.ShippingTotal) || 0,
-            discount: parseFloat(o.DiscountTotal) || 0,
-            total: parseFloat(o.GrandTotal) || 0,
+            subtotal: grandTotal - taxTotal - shippingTotal,
+            tax: taxTotal,
+            shipping: shippingTotal,
+            discount: discountTotal,
+            total: grandTotal,
             notes: o.InternalOrderNotes || null,
-            shipping_method: o.ShippingOption || null,
-            delivery_instructions: o.DeliveryInstruction || null,
             created_at: o.DatePlaced || new Date().toISOString(),
           };
 
-          const { data: inserted, error } = await supabase
-            .from("orders")
-            .insert(orderData as any)
-            .select("id")
-            .single();
+          // Link shipping/billing address as JSON
+          if (o.ShipAddress) orderData.shipping_address = o.ShipAddress;
+          if (o.BillAddress) orderData.billing_address = o.BillAddress;
 
+          const { data: inserted, error } = await supabase
+            .from("orders").insert(orderData).select("id").single();
           if (error) throw error;
 
           // Import order line items
@@ -340,12 +365,11 @@ serve(async (req) => {
               await supabase.from("order_items").insert({
                 order_id: inserted.id,
                 store_id,
-                product_name: line.ProductName || line.ItemDescription || "",
+                title: line.ProductName || line.ItemDescription || "Item",
                 sku: line.SKU || null,
                 quantity: parseInt(line.Quantity) || 1,
                 unit_price: parseFloat(line.UnitPrice) || 0,
-                total: parseFloat(line.LineTotal) || parseFloat(line.UnitPrice) * parseInt(line.Quantity || "1"),
-                tax: parseFloat(line.TaxAmount) || 0,
+                total: parseFloat(line.LineTotal) || (parseFloat(line.UnitPrice || "0") * parseInt(line.Quantity || "1")),
               } as any).catch(() => {});
             }
           }
@@ -358,10 +382,8 @@ serve(async (req) => {
                 order_id: inserted.id,
                 store_id,
                 amount: parseFloat(pay.Amount) || 0,
-                method: pay.PaymentMethod || "unknown",
-                status: "completed",
-                transaction_id: pay.TransactionID || null,
-                paid_at: pay.DatePaid || o.DatePaid || new Date().toISOString(),
+                payment_method: pay.PaymentMethod || "unknown",
+                reference: pay.TransactionID || null,
               } as any).catch(() => {});
             }
           }
@@ -382,10 +404,19 @@ serve(async (req) => {
 
       for (const p of pages) {
         try {
+          const slug = (p.ContentReference || p.ContentName || `page-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `page-${Date.now()}`;
+
+          const { data: existing } = await supabase
+            .from("content_pages")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("slug", slug)
+            .maybeSingle();
+
           const pageData = {
             store_id,
             title: p.ContentName || "Untitled Page",
-            slug: (p.ContentReference || p.ContentName || `page-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            slug,
             content: p.Description || p.ShortDescription || "",
             page_type: p.ContentType === "blog" ? "blog" : "page",
             status: p.Active === "True" ? "published" : "draft",
@@ -396,14 +427,14 @@ serve(async (req) => {
             published_at: p.DatePosted || null,
           };
 
-          const { data: inserted, error } = await supabase
-            .from("content_pages")
-            .upsert(pageData as any, { onConflict: "store_id,slug" })
-            .select("id")
-            .single();
+          if (existing) {
+            await supabase.from("content_pages").update(pageData).eq("id", existing.id);
+          } else {
+            const { error } = await supabase.from("content_pages").insert(pageData);
+            if (error) throw error;
+          }
 
-          if (error) throw error;
-          await logEntity("content", p.ContentID, inserted.id);
+          await logEntity("content", p.ContentID, existing?.id || "new");
           imported++;
         } catch (err: any) {
           failed++;
@@ -430,7 +461,7 @@ serve(async (req) => {
             recipient_name: v.RecipientName || null,
             sender_name: v.SenderName || null,
             message: v.Message || null,
-          } as any);
+          });
           imported++;
         } catch (err: any) {
           failed++;
@@ -455,7 +486,7 @@ serve(async (req) => {
             address: [s.Address1, s.Address2, s.City, s.State, s.PostCode, s.Country].filter(Boolean).join(", ") || null,
             lead_time_days: parseInt(s.LeadTime) || null,
             notes: s.Notes || null,
-          } as any);
+          });
           imported++;
         } catch (err: any) {
           failed++;
@@ -476,7 +507,7 @@ serve(async (req) => {
             name: w.WarehouseName || w.Name || "Warehouse",
             address: [w.Address1, w.Address2, w.City, w.State, w.PostCode, w.Country].filter(Boolean).join(", ") || null,
             type: "warehouse",
-          } as any);
+          });
           imported++;
         } catch (err: any) {
           failed++;
@@ -495,10 +526,9 @@ serve(async (req) => {
           await supabase.from("shipping_zones").insert({
             store_id,
             name: m.ShippingMethodName || m.Name || "Shipping Method",
-            type: m.Type || "flat_rate",
-            is_active: m.Active !== "False",
-            base_rate: parseFloat(m.Rate) || 0,
-          } as any);
+            rate_type: m.Type || "flat_rate",
+            flat_rate: parseFloat(m.Rate) || 0,
+          });
           imported++;
         } catch (err: any) {
           failed++;
@@ -516,12 +546,11 @@ serve(async (req) => {
         try {
           await supabase.from("returns").insert({
             store_id,
-            return_number: `RMA-${r.RmaID || Date.now()}`,
             reason: r.Reason || r.ReturnReason || null,
             status: r.Status === "Approved" ? "approved" : r.Status === "Complete" ? "completed" : "pending",
             notes: r.Notes || null,
             created_at: r.DateCreated || new Date().toISOString(),
-          } as any);
+          });
           imported++;
         } catch (err: any) {
           failed++;
@@ -532,27 +561,10 @@ serve(async (req) => {
 
     // ── IMPORT THEME / CSS ──
     else if (action === "import_theme_css") {
-      // source_data contains { templates: [...], css: string, js: string }
       try {
-        if (source_data.css) {
-          await supabase.from("store_settings" as any).upsert({
-            store_id,
-            setting_key: "custom_css",
-            setting_value: source_data.css,
-          }, { onConflict: "store_id,setting_key" });
-          imported++;
-        }
-        if (source_data.js) {
-          await supabase.from("store_settings" as any).upsert({
-            store_id,
-            setting_key: "custom_js",
-            setting_value: source_data.js,
-          }, { onConflict: "store_id,setting_key" });
-          imported++;
-        }
         if (source_data.templates) {
           for (const tpl of source_data.templates) {
-            await supabase.from("store_templates" as any).upsert({
+            await supabase.from("store_templates").upsert({
               store_id,
               slug: tpl.slug,
               name: tpl.name,
@@ -560,7 +572,18 @@ serve(async (req) => {
               content: tpl.content,
               custom_css: tpl.custom_css || null,
               is_active: true,
-            }, { onConflict: "store_id,slug" });
+            } as any, { onConflict: "store_id,slug" }).catch(() => {
+              // If upsert fails, try insert
+              return supabase.from("store_templates").insert({
+                store_id,
+                slug: tpl.slug,
+                name: tpl.name,
+                template_type: tpl.template_type || "page",
+                content: tpl.content,
+                custom_css: tpl.custom_css || null,
+                is_active: true,
+              } as any);
+            });
             imported++;
           }
         }
@@ -574,15 +597,11 @@ serve(async (req) => {
     if (migration_job_id) {
       await supabase.from("migration_jobs").update({
         progress: { imported, failed, errors: errors.slice(0, 50) },
-        updated_at: new Date().toISOString(),
-      } as any).eq("id", migration_job_id);
+      } as any).eq("id", migration_job_id).catch(() => {});
     }
 
     return new Response(JSON.stringify({
-      success: true,
-      action,
-      imported,
-      failed,
+      success: true, action, imported, failed,
       errors: errors.slice(0, 50),
     }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },

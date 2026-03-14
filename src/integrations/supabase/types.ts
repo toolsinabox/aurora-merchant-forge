@@ -976,6 +976,81 @@ export type Database = {
           },
         ]
       }
+      customer_addresses: {
+        Row: {
+          address_1: string | null
+          address_2: string | null
+          address_type: string
+          city: string | null
+          company: string | null
+          country: string | null
+          created_at: string
+          customer_id: string
+          first_name: string | null
+          id: string
+          is_default: boolean | null
+          last_name: string | null
+          phone: string | null
+          postcode: string | null
+          state: string | null
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          address_1?: string | null
+          address_2?: string | null
+          address_type?: string
+          city?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id: string
+          first_name?: string | null
+          id?: string
+          is_default?: boolean | null
+          last_name?: string | null
+          phone?: string | null
+          postcode?: string | null
+          state?: string | null
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          address_1?: string | null
+          address_2?: string | null
+          address_type?: string
+          city?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string
+          customer_id?: string
+          first_name?: string | null
+          id?: string
+          is_default?: boolean | null
+          last_name?: string | null
+          phone?: string | null
+          postcode?: string | null
+          state?: string | null
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_addresses_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_addresses_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_communications: {
         Row: {
           body: string | null

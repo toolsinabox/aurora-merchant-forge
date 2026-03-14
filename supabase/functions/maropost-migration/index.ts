@@ -98,7 +98,7 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
   test_connection: ["ID", "Name", "Model"],
 };
 
-// Max page sizes per entity (Maropost has response size limits with large OutputSelectors)
+// Max page sizes per entity — scan_mode can use larger pages since fields are minimal
 const MAX_PAGE_SIZE: Record<string, number> = {
   get_products: 20,    // Products have 60+ fields, must keep small
   get_categories: 200,
@@ -112,6 +112,21 @@ const MAX_PAGE_SIZE: Record<string, number> = {
   get_warehouses: 100,
   get_shipping: 100,
   get_currency: 100,
+};
+
+const SCAN_MAX_PAGE_SIZE: Record<string, number> = {
+  get_products: 200,
+  get_categories: 500,
+  get_customers: 500,
+  get_orders: 200,
+  get_content: 500,
+  get_vouchers: 500,
+  get_suppliers: 500,
+  get_rma: 500,
+  get_payments: 500,
+  get_warehouses: 500,
+  get_shipping: 500,
+  get_currency: 500,
 };
 
 serve(async (req) => {
@@ -141,16 +156,17 @@ serve(async (req) => {
       : (OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection);
 
     // Enforce max page sizes per entity to avoid Maropost response size limits
-    const maxLimit = MAX_PAGE_SIZE[action] || 100;
+    const pageLimits = scan_mode ? SCAN_MAX_PAGE_SIZE : MAX_PAGE_SIZE;
+    const maxLimit = pageLimits[action] || 100;
     const effectiveLimit = Math.min(limit, maxLimit);
     
     // Maropost API requires specific filter keys per entity type to return data
     const DEFAULT_FILTERS: Record<string, Record<string, unknown>> = {
-      get_products: { IsActive: ["True"] },
-      get_categories: { Active: ["True"] },
+      get_products: { IsActive: ["True", "False"] }, // Get ALL products including inactive
+      get_categories: { Active: ["True", "False"] },
       get_customers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_orders: { DatePlacedFrom: "2000-01-01 00:00:00", DatePlacedTo: "2030-01-01 00:00:00" },
-      get_content: { Active: ["True"] },
+      get_content: { Active: ["True", "False"] },
       get_vouchers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_suppliers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_rma: { DateIssuedFrom: "2000-01-01 00:00:00", DateIssuedTo: "2030-01-01 00:00:00" },

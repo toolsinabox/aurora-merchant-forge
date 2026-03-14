@@ -124,6 +124,16 @@ export default function MaropostMigration() {
     }
   };
 
+  const countItems = (responseData: any): number => {
+    if (!responseData) return 0;
+    const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
+    if (keys.length === 0) return 0;
+    const items = responseData[keys[0]];
+    if (Array.isArray(items)) return items.length;
+    if (items && typeof items === "object") return 1;
+    return 0;
+  };
+
   const scanStore = async () => {
     setScanning(true);
     addLog("Starting store scan...");
@@ -132,48 +142,34 @@ export default function MaropostMigration() {
     for (const entity of MIGRATION_ENTITIES) {
       try {
         addLog(`Scanning ${entity.label}...`);
-        // Use a small page to detect presence, but let the edge function handle filters
-        const { data } = await supabase.functions.invoke("maropost-migration", {
-          body: {
-            action: FETCH_ACTION_MAP[entity.entity] || "test_connection",
-            store_domain: storeDomain, api_key: apiKey,
-            page: 0,
-            limit: 10,
-          },
-        });
+        // Use scan_mode for fast counting with minimal fields
+        let totalCount = 0;
+        let page = 0;
+        let hasMore = true;
+        const scanLimit = 200; // Scan pages
 
-        const responseData = data?.data;
-        let count = 0;
-        if (responseData) {
-          const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
-          if (keys.length > 0) {
-            const items = responseData[keys[0]];
-            if (Array.isArray(items)) count = items.length;
-            else if (items && typeof items === "object") count = 1;
-            // If we got the max (10), there are likely more pages
-            if (count >= 10) {
-              // Fetch a larger page to better estimate
-              const { data: bigPage } = await supabase.functions.invoke("maropost-migration", {
-                body: {
-                  action: FETCH_ACTION_MAP[entity.entity] || "test_connection",
-                  store_domain: storeDomain, api_key: apiKey,
-                  page: 0, limit: 1000,
-                },
-              });
-              const bigData = bigPage?.data;
-              if (bigData) {
-                const bKeys = Object.keys(bigData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
-                if (bKeys.length > 0) {
-                  const bItems = bigData[bKeys[0]];
-                  count = Array.isArray(bItems) ? bItems.length : count;
-                }
-              }
-            }
+        while (hasMore) {
+          const { data } = await supabase.functions.invoke("maropost-migration", {
+            body: {
+              action: FETCH_ACTION_MAP[entity.entity] || "test_connection",
+              store_domain: storeDomain, api_key: apiKey,
+              page, limit: scanLimit, scan_mode: true,
+            },
+          });
+
+          const pageCount = countItems(data?.data);
+          totalCount += pageCount;
+
+          if (pageCount < scanLimit || page >= 50) {
+            hasMore = false;
+          } else {
+            page++;
+            addLog(`  … page ${page + 1} (${totalCount} so far)`);
           }
         }
 
-        addLog(`  → ${entity.label}: ${count} records found`);
-        scannedEntities.push({ ...entity, count, selected: count > 0, status: "pending", imported: 0, failed: 0, errors: [], pages: Math.max(1, Math.ceil(count / ITEMS_PER_PAGE)) });
+        addLog(`  → ${entity.label}: ${totalCount} records found`);
+        scannedEntities.push({ ...entity, count: totalCount, selected: totalCount > 0, status: "pending", imported: 0, failed: 0, errors: [], pages: Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE)) });
       } catch (err: any) {
         addLog(`  → ${entity.label}: scan failed (${err.message})`);
         scannedEntities.push({ ...entity, count: 0, selected: false, status: "pending", imported: 0, failed: 0, errors: [], pages: 0 });
