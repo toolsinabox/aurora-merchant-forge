@@ -104,15 +104,15 @@ export default function Adverts() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Adverts & Promotions</h1>
-            <p className="text-muted-foreground">Manage banner ads, carousel slides, and promotional placements</p>
+            <h1 className="text-lg font-semibold">Adverts & Promotions</h1>
+            <p className="text-xs text-muted-foreground">Manage banner ads, carousel slides, and promotional placements</p>
           </div>
           <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) { setEditId(null); setForm(emptyForm); } }}>
             <DialogTrigger asChild>
-              <Button className="gap-2"><Plus className="h-4 w-4" /> New Advert</Button>
+              <Button size="sm" className="gap-1.5"><Plus className="h-3.5 w-3.5" /> New Advert</Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
