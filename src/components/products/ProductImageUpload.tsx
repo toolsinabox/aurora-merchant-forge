@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, X, Loader2, GripVertical } from "lucide-react";
+import { ImagePlus, X, Loader2, GripVertical, ArrowUp, ArrowDown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -66,6 +66,14 @@ export function ProductImageUpload({ storeId, productId, images, onImagesChange 
     onImagesChange(images.filter((_, i) => i !== index));
   }, [images, onImagesChange]);
 
+  const moveImage = useCallback((index: number, direction: "up" | "down") => {
+    const newIdx = direction === "up" ? index - 1 : index + 1;
+    if (newIdx < 0 || newIdx >= images.length) return;
+    const newImages = [...images];
+    [newImages[index], newImages[newIdx]] = [newImages[newIdx], newImages[index]];
+    onImagesChange(newImages);
+  }, [images, onImagesChange]);
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
@@ -102,8 +110,23 @@ export function ProductImageUpload({ storeId, productId, images, onImagesChange 
               >
                 <X className="h-3 w-3" />
               </button>
-              <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <GripVertical className="h-3.5 w-3.5 text-background drop-shadow" />
+              <div className="absolute bottom-1 left-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                {idx > 0 && (
+                  <button
+                    onClick={() => moveImage(idx, "up")}
+                    className="bg-background/80 backdrop-blur-sm rounded-full p-1 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowUp className="h-3 w-3" />
+                  </button>
+                )}
+                {idx < images.length - 1 && (
+                  <button
+                    onClick={() => moveImage(idx, "down")}
+                    className="bg-background/80 backdrop-blur-sm rounded-full p-1 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowDown className="h-3 w-3" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
