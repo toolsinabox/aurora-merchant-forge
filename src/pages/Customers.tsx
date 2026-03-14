@@ -1,12 +1,14 @@
 import { useState, useRef } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useCustomers } from "@/hooks/use-data";
+import { useCustomers, useCreateCustomer } from "@/hooks/use-data";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2 } from "lucide-react";
@@ -38,12 +40,15 @@ function downloadCSV(data: any[], filename: string) {
 export default function Customers() {
   const navigate = useNavigate();
   const { data: customers = [], isLoading } = useCustomers();
+  const createCustomer = useCreateCustomer();
   const { currentStore } = useAuth();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [segFilter, setSegFilter] = useState("all");
   const [importing, setImporting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({ name: "", email: "", phone: "", segment: "new" });
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || (c.email || "").toLowerCase().includes(search.toLowerCase());
@@ -125,7 +130,7 @@ export default function Customers() {
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
-            <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Customer</Button>
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> Add Customer</Button>
           </div>
         </div>
 
@@ -197,6 +202,57 @@ export default function Customers() {
             </Table>
           </CardContent>
         </Card>
+
+        <Dialog open={showCreate} onOpenChange={setShowCreate}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Customer</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs">Name *</Label>
+                <Input value={newCustomer.name} onChange={(e) => setNewCustomer(p => ({ ...p, name: e.target.value }))} placeholder="Customer name" className="h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs">Email</Label>
+                <Input type="email" value={newCustomer.email} onChange={(e) => setNewCustomer(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className="h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs">Phone</Label>
+                <Input value={newCustomer.phone} onChange={(e) => setNewCustomer(p => ({ ...p, phone: e.target.value }))} placeholder="+1 555-0100" className="h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs">Segment</Label>
+                <Select value={newCustomer.segment} onValueChange={(v) => setNewCustomer(p => ({ ...p, segment: v }))}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new" className="text-xs">New</SelectItem>
+                    <SelectItem value="returning" className="text-xs">Returning</SelectItem>
+                    <SelectItem value="vip" className="text-xs">VIP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowCreate(false)}>Cancel</Button>
+              <Button size="sm" disabled={!newCustomer.name || createCustomer.isPending} onClick={() => {
+                createCustomer.mutate({
+                  name: newCustomer.name,
+                  email: newCustomer.email || undefined,
+                  phone: newCustomer.phone || undefined,
+                  segment: newCustomer.segment,
+                }, {
+                  onSuccess: () => {
+                    setShowCreate(false);
+                    setNewCustomer({ name: "", email: "", phone: "", segment: "new" });
+                  }
+                });
+              }}>
+                {createCustomer.isPending ? "Creating..." : "Create Customer"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
