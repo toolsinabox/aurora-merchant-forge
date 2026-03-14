@@ -162,11 +162,11 @@ serve(async (req) => {
     
     // Maropost API requires specific filter keys per entity type to return data
     const DEFAULT_FILTERS: Record<string, Record<string, unknown>> = {
-      get_products: { IsActive: ["True"] },
-      get_categories: { Active: ["True"] },
+      get_products: { IsActive: ["True", "False"] }, // Get ALL products including inactive
+      get_categories: { Active: ["True", "False"] },
       get_customers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_orders: { DatePlacedFrom: "2000-01-01 00:00:00", DatePlacedTo: "2030-01-01 00:00:00" },
-      get_content: { Active: ["True"] },
+      get_content: { Active: ["True", "False"] },
       get_vouchers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_suppliers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_rma: { DateIssuedFrom: "2000-01-01 00:00:00", DateIssuedTo: "2030-01-01 00:00:00" },
