@@ -144,7 +144,7 @@ export default function Coupons() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Discount Codes</h1>

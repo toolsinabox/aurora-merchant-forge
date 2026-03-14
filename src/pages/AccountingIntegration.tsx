@@ -108,7 +108,7 @@ export default function AccountingIntegration() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Accounting Integration</h1>
           <p className="text-xs text-muted-foreground">Connect your accounting software and configure chart of accounts mapping</p>

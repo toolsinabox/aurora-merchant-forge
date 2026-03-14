@@ -105,7 +105,7 @@ export default function LoyaltyProgram() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Loyalty Program</h1>
