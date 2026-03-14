@@ -132,6 +132,54 @@ export default function Subscriptions() {
     },
   });
 
+  const skipDelivery = useMutation({
+    mutationFn: async (id: string) => {
+      const sub = subs.find((s: any) => s.id === id);
+      if (!sub?.next_order_date) throw new Error("No next order date set");
+      const freqDays: Record<string, number> = {
+        weekly: 7, fortnightly: 14, monthly: 30, bimonthly: 60, quarterly: 90, biannual: 180, annual: 365,
+      };
+      const days = freqDays[sub.frequency] || 30;
+      const next = new Date(sub.next_order_date);
+      next.setDate(next.getDate() + days);
+      const { error } = await supabase.from("subscription_plans" as any)
+        .update({ next_order_date: next.toISOString().split("T")[0] }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["subscription_plans"] });
+      toast.success("Next delivery skipped");
+      setSkipDialogOpen(false);
+    },
+  });
+
+  const swapProduct = useMutation({
+    mutationFn: async ({ id, productId }: { id: string; productId: string }) => {
+      const product = products.find((p: any) => p.id === productId);
+      const { error } = await supabase.from("subscription_plans" as any)
+        .update({ product_id: productId, unit_price: product?.price || 0 }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["subscription_plans"] });
+      toast.success("Product swapped");
+      setSwapDialogOpen(false);
+    },
+  });
+
+  const changeQty = useMutation({
+    mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
+      const { error } = await supabase.from("subscription_plans" as any)
+        .update({ quantity }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["subscription_plans"] });
+      toast.success("Quantity updated");
+      setQtyDialogOpen(false);
+    },
+  });
+
   const activeSubs = subs.filter((s: any) => s.status === "active").length;
   const pausedSubs = subs.filter((s: any) => s.status === "paused").length;
   const cancelledSubs = subs.filter((s: any) => s.status === "cancelled").length;
