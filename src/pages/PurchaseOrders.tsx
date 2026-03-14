@@ -285,8 +285,8 @@ export default function PurchaseOrders() {
                           <Badge variant={statusColors[p.status] || "outline"} className="text-[10px]">{p.status}</Badge>
                         </SelectTrigger>
                         <SelectContent>
-                          {["draft", "sent", "partial", "received", "closed", "cancelled"].map(s => (
-                            <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>
+                          {["draft", "pending_approval", "sent", "partial", "received", "closed", "cancelled"].map(s => (
+                            <SelectItem key={s} value={s} className="text-xs capitalize">{s.replace("_", " ")}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
