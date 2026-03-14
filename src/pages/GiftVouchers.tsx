@@ -125,41 +125,41 @@ export default function GiftVouchers() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Gift Vouchers</h1>
-            <p className="text-sm text-muted-foreground">{vouchers.length} vouchers · ${totalValue.toFixed(2)} issued · ${totalBalance.toFixed(2)} outstanding</p>
+            <h1 className="text-lg font-semibold">Gift Vouchers</h1>
+            <p className="text-xs text-muted-foreground">{vouchers.length} vouchers · ${totalValue.toFixed(2)} issued · ${totalBalance.toFixed(2)} outstanding</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setForm({ ...emptyForm, code: generateCode() }); }}>
             <DialogTrigger asChild>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />Create Voucher</Button>
+              <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Create Voucher</Button>
             </DialogTrigger>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle>New Gift Voucher</DialogTitle>
+                <DialogTitle className="text-sm">New Gift Voucher</DialogTitle>
               </DialogHeader>
-              <div className="grid gap-4 py-2">
-                <div>
-                  <Label>Voucher Code</Label>
+              <div className="grid gap-3 py-2">
+                <div className="space-y-1">
+                  <Label className="text-xs">Voucher Code</Label>
                   <div className="flex gap-2">
-                    <Input value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} className="font-mono" />
-                    <Button variant="outline" size="icon" onClick={() => setForm({ ...form, code: generateCode() })} title="Generate new code"><Copy className="h-4 w-4" /></Button>
+                    <Input value={form.code} onChange={e => setForm({ ...form, code: e.target.value })} className="h-8 text-xs font-mono" />
+                    <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => setForm({ ...form, code: generateCode() })} title="Generate new code"><Copy className="h-3.5 w-3.5" /></Button>
                   </div>
                 </div>
-                <div>
-                  <Label>Value ($)</Label>
-                  <Input type="number" value={form.initial_value} onChange={e => setForm({ ...form, initial_value: Number(e.target.value) })} />
+                <div className="space-y-1">
+                  <Label className="text-xs">Value ($)</Label>
+                  <Input type="number" className="h-8 text-xs" value={form.initial_value} onChange={e => setForm({ ...form, initial_value: Number(e.target.value) })} />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div><Label>Recipient Name</Label><Input value={form.recipient_name} onChange={e => setForm({ ...form, recipient_name: e.target.value })} /></div>
-                  <div><Label>Recipient Email</Label><Input type="email" value={form.recipient_email} onChange={e => setForm({ ...form, recipient_email: e.target.value })} /></div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1"><Label className="text-xs">Recipient Name</Label><Input className="h-8 text-xs" value={form.recipient_name} onChange={e => setForm({ ...form, recipient_name: e.target.value })} /></div>
+                  <div className="space-y-1"><Label className="text-xs">Recipient Email</Label><Input className="h-8 text-xs" type="email" value={form.recipient_email} onChange={e => setForm({ ...form, recipient_email: e.target.value })} /></div>
                 </div>
-                <div><Label>Sender Name</Label><Input value={form.sender_name} onChange={e => setForm({ ...form, sender_name: e.target.value })} /></div>
-                <div><Label>Message</Label><Textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Happy birthday!" /></div>
-                <div><Label>Expires At</Label><Input type="date" value={form.expires_at} onChange={e => setForm({ ...form, expires_at: e.target.value })} /></div>
-                <div className="flex items-center gap-2"><Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} /><Label>Active</Label></div>
-                <Button onClick={() => createMutation.mutate()} disabled={!form.code || !form.initial_value || createMutation.isPending}>
+                <div className="space-y-1"><Label className="text-xs">Sender Name</Label><Input className="h-8 text-xs" value={form.sender_name} onChange={e => setForm({ ...form, sender_name: e.target.value })} /></div>
+                <div className="space-y-1"><Label className="text-xs">Message</Label><Textarea className="text-xs min-h-[60px]" value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} placeholder="Happy birthday!" /></div>
+                <div className="space-y-1"><Label className="text-xs">Expires At</Label><Input type="date" className="h-8 text-xs" value={form.expires_at} onChange={e => setForm({ ...form, expires_at: e.target.value })} /></div>
+                <div className="flex items-center gap-2"><Switch checked={form.is_active} onCheckedChange={v => setForm({ ...form, is_active: v })} /><Label className="text-xs">Active</Label></div>
+                <Button size="sm" className="w-full text-xs" onClick={() => createMutation.mutate()} disabled={!form.code || !form.initial_value || createMutation.isPending}>
                   {createMutation.isPending ? "Creating..." : "Create Voucher"}
                 </Button>
               </div>
@@ -167,45 +167,73 @@ export default function GiftVouchers() {
           </Dialog>
         </div>
 
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search vouchers..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger-children">
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center"><Gift className="h-4 w-4 text-primary" /></div>
+              <div><p className="text-2xs text-muted-foreground">Total</p><p className="text-lg font-bold">{vouchers.length}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-success/10 flex items-center justify-center"><Gift className="h-4 w-4 text-success" /></div>
+              <div><p className="text-2xs text-muted-foreground">Active</p><p className="text-lg font-bold">{vouchers.filter((v: any) => v.is_active).length}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-info/10 flex items-center justify-center"><Gift className="h-4 w-4 text-info" /></div>
+              <div><p className="text-2xs text-muted-foreground">Issued</p><p className="text-lg font-bold">${totalValue.toFixed(0)}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-warning/10 flex items-center justify-center"><Gift className="h-4 w-4 text-warning" /></div>
+              <div><p className="text-2xs text-muted-foreground">Outstanding</p><p className="text-lg font-bold">${totalBalance.toFixed(0)}</p></div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>
           <CardContent className="p-0">
+            <div className="flex items-center gap-2 p-3 border-b">
+              <div className="relative flex-1 max-w-xs">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Input placeholder="Search vouchers..." value={search} onChange={e => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
+              </div>
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Recipient</TableHead>
-                  <TableHead>Initial Value</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Expires</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-20"></TableHead>
+                  <TableHead className="text-xs h-8">Code</TableHead>
+                  <TableHead className="text-xs h-8">Recipient</TableHead>
+                  <TableHead className="text-xs h-8">Initial Value</TableHead>
+                  <TableHead className="text-xs h-8">Balance</TableHead>
+                  <TableHead className="text-xs h-8">Expires</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8 w-16"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No gift vouchers found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">No gift vouchers found</TableCell></TableRow>
                 ) : filtered.map((v: any) => (
-                  <TableRow key={v.id}>
-                    <TableCell className="font-mono font-medium text-sm">{v.code}</TableCell>
-                    <TableCell className="text-sm">
+                  <TableRow key={v.id} className="text-xs">
+                    <TableCell className="py-2 font-mono font-medium">{v.code}</TableCell>
+                    <TableCell className="py-2">
                       <div>{v.recipient_name || "—"}</div>
-                      {v.recipient_email && <div className="text-xs text-muted-foreground">{v.recipient_email}</div>}
+                      {v.recipient_email && <div className="text-2xs text-muted-foreground">{v.recipient_email}</div>}
                     </TableCell>
-                    <TableCell className="font-medium">${Number(v.initial_value).toFixed(2)}</TableCell>
-                    <TableCell className={Number(v.balance) === 0 ? "text-muted-foreground" : "font-medium text-primary"}>${Number(v.balance).toFixed(2)}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{v.expires_at ? format(new Date(v.expires_at), "dd MMM yyyy") : "Never"}</TableCell>
-                    <TableCell>
+                    <TableCell className="py-2 font-medium">${Number(v.initial_value).toFixed(2)}</TableCell>
+                    <TableCell className={`py-2 ${Number(v.balance) === 0 ? "text-muted-foreground" : "font-medium text-primary"}`}>${Number(v.balance).toFixed(2)}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{v.expires_at ? format(new Date(v.expires_at), "dd MMM yyyy") : "Never"}</TableCell>
+                    <TableCell className="py-2">
                       <Switch checked={v.is_active} onCheckedChange={active => toggleActive.mutate({ id: v.id, active })} />
                     </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(v.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <TableCell className="py-2">
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteMutation.mutate(v.id)}><Trash2 className="h-3 w-3" /></Button>
                     </TableCell>
                   </TableRow>
                 ))}

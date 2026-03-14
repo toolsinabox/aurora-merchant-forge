@@ -94,71 +94,91 @@ export default function Affiliates() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Affiliate Program</h1>
-            <p className="text-muted-foreground">Manage affiliates, referral codes, and commissions</p>
+            <h1 className="text-lg font-semibold">Affiliate Program</h1>
+            <p className="text-xs text-muted-foreground">Manage affiliates, referral codes, and commissions</p>
           </div>
-          <Button onClick={() => setShowCreate(true)} className="gap-2"><Plus className="h-4 w-4" /> Add Affiliate</Button>
+          <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> Add Affiliate</Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Total Affiliates</p><p className="text-2xl font-bold">{totalAffiliates}</p></CardContent></Card>
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Active</p><p className="text-2xl font-bold text-primary">{activeAffiliates}</p></CardContent></Card>
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Referred Revenue</p><p className="text-2xl font-bold">${totalRevenue.toFixed(2)}</p></CardContent></Card>
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Unpaid Commission</p><p className="text-2xl font-bold text-destructive">${unpaidCommission.toFixed(2)}</p></CardContent></Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 stagger-children">
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center"><Users className="h-4 w-4 text-primary" /></div>
+              <div><p className="text-2xs text-muted-foreground">Total</p><p className="text-lg font-bold">{totalAffiliates}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-success/10 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-success" /></div>
+              <div><p className="text-2xs text-muted-foreground">Active</p><p className="text-lg font-bold">{activeAffiliates}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-info/10 flex items-center justify-center"><DollarSign className="h-4 w-4 text-info" /></div>
+              <div><p className="text-2xs text-muted-foreground">Revenue</p><p className="text-lg font-bold">${totalRevenue.toFixed(0)}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-destructive/10 flex items-center justify-center"><DollarSign className="h-4 w-4 text-destructive" /></div>
+              <div><p className="text-2xs text-muted-foreground">Unpaid</p><p className="text-lg font-bold">${unpaidCommission.toFixed(0)}</p></div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>
-          <CardContent className="pt-4">
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Commission</TableHead>
-                  <TableHead>Referrals</TableHead>
-                  <TableHead>Revenue</TableHead>
-                  <TableHead>Unpaid</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead />
+                  <TableHead className="text-xs h-8">Name</TableHead>
+                  <TableHead className="text-xs h-8">Email</TableHead>
+                  <TableHead className="text-xs h-8">Code</TableHead>
+                  <TableHead className="text-xs h-8">Commission</TableHead>
+                  <TableHead className="text-xs h-8">Referrals</TableHead>
+                  <TableHead className="text-xs h-8">Revenue</TableHead>
+                  <TableHead className="text-xs h-8">Unpaid</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {affiliates.map((a: any) => (
-                  <TableRow key={a.id}>
-                    <TableCell className="font-medium">{a.name}</TableCell>
-                    <TableCell className="text-sm">{a.email}</TableCell>
-                    <TableCell>
+                  <TableRow key={a.id} className="text-xs">
+                    <TableCell className="py-2 font-medium">{a.name}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{a.email}</TableCell>
+                    <TableCell className="py-2">
                       <div className="flex items-center gap-1">
-                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{a.referral_code}</code>
+                        <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-[10px]">{a.referral_code}</code>
                         <Button size="sm" variant="ghost" className="h-5 w-5 p-0" onClick={() => { navigator.clipboard.writeText(a.referral_code); toast.success("Copied!"); }}>
-                          <Copy className="h-3 w-3" />
+                          <Copy className="h-2.5 w-2.5" />
                         </Button>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm">{a.commission_rate}{a.commission_type === "percentage" ? "%" : " flat"}</TableCell>
-                    <TableCell>{a.total_referrals}</TableCell>
-                    <TableCell>${Number(a.total_revenue).toFixed(2)}</TableCell>
-                    <TableCell className="font-medium text-destructive">${Number(a.unpaid_commission).toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge variant={a.status === "active" ? "default" : "secondary"}>{a.status}</Badge>
+                    <TableCell className="py-2">{a.commission_rate}{a.commission_type === "percentage" ? "%" : " flat"}</TableCell>
+                    <TableCell className="py-2">{a.total_referrals}</TableCell>
+                    <TableCell className="py-2">${Number(a.total_revenue).toFixed(2)}</TableCell>
+                    <TableCell className="py-2 font-medium text-destructive">${Number(a.unpaid_commission).toFixed(2)}</TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant={a.status === "active" ? "default" : "secondary"} className="text-[10px]">{a.status}</Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-2">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild><Button size="sm" variant="ghost" className="h-7 w-7 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                        <DropdownMenuTrigger asChild><Button size="sm" variant="ghost" className="h-6 w-6 p-0"><MoreHorizontal className="h-3.5 w-3.5" /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => { setSelectedAffiliate(a); setShowPayouts(true); }}>View Referrals</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toggleStatus(a.id, a.status)}>{a.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onClick={() => deleteAffiliate(a.id)}>Delete</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs" onClick={() => { setSelectedAffiliate(a); setShowPayouts(true); }}>View Referrals</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs" onClick={() => toggleStatus(a.id, a.status)}>{a.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs text-destructive" onClick={() => deleteAffiliate(a.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
-                {affiliates.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">No affiliates yet</TableCell></TableRow>}
+                {affiliates.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-xs text-muted-foreground py-8">No affiliates yet</TableCell></TableRow>}
               </TableBody>
             </Table>
           </CardContent>
