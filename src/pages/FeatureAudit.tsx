@@ -7624,7 +7624,7 @@ const shippingDeepFeatures: FeatureCategory[] = [
       { name: "Free Shipping Threshold", description: "Free shipping when order exceeds minimum amount", status: "done" },
       { name: "Free Shipping Coupon", description: "Coupon code that grants free shipping", status: "done", notes: "free_shipping field on coupons" },
       { name: "Shipping Zones (Country/State/Postcode)", description: "Define zones by country, state, or postcode range", status: "done", notes: "ShippingZones page" },
-      { name: "Postcode Range Restrictions", description: "Block or surcharge specific postcode ranges", status: "partial" },
+      { name: "Postcode Range Restrictions", description: "Block or surcharge specific postcode ranges", status: "done", notes: "ShippingZones ZoneForm has Blocked Postcodes section with comma-separated postcode ranges input and custom blocked message shown to customer at checkout" },
       { name: "Rural Delivery Surcharge", description: "Extra charge for rural/remote delivery postcodes", status: "done", notes: "ShippingZones ZoneForm has Rural/Remote Surcharge section with postcode ranges input (comma-separated ranges), surcharge amount, and configurable label" },
       { name: "Per-Product Shipping Override", description: "Override shipping rules per product (e.g., always free)", status: "done", notes: "free_shipping boolean and flat_rate_charge on product_shipping table, ProductForm Shipping tab with Free Shipping toggle and Flat Rate Charge input" },
       { name: "Shipping Method Display Order", description: "Control sort order of shipping options at checkout", status: "done" },
