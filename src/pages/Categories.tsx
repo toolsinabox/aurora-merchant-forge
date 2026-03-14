@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCategories, useCreateCategory, useDeleteCategory } from "@/hooks/use-data";
-import { Plus, ChevronRight, Folder, FolderOpen, Trash2, Edit, Save } from "lucide-react";
+import { Plus, ChevronRight, Folder, FolderOpen, Trash2, Edit, Save, ArrowUp, ArrowDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -33,8 +33,9 @@ function buildTree(cats: Cat[]): (Cat & { children: Cat[] })[] {
   }));
 }
 
-function CategoryItem({ category, children, onDelete, onEdit }: {
+function CategoryItem({ category, children, onDelete, onEdit, onMoveUp, onMoveDown, isFirst, isLast }: {
   category: Cat; children: Cat[]; onDelete: (id: string) => void; onEdit: (cat: Cat) => void;
+  onMoveUp?: () => void; onMoveDown?: () => void; isFirst?: boolean; isLast?: boolean;
 }) {
   const hasChildren = children.length > 0;
 
@@ -47,6 +48,8 @@ function CategoryItem({ category, children, onDelete, onEdit }: {
           <span className="text-2xs text-muted-foreground">/{category.slug}</span>
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100">
+          {onMoveUp && !isFirst && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveUp}><ArrowUp className="h-3 w-3" /></Button>}
+          {onMoveDown && !isLast && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveDown}><ArrowDown className="h-3 w-3" /></Button>}
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(category)}><Edit className="h-3 w-3" /></Button>
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onDelete(category.id)}><Trash2 className="h-3 w-3" /></Button>
         </div>
@@ -66,12 +69,16 @@ function CategoryItem({ category, children, onDelete, onEdit }: {
           </div>
         </CollapsibleTrigger>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 pr-2">
+          {onMoveUp && !isFirst && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveUp}><ArrowUp className="h-3 w-3" /></Button>}
+          {onMoveDown && !isLast && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveDown}><ArrowDown className="h-3 w-3" /></Button>}
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(category)}><Edit className="h-3 w-3" /></Button>
         </div>
       </div>
       <CollapsibleContent className="pl-5">
-        {children.map((child) => (
-          <CategoryItem key={child.id} category={child} children={[]} onDelete={onDelete} onEdit={onEdit} />
+        {children.map((child, idx) => (
+          <CategoryItem key={child.id} category={child} children={[]} onDelete={onDelete} onEdit={onEdit}
+            isFirst={idx === 0} isLast={idx === children.length - 1}
+            onMoveUp={() => onEdit(child)} onMoveDown={() => onEdit(child)} />
         ))}
       </CollapsibleContent>
     </Collapsible>
@@ -90,6 +97,15 @@ export default function Categories() {
   });
 
   const tree = buildTree(categories as Cat[]);
+
+  const swapSortOrder = async (catA: Cat, catB: Cat) => {
+    const tmpA = catA.sort_order;
+    const tmpB = catB.sort_order;
+    await supabase.from("categories").update({ sort_order: tmpB } as any).eq("id", catA.id);
+    await supabase.from("categories").update({ sort_order: tmpA } as any).eq("id", catB.id);
+    qc.invalidateQueries({ queryKey: ["categories"] });
+    toast.success("Order updated");
+  };
 
   const resetForm = () => setForm({ name: "", slug: "", parent_id: "", description: "", image_url: "", seo_title: "", seo_description: "" });
 
@@ -218,8 +234,13 @@ export default function Categories() {
             ) : categories.length === 0 ? (
               <p className="text-xs text-muted-foreground text-center py-6">No categories yet. Create your first category.</p>
             ) : (
-              tree.map((cat) => (
-                <CategoryItem key={cat.id} category={cat} children={cat.children} onDelete={(id) => deleteCategory.mutate(id)} onEdit={openEdit} />
+              tree.map((cat, idx) => (
+                <CategoryItem key={cat.id} category={cat} children={cat.children}
+                  onDelete={(id) => deleteCategory.mutate(id)} onEdit={openEdit}
+                  isFirst={idx === 0} isLast={idx === tree.length - 1}
+                  onMoveUp={idx > 0 ? () => swapSortOrder(cat, tree[idx - 1]) : undefined}
+                  onMoveDown={idx < tree.length - 1 ? () => swapSortOrder(cat, tree[idx + 1]) : undefined}
+                />
               ))
             )}
           </CardContent>
