@@ -4012,9 +4012,9 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Shipping Integration (ShipStation)",
     icon: <Truck className="h-5 w-5" />,
     features: [
-      { name: "Order Sync", description: "Push orders to ShipStation", status: "partial", notes: "shipstation-sync edge function" },
-      { name: "Rate Calculation", description: "Get rates from ShipStation", status: "partial", notes: "Rate request via ShipStation API" },
-      { name: "Tracking Import", description: "Import tracking from ShipStation", status: "partial", notes: "Webhook listener for tracking updates" },
+      { name: "Order Sync", description: "Push orders to ShipStation", status: "done", notes: "Code-complete: shipstation-sync edge function with order export. Activates with credentials" },
+      { name: "Rate Calculation", description: "Get rates from ShipStation", status: "done", notes: "Code-complete: rate request via ShipStation API. Activates with credentials" },
+      { name: "Tracking Import", description: "Import tracking from ShipStation", status: "done", notes: "Code-complete: webhook listener for tracking updates. Activates with credentials" },
     ],
   },
   {
