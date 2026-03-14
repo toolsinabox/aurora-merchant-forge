@@ -130,6 +130,38 @@ export default function MaropostTransferAudit() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [dbCounts, setDbCounts] = useState<Record<string, number>>({});
+
+  // Fetch live record counts from the database
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const tables = [
+        { key: "products", table: "products" },
+        { key: "categories", table: "categories" },
+        { key: "customers", table: "customers" },
+        { key: "orders", table: "orders" },
+        { key: "content_pages", table: "content_pages" },
+        { key: "gift_vouchers", table: "gift_vouchers" },
+        { key: "suppliers", table: "suppliers" },
+        { key: "inventory_locations", table: "inventory_locations" },
+        { key: "shipping_zones", table: "shipping_zones" },
+        { key: "product_variants", table: "product_variants" },
+        { key: "product_relations", table: "product_relations" },
+        { key: "customer_addresses", table: "customer_addresses" },
+        { key: "order_items", table: "order_items" },
+        { key: "product_specifics", table: "product_specifics" },
+        { key: "inventory_stock", table: "inventory_stock" },
+      ] as const;
+
+      const counts: Record<string, number> = {};
+      await Promise.all(tables.map(async ({ key, table }) => {
+        const { count } = await supabase.from(table).select("id", { count: "exact", head: true }) as any;
+        counts[key] = count || 0;
+      }));
+      setDbCounts(counts);
+    };
+    fetchCounts();
+  }, []);
 
   const filtered = useMemo(() => {
     return TRANSFER_ITEMS.filter(item => {
