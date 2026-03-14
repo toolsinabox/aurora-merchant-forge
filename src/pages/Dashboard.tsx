@@ -506,7 +506,7 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
           </>
         )}
