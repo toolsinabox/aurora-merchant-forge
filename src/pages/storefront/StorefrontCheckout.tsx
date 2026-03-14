@@ -445,8 +445,9 @@ export default function StorefrontCheckout() {
           shipping: actualShipping,
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
-          payment_status: payOnAccount ? "pending" : "pending",
+          payment_status: payOnAccount ? "pending" : paymentMethod === "cod" ? "pending" : "pending",
           notes: [
+            paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
             form.company ? `[Company: ${form.company}]` : null,
