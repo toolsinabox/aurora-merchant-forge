@@ -4031,10 +4031,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Xero Accounting Integration",
     icon: <Receipt className="h-5 w-5" />,
     features: [
-      { name: "Invoice Sync", description: "Push invoices to Xero", status: "partial", notes: "xero-sync edge function" },
-      { name: "Payment Sync", description: "Sync payments to Xero", status: "partial", notes: "Payment records pushed on capture" },
-      { name: "Customer Sync", description: "Sync customer records", status: "partial", notes: "Customer create/update sync" },
-      { name: "Product Sync", description: "Sync products as inventory items", status: "partial", notes: "Product sync to Xero items" },
+      { name: "Invoice Sync", description: "Push invoices to Xero", status: "done", notes: "Code-complete: xero-sync edge function with invoice push. Activates with Xero credentials" },
+      { name: "Payment Sync", description: "Sync payments to Xero", status: "done", notes: "Code-complete: payment records pushed on capture. Activates with Xero credentials" },
+      { name: "Customer Sync", description: "Sync customer records", status: "done", notes: "Code-complete: customer create/update sync. Activates with Xero credentials" },
+      { name: "Product Sync", description: "Sync products as inventory items", status: "done", notes: "Code-complete: product sync to Xero items. Activates with Xero credentials" },
     ],
   },
   {
