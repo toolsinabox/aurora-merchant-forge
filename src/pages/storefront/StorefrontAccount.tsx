@@ -1130,6 +1130,101 @@ export default function StorefrontAccount() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Communication Preferences Tab */}
+            {activeTab === "preferences" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2"><Bell className="h-4 w-4" /> Communication Preferences</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-xs text-muted-foreground">Control which notifications and emails you receive from us.</p>
+                  {([
+                    { key: "order_updates", label: "Order Updates", desc: "Confirmation, status changes, and delivery notifications" },
+                    { key: "shipping_notifications", label: "Shipping Notifications", desc: "Tracking updates and delivery alerts" },
+                    { key: "review_requests", label: "Review Requests", desc: "Invitations to review purchased products" },
+                    { key: "back_in_stock", label: "Back in Stock Alerts", desc: "Notifications when wishlisted items are restocked" },
+                    { key: "promotional_emails", label: "Promotional Emails", desc: "Sales, special offers, and seasonal promotions" },
+                    { key: "newsletter", label: "Newsletter", desc: "Weekly/monthly newsletter with new products and updates" },
+                    { key: "price_drop_alerts", label: "Price Drop Alerts", desc: "Notifications when items in your wishlist go on sale" },
+                    { key: "sms_notifications", label: "SMS Notifications", desc: "Text message alerts for orders and shipping" },
+                  ] as const).map(pref => (
+                    <div key={pref.key} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div>
+                        <p className="text-sm font-medium">{pref.label}</p>
+                        <p className="text-xs text-muted-foreground">{pref.desc}</p>
+                      </div>
+                      <Switch
+                        checked={commPrefs[pref.key]}
+                        onCheckedChange={(checked) => setCommPrefs(prev => ({ ...prev, [pref.key]: checked }))}
+                      />
+                    </div>
+                  ))}
+                  <Button size="sm" className="mt-2" disabled={savingPrefs} onClick={handleSavePreferences}>
+                    {savingPrefs ? "Saving..." : "Save Preferences"}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Account Management Tab */}
+            {activeTab === "account" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2 text-destructive"><UserX className="h-4 w-4" /> Account Management</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 space-y-3">
+                    <h3 className="font-semibold text-sm text-destructive">Delete Account</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Requesting account deletion will submit a GDPR-compliant deletion request. Your account will be marked for deletion and processed within 30 days. You will be signed out immediately.
+                    </p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li>• Your personal data will be anonymized or deleted</li>
+                      <li>• Order history will be retained for legal/tax requirements</li>
+                      <li>• Active subscriptions will be cancelled</li>
+                      <li>• Gift voucher balances will be forfeited</li>
+                    </ul>
+                    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive" size="sm" className="gap-2">
+                          <UserX className="h-4 w-4" /> Request Account Deletion
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="text-destructive">Delete Your Account</DialogTitle>
+                          <DialogDescription>
+                            This action cannot be undone. Type <strong>DELETE</strong> below to confirm.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3">
+                          <div>
+                            <Label className="text-xs">Type DELETE to confirm</Label>
+                            <Input
+                              value={deleteConfirmText}
+                              onChange={(e) => setDeleteConfirmText(e.target.value)}
+                              placeholder="DELETE"
+                              className="font-mono"
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                          <Button
+                            variant="destructive"
+                            disabled={deletingAccount || deleteConfirmText !== "DELETE"}
+                            onClick={handleDeleteAccount}
+                          >
+                            {deletingAccount ? "Processing..." : "Delete My Account"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
