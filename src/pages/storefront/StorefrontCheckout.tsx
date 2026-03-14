@@ -564,6 +564,7 @@ export default function StorefrontCheckout() {
           notes: [
             paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
+            deliveryMethod === "pickup" ? `[Click & Collect: ${pickupLocations.find(l => l.id === selectedPickupLocation)?.name || "Store pickup"}${pickupLocations.find(l => l.id === selectedPickupLocation)?.address ? ` — ${pickupLocations.find(l => l.id === selectedPickupLocation)?.address}` : ""}]` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
             signatureRequired ? "[Signature Required]" : null,
             authorityToLeave ? "[Authority to Leave]" : null,
