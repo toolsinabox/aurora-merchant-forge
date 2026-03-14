@@ -8868,7 +8868,7 @@ const addonEcosystemFeatures: FeatureCategory[] = [
       { name: "Addon Usage Count", description: "Track how many stores use each addon", status: "done", notes: "install_count" },
       { name: "Addon Dependency Check", description: "Check addon dependencies before install", status: "not_started" },
       { name: "Custom Addon Development", description: "SDK/documentation for building custom addons", status: "not_started" },
-      { name: "Addon Webhooks / Events", description: "Addons can subscribe to platform events", status: "partial" },
+      { name: "Addon Webhooks / Events", description: "Addons can subscribe to platform events", status: "done", notes: "Webhook system allows subscribing to all entity events; addons can register webhook URLs" },
     ],
   },
 ];
