@@ -7514,8 +7514,28 @@ const adminInfraFeatures: FeatureCategory[] = [
   },
 ];
 
-// Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures];
+// Merge all feature data and deduplicate
+function deduplicateFeatures(categories: FeatureCategory[]): FeatureCategory[] {
+  const categoryMap = new Map<string, FeatureCategory>();
+  for (const cat of categories) {
+    const existing = categoryMap.get(cat.category);
+    if (existing) {
+      // Merge features, dedup by name (keep first occurrence)
+      const seenNames = new Set(existing.features.map(f => f.name));
+      for (const f of cat.features) {
+        if (!seenNames.has(f.name)) {
+          existing.features.push(f);
+          seenNames.add(f.name);
+        }
+      }
+    } else {
+      categoryMap.set(cat.category, { ...cat, features: [...cat.features] });
+    }
+  }
+  return Array.from(categoryMap.values());
+}
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
