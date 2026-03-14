@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useCustomer, useOrders, useCustomerAddresses, useCreateCustomerAddress, useDeleteCustomerAddress, useCustomerGroups } from "@/hooks/use-data";
-import { ArrowLeft, Mail, Phone, Calendar, MapPin, Plus, Trash2, Save, Tag, FileText, Merge, Upload, Paperclip } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Calendar, MapPin, Plus, Trash2, Save, Tag, FileText, Merge, Upload, Paperclip, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
