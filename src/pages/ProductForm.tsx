@@ -132,6 +132,8 @@ export default function ProductForm() {
         misc1: (existing as any).misc1 || "", misc2: (existing as any).misc2 || "",
         misc3: (existing as any).misc3 || "", misc4: (existing as any).misc4 || "",
         misc5: (existing as any).misc5 || "",
+        scheduled_publish_at: (existing as any).scheduled_publish_at ? new Date((existing as any).scheduled_publish_at).toISOString().slice(0, 16) : "",
+        scheduled_unpublish_at: (existing as any).scheduled_unpublish_at ? new Date((existing as any).scheduled_unpublish_at).toISOString().slice(0, 16) : "",
       });
       setProductImages(existing.images || []);
     }
