@@ -36,26 +36,28 @@ function ProductCard({ p, basePath, store, onQuickView }: { p: any; basePath: st
   const displayPrice = promoActive ? p.promo_price : p.price;
 
   return (
-    <div key={p.id} className="group relative">
+    <div key={p.id} className="group relative card-hover rounded-xl border bg-card overflow-hidden">
       <Link to={`${basePath}/product/${p.id}`}>
-        <div className="aspect-square rounded-lg overflow-hidden bg-muted border mb-2.5 relative">
+        <div className="aspect-square overflow-hidden bg-muted relative">
           {p.images?.[0] ? (
             <img src={getImageUrl(p.images[0])} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
           )}
           {promoActive && p.promo_tag && (
-            <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-2xs">{p.promo_tag}</Badge>
+            <Badge className="absolute top-2.5 left-2.5 bg-destructive text-destructive-foreground text-2xs shadow-sm">{p.promo_tag}</Badge>
           )}
         </div>
-        {p.brand && <p className="text-2xs text-muted-foreground uppercase tracking-wide">{p.brand}</p>}
-        <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
-        <div className="flex items-baseline gap-1.5 mt-0.5">
-          <p className="text-sm font-semibold">${Number(displayPrice).toFixed(2)}</p>
-          {promoActive && <p className="text-xs text-muted-foreground line-through">${Number(p.price).toFixed(2)}</p>}
-          {!promoActive && p.compare_at_price && p.compare_at_price > p.price && (
-            <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
-          )}
+        <div className="p-3">
+          {p.brand && <p className="text-2xs text-muted-foreground uppercase tracking-wide">{p.brand}</p>}
+          <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2">{p.title}</h3>
+          <div className="flex items-baseline gap-1.5 mt-1">
+            <p className="text-sm font-semibold">${Number(displayPrice).toFixed(2)}</p>
+            {promoActive && <p className="text-xs text-muted-foreground line-through">${Number(p.price).toFixed(2)}</p>}
+            {!promoActive && p.compare_at_price && p.compare_at_price > p.price && (
+              <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
+            )}
+          </div>
         </div>
       </Link>
 
