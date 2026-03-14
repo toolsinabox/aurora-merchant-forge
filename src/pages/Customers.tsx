@@ -191,7 +191,7 @@ export default function Customers() {
                 ) : filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">No customers yet.</TableCell></TableRow>
                 ) : (
-                  filtered.map((c) => (
+                  filtered.slice((page - 1) * pageSize, page * pageSize).map((c) => (
                     <TableRow key={c.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/customers/${c.id}`)}>
                       <TableCell className="py-2 font-medium">{c.name}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{c.email || "—"}</TableCell>
