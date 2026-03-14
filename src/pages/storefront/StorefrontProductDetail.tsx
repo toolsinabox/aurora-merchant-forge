@@ -21,6 +21,9 @@ import { RenderedTemplate } from "@/components/storefront/RenderedTemplate";
 import { SEOHead } from "@/components/storefront/SEOHead";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
 import { AddToCartPopup } from "@/components/storefront/AddToCartPopup";
+import { SocialShare } from "@/components/storefront/SocialShare";
+import { ProductBadges } from "@/components/storefront/ProductBadges";
+import { DeliveryEstimate } from "@/components/storefront/DeliveryEstimate";
 import type { TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
