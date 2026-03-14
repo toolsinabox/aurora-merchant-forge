@@ -7755,7 +7755,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel analysis", status: "done", notes: "Analytics page Conversion Funnel visualization" },
       { name: "Product Performance Dashboard", description: "Per-product views, conversion, revenue, margin dashboard", status: "partial" },
       { name: "Inventory Valuation Report", description: "Total inventory value at cost and retail", status: "done", notes: "Analytics page Inventory Valuation card + InventoryReports valuation tab" },
-      { name: "Custom Report Builder Formulas", description: "User-defined calculated columns in report builder", status: "partial", notes: "ReportBuilder page exists" },
+      { name: "Custom Report Builder Formulas", description: "User-defined calculated columns in report builder", status: "done", notes: "ReportBuilder calculated columns: sum (running), avg, min, max, count, % of total, multiply, divide; add/remove formula columns with dialog; computed values highlighted in primary color; included in CSV/Excel/JSON exports" },
       { name: "Scheduled Report Email", description: "Auto-email reports on schedule (daily/weekly/monthly)", status: "done", notes: "scheduled-report-email function" },
       { name: "Report Export (CSV/PDF)", description: "Export any report to CSV or PDF", status: "done", notes: "ExportWizard page" },
       { name: "Real-Time Dashboard", description: "Live updating dashboard with current day metrics", status: "done", notes: "Dashboard page" },
