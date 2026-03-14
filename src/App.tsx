@@ -111,6 +111,7 @@ import EmailAutomations from "./pages/EmailAutomations.tsx";
 import PriceRules from "./pages/PriceRules.tsx";
 import GoLiveChecklist from "./pages/GoLiveChecklist.tsx";
 import InventoryReports from "./pages/InventoryReports.tsx";
+import CarrierManifest from "./pages/CarrierManifest.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
