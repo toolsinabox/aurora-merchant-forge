@@ -259,6 +259,7 @@ export default function ProductForm() {
       reorder_quantity: parseInt(form.reorder_quantity) || 0,
       restock_quantity: parseInt(form.restock_quantity) || 0,
       preorder_quantity: parseInt(form.preorder_quantity) || 0,
+      min_order_quantity: parseInt(form.min_order_quantity) || 1,
       misc1: form.misc1 || null, misc2: form.misc2 || null, misc3: form.misc3 || null,
       misc4: form.misc4 || null, misc5: form.misc5 || null,
       scheduled_publish_at: form.scheduled_publish_at || null,
