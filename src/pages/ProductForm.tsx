@@ -16,7 +16,7 @@ import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDelet
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, Save, Plus, Trash2, X, AlertTriangle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 import { FieldLabel } from "@/components/products/BaseTag";
