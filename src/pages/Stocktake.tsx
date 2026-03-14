@@ -215,7 +215,7 @@ export default function Stocktake() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredItems.map((item: any) => {
+                  {varianceFilteredItems.map((item: any) => {
                     const diff = item.counted_quantity !== null && item.counted_quantity !== undefined
                       ? item.counted_quantity - item.expected_quantity : null;
                     return (
