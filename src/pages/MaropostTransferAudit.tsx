@@ -327,30 +327,62 @@ export default function MaropostTransferAudit() {
               <CardTitle className="text-base">Imported Records (Live)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                 {[
-                  { key: "products", label: "Products" },
-                  { key: "product_variants", label: "Variants" },
-                  { key: "categories", label: "Categories" },
-                  { key: "customers", label: "Customers" },
-                  { key: "customer_addresses", label: "Addresses" },
-                  { key: "orders", label: "Orders" },
-                  { key: "order_items", label: "Line Items" },
-                  { key: "content_pages", label: "Pages" },
-                  { key: "gift_vouchers", label: "Vouchers" },
-                  { key: "suppliers", label: "Suppliers" },
-                  { key: "inventory_locations", label: "Warehouses" },
-                  { key: "inventory_stock", label: "Stock Records" },
-                  { key: "shipping_zones", label: "Shipping" },
-                  { key: "product_relations", label: "Relations" },
-                  { key: "product_specifics", label: "Specifics" },
-                ].map(({ key, label }) => (
-                  <div key={key} className="text-center p-2 rounded-lg bg-muted/50">
-                    <p className="text-lg font-bold text-foreground">{dbCounts[key] || 0}</p>
-                    <p className="text-2xs text-muted-foreground">{label}</p>
-                  </div>
-                ))}
+                  { key: "products", label: "Products", srcKey: "products" },
+                  { key: "product_variants", label: "Variants", srcKey: "" },
+                  { key: "categories", label: "Categories", srcKey: "categories" },
+                  { key: "customers", label: "Customers", srcKey: "customers" },
+                  { key: "customer_addresses", label: "Addresses", srcKey: "" },
+                  { key: "orders", label: "Orders", srcKey: "orders" },
+                  { key: "order_items", label: "Line Items", srcKey: "" },
+                  { key: "content_pages", label: "Pages", srcKey: "content" },
+                  { key: "gift_vouchers", label: "Vouchers", srcKey: "vouchers" },
+                  { key: "suppliers", label: "Suppliers", srcKey: "suppliers" },
+                  { key: "inventory_locations", label: "Warehouses", srcKey: "warehouses" },
+                  { key: "inventory_stock", label: "Stock Records", srcKey: "" },
+                  { key: "shipping_zones", label: "Shipping", srcKey: "shipping" },
+                  { key: "product_relations", label: "Relations", srcKey: "" },
+                  { key: "product_specifics", label: "Specifics", srcKey: "" },
+                  { key: "currencies", label: "Currencies", srcKey: "currency" },
+                  { key: "redirects", label: "Redirects", srcKey: "redirects" },
+                  { key: "returns", label: "Returns", srcKey: "rma" },
+                ].map(({ key, label, srcKey }) => {
+                  const imported = dbCounts[key] || 0;
+                  const source = srcKey ? (sourceCounts[srcKey] || 0) : 0;
+                  const pct = source > 0 ? Math.min(100, Math.round((imported / source) * 100)) : null;
+                  return (
+                    <div key={key} className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold text-foreground">{imported}</p>
+                      {source > 0 && (
+                        <p className="text-[10px] text-muted-foreground">
+                          of {source} <span className={pct === 100 ? "text-green-600" : pct && pct > 80 ? "text-yellow-600" : "text-destructive"}>({pct}%)</span>
+                        </p>
+                      )}
+                      <p className="text-[10px] text-muted-foreground">{label}</p>
+                    </div>
+                  );
+                })}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Data Integrity Checks */}
+        {integrityIssues.length > 0 && (
+          <Card className="border-yellow-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-yellow-600" />Data Integrity Warnings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-1 text-sm">
+                {integrityIssues.map((issue, i) => (
+                  <li key={i} className="flex items-center gap-2 text-muted-foreground">
+                    <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 shrink-0" />
+                    {issue}
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
         )}
