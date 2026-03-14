@@ -395,12 +395,12 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
 
             {/* Customer Growth + Order Status */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <Card className="lg:col-span-2">
+              {w("customerGrowth") && <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                   <CardTitle className="text-sm font-medium">Customer Growth (30 Days)</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/customers")}>
