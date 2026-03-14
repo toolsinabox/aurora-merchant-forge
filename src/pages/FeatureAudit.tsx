@@ -964,10 +964,10 @@ export default function FeatureAudit() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Maropost Feature Audit</h1>
-          <p className="text-muted-foreground">Comprehensive parity tracker — {stats.total} features across {featureData.length} modules</p>
+          <h1 className="text-lg font-semibold">Maropost Feature Audit</h1>
+          <p className="text-xs text-muted-foreground">Comprehensive parity tracker — {stats.total} features across {featureData.length} modules</p>
         </div>
 
         {/* Summary Cards */}

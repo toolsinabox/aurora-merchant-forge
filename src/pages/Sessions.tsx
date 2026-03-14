@@ -50,11 +50,11 @@ export default function Sessions() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Session Management</h1>
-            <p className="text-muted-foreground">View and manage your active sessions</p>
+            <h1 className="text-lg font-semibold">Session Management</h1>
+            <p className="text-xs text-muted-foreground">View and manage your active sessions</p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" className="gap-2" onClick={handleRefreshToken}>

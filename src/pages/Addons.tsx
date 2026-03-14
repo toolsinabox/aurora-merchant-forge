@@ -130,21 +130,21 @@ export default function Addons() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Add-Ons</h1>
-            <p className="text-muted-foreground">Extend your store with plugins and integrations</p>
+            <h1 className="text-lg font-semibold">Add-Ons</h1>
+            <p className="text-xs text-muted-foreground">Extend your store with plugins and integrations</p>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">{installed.length} installed</Badge>
+            <Badge variant="secondary" className="text-xs">{installed.length} installed</Badge>
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search add-ons..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        <div className="flex gap-2">
+          <div className="relative flex-1 max-w-xs">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input placeholder="Search add-ons..." value={search} onChange={e => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
           </div>
           <div className="flex gap-1 border rounded-md p-0.5">
             <Button size="sm" variant={tab === "catalog" ? "default" : "ghost"} onClick={() => setTab("catalog")} className="text-xs h-8">
