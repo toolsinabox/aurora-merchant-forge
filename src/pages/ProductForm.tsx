@@ -225,6 +225,7 @@ export default function ProductForm() {
       misc4: form.misc4 || null, misc5: form.misc5 || null,
       scheduled_publish_at: form.scheduled_publish_at || null,
       scheduled_unpublish_at: form.scheduled_unpublish_at || null,
+      video_url: form.video_url || null,
       images: productImages,
     };
 
