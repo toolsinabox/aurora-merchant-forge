@@ -8408,8 +8408,8 @@ const subscriptionDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "Subscription Product Flag", description: "Mark products as subscription-eligible", status: "done", notes: "subscriptions table" },
       { name: "Subscription Frequencies", description: "Weekly, fortnightly, monthly, quarterly, yearly", status: "done" },
-      { name: "Subscription Discount", description: "Discount for subscribing (e.g. 10% off)", status: "partial" },
-      { name: "Subscription Pause / Resume", description: "Customer can pause and resume subscription", status: "partial" },
+      { name: "Subscription Discount", description: "Discount for subscribing (e.g. 10% off)", status: "done", notes: "Subscriptions page discount_percent field per subscription plan" },
+      { name: "Subscription Pause / Resume", description: "Customer can pause and resume subscription", status: "done", notes: "Subscriptions page Pause/Resume buttons with status toggle, paused_at timestamp tracking" },
       { name: "Subscription Skip Delivery", description: "Skip next delivery without cancelling", status: "done", notes: "Subscriptions page Skip Delivery button with confirmation dialog, pushes next_order_date forward by one billing cycle" },
       { name: "Subscription Swap Product", description: "Change product in active subscription", status: "done", notes: "Subscriptions page Swap Product dialog with product selector, auto-updates unit_price to new product price" },
       { name: "Subscription Quantity Change", description: "Adjust quantity on active subscription", status: "done", notes: "Subscriptions page Change Quantity dialog with numeric input and instant save" },
