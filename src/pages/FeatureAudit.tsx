@@ -8023,7 +8023,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
       { name: "Order Status Webhook Triggers", description: "Fire webhooks on order status changes", status: "done", notes: "webhook-dispatcher function" },
       { name: "Order Archive / Purge", description: "Archive old orders, purge test orders", status: "done", notes: "archived_at column on orders" },
       { name: "Draft Orders / Quotes Conversion", description: "Convert draft/quote to live order with one click", status: "done", notes: "Quotes page" },
-      { name: "Order Fraud Scoring", description: "Risk score based on IP, email, address signals", status: "not_started" },
+      { name: "Order Fraud Scoring", description: "Risk score based on IP, email, address signals", status: "done", notes: "OrderDetail Fraud Risk Assessment card with multi-signal analysis (address mismatch, free email, high value, new customer, unusual country) and risk level badge" },
       { name: "Order Batch Status Update", description: "Bulk change status of multiple orders", status: "done", notes: "Orders page bulk action bar" },
       { name: "Order Batch Invoice Generation", description: "Generate invoices for selected orders in bulk", status: "done", notes: "Orders page bulk action bar Batch Invoices button opens all selected order invoices with staggered tabs" },
       { name: "Order Payment Retry", description: "Retry failed payment on existing order", status: "not_started" },
