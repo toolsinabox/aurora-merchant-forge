@@ -7850,7 +7850,7 @@ const adminUxFeatures: FeatureCategory[] = [
     icon: <Sparkles className="h-5 w-5" />,
     features: [
       { name: "Keyboard Shortcuts (Global)", description: "Ctrl+K search, Ctrl+S save, etc.", status: "done", notes: "CommandPalette component with Ctrl+K global search across all admin pages" },
-      { name: "Bulk Image Upload & Assignment", description: "Upload multiple images and auto-match to products by SKU/filename", status: "partial", notes: "ZipImageUpload exists" },
+      { name: "Bulk Image Upload & Assignment", description: "Upload multiple images and auto-match to products by SKU/filename", status: "done", notes: "ZipImageUpload component: extracts images from ZIP, matches by SKU, barcode, title slug, or product ID prefix; uploads matched images to product-images storage bucket and appends to product images array" },
       { name: "Drag-Reorder Products", description: "Drag to reorder products within category", status: "done", notes: "Products page up/down arrow buttons per product row to swap sort_order positions" },
       { name: "Drag-Reorder Categories", description: "Drag to reorder category display order", status: "done", notes: "Categories page up/down arrow buttons on hover per category row to swap sort_order positions, works for both top-level and child categories" },
       { name: "Drag-Reorder Images", description: "Drag to reorder product images", status: "done", notes: "ProductImageUpload component with up/down arrow buttons on hover per image to swap positions, first image marked as Main" },
