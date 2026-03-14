@@ -291,7 +291,159 @@ export default function WarehouseDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Putaway Rules */}
+        <PutawayRulesCard />
       </div>
     </AdminLayout>
+  );
+}
+
+interface PutawayRule {
+  id: string;
+  category: string;
+  zone: string;
+  aisle: string;
+  shelf: string;
+  priority: number;
+  is_active: boolean;
+}
+
+function PutawayRulesCard() {
+  const { currentStore } = useAuth();
+  const [rules, setRules] = useState<PutawayRule[]>([]);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ category: "", zone: "A", aisle: "1", shelf: "01" });
+
+  useEffect(() => {
+    if (!currentStore) return;
+    try {
+      setRules(JSON.parse(localStorage.getItem(`putaway_rules_${currentStore.id}`) || "[]"));
+    } catch {}
+  }, [currentStore]);
+
+  const save = (updated: PutawayRule[]) => {
+    setRules(updated);
+    if (currentStore) localStorage.setItem(`putaway_rules_${currentStore.id}`, JSON.stringify(updated));
+  };
+
+  const addRule = () => {
+    if (!form.category.trim()) { toast.error("Category/keyword required"); return; }
+    const binSuggestion = `${form.zone}-${form.aisle}-${form.shelf}`;
+    save([...rules, {
+      id: crypto.randomUUID(),
+      category: form.category,
+      zone: form.zone,
+      aisle: form.aisle,
+      shelf: form.shelf,
+      priority: rules.length + 1,
+      is_active: true,
+    }]);
+    setForm({ category: "", zone: "A", aisle: "1", shelf: "01" });
+    toast.success(`Putaway rule added → Bin ${binSuggestion}`);
+    setOpen(false);
+  };
+
+  const toggleActive = (id: string) => {
+    save(rules.map(r => r.id === id ? { ...r, is_active: !r.is_active } : r));
+  };
+
+  const deleteRule = (id: string) => {
+    save(rules.filter(r => r.id !== id));
+    toast.success("Rule removed");
+  };
+
+  const suggestBin = (productCategory: string): string => {
+    const match = rules.find(r => r.is_active && productCategory.toLowerCase().includes(r.category.toLowerCase()));
+    return match ? `${match.zone}-${match.aisle}-${match.shelf}` : "Unassigned";
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+        <CardTitle className="text-sm flex items-center gap-1.5">
+          <MapPin className="h-3.5 w-3.5" /> Putaway Rules
+        </CardTitle>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" variant="outline" className="h-7 text-xs"><Plus className="h-3 w-3 mr-1" /> Add Rule</Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle className="text-sm">New Putaway Rule</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs">Product Category / Keyword</Label>
+                <Input placeholder="e.g. Electronics, Fragile, Heavy" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="h-8 text-sm" />
+                <p className="text-[10px] text-muted-foreground mt-0.5">Matches product category or tags containing this keyword</p>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <Label className="text-xs">Zone</Label>
+                  <Select value={form.zone} onValueChange={v => setForm({ ...form, zone: v })}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["A", "B", "C", "D", "E", "F"].map(z => <SelectItem key={z} value={z} className="text-xs">Zone {z}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Aisle</Label>
+                  <Select value={form.aisle} onValueChange={v => setForm({ ...form, aisle: v })}>
+                    <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["1", "2", "3", "4", "5", "6", "7", "8"].map(a => <SelectItem key={a} value={a} className="text-xs">Aisle {a}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs">Shelf</Label>
+                  <Input placeholder="01" value={form.shelf} onChange={e => setForm({ ...form, shelf: e.target.value })} className="h-8 text-xs" />
+                </div>
+              </div>
+              <div className="bg-muted/50 rounded p-2 text-xs">
+                <span className="text-muted-foreground">Suggested Bin: </span>
+                <span className="font-mono font-medium">{form.zone}-{form.aisle}-{form.shelf}</span>
+              </div>
+              <Button size="sm" className="w-full text-xs" onClick={addRule}>Add Putaway Rule</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent className="p-0">
+        {rules.length === 0 ? (
+          <div className="text-center text-xs text-muted-foreground py-6">
+            <MapPin className="h-6 w-6 mx-auto mb-1 text-muted-foreground/40" />
+            No putaway rules configured. Add rules to auto-suggest bin locations for incoming inventory.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-xs h-8">Category/Keyword</TableHead>
+                <TableHead className="text-xs h-8">Suggested Bin</TableHead>
+                <TableHead className="text-xs h-8">Active</TableHead>
+                <TableHead className="text-xs h-8 w-10"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rules.map(r => (
+                <TableRow key={r.id} className="text-xs">
+                  <TableCell className="py-1.5 font-medium">{r.category}</TableCell>
+                  <TableCell className="py-1.5 font-mono">{r.zone}-{r.aisle}-{r.shelf}</TableCell>
+                  <TableCell className="py-1.5">
+                    <Switch checked={r.is_active} onCheckedChange={() => toggleActive(r.id)} className="scale-75" />
+                  </TableCell>
+                  <TableCell className="py-1.5">
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteRule(r.id)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }

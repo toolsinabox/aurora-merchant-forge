@@ -637,7 +637,103 @@ function FulfillmentRulesTab() {
           )}
         </CardContent>
       </Card>
+      {/* Auto-Assign Warehouse Rules */}
+      <AutoAssignWarehouseCard />
     </div>
+  );
+}
+
+function AutoAssignWarehouseCard() {
+  const { currentStore } = useAuth();
+  const [rules, setRules] = useState<Array<{ id: string; name: string; region: string; country: string; warehouse: string; priority: number; is_active: boolean }>>([]);
+  const [form, setForm] = useState({ name: "", region: "", country: "AU", warehouse: "" });
+  const [locations, setLocations] = useState<Array<{ id: string; name: string }>>([]);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    try { setRules(JSON.parse(localStorage.getItem(`auto_assign_warehouse_${currentStore.id}`) || "[]")); } catch {}
+    supabase.from("inventory_locations").select("id, name").eq("store_id", currentStore.id).order("name")
+      .then(({ data }) => setLocations(data || []));
+  }, [currentStore]);
+
+  const save = (updated: typeof rules) => {
+    setRules(updated);
+    if (currentStore) localStorage.setItem(`auto_assign_warehouse_${currentStore.id}`, JSON.stringify(updated));
+  };
+
+  const addRule = () => {
+    if (!form.name.trim() || !form.warehouse) { toast.error("Name and warehouse required"); return; }
+    save([...rules, {
+      id: crypto.randomUUID(),
+      name: form.name,
+      region: form.region,
+      country: form.country,
+      warehouse: form.warehouse,
+      priority: rules.length + 1,
+      is_active: true,
+    }]);
+    setForm({ name: "", region: "", country: "AU", warehouse: "" });
+    toast.success("Auto-assign rule added");
+  };
+
+  const countryLabels: Record<string, string> = { AU: "Australia", NZ: "New Zealand", US: "United States", GB: "United Kingdom", CA: "Canada", SG: "Singapore", ANY: "Any country" };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Auto-Assign Warehouse</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">Route orders to the best warehouse based on customer shipping region.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <Input placeholder="Rule name (e.g. Sydney Metro)" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="h-8 text-sm" />
+          <Input placeholder="State/Region (optional)" value={form.region} onChange={e => setForm({ ...form, region: e.target.value })} className="h-8 text-sm" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <Select value={form.country} onValueChange={v => setForm({ ...form, country: v })}>
+            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {Object.entries(countryLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={form.warehouse} onValueChange={v => setForm({ ...form, warehouse: v })}>
+            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select warehouse" /></SelectTrigger>
+            <SelectContent>
+              {locations.map(l => <SelectItem key={l.id} value={l.name} className="text-xs">{l.name}</SelectItem>)}
+              {locations.length === 0 && <SelectItem value="default" className="text-xs">Default Warehouse</SelectItem>}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button size="sm" className="text-xs h-7" onClick={addRule}><Plus className="h-3 w-3 mr-1" /> Add Rule</Button>
+
+        {rules.length > 0 && (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-xs h-8">#</TableHead>
+                <TableHead className="text-xs h-8">Rule</TableHead>
+                <TableHead className="text-xs h-8">Country</TableHead>
+                <TableHead className="text-xs h-8">Region</TableHead>
+                <TableHead className="text-xs h-8">Warehouse</TableHead>
+                <TableHead className="text-xs h-8 text-right"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rules.map((r, i) => (
+                <TableRow key={r.id} className="text-xs">
+                  <TableCell className="py-1.5">{i + 1}</TableCell>
+                  <TableCell className="py-1.5 font-medium">{r.name}</TableCell>
+                  <TableCell className="py-1.5"><Badge variant="outline" className="text-[10px]">{countryLabels[r.country] || r.country}</Badge></TableCell>
+                  <TableCell className="py-1.5 text-muted-foreground">{r.region || "Any"}</TableCell>
+                  <TableCell className="py-1.5"><Badge variant="secondary" className="text-[10px]">{r.warehouse}</Badge></TableCell>
+                  <TableCell className="py-1.5 text-right">
+                    <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => save(rules.filter(x => x.id !== r.id))}><Trash2 className="h-3 w-3" /></Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
