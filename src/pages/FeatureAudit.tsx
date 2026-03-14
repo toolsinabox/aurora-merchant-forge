@@ -7802,7 +7802,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
       { name: "Return Reason Codes", description: "Configurable return reason dropdown", status: "partial" },
       { name: "Return Authorization Workflow", description: "Staff approve/reject return requests with notes", status: "partial" },
       { name: "Return Shipping Label Generation", description: "Auto-generate prepaid return shipping label", status: "done", notes: "PrintReturnLabel page" },
-      { name: "Return Tracking", description: "Track return shipment status", status: "not_started" },
+      { name: "Return Tracking", description: "Track return shipment status", status: "done", notes: "StorefrontAccount Returns tab shows return progress bar (requested → approved → processing → refunded) with visual step indicator" },
       { name: "Refund to Original Payment", description: "Process refund back to original payment method", status: "not_started" },
       { name: "Refund to Store Credit", description: "Issue return refund as store credit instead of cash", status: "partial", notes: "Credit notes exist" },
       { name: "Exchange Workflow", description: "Exchange returned item for different size/color", status: "done", notes: "Allow Exchanges toggle in Settings Returns tab + replacement order creation on Returns page" },
