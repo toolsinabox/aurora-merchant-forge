@@ -230,6 +230,10 @@ export default function Returns() {
             </div>
           </TabsContent>
 
+          <TabsContent value="receiving">
+            <ReturnsReceivingTab />
+          </TabsContent>
+
           <TabsContent value="warranty">
             <WarrantyClaimsTab />
           </TabsContent>
