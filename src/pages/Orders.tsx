@@ -44,6 +44,8 @@ export default function Orders() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkStatus, setBulkStatus] = useState("");
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const navigate = useNavigate();
   const qc = useQueryClient();
 
