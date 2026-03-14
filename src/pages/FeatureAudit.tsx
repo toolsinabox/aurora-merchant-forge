@@ -8119,7 +8119,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Forecast vs Actual Sales", description: "Compare forecasted to actual sales", status: "done", notes: "Analytics page Forecast vs Actual card with 12-week line chart (actual vs 3-week moving average forecast), accuracy %" },
       { name: "Custom Report Builder", description: "Drag-and-drop report builder with saved reports", status: "done", notes: "ReportBuilder page" },
       { name: "Scheduled Report Emails", description: "Auto-email reports on schedule", status: "done", notes: "scheduled-report-email function" },
-      { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "partial" },
+      { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "done", notes: "ReportBuilder page with CSV, Excel (TSV with BOM for UTF-8), and JSON export buttons for all report results" },
       { name: "Dashboard Widget Customization", description: "Rearrange/add dashboard widgets", status: "done", notes: "Dashboard Widgets popover" },
     ],
   },

@@ -151,7 +151,6 @@ export default function Analytics() {
       const prodCatMap: Record<string, string> = {};
       (prods || []).forEach((p: any) => { if (p.category_id) prodCatMap[p.id] = catMap[p.category_id] || "Other"; });
       
-      const catRevenue: Record<string, number> = {};
       const catRevenueMap: Record<string, { revenue: number; units: number }> = {};
       (items || []).forEach((item: any) => {
         const cat = prodCatMap[item.product_id] || "Uncategorized";
