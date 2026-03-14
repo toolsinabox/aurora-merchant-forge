@@ -118,15 +118,15 @@ export default function Merchants() {
             <div className="rounded-md border overflow-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="text-2xs">
-                    <TableHead>Store</TableHead>
-                    <TableHead>Owner</TableHead>
-                    <TableHead className="text-center">Products</TableHead>
-                    <TableHead className="text-center">Orders</TableHead>
-                     <TableHead>Slug</TableHead>
-                     <TableHead>Joined</TableHead>
-                     <TableHead className="w-10"></TableHead>
-                   </TableRow>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Store</TableHead>
+                    <TableHead className="text-xs h-8">Owner</TableHead>
+                    <TableHead className="text-xs h-8 text-center">Products</TableHead>
+                    <TableHead className="text-xs h-8 text-center">Orders</TableHead>
+                    <TableHead className="text-xs h-8">Slug</TableHead>
+                    <TableHead className="text-xs h-8">Joined</TableHead>
+                    <TableHead className="text-xs h-8 w-10"></TableHead>
+                  </TableRow>
                  </TableHeader>
                 <TableBody>
                   {isLoading ? (
