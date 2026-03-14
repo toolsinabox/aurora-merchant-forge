@@ -9686,6 +9686,10 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Order Deduplication", description: "Upsert orders by order_number (MP-{OrderID}) to prevent duplicates", status: "done", notes: "Order number lookup before insert, updates existing order data" },
       { name: "Per-Entity Batch Progress", description: "Show batch X/Y progress bar per entity during import", status: "done", notes: "batchProgress state on EntityCount, Progress bar shown during importing status" },
       { name: "Dry-Run / Preview Mode", description: "Validate data structure without writing to database", status: "done", notes: "dry_run flag passed to edge function, checkbox in select step UI" },
+      { name: "Source vs Imported Comparison", description: "Side-by-side source counts vs imported counts with percentage completion", status: "done", notes: "Transfer audit shows source counts from session alongside live DB counts" },
+      { name: "Auto-Refresh Live Counts", description: "Toggle auto-refresh for live database counts every 10 seconds", status: "done", notes: "Auto-refresh button with interval in transfer audit" },
+      { name: "Data Integrity Checks", description: "Detect orphan orders, uncategorized products, and missing images", status: "done", notes: "Integrity warnings panel in transfer audit with per-issue counts" },
+      { name: "Export Transfer Audit (CSV)", description: "Download full transfer audit report as CSV", status: "done", notes: "Exports feature mapping, live counts, and integrity issues" },
     ],
   },
 ];
