@@ -7746,7 +7746,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Customer Lifetime Value (CLV)", description: "Calculate and display customer LTV", status: "partial", notes: "total_spent tracked" },
       { name: "Customer Cohort Analysis", description: "Retention and spend analysis by signup cohort", status: "done", notes: "Analytics page cohort table showing signup month vs order month with heat-mapped retention percentages" },
       { name: "Customer RFM Segmentation", description: "Recency/Frequency/Monetary segmentation scoring", status: "partial", notes: "Segmentation rules exist" },
-      { name: "Sales by Channel Report", description: "Revenue breakdown by sales channel (web, POS, marketplace)", status: "not_started" },
+      { name: "Sales by Channel Report", description: "Revenue breakdown by sales channel (web, POS, marketplace)", status: "done", notes: "Analytics page Sales by Channel table with orders, revenue, and AOV per channel" },
       { name: "Sales by Staff Report", description: "Revenue attributed to each staff member", status: "not_started" },
       { name: "Sales by Region/State Report", description: "Geographic breakdown of revenue", status: "not_started" },
       { name: "Tax Report / BAS Report", description: "Tax collected summary for BAS/GST reporting", status: "done", notes: "Analytics page Tax Report card with total collected, taxed orders, and monthly bar chart" },
