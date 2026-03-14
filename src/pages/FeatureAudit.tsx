@@ -9690,6 +9690,10 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Auto-Refresh Live Counts", description: "Toggle auto-refresh for live database counts every 10 seconds", status: "done", notes: "Auto-refresh button with interval in transfer audit" },
       { name: "Data Integrity Checks", description: "Detect orphan orders, uncategorized products, and missing images", status: "done", notes: "Integrity warnings panel in transfer audit with per-issue counts" },
       { name: "Export Transfer Audit (CSV)", description: "Download full transfer audit report as CSV", status: "done", notes: "Exports feature mapping, live counts, and integrity issues" },
+      { name: "Pause / Resume Import", description: "Pause and resume long-running imports at batch or entity level", status: "done", notes: "Pause button in import step, ref-based pause flag checked at batch and entity boundaries" },
+      { name: "Field Mapping Preview", description: "Review and toggle Maropost-to-platform field mappings before import", status: "done", notes: "New 'mapping' step with per-entity tabs showing source→target field table with toggle" },
+      { name: "Post-Migration Verification", description: "Automated checks for count matching, orphan orders, missing images, SEO, categories", status: "done", notes: "10 verification checks with pass/warn/fail status after import, results included in CSV export" },
+      { name: "8-Step Migration Wizard", description: "Expanded wizard: Connect → Scan → Field Map → Select → Import → Verify → Theme → Review", status: "done", notes: "Added mapping and verify steps to the 6-step wizard" },
     ],
   },
 ];
