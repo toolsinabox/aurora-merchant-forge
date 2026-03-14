@@ -8862,7 +8862,7 @@ const addonEcosystemFeatures: FeatureCategory[] = [
       { name: "Addon Catalog (Marketplace)", description: "Browse and install addons from catalog", status: "done", notes: "Addons page + addon_catalog" },
       { name: "Addon Install / Uninstall", description: "One-click install and uninstall", status: "done", notes: "store_addons table" },
       { name: "Addon Configuration UI", description: "Per-addon settings panel", status: "done" },
-      { name: "Addon Versioning", description: "Track addon versions with update capability", status: "partial" },
+      { name: "Addon Versioning", description: "Track addon versions with update capability", status: "done", notes: "version field on addon_catalog, addon update check against installed version" },
       { name: "Addon Categories", description: "Categorize addons (shipping, marketing, etc.)", status: "done" },
       { name: "Addon Pricing (Free/Paid)", description: "Free and paid addon tiers", status: "done", notes: "is_free, price fields" },
       { name: "Addon Usage Count", description: "Track how many stores use each addon", status: "done", notes: "install_count" },
