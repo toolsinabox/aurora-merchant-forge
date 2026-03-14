@@ -66,6 +66,7 @@ const salesNav = [
 // ── Customers ──
 const customersNav = [
   { title: "Customers", url: `${prefix}/customers`, icon: Users },
+  { title: "Segments", url: `${prefix}/customer-segments`, icon: Target },
   { title: "Affiliates", url: `${prefix}/affiliates`, icon: UserPlus },
   { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
   { title: "Loyalty", url: `${prefix}/loyalty`, icon: Heart },
