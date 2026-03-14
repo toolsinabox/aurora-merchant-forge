@@ -202,6 +202,15 @@ export default function OrderDetail() {
     setShipForm({ carrier: "", tracking_number: "", tracking_url: "", notes: "", selectedItems: {} });
   };
 
+  const insertMention = (name: string) => {
+    const cursorText = newComment;
+    const atIdx = cursorText.lastIndexOf("@");
+    if (atIdx >= 0) {
+      setNewComment(cursorText.slice(0, atIdx) + `@${name} ` + cursorText.slice(atIdx + 1 + mentionQuery.length));
+    }
+    setMentionOpen(false);
+  };
+
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
     await createTimelineEvent.mutateAsync({
