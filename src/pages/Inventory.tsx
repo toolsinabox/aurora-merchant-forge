@@ -813,6 +813,7 @@ export default function Inventory() {
               </CardContent>
             </Card>
           </TabsContent>
+        </Tabs>
 
         {/* Bulk Adjust Dialog */}
         <Dialog open={bulkAdjustOpen} onOpenChange={setBulkAdjustOpen}>
