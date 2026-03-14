@@ -220,7 +220,7 @@ export default function Inventory() {
         </div>
 
         <Tabs defaultValue="stock">
-          <TabsList className="h-8">
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="stock" className="text-xs h-7">Stock</TabsTrigger>
             <TabsTrigger value="serials" className="text-xs h-7">Serial Numbers</TabsTrigger>
           </TabsList>

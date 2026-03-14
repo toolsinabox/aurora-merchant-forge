@@ -264,7 +264,7 @@ export default function Suppliers() {
         </div>
 
         <Tabs defaultValue="list">
-          <TabsList className="h-8">
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="list" className="text-xs h-7">Suppliers</TabsTrigger>
             <TabsTrigger value="products" className="text-xs h-7">Product Assignments</TabsTrigger>
             <TabsTrigger value="performance" className="text-xs h-7">Performance</TabsTrigger>

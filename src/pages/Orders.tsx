@@ -169,14 +169,14 @@ export default function Orders() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="page-header">
           <div>
             <h1 className="text-lg font-bold tracking-tight">Orders</h1>
             <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
           </div>
-          <div className="flex gap-2">
+          <div className="page-header-actions">
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
-              <Download className="h-3.5 w-3.5" /> Export
+              <Download className="h-3.5 w-3.5" /> <span className="btn-label">Export</span>
             </Button>
             <CreateOrderDialog />
           </div>
@@ -185,7 +185,7 @@ export default function Orders() {
         {/* Bulk Actions Bar */}
         {selected.size > 0 && (
           <Card>
-            <CardContent className="p-3 flex items-center gap-3">
+            <CardContent className="p-2 sm:p-3 flex flex-wrap items-center gap-2 sm:gap-3">
               <CheckSquare className="h-4 w-4 text-primary" />
               <span className="text-xs font-medium">{selected.size} selected</span>
               <Select value={bulkStatus} onValueChange={setBulkStatus}>
@@ -202,25 +202,25 @@ export default function Orders() {
                 {bulkProcessing ? "Updating..." : "Apply"}
               </Button>
               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>Clear</Button>
-              <div className="ml-auto flex gap-1">
+              <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap gap-1">
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
                   const idsParam = ids.join(",");
                   window.open(`/pick-pack?orders=${idsParam}`, "_blank");
                 }}>
-                  <Printer className="h-3 w-3" /> Print Packing Slips
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Packing Slips</span>
                 </Button>
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
                   ids.forEach(id => window.open(`/orders/${id}/shipping-label`, "_blank"));
                 }}>
-                  <Printer className="h-3 w-3" /> Print Labels
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Labels</span>
                 </Button>
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
                   ids.forEach(id => window.open(`/orders/${id}/invoice`, "_blank"));
                 }}>
-                  <Printer className="h-3 w-3" /> Print Invoices
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Invoices</span>
                 </Button>
               </div>
             </CardContent>
@@ -229,8 +229,8 @@ export default function Orders() {
 
         <Card>
           <CardContent className="p-0">
-            <div className="flex items-center gap-2 p-3 border-b">
-              <div className="relative flex-1 max-w-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 border-b">
+              <div className="relative flex-1 w-full sm:max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Search orders..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
               </div>
@@ -246,6 +246,7 @@ export default function Orders() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -306,6 +307,7 @@ export default function Orders() {
                 )}
               </TableBody>
             </Table>
+            </div>
             <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>

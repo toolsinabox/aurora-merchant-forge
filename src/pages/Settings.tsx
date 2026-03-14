@@ -664,7 +664,7 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="store">
-          <TabsList className="h-8 flex-wrap">
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
             <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
@@ -1253,7 +1253,7 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="p-4 pt-2 space-y-3">
                 <p className="text-xs text-muted-foreground">Configure outgoing email settings for order confirmations, notifications, and marketing emails.</p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">SMTP Host</Label>
                     <Input className="h-8 text-xs" value={smtpForm.host} onChange={(e) => setSmtpForm({ ...smtpForm, host: e.target.value })} placeholder="smtp.gmail.com" />
@@ -1271,7 +1271,7 @@ export default function SettingsPage() {
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">Username</Label>
                     <Input className="h-8 text-xs" value={smtpForm.username} onChange={(e) => setSmtpForm({ ...smtpForm, username: e.target.value })} placeholder="your@email.com" />
@@ -1281,7 +1281,7 @@ export default function SettingsPage() {
                     <Input type="password" className="h-8 text-xs" value={smtpForm.password} onChange={(e) => setSmtpForm({ ...smtpForm, password: e.target.value })} placeholder="••••••••" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">From Name</Label>
                     <Input className="h-8 text-xs" value={smtpForm.from_name} onChange={(e) => setSmtpForm({ ...smtpForm, from_name: e.target.value })} placeholder="My Store" />

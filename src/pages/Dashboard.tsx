@@ -184,23 +184,23 @@ export default function Dashboard() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="page-header">
           <div>
             <h1 className="text-lg font-semibold">Dashboard</h1>
             <p className="text-xs text-muted-foreground">
               {currentStore ? `${currentStore.name} overview` : "Welcome back. Here's your store overview."}
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="page-header-actions">
             <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate("/products/new")}>
-              <Plus className="h-3.5 w-3.5" /> Product
+              <Plus className="h-3.5 w-3.5" /> <span className="btn-label">Product</span>
             </Button>
             <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate("/orders")}>
-              <ShoppingCart className="h-3.5 w-3.5" /> Orders
+              <ShoppingCart className="h-3.5 w-3.5" /> <span className="btn-label">Orders</span>
             </Button>
             {(currentStore as any)?.slug && (
               <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => window.open(`/store/${(currentStore as any).slug}`, '_blank')}>
-                <ExternalLink className="h-3.5 w-3.5" /> View Store
+                <ExternalLink className="h-3.5 w-3.5" /> <span className="btn-label">View Store</span>
               </Button>
             )}
           </div>
@@ -273,6 +273,7 @@ export default function Dashboard() {
                   </Button>
                 </CardHeader>
                 <CardContent className="p-0">
+                  <div className="table-scroll">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -303,6 +304,7 @@ export default function Dashboard() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </CardContent>
               </Card>
 

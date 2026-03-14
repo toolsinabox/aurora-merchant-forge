@@ -166,32 +166,32 @@ export default function Products() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="page-header">
           <div>
             <h1 className="text-lg font-bold tracking-tight">Products</h1>
             <p className="text-xs text-muted-foreground">{products.length} products in catalog</p>
           </div>
-          <div className="flex gap-2">
+          <div className="page-header-actions">
             <input type="file" ref={fileInputRef} accept=".csv" onChange={handleImport} className="hidden" />
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => fileInputRef.current?.click()} disabled={importing}>
-              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} Import
+              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} <span className="btn-label">Import</span>
             </Button>
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/export")}>
-              <Download className="h-3.5 w-3.5" /> Export
+              <Download className="h-3.5 w-3.5" /> <span className="btn-label">Export</span>
             </Button>
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/import")}>
-              <Upload className="h-3.5 w-3.5" /> Import
+              <Upload className="h-3.5 w-3.5" /> <span className="btn-label">Import</span>
             </Button>
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/new")}>
-              <Plus className="h-3.5 w-3.5" /> Add Product
+              <Plus className="h-3.5 w-3.5" /> <span className="btn-label">Add Product</span>
             </Button>
           </div>
         </div>
 
         <Card>
           <CardContent className="p-0">
-            <div className="flex items-center gap-2 p-3 border-b border-border">
-              <div className="relative flex-1 max-w-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 border-b border-border">
+              <div className="relative flex-1 w-full sm:max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
               </div>
@@ -233,6 +233,7 @@ export default function Products() {
               )}
             </div>
 
+            <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -303,6 +304,7 @@ export default function Products() {
                 )}
               </TableBody>
             </Table>
+            </div>
             <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>

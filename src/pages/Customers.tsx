@@ -120,20 +120,20 @@ export default function Customers() {
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="page-header">
           <div>
             <h1 className="text-lg font-bold tracking-tight">Customers</h1>
             <p className="text-xs text-muted-foreground">{customers.length} total customers</p>
           </div>
-          <div className="flex gap-2">
+          <div className="page-header-actions">
             <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleImport} />
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => fileRef.current?.click()} disabled={importing}>
-              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} Import
+              {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />} <span className="btn-label">Import</span>
             </Button>
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
-              <Download className="h-3.5 w-3.5" /> Export
+              <Download className="h-3.5 w-3.5" /> <span className="btn-label">Export</span>
             </Button>
-            <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> Add Customer</Button>
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> <span className="btn-label">Add Customer</span></Button>
           </div>
         </div>
 
@@ -160,8 +160,8 @@ export default function Customers() {
 
         <Card>
           <CardContent className="p-0">
-            <div className="flex items-center gap-2 p-3 border-b">
-              <div className="relative flex-1 max-w-xs">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 border-b">
+              <div className="relative flex-1 w-full sm:max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Search customers..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
               </div>
@@ -175,6 +175,7 @@ export default function Customers() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -203,6 +204,7 @@ export default function Customers() {
                 )}
               </TableBody>
             </Table>
+            </div>
             <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>
