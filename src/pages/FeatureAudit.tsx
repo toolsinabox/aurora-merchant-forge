@@ -7857,7 +7857,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Saved Filter Presets", description: "Save and recall filter combinations on list pages", status: "done", notes: "Products page Presets popover with save/load/delete using localStorage" },
       { name: "Column Visibility Toggle", description: "Show/hide columns on admin tables", status: "done", notes: "Products page Columns dropdown with localStorage persistence" },
       { name: "Column Reorder (Drag)", description: "Drag to reorder table columns", status: "not_started" },
-      { name: "Inline Editing on Tables", description: "Click cell to edit value directly in table view", status: "not_started" },
+      { name: "Inline Editing on Tables", description: "Click cell to edit value directly in table view", status: "done", notes: "Products page — click price or status cells to edit inline with instant save" },
       { name: "Mass Price Update", description: "Bulk update prices by percentage or fixed amount", status: "partial", notes: "BulkEditDialog exists" },
       { name: "Mass Category Assignment", description: "Bulk assign products to categories", status: "partial" },
       { name: "Undo/Redo in Forms", description: "Ctrl+Z/Y support in admin forms", status: "not_started" },
