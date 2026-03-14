@@ -28,6 +28,7 @@ const mainNav = [
 const catalogNav = [
   { title: "Products", url: `${prefix}/products`, icon: Package },
   { title: "Categories", url: `${prefix}/categories`, icon: Layers },
+  { title: "Smart Collections", url: `${prefix}/smart-collections`, icon: Sparkles },
   { title: "Inventory", url: `${prefix}/inventory`, icon: Warehouse },
   { title: "Stock Adjustments", url: `${prefix}/stock-adjustments`, icon: History },
   { title: "Stocktake", url: `${prefix}/stocktake`, icon: ClipboardCheck },
