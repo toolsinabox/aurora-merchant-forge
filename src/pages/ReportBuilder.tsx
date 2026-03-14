@@ -109,7 +109,7 @@ export default function ReportBuilder() {
               </div>
               <div>
                 <Label className="text-xs flex items-center gap-1"><Calendar className="h-3 w-3" /> Date From</Label>
-                <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="h-9" />
+                <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="h-8 text-xs" />
               </div>
               <div>
                 <Label className="text-xs">Date To</Label>
