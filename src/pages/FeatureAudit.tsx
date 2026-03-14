@@ -8009,7 +8009,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
     category: "Order Workflows — Advanced",
     icon: <Workflow className="h-5 w-5" />,
     features: [
-      { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "partial", notes: "Status-based hold" },
+      { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "done", notes: "OrderHolds page with hold/release workflow, KPI cards (active/released/total), hold reasons (fraud, payment, address verification, high value, suspicious activity), search/filter, order selection from pending/processing orders" },
       { name: "Order Auto-Allocation Rules", description: "Auto-assign orders to warehouse by region/stock", status: "done", notes: "Settings Fulfillment tab AutoAssignWarehouseCard with region/country-based routing to warehouses, priority ordering, active toggle" },
       { name: "Split Shipment (Partial Fulfillment)", description: "Ship part of an order, hold remainder", status: "done", notes: "Create Shipment dialog with per-item checkbox and quantity selector for partial fulfillment, Split Order dialog for splitting items into new order, fulfillment_status supports unfulfilled/partial/fulfilled" },
       { name: "Backorder Auto-Creation", description: "Auto-create backorders when stock insufficient", status: "done", notes: "backorders table" },
