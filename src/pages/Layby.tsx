@@ -126,7 +126,7 @@ export default function Layby() {
 
         <div className="grid grid-cols-3 gap-3">
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{totalActive}</p>
+            <p className="text-lg font-bold">{totalActive}</p>
             <p className="text-xs text-muted-foreground">Active Plans</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
