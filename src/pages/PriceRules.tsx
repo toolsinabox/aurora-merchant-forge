@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap } from "lucide-react";
+import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap, ShoppingBag, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 
 const RULE_TYPES = [
@@ -21,6 +21,8 @@ const RULE_TYPES = [
   { value: "fixed_amount", label: "Fixed Amount Off", icon: DollarSign },
   { value: "buy_x_get_y", label: "Buy X Get Y", icon: Gift },
   { value: "free_shipping", label: "Free Shipping", icon: Truck },
+  { value: "gift_with_purchase", label: "Gift With Purchase", icon: ShoppingBag },
+  { value: "first_order", label: "First Order Discount", icon: UserPlus },
 ];
 
 const APPLIES_TO = [
@@ -39,6 +41,7 @@ export default function PriceRules() {
     name: "", rule_type: "percentage", discount_value: "10", applies_to: "all",
     min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
     starts_at: "", ends_at: "", priority: "0", max_uses: "",
+    gift_product_sku: "", // for gift_with_purchase type
   });
 
   const { data: rules = [] } = useQuery({
@@ -105,7 +108,7 @@ export default function PriceRules() {
     setEditingId(null);
     setForm({ name: "", rule_type: "percentage", discount_value: "10", applies_to: "all",
       min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
-      starts_at: "", ends_at: "", priority: "0", max_uses: "" });
+      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "" });
   };
 
   const editRule = (r: any) => {
@@ -121,6 +124,7 @@ export default function PriceRules() {
       ends_at: r.ends_at ? r.ends_at.slice(0, 16) : "",
       priority: String(r.priority || 0),
       max_uses: r.max_uses ? String(r.max_uses) : "",
+      gift_product_sku: r.gift_product_sku || "",
     });
     setEditingId(r.id);
     setShowForm(true);

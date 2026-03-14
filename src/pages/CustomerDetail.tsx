@@ -9,6 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useCustomer, useOrders, useCustomerAddresses, useCreateCustomerAddress, useDeleteCustomerAddress, useCustomerGroups } from "@/hooks/use-data";
 import { ArrowLeft, Mail, Phone, Calendar, MapPin, Plus, Trash2, Save, Tag, FileText, Merge, Upload, Paperclip, Download } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -397,6 +402,47 @@ export default function CustomerDetail() {
               }}>
                 <Download className="h-3 w-3 mr-1" />GDPR Export
               </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button size="sm" variant="destructive" className="text-xs">
+                    <Trash2 className="h-3 w-3 mr-1" />GDPR Delete
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete All Customer Data (GDPR)</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will permanently delete all data for <strong>{customer?.name}</strong> including orders, addresses, communications, files, store credits, and the customer record itself. This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={async () => {
+                      if (!customer || !currentStore) return;
+                      try {
+                        // Delete all related data
+                        await Promise.all([
+                          supabase.from("orders").delete().eq("customer_id", customer.id).eq("store_id", currentStore.id),
+                          supabase.from("customer_addresses" as any).delete().eq("customer_id", customer.id),
+                          supabase.from("customer_communications").delete().eq("customer_id", customer.id),
+                          supabase.from("customer_files").delete().eq("customer_id", customer.id),
+                          supabase.from("store_credit_transactions" as any).delete().eq("customer_id", customer.id),
+                          supabase.from("returns" as any).delete().eq("customer_id", customer.id),
+                          supabase.from("abandoned_carts").delete().eq("customer_id", customer.id),
+                        ]);
+                        // Delete customer record
+                        await supabase.from("customers").delete().eq("id", customer.id);
+                        toast.success("All customer data deleted (GDPR compliance)");
+                        navigate("/customers");
+                      } catch (err: any) {
+                        toast.error(err.message || "Deletion failed");
+                      }
+                    }}>
+                      Delete All Data
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
               <Dialog open={mergeOpen} onOpenChange={setMergeOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="outline" className="text-xs"><Merge className="h-3 w-3 mr-1" />Merge</Button>
