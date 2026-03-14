@@ -105,35 +105,39 @@ export default function LoyaltyProgram() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Loyalty Program</h1>
-            <p className="text-sm text-muted-foreground">Manage points, tiers, and member rewards</p>
+            <h1 className="text-lg font-semibold">Loyalty Program</h1>
+            <p className="text-xs text-muted-foreground">Manage points, tiers, and member rewards</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card><CardContent className="pt-4 pb-3 text-center">
-            <Users className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-            <p className="text-2xl font-bold">{totalMembers}</p>
-            <p className="text-xs text-muted-foreground">Members</p>
-          </CardContent></Card>
-          <Card><CardContent className="pt-4 pb-3 text-center">
-            <Star className="h-5 w-5 mx-auto mb-1 text-primary" />
-            <p className="text-2xl font-bold">{totalPoints.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">Active Points</p>
-          </CardContent></Card>
-          <Card><CardContent className="pt-4 pb-3 text-center">
-            <TrendingUp className="h-5 w-5 mx-auto mb-1 text-primary" />
-            <p className="text-2xl font-bold">{totalEarned.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">Lifetime Earned</p>
-          </CardContent></Card>
-          <Card><CardContent className="pt-4 pb-3 text-center">
-            <Gift className="h-5 w-5 mx-auto mb-1 text-primary" />
-            <p className="text-2xl font-bold">{totalRedeemed.toLocaleString()}</p>
-            <p className="text-xs text-muted-foreground">Redeemed</p>
-          </CardContent></Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 stagger-children">
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center"><Users className="h-4 w-4 text-primary" /></div>
+              <div><p className="text-2xs text-muted-foreground">Members</p><p className="text-lg font-bold">{totalMembers}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-success/10 flex items-center justify-center"><Star className="h-4 w-4 text-success" /></div>
+              <div><p className="text-2xs text-muted-foreground">Active Points</p><p className="text-lg font-bold">{totalPoints.toLocaleString()}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-info/10 flex items-center justify-center"><TrendingUp className="h-4 w-4 text-info" /></div>
+              <div><p className="text-2xs text-muted-foreground">Lifetime Earned</p><p className="text-lg font-bold">{totalEarned.toLocaleString()}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-warning/10 flex items-center justify-center"><Gift className="h-4 w-4 text-warning" /></div>
+              <div><p className="text-2xs text-muted-foreground">Redeemed</p><p className="text-lg font-bold">{totalRedeemed.toLocaleString()}</p></div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>

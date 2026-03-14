@@ -205,35 +205,35 @@ export default function GiftVouchers() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Recipient</TableHead>
-                  <TableHead>Initial Value</TableHead>
-                  <TableHead>Balance</TableHead>
-                  <TableHead>Expires</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-20"></TableHead>
+                  <TableHead className="text-xs h-8">Code</TableHead>
+                  <TableHead className="text-xs h-8">Recipient</TableHead>
+                  <TableHead className="text-xs h-8">Initial Value</TableHead>
+                  <TableHead className="text-xs h-8">Balance</TableHead>
+                  <TableHead className="text-xs h-8">Expires</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8 w-16"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No gift vouchers found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">No gift vouchers found</TableCell></TableRow>
                 ) : filtered.map((v: any) => (
-                  <TableRow key={v.id}>
-                    <TableCell className="font-mono font-medium text-sm">{v.code}</TableCell>
-                    <TableCell className="text-sm">
+                  <TableRow key={v.id} className="text-xs">
+                    <TableCell className="py-2 font-mono font-medium">{v.code}</TableCell>
+                    <TableCell className="py-2">
                       <div>{v.recipient_name || "—"}</div>
-                      {v.recipient_email && <div className="text-xs text-muted-foreground">{v.recipient_email}</div>}
+                      {v.recipient_email && <div className="text-2xs text-muted-foreground">{v.recipient_email}</div>}
                     </TableCell>
-                    <TableCell className="font-medium">${Number(v.initial_value).toFixed(2)}</TableCell>
-                    <TableCell className={Number(v.balance) === 0 ? "text-muted-foreground" : "font-medium text-primary"}>${Number(v.balance).toFixed(2)}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{v.expires_at ? format(new Date(v.expires_at), "dd MMM yyyy") : "Never"}</TableCell>
-                    <TableCell>
+                    <TableCell className="py-2 font-medium">${Number(v.initial_value).toFixed(2)}</TableCell>
+                    <TableCell className={`py-2 ${Number(v.balance) === 0 ? "text-muted-foreground" : "font-medium text-primary"}`}>${Number(v.balance).toFixed(2)}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{v.expires_at ? format(new Date(v.expires_at), "dd MMM yyyy") : "Never"}</TableCell>
+                    <TableCell className="py-2">
                       <Switch checked={v.is_active} onCheckedChange={active => toggleActive.mutate({ id: v.id, active })} />
                     </TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(v.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    <TableCell className="py-2">
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteMutation.mutate(v.id)}><Trash2 className="h-3 w-3" /></Button>
                     </TableCell>
                   </TableRow>
                 ))}

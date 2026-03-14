@@ -131,54 +131,54 @@ export default function Affiliates() {
         </div>
 
         <Card>
-          <CardContent className="pt-4">
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Commission</TableHead>
-                  <TableHead>Referrals</TableHead>
-                  <TableHead>Revenue</TableHead>
-                  <TableHead>Unpaid</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead />
+                  <TableHead className="text-xs h-8">Name</TableHead>
+                  <TableHead className="text-xs h-8">Email</TableHead>
+                  <TableHead className="text-xs h-8">Code</TableHead>
+                  <TableHead className="text-xs h-8">Commission</TableHead>
+                  <TableHead className="text-xs h-8">Referrals</TableHead>
+                  <TableHead className="text-xs h-8">Revenue</TableHead>
+                  <TableHead className="text-xs h-8">Unpaid</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {affiliates.map((a: any) => (
-                  <TableRow key={a.id}>
-                    <TableCell className="font-medium">{a.name}</TableCell>
-                    <TableCell className="text-sm">{a.email}</TableCell>
-                    <TableCell>
+                  <TableRow key={a.id} className="text-xs">
+                    <TableCell className="py-2 font-medium">{a.name}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{a.email}</TableCell>
+                    <TableCell className="py-2">
                       <div className="flex items-center gap-1">
-                        <code className="text-xs bg-muted px-1.5 py-0.5 rounded">{a.referral_code}</code>
+                        <code className="font-mono bg-muted px-1.5 py-0.5 rounded text-[10px]">{a.referral_code}</code>
                         <Button size="sm" variant="ghost" className="h-5 w-5 p-0" onClick={() => { navigator.clipboard.writeText(a.referral_code); toast.success("Copied!"); }}>
-                          <Copy className="h-3 w-3" />
+                          <Copy className="h-2.5 w-2.5" />
                         </Button>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm">{a.commission_rate}{a.commission_type === "percentage" ? "%" : " flat"}</TableCell>
-                    <TableCell>{a.total_referrals}</TableCell>
-                    <TableCell>${Number(a.total_revenue).toFixed(2)}</TableCell>
-                    <TableCell className="font-medium text-destructive">${Number(a.unpaid_commission).toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge variant={a.status === "active" ? "default" : "secondary"}>{a.status}</Badge>
+                    <TableCell className="py-2">{a.commission_rate}{a.commission_type === "percentage" ? "%" : " flat"}</TableCell>
+                    <TableCell className="py-2">{a.total_referrals}</TableCell>
+                    <TableCell className="py-2">${Number(a.total_revenue).toFixed(2)}</TableCell>
+                    <TableCell className="py-2 font-medium text-destructive">${Number(a.unpaid_commission).toFixed(2)}</TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant={a.status === "active" ? "default" : "secondary"} className="text-[10px]">{a.status}</Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-2">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild><Button size="sm" variant="ghost" className="h-7 w-7 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                        <DropdownMenuTrigger asChild><Button size="sm" variant="ghost" className="h-6 w-6 p-0"><MoreHorizontal className="h-3.5 w-3.5" /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => { setSelectedAffiliate(a); setShowPayouts(true); }}>View Referrals</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toggleStatus(a.id, a.status)}>{a.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onClick={() => deleteAffiliate(a.id)}>Delete</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs" onClick={() => { setSelectedAffiliate(a); setShowPayouts(true); }}>View Referrals</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs" onClick={() => toggleStatus(a.id, a.status)}>{a.status === "active" ? "Deactivate" : "Activate"}</DropdownMenuItem>
+                          <DropdownMenuItem className="text-xs text-destructive" onClick={() => deleteAffiliate(a.id)}>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
-                {affiliates.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-muted-foreground py-8">No affiliates yet</TableCell></TableRow>}
+                {affiliates.length === 0 && <TableRow><TableCell colSpan={9} className="text-center text-xs text-muted-foreground py-8">No affiliates yet</TableCell></TableRow>}
               </TableBody>
             </Table>
           </CardContent>
