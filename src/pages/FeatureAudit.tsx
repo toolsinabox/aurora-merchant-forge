@@ -9382,7 +9382,131 @@ const emailDeliverabilityFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures, ...giftRegistryFeatures, ...warehouseAutomationFeatures, ...returnPolicyFeatures, ...customerSegmentationFeatures, ...internationalFeatures, ...productSchedulingFeatures, ...orderPrintingFeatures, ...developerToolsFeatures, ...cartFeatures, ...adminDashboardFeatures, ...productCustomFieldFeatures, ...onboardingFeatures, ...advancedOrderFeatures, ...storefrontNavigationFeatures, ...emailDeliverabilityFeatures]);
+// ═══════ WAVE 13 — ABSOLUTE FINAL MICRO-FEATURES ═══════
+
+const productRelationFeatures: FeatureCategory[] = [
+  {
+    category: "Product Relations & Associations",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "Related Products (Manual)", description: "Manually assign related products", status: "done", notes: "product_relations" },
+      { name: "Related Products (Auto)", description: "Auto-suggest related by category/tags", status: "partial" },
+      { name: "Cross-Sell Products", description: "Products shown on cart page", status: "done" },
+      { name: "Upsell Products", description: "Higher-value alternative suggestions", status: "done" },
+      { name: "Frequently Bought Together", description: "Bundle suggestions based on order history", status: "not_started" },
+      { name: "Accessories / Add-Ons", description: "Optional add-on products for main product", status: "done", notes: "product_addons" },
+      { name: "Required Accessories", description: "Mandatory add-ons auto-added to cart", status: "partial" },
+      { name: "Product Comparison Group", description: "Group products for side-by-side comparison", status: "done", notes: "CompareContext" },
+      { name: "Substitute / Alternative Products", description: "Suggest alternatives when out of stock", status: "not_started" },
+      { name: "Warranty Product Link", description: "Link warranty products to eligible items", status: "not_started" },
+    ],
+  },
+];
+
+const storefrontFooterFeatures: FeatureCategory[] = [
+  {
+    category: "Storefront Footer & Chrome",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Footer Link Columns", description: "Multi-column footer with links", status: "done" },
+      { name: "Footer Newsletter Signup", description: "Newsletter form in footer", status: "done", notes: "NewsletterSignup" },
+      { name: "Footer Social Media Icons", description: "Social media icon links", status: "done" },
+      { name: "Footer Payment Icons", description: "Accepted payment method icons", status: "partial" },
+      { name: "Footer Trust Badges", description: "SSL, security, guarantee badges", status: "partial" },
+      { name: "Footer Copyright Notice", description: "Dynamic copyright year", status: "done" },
+      { name: "Footer Contact Info", description: "Phone, email, address in footer", status: "done" },
+      { name: "Footer Store Locator Link", description: "Link to store finder page", status: "done" },
+      { name: "Announcement Bar (Top)", description: "Configurable top-of-page announcement", status: "done", notes: "AdvertBanner" },
+      { name: "Promo Popup (Entry/Exit)", description: "Promotional popup on entry or exit intent", status: "done", notes: "PromoPopup" },
+    ],
+  },
+];
+
+const inventoryReceivingFeatures: FeatureCategory[] = [
+  {
+    category: "Inventory Receiving & Inbound",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Receive Against PO", description: "Record received stock against purchase order", status: "partial" },
+      { name: "Receive Without PO", description: "Ad-hoc stock receipt without PO", status: "partial" },
+      { name: "Barcode Scan Receiving", description: "Scan items during receiving process", status: "done", notes: "BarcodeScanner" },
+      { name: "Receive with Quality Check", description: "Inspect quality during receiving", status: "not_started" },
+      { name: "Partial Receive (PO)", description: "Receive subset of PO items", status: "partial" },
+      { name: "Over-Receive Warning", description: "Warn when receiving more than ordered", status: "not_started" },
+      { name: "Receive to Specific Location/Bin", description: "Direct received stock to bin location", status: "partial", notes: "bin_location field" },
+      { name: "Receiving Report / GRN Print", description: "Print goods receipt note", status: "not_started" },
+      { name: "Supplier Packing Slip Reconciliation", description: "Compare received items to supplier slip", status: "not_started" },
+      { name: "Auto-Update Stock on Receive", description: "Automatically adjust stock levels", status: "done" },
+    ],
+  },
+];
+
+const contentBlockFeatures: FeatureCategory[] = [
+  {
+    category: "Content Blocks & Dynamic Content",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Content Block CRUD", description: "Create/edit/delete reusable content blocks", status: "done", notes: "ContentBlocks page" },
+      { name: "Content Block Placement", description: "Assign blocks to page positions", status: "done", notes: "placement field" },
+      { name: "Content Block Scheduling", description: "Schedule block visibility by date", status: "partial" },
+      { name: "Content Block Targeting", description: "Show blocks to specific customer groups", status: "not_started" },
+      { name: "HTML Content Block", description: "Raw HTML content block type", status: "done" },
+      { name: "Banner / Image Block", description: "Image banner content block", status: "done" },
+      { name: "Product Carousel Block", description: "Dynamic product carousel widget", status: "partial" },
+      { name: "Category Feature Block", description: "Featured categories widget", status: "partial" },
+      { name: "Testimonial Block", description: "Customer testimonials widget", status: "not_started" },
+      { name: "FAQ Accordion Block", description: "Collapsible FAQ content block", status: "partial" },
+    ],
+  },
+];
+
+const posAdvancedFeatures: FeatureCategory[] = [
+  {
+    category: "POS — Advanced Operations",
+    icon: <Tv className="h-5 w-5" />,
+    features: [
+      { name: "POS Product Search", description: "Quick search products by name/SKU/barcode", status: "done", notes: "POS page" },
+      { name: "POS Barcode Scanner Input", description: "Scan barcodes to add to POS cart", status: "done" },
+      { name: "POS Customer Lookup", description: "Search and assign customer to sale", status: "done" },
+      { name: "POS Discount Application", description: "Apply line/cart discounts at POS", status: "done" },
+      { name: "POS Cash Payment", description: "Accept cash with change calculation", status: "done" },
+      { name: "POS Card Payment", description: "Process card payments via terminal", status: "partial" },
+      { name: "POS Split Payment", description: "Split payment across methods", status: "not_started" },
+      { name: "POS Receipt Print", description: "Print thermal receipt", status: "partial" },
+      { name: "POS End-of-Day Report", description: "Daily POS sales summary", status: "not_started" },
+      { name: "POS Cash Drawer Open", description: "Trigger cash drawer via USB/Bluetooth", status: "not_started" },
+      { name: "POS Refund Processing", description: "Process refunds at POS", status: "not_started" },
+      { name: "POS Hold / Park Sale", description: "Park current sale and serve next customer", status: "not_started" },
+      { name: "POS Gift Card Scan & Redeem", description: "Scan and apply gift cards at POS", status: "not_started" },
+      { name: "POS Loyalty Points Display", description: "Show customer loyalty balance at POS", status: "not_started" },
+      { name: "POS Multiple Registers", description: "Support multiple POS terminals per store", status: "not_started" },
+      { name: "POS Offline Mode", description: "Continue sales when internet is down", status: "not_started" },
+    ],
+  },
+];
+
+const supplierDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Suppliers — Deep Management",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Supplier Directory", description: "List and manage all suppliers", status: "done", notes: "Suppliers page" },
+      { name: "Supplier Contact Details", description: "Store supplier contact info", status: "done" },
+      { name: "Supplier Payment Terms", description: "Track supplier payment terms", status: "partial" },
+      { name: "Supplier Currency", description: "Supplier-specific currency", status: "partial" },
+      { name: "Supplier Product Assignment", description: "Link products to their suppliers", status: "done", notes: "supplier_id on products" },
+      { name: "Supplier Price Lists", description: "Track supplier cost prices", status: "partial" },
+      { name: "Supplier Lead Time", description: "Default lead time per supplier", status: "partial" },
+      { name: "Supplier Minimum Order", description: "Minimum order value per supplier", status: "not_started" },
+      { name: "Supplier Rating / Scorecarding", description: "Rate suppliers on performance", status: "not_started" },
+      { name: "Supplier Portal Access", description: "Supplier login to view/fulfill orders", status: "not_started" },
+      { name: "Supplier Document Storage", description: "Store contracts, certificates per supplier", status: "not_started" },
+      { name: "Multi-Supplier per Product", description: "Multiple suppliers for same product", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures, ...giftRegistryFeatures, ...warehouseAutomationFeatures, ...returnPolicyFeatures, ...customerSegmentationFeatures, ...internationalFeatures, ...productSchedulingFeatures, ...orderPrintingFeatures, ...developerToolsFeatures, ...cartFeatures, ...adminDashboardFeatures, ...productCustomFieldFeatures, ...onboardingFeatures, ...advancedOrderFeatures, ...storefrontNavigationFeatures, ...emailDeliverabilityFeatures, ...productRelationFeatures, ...storefrontFooterFeatures, ...inventoryReceivingFeatures, ...contentBlockFeatures, ...posAdvancedFeatures, ...supplierDeepFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
