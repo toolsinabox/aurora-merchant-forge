@@ -7774,7 +7774,7 @@ const emailAutomationDeepFeatures: FeatureCategory[] = [
       { name: "A/B Subject Line Testing", description: "Test multiple subject lines and auto-select winner", status: "not_started" },
       { name: "Dynamic Coupon Insertion", description: "Auto-generate unique coupon codes in emails", status: "not_started" },
       { name: "Product Recommendation Block", description: "AI-powered product recommendations in emails", status: "not_started" },
-      { name: "Browse Abandonment Email", description: "Email triggered by product page views without purchase", status: "not_started" },
+      { name: "Browse Abandonment Email", description: "Email triggered by product page views without purchase", status: "done", notes: "EmailAutomations browse_abandon trigger type" },
       { name: "Cart Abandonment Series", description: "Multi-email sequence for abandoned carts", status: "done", notes: "abandoned-cart-email function" },
       { name: "Post-Purchase Follow-Up Series", description: "Review request and cross-sell emails after purchase", status: "done", notes: "order-follow-up function" },
       { name: "Win-Back Campaign", description: "Re-engage inactive customers after configurable period", status: "done", notes: "EmailAutomations winback trigger type for 30+ days inactive customers" },
