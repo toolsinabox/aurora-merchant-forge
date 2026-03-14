@@ -157,9 +157,10 @@ export default function Webhooks() {
                   <TableHead className="text-xs h-8">URL</TableHead>
                   <TableHead className="text-xs h-8">Events</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8">Failures</TableHead>
                   <TableHead className="text-xs h-8">Last Triggered</TableHead>
                   <TableHead className="text-xs h-8 w-20">Active</TableHead>
-                  <TableHead className="text-xs h-8 w-10"></TableHead>
+                  <TableHead className="text-xs h-8 w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
