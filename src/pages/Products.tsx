@@ -64,20 +64,37 @@ function parseCSV(text: string): Record<string, string>[] {
 }
 
 export default function Products() {
-  const navigate = useNavigate();
-  const { data: products = [], isLoading } = useProducts();
-  const { data: categories = [] } = useCategories();
-  const deleteProducts = useDeleteProducts();
-  const updateProduct = useUpdateProduct();
-  const { currentStore } = useAuth();
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selected, setSelected] = useState<string[]>([]);
-  const [importing, setImporting] = useState(false);
-  const [bulkEditOpen, setBulkEditOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  // Column visibility
+  type ColKey = "sku" | "status" | "stock" | "price";
+  const COLUMN_STORAGE_KEY = "products-visible-columns";
+  const defaultCols: Record<ColKey, boolean> = { sku: true, status: true, stock: true, price: true };
+  const [visibleCols, setVisibleCols] = useState<Record<ColKey, boolean>>(() => {
+    try { const s = localStorage.getItem(COLUMN_STORAGE_KEY); return s ? JSON.parse(s) : defaultCols; } catch { return defaultCols; }
+  });
+  useEffect(() => { localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(visibleCols)); }, [visibleCols]);
+  const toggleCol = (col: ColKey) => setVisibleCols(prev => ({ ...prev, [col]: !prev[col] }));
+
+  // Saved filter presets
+  const FILTER_PRESET_KEY = "products-filter-presets";
+  const [filterPresets, setFilterPresets] = useState<{ name: string; search: string; status: string }[]>(() => {
+    try { const s = localStorage.getItem(FILTER_PRESET_KEY); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  useEffect(() => { localStorage.setItem(FILTER_PRESET_KEY, JSON.stringify(filterPresets)); }, [filterPresets]);
+
+  const saveFilterPreset = () => {
+    const name = prompt("Preset name:");
+    if (!name) return;
+    setFilterPresets(prev => [...prev.filter(p => p.name !== name), { name, search, status: statusFilter }]);
+    toast.success(`Saved preset "${name}"`);
+  };
+  const loadFilterPreset = (preset: { search: string; status: string }) => {
+    setSearch(preset.search);
+    setStatusFilter(preset.status);
+  };
+  const deleteFilterPreset = (name: string) => {
+    setFilterPresets(prev => prev.filter(p => p.name !== name));
+    toast.success(`Deleted preset "${name}"`);
+  };
 
   const filtered = products.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || (p.sku || "").toLowerCase().includes(search.toLowerCase());
