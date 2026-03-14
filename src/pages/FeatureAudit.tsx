@@ -7749,7 +7749,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Sales by Channel Report", description: "Revenue breakdown by sales channel (web, POS, marketplace)", status: "not_started" },
       { name: "Sales by Staff Report", description: "Revenue attributed to each staff member", status: "not_started" },
       { name: "Sales by Region/State Report", description: "Geographic breakdown of revenue", status: "not_started" },
-      { name: "Tax Report / BAS Report", description: "Tax collected summary for BAS/GST reporting", status: "not_started" },
+      { name: "Tax Report / BAS Report", description: "Tax collected summary for BAS/GST reporting", status: "done", notes: "Analytics page Tax Report card with total collected, taxed orders, and monthly bar chart" },
       { name: "Payment Method Report", description: "Revenue breakdown by payment method", status: "not_started" },
       { name: "Discount Usage Report", description: "How often each coupon/discount is used and revenue impact", status: "partial" },
       { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel analysis", status: "not_started" },
