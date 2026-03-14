@@ -1,6 +1,6 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState, useEffect, useCallback } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ShoppingBag, Menu, User, Store, Search, Heart, ChevronDown } from "lucide-react";
+import { ShoppingBag, Menu, User, Store, Search, Heart, ChevronDown, ChevronUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
@@ -32,13 +32,28 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [categories, setCategories] = useState<any[]>([]);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [bannerText, setBannerText] = useState<string | null>(null);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const currencyData = useCurrency(storeId);
+
+  // Back to top scroll listener
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
       if (s) {
         setStoreId(s.id);
+        // Check maintenance mode
+        if ((s as any).maintenance_mode) { setMaintenanceMode(true); return; }
         if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
         // Banner scheduling
         const bt = (s as any).banner_text;
@@ -123,8 +138,31 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const parentCategories = categories.filter(c => !c.parent_id);
   const getChildren = (parentId: string) => categories.filter(c => c.parent_id === parentId);
 
+  // Maintenance mode
+  if (maintenanceMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-8">
+        <div className="text-center max-w-md">
+          <Store className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+          <h1 className="text-2xl font-bold mb-3">We'll Be Right Back</h1>
+          <p className="text-muted-foreground">
+            {storeName || "Our store"} is currently undergoing scheduled maintenance. 
+            We'll be back shortly — thank you for your patience.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
+      {/* Skip to Content (A11y) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
+      >
+        Skip to content
+      </a>
       {/* Announcement Banner */}
       {bannerText && (
         <div className="bg-primary text-primary-foreground text-center text-xs py-2 px-4 font-medium">
@@ -263,7 +301,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1">{children}</main>
 
       {/* Footer */}
       <footer className="border-t bg-card/50">
@@ -327,6 +365,17 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
 
       <CookieConsentBanner />
       <PromoPopup basePath={basePath} storeName={storeName} />
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-all motion-reduce:transition-none"
+          aria-label="Back to top"
+        >
+          <ChevronUp className="h-5 w-5" />
+        </button>
+      )}
     </div>
   );
 }
