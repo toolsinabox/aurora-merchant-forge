@@ -60,6 +60,20 @@ export default function StorefrontCheckout() {
     billing_address: "", billing_city: "", billing_zip: "", billing_country: "",
     notes: "",
     delivery_instructions: "",
+    company: "",
+    po_number: "",
+    custom_field_1: "",
+  });
+
+  // Capture UTM params from URL
+  const [utmParams] = useState(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const params: Record<string, string> = {};
+    ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"].forEach(k => {
+      const v = sp.get(k);
+      if (v) params[k] = v;
+    });
+    return Object.keys(params).length > 0 ? params : null;
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [shippingZones, setShippingZones] = useState<any[]>([]);
@@ -431,10 +445,19 @@ export default function StorefrontCheckout() {
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
           payment_status: payOnAccount ? "pending" : "pending",
-          notes: [payOnAccount ? `Pay on Account - ${creditTerms}` : null, form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null, form.notes].filter(Boolean).join(" ") || null,
+          notes: [
+            payOnAccount ? `Pay on Account - ${creditTerms}` : null,
+            form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
+            form.company ? `[Company: ${form.company}]` : null,
+            form.po_number ? `[PO#: ${form.po_number}]` : null,
+            form.custom_field_1 ? `[Custom: ${form.custom_field_1}]` : null,
+            utmParams ? `[UTM: ${Object.entries(utmParams).map(([k,v]) => `${k}=${v}`).join("&")}]` : null,
+            form.notes,
+          ].filter(Boolean).join(" ") || null,
           shipping_address: shippingAddr,
           billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
+          metadata: utmParams ? utmParams : undefined,
         } as any)
         .select()
         .single();
@@ -782,6 +805,25 @@ export default function StorefrontCheckout() {
                   <p className="text-xs text-muted-foreground">{form.delivery_instructions.length}/300 characters</p>
                 </div>
               )}
+
+              {/* Custom Fields */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold">Additional Information</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-sm">Company Name <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                    <Input value={form.company} onChange={(e) => update("company", e.target.value)} placeholder="Your company" />
+                  </div>
+                  <div>
+                    <Label className="text-sm">PO Number <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                    <Input value={form.po_number} onChange={(e) => update("po_number", e.target.value)} placeholder="Purchase order #" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm">Special Requirements <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                  <Input value={form.custom_field_1} onChange={(e) => update("custom_field_1", e.target.value)} placeholder="Any special requirements..." />
+                </div>
+              </div>
 
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">

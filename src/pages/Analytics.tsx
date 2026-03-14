@@ -1293,6 +1293,63 @@ export default function Analytics() {
             )}
           </CardContent>
         </Card>
+
+        {/* AOV Trend */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Average Order Value Trend</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={timeSeries}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
+                <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" interval="preserveStartEnd" />
+                <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" tickFormatter={(v) => `$${v.toFixed(0)}`} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "AOV"]} />
+                <Line type="monotone" dataKey="avgOrderValue" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* UTM Source Attribution */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by UTM Source</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[100px]" /> : (() => {
+              const utmMap: Record<string, { orders: number; revenue: number }> = {};
+              (orders as any[]).forEach((o: any) => {
+                const meta = o.metadata || o.notes || "";
+                let source = "Direct";
+                if (typeof meta === "object" && meta?.utm_source) source = meta.utm_source;
+                else if (typeof meta === "string") {
+                  const m = meta.match(/utm_source=([^\s&,]+)/);
+                  if (m) source = m[1];
+                }
+                if (!utmMap[source]) utmMap[source] = { orders: 0, revenue: 0 };
+                utmMap[source].orders++;
+                utmMap[source].revenue += Number(o.total || 0);
+              });
+              const rows = Object.entries(utmMap).map(([source, d]) => ({ source, ...d })).sort((a, b) => b.revenue - a.revenue);
+              return rows.length === 0 ? <p className="text-xs text-muted-foreground text-center py-4">No UTM data yet.</p> : (
+                <Table>
+                  <TableHeader><TableRow>
+                    <TableHead className="text-xs h-8">Source</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                  </TableRow></TableHeader>
+                  <TableBody>
+                    {rows.map(r => (
+                      <TableRow key={r.source} className="text-xs">
+                        <TableCell className="py-1.5 font-medium">{r.source}</TableCell>
+                        <TableCell className="py-1.5 text-right">{r.orders}</TableCell>
+                        <TableCell className="py-1.5 text-right">${r.revenue.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              );
+            })()}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
