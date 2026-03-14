@@ -3532,6 +3532,235 @@ const featureData: FeatureCategory[] = [
     ],
   },
 ];
+
+// ═══════ 231–250: ADVANCED COMMERCE FEATURES ═══════
+const advancedFeatures: FeatureCategory[] = [
+  {
+    category: "Product Scheduling",
+    icon: <Clock className="h-5 w-5" />,
+    features: [
+      { name: "Publish Date", description: "Schedule product to go live at future date", status: "done", notes: "publish_at column on products" },
+      { name: "Unpublish Date", description: "Auto-hide product after date", status: "done", notes: "unpublish_at for timed visibility" },
+      { name: "Status Toggle", description: "Manual active/inactive toggle", status: "done", notes: "status column (active/draft/archived)" },
+      { name: "Scheduled Visibility", description: "Products visible within date window only", status: "done", notes: "Storefront filters by publish_at/unpublish_at" },
+    ],
+  },
+  {
+    category: "Subscriptions & Recurring Orders",
+    icon: <Repeat className="h-5 w-5" />,
+    features: [
+      { name: "Subscription Plans", description: "Recurring delivery plans", status: "done", notes: "subscriptions table with frequency, next_delivery_date" },
+      { name: "Frequency Options", description: "Weekly, biweekly, monthly, quarterly", status: "done", notes: "frequency column" },
+      { name: "Subscription Status", description: "Active/paused/cancelled workflow", status: "done", notes: "status with pause/resume/cancel" },
+      { name: "Auto-Renewal", description: "Auto order creation on schedule", status: "done", notes: "next_delivery_date triggers order" },
+      { name: "Subscription Discount", description: "Discount for subscribers", status: "done", notes: "discount_percent column" },
+      { name: "Skip Delivery", description: "Skip next without cancelling", status: "done", notes: "Skip advances next_delivery_date" },
+    ],
+  },
+  {
+    category: "Multimarket Management",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Market Regions", description: "Configure regional markets", status: "done", notes: "markets table with name, currency, language, domain" },
+      { name: "Regional Pricing", description: "Different prices per market", status: "done", notes: "market_prices with product_id, market_id, price" },
+      { name: "Market-Specific Content", description: "Localized content per market", status: "done", notes: "Content pages with market_id filtering" },
+      { name: "Currency Per Market", description: "Default currency per region", status: "done", notes: "currency column on markets" },
+      { name: "Domain Per Market", description: "Separate domain per market", status: "done", notes: "domain column for routing" },
+      { name: "Admin Market Switcher", description: "Switch markets in admin", status: "done", notes: "Admin /multimarket page" },
+    ],
+  },
+  {
+    category: "Price Lists & Contract Pricing",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Price List CRUD", description: "Create named price lists", status: "done", notes: "price_lists table" },
+      { name: "Customer Group Assignment", description: "Assign lists to groups", status: "done", notes: "customer_group_id on price_lists" },
+      { name: "Price List Items", description: "Per-product pricing", status: "done", notes: "price_list_items with product_id, price, min_quantity" },
+      { name: "Quantity Breaks", description: "Tiered pricing by quantity", status: "done", notes: "min_quantity for volume pricing" },
+      { name: "Date Range", description: "Valid from/to dates", status: "done", notes: "valid_from and valid_to columns" },
+    ],
+  },
+  {
+    category: "Shipping Manifests",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Create Manifest", description: "Group shipments into carrier manifests", status: "done", notes: "shipping_manifests table" },
+      { name: "Add Shipments", description: "Add order shipments to manifest", status: "done", notes: "shipping_manifest_items" },
+      { name: "Close & Submit", description: "Close and submit to carrier", status: "done", notes: "Status: open → closed → submitted" },
+      { name: "Manifest Tracking", description: "Track submission status", status: "done", notes: "submitted_at and carrier_reference" },
+    ],
+  },
+  {
+    category: "Tax Certificates",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Certificate Upload", description: "Upload tax exemption certificates", status: "done", notes: "tax_certificates table" },
+      { name: "Expiry Tracking", description: "Track expiry dates", status: "done", notes: "expires_at column" },
+      { name: "Auto-Exemption", description: "Auto-apply exemption for valid certs", status: "done", notes: "Valid cert triggers exemption at checkout" },
+      { name: "Verification Status", description: "Pending/verified/expired/rejected", status: "done", notes: "status column" },
+    ],
+  },
+  {
+    category: "B@SE Template Engine (Extended)",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "Recursive Includes", description: "[!include!] for nested composition", status: "done", notes: "processIncludes() with depth limit" },
+      { name: "Thumblist Iterator", description: "[%thumblist%] for image gallery loops", status: "done", notes: "processThumblist()" },
+      { name: "Conditional Blocks", description: "[%if%][%else%][%endif%]", status: "done", notes: "processConditionals() with nesting" },
+      { name: "Loop Blocks", description: "[%loop%][%endloop%] for repeating data", status: "done", notes: "processLoops()" },
+      { name: "Variable Substitution", description: "[@variable@] replacement", status: "done", notes: "processVariables() with nested access" },
+      { name: "AJAX Partial Rendering", description: "Dynamic page segment updates", status: "done", notes: "Partial rendering for AJAX" },
+      { name: "Advert Blocks", description: "Scheduled promo blocks", status: "done", notes: "Advert blocks with date-range filtering" },
+    ],
+  },
+  {
+    category: "Product Relations",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "Related Products", description: "Link related products", status: "done", notes: "product_relations table" },
+      { name: "Cross-Sells", description: "Complementary products", status: "done", notes: "relation_type='cross_sell'" },
+      { name: "Up-Sells", description: "Premium alternatives", status: "done", notes: "relation_type='up_sell'" },
+      { name: "Accessories", description: "Link accessories", status: "done", notes: "relation_type='accessory'" },
+      { name: "Bidirectional", description: "Relations work both ways", status: "done", notes: "is_bidirectional flag" },
+    ],
+  },
+  {
+    category: "Product Specifics (Custom Fields)",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "Custom Field Definition", description: "Define fields per product type", status: "done", notes: "product_specifics table" },
+      { name: "Field Types", description: "Text, number, dropdown, boolean", status: "done", notes: "field_type column" },
+      { name: "Storefront Display", description: "Show specifics on detail page", status: "done", notes: "Specifics section on product detail" },
+      { name: "Filterable Specifics", description: "Use as filter criteria", status: "done", notes: "Faceted filtering by values" },
+    ],
+  },
+  {
+    category: "Pricing Tiers (Volume Pricing)",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Tier Setup", description: "Quantity-based pricing tiers", status: "done", notes: "product_pricing_tiers" },
+      { name: "Per-Product Tiers", description: "Different tiers per product", status: "done", notes: "product_id FK" },
+      { name: "Customer Group Tiers", description: "Group-specific tiers", status: "done", notes: "customer_group_id" },
+      { name: "Storefront Display", description: "Show tier pricing on page", status: "done", notes: "Quantity price table" },
+      { name: "Auto-Apply", description: "Apply best tier at checkout", status: "done", notes: "Cart calculates by quantity" },
+    ],
+  },
+  {
+    category: "Product Downloads (Digital)",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "File Attachment", description: "Attach downloadable files", status: "done", notes: "product_downloads table" },
+      { name: "Download Limits", description: "Limit downloads per purchase", status: "done", notes: "max_downloads column" },
+      { name: "Expiry", description: "Downloads expire after period", status: "done", notes: "expires_at column" },
+      { name: "Secure Token Links", description: "Unique download tokens", status: "done", notes: "download_token for secure access" },
+      { name: "Download Tracking", description: "Track count per customer", status: "done", notes: "download_count incremented" },
+    ],
+  },
+  {
+    category: "Gift Vouchers (Extended)",
+    icon: <Gift className="h-5 w-5" />,
+    features: [
+      { name: "Voucher Creation", description: "Create with value and code", status: "done", notes: "gift_vouchers table" },
+      { name: "Recipient Details", description: "Name and email", status: "done", notes: "recipient_name, recipient_email" },
+      { name: "Custom Message", description: "Personal message", status: "done", notes: "message column" },
+      { name: "Balance Tracking", description: "Track remaining balance", status: "done", notes: "balance decremented" },
+      { name: "Voucher Email", description: "Email to recipient", status: "done", notes: "gift-voucher-email edge function" },
+      { name: "Print Voucher", description: "Printable PDF", status: "done", notes: "PrintGiftVoucher page" },
+      { name: "Expiry Date", description: "Set expiration", status: "done", notes: "expires_at with auto-deactivation" },
+    ],
+  },
+  {
+    category: "Loyalty Program (Extended)",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Points Balance", description: "Customer points balance", status: "done", notes: "loyalty_points table" },
+      { name: "Earn on Purchase", description: "Award points on orders", status: "done", notes: "Points based on order total" },
+      { name: "Redeem at Checkout", description: "Redeem as payment", status: "done", notes: "Points redemption discount" },
+      { name: "Tier System", description: "Bronze/Silver/Gold/Platinum", status: "done", notes: "tier with auto-promotion" },
+      { name: "Transaction History", description: "All points transactions", status: "done", notes: "loyalty_transactions table" },
+      { name: "Points Expiry", description: "Expire unused points", status: "done", notes: "expires_at on transactions" },
+    ],
+  },
+  {
+    category: "Affiliate Program",
+    icon: <UserPlus className="h-5 w-5" />,
+    features: [
+      { name: "Affiliate Registration", description: "Sign up with referral code", status: "done", notes: "affiliates table" },
+      { name: "Commission Tracking", description: "Per-sale commissions", status: "done", notes: "affiliate_commissions" },
+      { name: "Payout Management", description: "Pending/approved/paid", status: "done", notes: "status on commissions" },
+      { name: "Referral Link", description: "Unique referral URL", status: "done", notes: "referral_code" },
+      { name: "Performance Dashboard", description: "Clicks, conversions, earnings", status: "done", notes: "Admin /affiliates page" },
+    ],
+  },
+  {
+    category: "Order Holds & Fraud Review",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Hold Order", description: "Place on hold for review", status: "done", notes: "order_holds table" },
+      { name: "Fraud Flags", description: "Flag for potential fraud", status: "done", notes: "hold_type='fraud'" },
+      { name: "Review Workflow", description: "Review and release/cancel", status: "done", notes: "released_at, released_by" },
+      { name: "Auto-Hold Rules", description: "Auto hold matching orders", status: "done", notes: "Rules on value, location, payment" },
+    ],
+  },
+  {
+    category: "Print Documents",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Print Invoice", description: "Printable invoice", status: "done", notes: "PrintInvoice page" },
+      { name: "Print Packing Slip", description: "Packing slip", status: "done", notes: "PrintPackingSlip page" },
+      { name: "Print Shipping Label", description: "Shipping label", status: "done", notes: "PrintShippingLabel page" },
+      { name: "Print Pick List", description: "Pick list", status: "done", notes: "PrintPickList page" },
+      { name: "Print Quote", description: "Printable quote", status: "done", notes: "PrintQuote page" },
+      { name: "Print Purchase Order", description: "Printable PO", status: "done", notes: "PrintPurchaseOrder page" },
+      { name: "Print Return Label", description: "Return label", status: "done", notes: "PrintReturnLabel page" },
+      { name: "Print Payment Receipt", description: "Payment receipt", status: "done", notes: "PrintPaymentReceipt page" },
+      { name: "Print Customer Statement", description: "Account statement", status: "done", notes: "PrintCustomerStatement page" },
+      { name: "Print Barcode Labels", description: "Barcode labels", status: "done", notes: "PrintBarcodeLabels page" },
+      { name: "Print Gift Voucher", description: "Printable voucher", status: "done", notes: "PrintGiftVoucher page" },
+    ],
+  },
+  {
+    category: "Recently Viewed Products",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Track Viewed Products", description: "Track products viewed", status: "done", notes: "useRecentlyViewed hook" },
+      { name: "Display Recently Viewed", description: "Show on storefront", status: "done", notes: "Section on product pages" },
+      { name: "Max Items Limit", description: "Configurable max items", status: "done", notes: "Default 10" },
+    ],
+  },
+  {
+    category: "Image Lightbox",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Fullscreen Gallery", description: "View images fullscreen", status: "done", notes: "ImageLightbox component" },
+      { name: "Navigation", description: "Next/prev arrows", status: "done", notes: "Arrow navigation" },
+      { name: "Keyboard Support", description: "Arrow keys and Escape", status: "done", notes: "Keyboard handlers" },
+      { name: "Zoom", description: "Zoom into images", status: "done", notes: "Click-to-zoom" },
+    ],
+  },
+  {
+    category: "Currency Switcher",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Currency Display", description: "Show prices in multiple currencies", status: "done", notes: "CurrencySwitcher component" },
+      { name: "Currency Selection", description: "Customer selects currency", status: "done", notes: "Dropdown" },
+      { name: "Exchange Rate Config", description: "Configure exchange rates", status: "done", notes: "currencies table with exchange_rate" },
+      { name: "Persistence", description: "Remember selection", status: "done", notes: "localStorage" },
+    ],
+  },
+  {
+    category: "Language Switcher",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Language Support", description: "Switch storefront language", status: "done", notes: "LanguageSwitcher component" },
+      { name: "Language Selection", description: "Customer selects language", status: "done", notes: "Dropdown" },
+      { name: "Persistence", description: "Remember selection", status: "done", notes: "localStorage" },
+    ],
+  },
+];
+
+// Merge all feature data
+const allFeatureData = [...featureData, ...advancedFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
