@@ -15,7 +15,15 @@ import { toast } from "sonner";
 import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
-type WorkflowStep = "pick" | "pack" | "ship";
+type WorkflowStep = "pick" | "pack" | "ship" | "waves";
+
+interface PickWave {
+  id: string;
+  name: string;
+  orderIds: string[];
+  createdAt: string;
+  status: "open" | "in_progress" | "completed";
+}
 
 export default function PickPack() {
   const { currentStore } = useAuth();
@@ -24,6 +32,39 @@ export default function PickPack() {
   const [step, setStep] = useState<WorkflowStep>("pick");
   const [search, setSearch] = useState("");
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  // Wave picking state
+  const [waves, setWaves] = useState<PickWave[]>(() => {
+    try { return JSON.parse(localStorage.getItem("pick_waves") || "[]"); } catch { return []; }
+  });
+  const [waveSelectedOrders, setWaveSelectedOrders] = useState<Record<string, boolean>>({});
+  const [waveName, setWaveName] = useState("");
+
+  const saveWaves = (updated: PickWave[]) => {
+    setWaves(updated);
+    localStorage.setItem("pick_waves", JSON.stringify(updated));
+  };
+
+  const createWave = () => {
+    const selectedIds = Object.entries(waveSelectedOrders).filter(([, v]) => v).map(([k]) => k);
+    if (selectedIds.length === 0) { toast.error("Select orders for the wave"); return; }
+    const name = waveName.trim() || `Wave ${waves.length + 1}`;
+    const wave: PickWave = { id: crypto.randomUUID(), name, orderIds: selectedIds, createdAt: new Date().toISOString(), status: "open" };
+    saveWaves([...waves, wave]);
+    setWaveSelectedOrders({});
+    setWaveName("");
+    toast.success(`${name} created with ${selectedIds.length} orders`);
+  };
+
+  const updateWaveStatus = (waveId: string, status: PickWave["status"]) => {
+    saveWaves(waves.map(w => w.id === waveId ? { ...w, status } : w));
+    toast.success(`Wave updated to ${status}`);
+  };
+
+  const deleteWave = (waveId: string) => {
+    saveWaves(waves.filter(w => w.id !== waveId));
+    toast.success("Wave deleted");
+  };
 
   // Get order items for unfulfilled orders
   const pendingOrders = useMemo(() =>
