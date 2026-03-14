@@ -9554,7 +9554,7 @@ const shippingTrackingFeatures: FeatureCategory[] = [
     icon: <MapPin className="h-5 w-5" />,
     features: [
       { name: "Tracking Number Entry", description: "Enter tracking number per shipment", status: "done" },
-      { name: "Multi-Carrier Tracking", description: "Support tracking across all carriers", status: "partial" },
+      { name: "Multi-Carrier Tracking", description: "Support tracking across all carriers", status: "done", notes: "Carrier field on shipments with tracking URL pattern per carrier (AusPost, StarTrack, DHL, FedEx, etc.)" },
       { name: "Tracking Page (Customer)", description: "Customer-facing order tracking page", status: "done", notes: "StorefrontTrackOrder" },
       { name: "Tracking Email with Link", description: "Email tracking number and link to customer", status: "done", notes: "shipment-email function" },
       { name: "Tracking Status Auto-Update", description: "Auto-poll carrier API for status updates", status: "not_started" },
