@@ -43,6 +43,43 @@ export default function EmailTemplates() {
   const [previewHtml, setPreviewHtml] = useState("");
   const [previewOpen, setPreviewOpen] = useState(false);
 
+  // SMS Templates (localStorage-based per store)
+  const smsStorageKey = currentStore ? `sms_templates_${currentStore.id}` : "sms_templates";
+  const [smsTemplates, setSmsTemplates] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem(smsStorageKey) || "[]"); } catch { return []; }
+  });
+  const [editSms, setEditSms] = useState<any>(null);
+  const [editSmsOpen, setEditSmsOpen] = useState(false);
+
+  const saveSmsTemplates = (updated: any[]) => {
+    setSmsTemplates(updated);
+    localStorage.setItem(smsStorageKey, JSON.stringify(updated));
+  };
+
+  const seedSmsDefaults = () => {
+    const existing = smsTemplates.map((t: any) => t.key);
+    const toAdd = DEFAULT_SMS_TEMPLATES.filter(d => !existing.includes(d.key)).map(d => ({ ...d, id: crypto.randomUUID(), is_active: true }));
+    if (toAdd.length === 0) { toast.info("All default SMS templates exist"); return; }
+    saveSmsTemplates([...smsTemplates, ...toAdd]);
+    toast.success(`${toAdd.length} SMS templates added`);
+  };
+
+  const saveSmsTemplate = () => {
+    if (!editSms) return;
+    if (editSms.id) {
+      saveSmsTemplates(smsTemplates.map(t => t.id === editSms.id ? editSms : t));
+    } else {
+      saveSmsTemplates([...smsTemplates, { ...editSms, id: crypto.randomUUID() }]);
+    }
+    toast.success("SMS template saved");
+    setEditSmsOpen(false);
+  };
+
+  const deleteSmsTemplate = (id: string) => {
+    saveSmsTemplates(smsTemplates.filter(t => t.id !== id));
+    toast.success("SMS template deleted");
+  };
+
   const fetchData = async () => {
     if (!currentStore) return;
     setLoading(true);
