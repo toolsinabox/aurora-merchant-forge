@@ -912,6 +912,13 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
+              {/* Gift Message */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Message</h2>
+                <Textarea value={orderGiftMessage} onChange={(e) => setOrderGiftMessage(e.target.value)} placeholder="Add a personal gift message to include with your order..." className="min-h-[60px]" maxLength={500} />
+                <p className="text-xs text-muted-foreground">{orderGiftMessage.length}/500 characters</p>
+              </div>
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
