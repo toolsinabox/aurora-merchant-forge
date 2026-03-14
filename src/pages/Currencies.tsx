@@ -140,7 +140,14 @@ export default function Currencies() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {currencies.length === 0 && <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No currencies configured. Add your store's base currency to get started.</TableCell></TableRow>}
+                {currencies.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                      <DollarSign className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                      No currencies configured. Add your store's base currency to get started.
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
