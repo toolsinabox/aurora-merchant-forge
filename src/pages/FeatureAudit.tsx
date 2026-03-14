@@ -7544,7 +7544,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "Wave Picking", description: "Group multiple orders into pick waves for efficient warehouse walks", status: "done", notes: "PickPack Waves tab with wave creation, order selection, status management, localStorage persistence" },
       { name: "Zone-Based Picking", description: "Divide warehouse into zones; assign pickers per zone", status: "not_started" },
-      { name: "Batch Picking", description: "Pick identical SKUs across multiple orders simultaneously", status: "not_started" },
+      { name: "Batch Picking", description: "Pick identical SKUs across multiple orders simultaneously", status: "done", notes: "PickPack Batch Pick tab groups identical SKUs across orders with total qty, order count, and order numbers" },
       { name: "Pick Path Optimization", description: "Suggest optimal walking route through warehouse aisles", status: "not_started" },
       { name: "Packing Station UI", description: "Dedicated packing interface with order verification and weight check", status: "partial", notes: "Basic pick/pack exists" },
       { name: "Pack Slip Auto-Print", description: "Automatically print packing slip when order is scanned at station", status: "not_started" },
