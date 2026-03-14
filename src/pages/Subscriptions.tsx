@@ -119,6 +119,19 @@ export default function Subscriptions() {
 
   const activeSubs = subs.filter((s: any) => s.status === "active").length;
   const pausedSubs = subs.filter((s: any) => s.status === "paused").length;
+  const cancelledSubs = subs.filter((s: any) => s.status === "cancelled").length;
+  const churnRate = subs.length > 0 ? ((cancelledSubs / subs.length) * 100).toFixed(1) : "0.0";
+
+  // Calculate MRR — normalize all frequencies to monthly
+  const freqMultiplier: Record<string, number> = {
+    weekly: 4.33, fortnightly: 2.17, monthly: 1, bimonthly: 0.5, quarterly: 0.33, biannual: 0.167, annual: 0.083,
+  };
+  const mrr = subs.filter((s: any) => s.status === "active").reduce((sum: number, s: any) => {
+    const price = Number(s.unit_price) * Number(s.quantity) * (1 - Number(s.discount_percent) / 100);
+    const mult = freqMultiplier[s.frequency] || 1;
+    return sum + price * mult;
+  }, 0);
+  const arr = mrr * 12;
   const monthlyRevenue = subs.filter((s: any) => s.status === "active").reduce((sum: number, s: any) => {
     const price = Number(s.unit_price) * Number(s.quantity) * (1 - Number(s.discount_percent) / 100);
     return sum + price;
