@@ -96,6 +96,7 @@ const marketingNav = [
   { title: "Price Lists", url: `${prefix}/price-lists`, icon: List },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
   { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
+  { title: "Sales Channels", url: `${prefix}/sales-channels`, icon: Share2 },
 ];
 
 // ── Analytics & Reports ──
