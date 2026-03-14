@@ -7923,7 +7923,7 @@ const seoContentDeepFeatures: FeatureCategory[] = [
     icon: <FileSearch className="h-5 w-5" />,
     features: [
       { name: "Auto Meta Title Generation", description: "Auto-generate meta title from product/page title", status: "done" },
-      { name: "Auto Meta Description", description: "Auto-generate meta description from content", status: "partial" },
+      { name: "Auto Meta Description", description: "Auto-generate meta description from content", status: "done", notes: "ProductForm SEO tab Auto-generate button strips HTML, trims whitespace, and takes first 160 chars from product description; ContentPages also supports seo_description field" },
       { name: "Canonical URL Management", description: "Set canonical URLs to prevent duplicate content", status: "done", notes: "SEOHead component" },
       { name: "Open Graph Tags", description: "OG meta tags for social sharing previews", status: "done" },
       { name: "Twitter Card Tags", description: "Twitter-specific sharing meta tags", status: "done" },
