@@ -9145,7 +9145,7 @@ const customerSegmentationFeatures: FeatureCategory[] = [
       { name: "Segment by Category Purchased", description: "Customers who bought from specific categories", status: "done", notes: "customer_segmentation_rules JSONB rules support category_purchased condition" },
       { name: "Segment by Location", description: "Segment by shipping address state/country", status: "done", notes: "customer_segmentation_rules JSONB rules support location (state/country) condition" },
       { name: "Segment by Registration Date", description: "Segment by account age", status: "done" },
-      { name: "Segment by Email Engagement", description: "Segment by email open/click rate", status: "not_started" },
+      { name: "Segment by Email Engagement", description: "Segment by email open/click rate", status: "done", notes: "customer_segmentation_rules JSONB rules support email_engagement condition based on email_queue sent/read status" },
       { name: "Auto-Assign Segment", description: "Auto-assign customers to segments on rule match", status: "done", notes: "is_active rules" },
       { name: "Segment-Based Email Campaigns", description: "Send targeted emails to segments", status: "done", notes: "Email automations with segment_id filter, Marketing page segment targeting" },
       { name: "Segment-Based Discounts", description: "Auto-apply discounts per segment", status: "done", notes: "Price rules with customer_segment condition for auto-applied segment discounts" },
