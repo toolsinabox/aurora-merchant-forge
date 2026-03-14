@@ -561,7 +561,7 @@ function ReturnsPolicyTab() {
   );
 }
 
-
+export default function SettingsPage() {
   const { currentStore, user } = useAuth();
   const updateStore = useUpdateStore();
   const { data: taxRates = [], isLoading: loadingTax } = useTaxRates();
