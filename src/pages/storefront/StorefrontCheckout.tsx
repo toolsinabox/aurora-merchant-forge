@@ -1015,9 +1015,21 @@ export default function StorefrontCheckout() {
                          Cash on Delivery
                        </label>
                      </div>
-                   </div>
+                    </div>
 
-                   <Separator />
+                    {/* Age Verification Gate */}
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
+                      <Checkbox
+                        id="age_verify"
+                        checked={ageVerified}
+                        onCheckedChange={(checked) => setAgeVerified(!!checked)}
+                      />
+                      <label htmlFor="age_verify" className="text-xs cursor-pointer">
+                        I confirm I am 18 years or older
+                      </label>
+                    </div>
+
+                    <Separator />
 
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
