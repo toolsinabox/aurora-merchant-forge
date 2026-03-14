@@ -1,6 +1,7 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { TopBar } from "./TopBar";
+import { CommandPalette } from "./CommandPalette";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           </main>
         </div>
       </div>
+      <CommandPalette />
     </SidebarProvider>
   );
 }

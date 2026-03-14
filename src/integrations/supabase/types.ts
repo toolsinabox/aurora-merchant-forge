@@ -4057,6 +4057,7 @@ export type Database = {
           title: string
           track_inventory: boolean
           updated_at: string
+          video_url: string | null
           virtual_product: boolean | null
           visibility_groups: string[] | null
           warranty: string | null
@@ -4121,6 +4122,7 @@ export type Database = {
           title: string
           track_inventory?: boolean
           updated_at?: string
+          video_url?: string | null
           virtual_product?: boolean | null
           visibility_groups?: string[] | null
           warranty?: string | null
@@ -4185,6 +4187,7 @@ export type Database = {
           title?: string
           track_inventory?: boolean
           updated_at?: string
+          video_url?: string | null
           virtual_product?: boolean | null
           visibility_groups?: string[] | null
           warranty?: string | null

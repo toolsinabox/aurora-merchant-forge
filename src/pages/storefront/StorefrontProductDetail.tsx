@@ -652,6 +652,7 @@ export default function StorefrontProductDetail() {
               {product.specifications && <TabsTrigger value="specifications">Specifications</TabsTrigger>}
               {shipping && <TabsTrigger value="shipping">Shipping</TabsTrigger>}
               {product.warranty && <TabsTrigger value="warranty">Warranty</TabsTrigger>}
+              {product.video_url && <TabsTrigger value="video">Video</TabsTrigger>}
             </TabsList>
             {product.description && (
               <TabsContent value="description" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
@@ -684,6 +685,29 @@ export default function StorefrontProductDetail() {
             {product.warranty && (
               <TabsContent value="warranty" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
                 <div className="whitespace-pre-wrap">{product.warranty}</div>
+              </TabsContent>
+            )}
+            {product.video_url && (
+              <TabsContent value="video" className="mt-4">
+                <div className="aspect-video w-full max-w-2xl rounded-lg overflow-hidden bg-muted">
+                  {(() => {
+                    const url = product.video_url;
+                    let embedUrl = url;
+                    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]+)/);
+                    if (ytMatch) embedUrl = `https://www.youtube.com/embed/${ytMatch[1]}`;
+                    const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+                    if (vimeoMatch) embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+                    return (
+                      <iframe
+                        src={embedUrl}
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title="Product Video"
+                      />
+                    );
+                  })()}
+                </div>
               </TabsContent>
             )}
           </Tabs>

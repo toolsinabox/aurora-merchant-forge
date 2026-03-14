@@ -81,6 +81,7 @@ export default function ProductForm() {
     reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
     scheduled_publish_at: "", scheduled_unpublish_at: "",
+    video_url: "",
   });
 
   const [shipping, setShipping] = useState({
@@ -134,6 +135,7 @@ export default function ProductForm() {
         misc5: (existing as any).misc5 || "",
         scheduled_publish_at: (existing as any).scheduled_publish_at ? new Date((existing as any).scheduled_publish_at).toISOString().slice(0, 16) : "",
         scheduled_unpublish_at: (existing as any).scheduled_unpublish_at ? new Date((existing as any).scheduled_unpublish_at).toISOString().slice(0, 16) : "",
+        video_url: (existing as any).video_url || "",
       });
       setProductImages(existing.images || []);
     }
@@ -223,6 +225,7 @@ export default function ProductForm() {
       misc4: form.misc4 || null, misc5: form.misc5 || null,
       scheduled_publish_at: form.scheduled_publish_at || null,
       scheduled_unpublish_at: form.scheduled_unpublish_at || null,
+      video_url: form.video_url || null,
       images: productImages,
     };
 
@@ -686,6 +689,11 @@ export default function ProductForm() {
                       images={productImages}
                       onImagesChange={setProductImages}
                     />
+                    <div className="mt-3 space-y-1">
+                      <FieldLabel label="Video URL" field="video_url" />
+                      <Input className="h-8 text-xs" value={form.video_url} onChange={(e) => update("video_url", e.target.value)} placeholder="YouTube or Vimeo URL (e.g. https://youtube.com/watch?v=...)" />
+                      <p className="text-2xs text-muted-foreground">Paste a YouTube or Vimeo video URL to embed on the product page</p>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
