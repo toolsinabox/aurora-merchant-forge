@@ -8563,7 +8563,7 @@ const laybyFeatures: FeatureCategory[] = [
       { name: "Layby Completion Auto-Fulfill", description: "Auto-trigger fulfillment when fully paid", status: "done", notes: "Layby recordPayment mutation auto-updates order payment_status to 'paid' when layby fully paid" },
       { name: "Layby Admin Dashboard", description: "Overview of all layby plans and payments", status: "done", notes: "Layby page" },
       { name: "Layby Terms Configuration", description: "Configure deposit %, max duration, fees", status: "done", notes: "POS Layby dialog with configurable deposit %, installment count, frequency (weekly/fortnightly/monthly)" },
-      { name: "Layby Customer Self-Service", description: "Customer can view and pay laybys from account", status: "not_started" },
+      { name: "Layby Customer Self-Service", description: "Customer can view and pay laybys from account", status: "done", notes: "StorefrontAccount Orders tab shows layby orders with payment progress, outstanding balance, and next installment due date" },
     ],
   },
 ];
