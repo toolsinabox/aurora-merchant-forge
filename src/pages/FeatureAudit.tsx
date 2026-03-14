@@ -7666,7 +7666,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
       { name: "3D Secure / SCA Compliance", description: "Strong Customer Authentication for European payments", status: "not_started" },
       { name: "PCI-DSS Compliance Scope", description: "Ensure payment flow meets PCI-DSS requirements", status: "partial", notes: "Using redirect/iframe flows" },
       { name: "Refund via Gateway", description: "Issue refunds back through payment gateway automatically", status: "not_started" },
-      { name: "Partial Refunds", description: "Refund partial amount of an order", status: "partial" },
+      { name: "Partial Refunds", description: "Refund partial amount of an order", status: "done", notes: "Refunds page create dialog with Full/Partial refund type selector, partial mode shows line item editor with product name, qty, unit price, and per-item refund amount; auto-calculates total; line items stored on refund record; table shows Full/Partial badge per refund" },
       { name: "Payment Retry Logic", description: "Retry failed payments (subscriptions/layby)", status: "not_started" },
       { name: "Invoice Payment Link", description: "Send payment link via email for outstanding invoices", status: "done", notes: "invoice-payment-link edge function generates branded HTML email with amount due, Pay Now button, payment token, and customer details via email_queue" },
     ],
