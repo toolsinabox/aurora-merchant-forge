@@ -7935,7 +7935,7 @@ const seoContentDeepFeatures: FeatureCategory[] = [
       { name: "Robots.txt Management", description: "Configurable robots.txt file", status: "done", notes: "public/robots.txt" },
       { name: "301 Redirect Manager", description: "Manage URL redirects for moved/deleted content", status: "done", notes: "Redirects page" },
       { name: "Alt Text Enforcement", description: "Warn when images are missing alt text", status: "partial" },
-      { name: "Heading Hierarchy Check", description: "Validate H1-H6 hierarchy on content pages", status: "not_started" },
+      { name: "Heading Hierarchy Check", description: "Validate H1-H6 hierarchy on content pages", status: "done", notes: "ContentPages editor shows real-time heading hierarchy validation: checks for multiple H1s, skipped levels, and incorrect first heading with inline warnings/success indicator" },
       { name: "Blog / Content Publishing", description: "Blog posts with categories, tags, and scheduling", status: "done", notes: "StorefrontBlog + content_pages" },
       { name: "Blog Comments / Reviews", description: "Comments/reviews on blog posts", status: "done", notes: "content_reviews table" },
       { name: "Rich Text Editor (WYSIWYG)", description: "Full WYSIWYG editor for content with media embedding", status: "done", notes: "rich-text-editor component" },
