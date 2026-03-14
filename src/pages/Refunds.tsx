@@ -61,7 +61,15 @@ export default function Refunds() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ order_number: "", amount: "", reason: "", refund_method: "original_payment", notes: "" });
+  const [form, setForm] = useState({ order_number: "", amount: "", reason: "", refund_method: "original_payment", notes: "", refund_type: "full" as "full" | "partial" });
+  const [lineItems, setLineItems] = useState<RefundLineItem[]>([{ title: "", quantity: 1, unit_price: 0, refund_amount: 0 }]);
+
+  const addLineItem = () => setLineItems(prev => [...prev, { title: "", quantity: 1, unit_price: 0, refund_amount: 0 }]);
+  const removeLineItem = (idx: number) => setLineItems(prev => prev.filter((_, i) => i !== idx));
+  const updateLineItem = (idx: number, field: keyof RefundLineItem, value: string | number) => {
+    setLineItems(prev => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  };
+  const lineItemTotal = lineItems.reduce((s, i) => s + (Number(i.refund_amount) || 0), 0);
 
   const filtered = refunds.filter(r => {
     const matchSearch = !search || r.refund_number.toLowerCase().includes(search.toLowerCase()) || r.order_number.toLowerCase().includes(search.toLowerCase()) || r.customer_name.toLowerCase().includes(search.toLowerCase());
