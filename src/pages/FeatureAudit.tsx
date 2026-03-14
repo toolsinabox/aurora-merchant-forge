@@ -9473,7 +9473,7 @@ const posAdvancedFeatures: FeatureCategory[] = [
       { name: "POS Card Payment", description: "Process card payments via terminal", status: "partial" },
       { name: "POS Split Payment", description: "Split payment across methods", status: "not_started" },
       { name: "POS Receipt Print", description: "Print thermal receipt", status: "partial" },
-      { name: "POS End-of-Day Report", description: "Daily POS sales summary", status: "not_started" },
+      { name: "POS End-of-Day Report", description: "Daily POS sales summary", status: "done", notes: "POS page EOD dialog" },
       { name: "POS Cash Drawer Open", description: "Trigger cash drawer via USB/Bluetooth", status: "not_started" },
       { name: "POS Refund Processing", description: "Process refunds at POS", status: "not_started" },
       { name: "POS Hold / Park Sale", description: "Park current sale and serve next customer", status: "not_started" },
