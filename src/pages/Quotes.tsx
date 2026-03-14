@@ -270,6 +270,7 @@ export default function Quotes() {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         <Card>
