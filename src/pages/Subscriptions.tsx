@@ -229,6 +229,42 @@ export default function Subscriptions() {
           </Dialog>
         </div>
 
+        {/* Subscription Analytics KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><DollarSign className="h-3 w-3" />MRR</div>
+              <p className="text-lg font-bold">${mrr.toFixed(2)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><TrendingUp className="h-3 w-3" />ARR</div>
+              <p className="text-lg font-bold">${arr.toFixed(0)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><Users className="h-3 w-3" />Active</div>
+              <p className="text-lg font-bold">{activeSubs}</p>
+              <p className="text-[10px] text-muted-foreground">{pausedSubs} paused</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><TrendingDown className="h-3 w-3" />Churn Rate</div>
+              <p className="text-lg font-bold">{churnRate}%</p>
+              <p className="text-[10px] text-muted-foreground">{cancelledSubs} cancelled</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><Repeat className="h-3 w-3" />Total</div>
+              <p className="text-lg font-bold">{subs.length}</p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card><CardContent className="pt-4 pb-4 text-center">
