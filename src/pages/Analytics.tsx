@@ -100,6 +100,7 @@ export default function Analytics() {
   const [channelData, setChannelData] = useState<any[]>([]);
   const [funnelData, setFunnelData] = useState<{ visitors: number; carts: number; checkouts: number; purchases: number }>({ visitors: 0, carts: 0, checkouts: 0, purchases: 0 });
   const [salesByBrand, setSalesByBrand] = useState<any[]>([]);
+  const [cohortData, setCohortData] = useState<{ months: string[]; cohorts: { label: string; counts: number[]; total: number }[] }>({ months: [], cohorts: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
