@@ -236,6 +236,10 @@ export default function Returns() {
             <ReturnsReceivingTab />
           </TabsContent>
 
+          <TabsContent value="quarantine">
+            <DamagedGoodsTab />
+          </TabsContent>
+
           <TabsContent value="warranty">
             <WarrantyClaimsTab />
           </TabsContent>
