@@ -167,12 +167,12 @@ export default function EmailTemplates() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-8"></TableHead>
-                      <TableHead>To</TableHead>
-                      <TableHead>Subject</TableHead>
-                      <TableHead>Template</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Sent</TableHead>
+                      <TableHead className="text-xs h-8 w-8"></TableHead>
+                      <TableHead className="text-xs h-8">To</TableHead>
+                      <TableHead className="text-xs h-8">Subject</TableHead>
+                      <TableHead className="text-xs h-8">Template</TableHead>
+                      <TableHead className="text-xs h-8">Status</TableHead>
+                      <TableHead className="text-xs h-8">Sent</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
