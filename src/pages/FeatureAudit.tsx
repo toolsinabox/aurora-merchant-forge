@@ -8045,7 +8045,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
       { name: "Customer Credit Balance", description: "Store credit / account balance per customer", status: "done", notes: "store_credit_transactions table + StoreCreditCard component" },
       { name: "Customer Price Lists", description: "Assign custom price lists to customer groups", status: "partial", notes: "customer_groups discount" },
       { name: "Customer Tax Exemption Certificate", description: "Upload and manage tax exemption documents", status: "not_started" },
-      { name: "Customer ABN / VAT Number", description: "Store ABN/VAT/GST registration numbers", status: "not_started" },
+      { name: "Customer ABN / VAT Number", description: "Store ABN/VAT/GST registration numbers", status: "done", notes: "abn_vat_number column on customers table, editable in CustomerDetail form" },
       { name: "Customer Communication Log", description: "Log all emails/SMS sent to customer", status: "done", notes: "customer_communications table" },
       { name: "Customer Lifetime Value (CLV)", description: "Calculate and display CLV per customer", status: "partial" },
       { name: "Customer Purchase History", description: "Full order history on customer profile", status: "done" },
