@@ -4413,6 +4413,7 @@ export type Database = {
           is_inventoried: boolean | null
           is_kit: boolean | null
           is_sold: boolean | null
+          min_order_quantity: number | null
           misc1: string | null
           misc2: string | null
           misc3: string | null
@@ -4478,6 +4479,7 @@ export type Database = {
           is_inventoried?: boolean | null
           is_kit?: boolean | null
           is_sold?: boolean | null
+          min_order_quantity?: number | null
           misc1?: string | null
           misc2?: string | null
           misc3?: string | null
@@ -4543,6 +4545,7 @@ export type Database = {
           is_inventoried?: boolean | null
           is_kit?: boolean | null
           is_sold?: boolean | null
+          min_order_quantity?: number | null
           misc1?: string | null
           misc2?: string | null
           misc3?: string | null
