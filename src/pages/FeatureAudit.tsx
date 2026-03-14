@@ -8073,7 +8073,7 @@ const inventoryAdvancedFeatures: FeatureCategory[] = [
       { name: "Inventory Valuation Report (FIFO/AVG)", description: "Stock valuation using FIFO or weighted average", status: "done", notes: "InventoryReports page" },
       { name: "Dead Stock Report", description: "Identify products with no sales in X days", status: "done", notes: "InventoryReports dead stock tab" },
       { name: "Stock Velocity Report", description: "Products ranked by sales velocity/turns", status: "done", notes: "InventoryReports velocity tab" },
-      { name: "Inventory Snapshot / History", description: "Point-in-time inventory snapshots for auditing", status: "not_started" },
+      { name: "Inventory Snapshot / History", description: "Point-in-time inventory snapshots for auditing", status: "done", notes: "InventoryReports Snapshots tab with Take Snapshot button capturing all SKUs/units/values, history table with unit delta badges, localStorage persistence (50 max)" },
       { name: "Putaway Rules", description: "Suggest bin locations for received stock", status: "not_started" },
       { name: "Pick Face Replenishment", description: "Auto-suggest bulk-to-pick replenishment", status: "not_started" },
       { name: "Serial Number Tracking", description: "Track individual serial numbers per unit sold", status: "done", notes: "serial_numbers table with CRUD in Inventory page, status tracking (available/sold/returned)" },
