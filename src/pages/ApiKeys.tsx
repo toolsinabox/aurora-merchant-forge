@@ -44,7 +44,7 @@ export default function ApiKeys() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [newKey, setNewKey] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", scopes: [] as string[] });
+  const [form, setForm] = useState({ name: "", scopes: [] as string[], ip_whitelist: "" });
 
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ["api_keys", currentStore?.id],
@@ -80,7 +80,7 @@ export default function ApiKeys() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["api_keys"] });
-      setForm({ name: "", scopes: [] });
+      setForm({ name: "", scopes: [], ip_whitelist: "" });
       toast.success("API key created — copy it now, it won't be shown again");
     },
     onError: (e: any) => toast.error(e.message),
@@ -120,7 +120,7 @@ export default function ApiKeys() {
             <h1 className="text-lg font-semibold">API Keys</h1>
             <p className="text-xs text-muted-foreground">Manage API keys for programmatic access to your store</p>
           </div>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setNewKey(null); setForm({ name: "", scopes: [] }); } }}>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setNewKey(null); setForm({ name: "", scopes: [], ip_whitelist: "" }); } }}>
             <DialogTrigger asChild>
               <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Create API Key</Button>
             </DialogTrigger>
@@ -155,6 +155,11 @@ export default function ApiKeys() {
                         </label>
                       ))}
                     </div>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">IP Whitelist <span className="text-muted-foreground">(optional)</span></Label>
+                    <Input className="h-8 text-xs" value={form.ip_whitelist} onChange={(e) => setForm({ ...form, ip_whitelist: e.target.value })} placeholder="1.2.3.4, 10.0.0.0/24 (comma-separated)" />
+                    <p className="text-[10px] text-muted-foreground">Leave empty to allow all IPs. Supports CIDR notation.</p>
                   </div>
                   <Button size="sm" className="w-full text-xs" onClick={() => create.mutate()} disabled={create.isPending}>
                     {create.isPending ? "Creating..." : "Create Key"}

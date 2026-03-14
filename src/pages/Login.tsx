@@ -14,14 +14,52 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Brute force protection
+  const MAX_ATTEMPTS = 5;
+  const LOCKOUT_MINUTES = 15;
+
+  const getAttempts = (): { count: number; lockedUntil: number | null } => {
+    try { return JSON.parse(localStorage.getItem("login_attempts") || '{"count":0,"lockedUntil":null}'); } catch { return { count: 0, lockedUntil: null }; }
+  };
+
+  const setAttempts = (data: { count: number; lockedUntil: number | null }) => {
+    localStorage.setItem("login_attempts", JSON.stringify(data));
+  };
+
+  const isLockedOut = () => {
+    const { lockedUntil } = getAttempts();
+    if (lockedUntil && Date.now() < lockedUntil) return true;
+    if (lockedUntil && Date.now() >= lockedUntil) { setAttempts({ count: 0, lockedUntil: null }); }
+    return false;
+  };
+
+  const getRemainingLockout = () => {
+    const { lockedUntil } = getAttempts();
+    if (!lockedUntil) return 0;
+    return Math.max(0, Math.ceil((lockedUntil - Date.now()) / 60000));
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLockedOut()) {
+      toast.error(`Account temporarily locked. Try again in ${getRemainingLockout()} minutes.`);
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      toast.error(error.message);
+      const attempts = getAttempts();
+      const newCount = attempts.count + 1;
+      if (newCount >= MAX_ATTEMPTS) {
+        setAttempts({ count: newCount, lockedUntil: Date.now() + LOCKOUT_MINUTES * 60 * 1000 });
+        toast.error(`Too many failed attempts. Account locked for ${LOCKOUT_MINUTES} minutes.`);
+      } else {
+        setAttempts({ count: newCount, lockedUntil: null });
+        toast.error(`${error.message} (${MAX_ATTEMPTS - newCount} attempts remaining)`);
+      }
     } else {
+      setAttempts({ count: 0, lockedUntil: null });
       const { data: stores } = await supabase.from("stores").select("id").limit(1);
       if (stores && stores.length > 0) {
         navigate("/dashboard");
