@@ -7962,7 +7962,7 @@ const securityComplianceFeatures: FeatureCategory[] = [
       { name: "Cookie Consent Banner", description: "GDPR/CCPA cookie consent with category selection", status: "done", notes: "CookieConsentBanner component" },
       { name: "Privacy Policy Page", description: "Configurable privacy policy page", status: "done", notes: "Content pages" },
       { name: "Terms of Service Page", description: "Configurable TOS page", status: "done" },
-      { name: "Password Strength Enforcement", description: "Enforce minimum password complexity", status: "partial" },
+      { name: "Password Strength Enforcement", description: "Enforce minimum password complexity", status: "done", notes: "Signup page password strength meter with 5-criteria check (length, uppercase, lowercase, number, special), visual bar, and per-criterion feedback" },
       { name: "Brute Force Protection", description: "Lock accounts after X failed login attempts", status: "not_started" },
       { name: "Staff Role Permissions (Granular)", description: "Per-feature permission toggles per role", status: "done", notes: "RolePermissions page" },
       { name: "Content Security Policy Headers", description: "Configure CSP headers for XSS protection", status: "not_started" },
