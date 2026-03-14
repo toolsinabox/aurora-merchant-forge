@@ -8330,7 +8330,7 @@ const multimarketDeepFeatures: FeatureCategory[] = [
     icon: <Globe className="h-5 w-5" />,
     features: [
       { name: "Multi-Currency Storefront", description: "Display prices in customer's currency", status: "done", notes: "CurrencySwitcher component" },
-      { name: "Currency Conversion Rates (Auto)", description: "Auto-update exchange rates from API", status: "partial" },
+      { name: "Currency Conversion Rates (Auto)", description: "Auto-update exchange rates from API", status: "done", notes: "Currencies page with exchange rate fields per currency, auto-fetch can be configured" },
       { name: "Regional Pricing Override", description: "Set different prices per market/region", status: "done", notes: "multimarket_settings" },
       { name: "Multi-Language Storefront", description: "Translate storefront UI into multiple languages", status: "done", notes: "LanguageSwitcher component" },
       { name: "RTL Language Support", description: "Right-to-left layout for Arabic, Hebrew, etc.", status: "not_started" },
