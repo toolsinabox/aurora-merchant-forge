@@ -147,10 +147,16 @@ export default function PurchaseOrders() {
     const items = data || [];
     setPOItems(items);
     const qtys: Record<string, number> = {};
+    const flags: Record<string, boolean> = {};
+    const notes: Record<string, string> = {};
     items.forEach((item: any) => {
       qtys[item.id] = 0;
+      flags[item.id] = false;
+      notes[item.id] = "";
     });
     setReceiveQtys(qtys);
+    setQcFlags(flags);
+    setQcNotes(notes);
     setLoadingItems(false);
   };
 
