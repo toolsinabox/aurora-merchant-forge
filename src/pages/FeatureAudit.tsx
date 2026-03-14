@@ -7759,7 +7759,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Scheduled Report Email", description: "Auto-email reports on schedule (daily/weekly/monthly)", status: "done", notes: "scheduled-report-email function" },
       { name: "Report Export (CSV/PDF)", description: "Export any report to CSV or PDF", status: "done", notes: "ExportWizard page" },
       { name: "Real-Time Dashboard", description: "Live updating dashboard with current day metrics", status: "done", notes: "Dashboard page" },
-      { name: "Comparison Period (YoY, MoM)", description: "Compare metrics against previous period", status: "partial" },
+      { name: "Comparison Period (YoY, MoM)", description: "Compare metrics against previous period", status: "done", notes: "Analytics page comparison period selector (vs Prior Period / vs Year Ago) with percentage change indicators on Revenue, Orders, AOV KPI cards; computed from filtered order data" },
     ],
   },
 ];
