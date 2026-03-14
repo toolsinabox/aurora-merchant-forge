@@ -8592,7 +8592,7 @@ const returnPortalFeatures: FeatureCategory[] = [
     category: "Returns Portal & RMA — Deep",
     icon: <RefreshCw className="h-5 w-5" />,
     features: [
-      { name: "Customer Self-Service Returns", description: "Customer initiates return from account", status: "partial" },
+      { name: "Customer Self-Service Returns", description: "Customer initiates return from account", status: "done", notes: "StorefrontAccount Returns tab with return request dialog, order selection, reason codes, notes field" },
       { name: "Return Reason Selection", description: "Predefined return reason categories", status: "done", notes: "returns table" },
       { name: "Return Photo Upload", description: "Customer uploads photos of damaged items", status: "not_started" },
       { name: "Return Label Generation", description: "Auto-generate return shipping label", status: "done", notes: "PrintReturnLabel page" },
