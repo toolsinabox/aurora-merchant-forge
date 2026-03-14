@@ -926,6 +926,74 @@ export type Database = {
           },
         ]
       }
+      customer_downloads: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          download_count: number | null
+          download_token: string
+          expires_at: string | null
+          id: string
+          max_downloads: number | null
+          order_id: string
+          product_download_id: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          download_count?: number | null
+          download_token: string
+          expires_at?: string | null
+          id?: string
+          max_downloads?: number | null
+          order_id: string
+          product_download_id: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          download_count?: number | null
+          download_token?: string
+          expires_at?: string | null
+          id?: string
+          max_downloads?: number | null
+          order_id?: string
+          product_download_id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_downloads_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_downloads_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_downloads_product_download_id_fkey"
+            columns: ["product_download_id"]
+            isOneToOne: false
+            referencedRelation: "product_downloads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_downloads_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_files: {
         Row: {
           created_at: string
@@ -1362,6 +1430,60 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "import_templates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inventory_forecasts: {
+        Row: {
+          avg_daily_sales: number | null
+          calculated_at: string
+          days_of_stock: number | null
+          id: string
+          lead_time_days: number | null
+          product_id: string
+          reorder_date: string | null
+          safety_stock: number | null
+          store_id: string
+          suggested_reorder_qty: number | null
+        }
+        Insert: {
+          avg_daily_sales?: number | null
+          calculated_at?: string
+          days_of_stock?: number | null
+          id?: string
+          lead_time_days?: number | null
+          product_id: string
+          reorder_date?: string | null
+          safety_stock?: number | null
+          store_id: string
+          suggested_reorder_qty?: number | null
+        }
+        Update: {
+          avg_daily_sales?: number | null
+          calculated_at?: string
+          days_of_stock?: number | null
+          id?: string
+          lead_time_days?: number | null
+          product_id?: string
+          reorder_date?: string | null
+          safety_stock?: number | null
+          store_id?: string
+          suggested_reorder_qty?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_forecasts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_forecasts_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
@@ -2817,6 +2939,60 @@ export type Database = {
           },
         ]
       }
+      product_downloads: {
+        Row: {
+          created_at: string
+          download_limit: number | null
+          expiry_days: number | null
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          product_id: string
+          sort_order: number | null
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          download_limit?: number | null
+          expiry_days?: number | null
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          product_id: string
+          sort_order?: number | null
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          download_limit?: number | null
+          expiry_days?: number | null
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          product_id?: string
+          sort_order?: number | null
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_downloads_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_downloads_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_pricing_tiers: {
         Row: {
           created_at: string
@@ -3713,6 +3889,54 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "role_permissions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_carts: {
+        Row: {
+          cart_items: Json
+          cart_total: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          name: string
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          cart_items?: Json
+          cart_total?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          name?: string
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          cart_items?: Json
+          cart_total?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          name?: string
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_carts_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_carts_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
