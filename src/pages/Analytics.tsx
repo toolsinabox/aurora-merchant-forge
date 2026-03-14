@@ -980,6 +980,49 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Customer Cohort Analysis */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Customer Cohort Analysis</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[200px]" /> : cohortData.cohorts.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">Not enough data for cohort analysis</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8 whitespace-nowrap">Signup Month</TableHead>
+                      <TableHead className="text-xs h-8 text-right whitespace-nowrap">Customers</TableHead>
+                      {cohortData.months.map(m => (
+                        <TableHead key={m} className="text-xs h-8 text-center whitespace-nowrap">{m}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {cohortData.cohorts.map((cohort) => (
+                      <TableRow key={cohort.label} className="text-xs">
+                        <TableCell className="py-1.5 font-medium whitespace-nowrap">{cohort.label}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{cohort.total}</TableCell>
+                        {cohort.counts.map((count, i) => {
+                          const pct = cohort.total > 0 ? (count / cohort.total) * 100 : 0;
+                          const intensity = Math.min(pct / 50, 1);
+                          return (
+                            <TableCell key={i} className="py-1.5 text-center font-mono" style={{
+                              backgroundColor: count > 0 ? `hsl(142, 71%, ${90 - intensity * 45}%)` : undefined,
+                            }}>
+                              {count > 0 ? `${count} (${pct.toFixed(0)}%)` : "—"}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
