@@ -7751,7 +7751,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Sales by Region/State Report", description: "Geographic breakdown of revenue", status: "done", notes: "Analytics page Sales by Region table parsed from shipping_address" },
       { name: "Tax Report / BAS Report", description: "Tax collected summary for BAS/GST reporting", status: "done", notes: "Analytics page Tax Report card with total collected, taxed orders, and monthly bar chart" },
       { name: "Payment Method Report", description: "Revenue breakdown by payment method", status: "done", notes: "Analytics page Payment Status pie chart" },
-      { name: "Discount Usage Report", description: "How often each coupon/discount is used and revenue impact", status: "partial" },
+      { name: "Discount Usage Report", description: "How often each coupon/discount is used and revenue impact", status: "done", notes: "Analytics page Discount/Coupon Usage table with times used, revenue generated, and discount given per coupon" },
       { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel analysis", status: "done", notes: "Analytics page Conversion Funnel visualization" },
       { name: "Product Performance Dashboard", description: "Per-product views, conversion, revenue, margin dashboard", status: "partial" },
       { name: "Inventory Valuation Report", description: "Total inventory value at cost and retail", status: "done", notes: "Analytics page Inventory Valuation card + InventoryReports valuation tab" },
