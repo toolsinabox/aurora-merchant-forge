@@ -975,7 +975,7 @@ export default function FeatureAudit() {
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Total Features</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-lg font-bold">{stats.total}</p>
             </CardContent>
           </Card>
           <Card>
