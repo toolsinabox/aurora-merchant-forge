@@ -10,8 +10,9 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useProducts, useInventoryLocations, useCreateLocation, useStockAdjustments, useInventoryStock } from "@/hooks/use-data";
-import { Search, Plus, AlertTriangle, Package, Warehouse, History, ArrowUpDown, ArrowLeftRight, Hash, Trash2, Zap } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Search, Plus, AlertTriangle, Package, Warehouse, History, ArrowUpDown, ArrowLeftRight, Hash, Trash2, Zap, CheckSquare } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +33,54 @@ export default function Inventory() {
   const [locOpen, setLocOpen] = useState(false);
   const [newLoc, setNewLoc] = useState({ name: "", type: "warehouse", address: "" });
   const [showHistory, setShowHistory] = useState(false);
+
+  // Bulk adjustment state
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [bulkAdjustOpen, setBulkAdjustOpen] = useState(false);
+  const [bulkAdjustQty, setBulkAdjustQty] = useState(0);
+  const [bulkAdjustReason, setBulkAdjustReason] = useState("");
+  const [bulkAdjustType, setBulkAdjustType] = useState<"set" | "add" | "subtract">("add");
+  const [bulkAdjusting, setBulkAdjusting] = useState(false);
+
+  const toggleProductSelect = (id: string) => {
+    setSelectedProducts(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+  };
+  const toggleAllProducts = () => {
+    if (selectedProducts.size === inventoryItems.length) setSelectedProducts(new Set());
+    else setSelectedProducts(new Set(inventoryItems.map(p => p.id)));
+  };
+
+  const handleBulkAdjust = async () => {
+    if (selectedProducts.size === 0 || !currentStore || !user) return;
+    setBulkAdjusting(true);
+    try {
+      let updated = 0;
+      for (const productId of selectedProducts) {
+        const product = products.find(p => p.id === productId);
+        if (!product) continue;
+        // Update all variants for this product
+        const variants = product.product_variants || [];
+        if (variants.length > 0) {
+          for (const v of variants) {
+            const currentStock = v.stock || 0;
+            const newStock = bulkAdjustType === "set" ? bulkAdjustQty : bulkAdjustType === "add" ? currentStock + bulkAdjustQty : Math.max(0, currentStock - bulkAdjustQty);
+            await supabase.from("product_variants").update({ stock: newStock }).eq("id", v.id);
+          }
+        }
+        updated++;
+      }
+      toast.success(`Adjusted stock for ${updated} products`);
+      setBulkAdjustOpen(false);
+      setSelectedProducts(new Set());
+      setBulkAdjustQty(0);
+      setBulkAdjustReason("");
+      qc.invalidateQueries({ queryKey: ["products"] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBulkAdjusting(false);
+    }
+  };
 
   // Transfer dialog
   const [transferOpen, setTransferOpen] = useState(false);
@@ -473,7 +522,7 @@ export default function Inventory() {
 
         <Card>
           <CardContent className="p-0">
-            <div className="flex items-center gap-2 p-3 border-b">
+            <div className="flex items-center gap-2 p-3 border-b flex-wrap">
               <div className="relative flex-1 max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
@@ -487,10 +536,18 @@ export default function Inventory() {
                   <SelectItem value="out-of-stock" className="text-xs">Out of Stock</SelectItem>
                 </SelectContent>
               </Select>
+              {selectedProducts.size > 0 && (
+                <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => setBulkAdjustOpen(true)}>
+                  <CheckSquare className="h-3.5 w-3.5" /> Bulk Adjust ({selectedProducts.size})
+                </Button>
+              )}
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-xs h-8 w-8">
+                    <Checkbox checked={selectedProducts.size === inventoryItems.length && inventoryItems.length > 0} onCheckedChange={toggleAllProducts} />
+                  </TableHead>
                   <TableHead className="text-xs h-8">Product</TableHead>
                   <TableHead className="text-xs h-8">SKU</TableHead>
                   <TableHead className="text-xs h-8">Bin Location</TableHead>
@@ -502,9 +559,9 @@ export default function Inventory() {
               </TableHeader>
               <TableBody>
                 {loadingProducts ? (
-                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : inventoryItems.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
                 ) : (
                   inventoryItems.map((p) => {
                     const stock = getVariantStock(p);
@@ -514,6 +571,9 @@ export default function Inventory() {
                     const isExpiringSoon = expDate && !isExpired && new Date(expDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
                     return (
                       <TableRow key={p.id} className="text-xs">
+                        <TableCell className="py-2" onClick={e => e.stopPropagation()}>
+                          <Checkbox checked={selectedProducts.has(p.id)} onCheckedChange={() => toggleProductSelect(p.id)} />
+                        </TableCell>
                         <TableCell className="py-2 font-medium">{p.title}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">
@@ -633,6 +693,41 @@ export default function Inventory() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Bulk Adjust Dialog */}
+        <Dialog open={bulkAdjustOpen} onOpenChange={setBulkAdjustOpen}>
+          <DialogContent>
+            <DialogHeader><DialogTitle className="text-sm">Bulk Stock Adjustment</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Adjust stock for {selectedProducts.size} selected products.</p>
+            <div className="space-y-3 my-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Adjustment Type</Label>
+                <Select value={bulkAdjustType} onValueChange={(v) => setBulkAdjustType(v as any)}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="add" className="text-xs">Add to stock</SelectItem>
+                    <SelectItem value="subtract" className="text-xs">Subtract from stock</SelectItem>
+                    <SelectItem value="set" className="text-xs">Set stock to</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Quantity</Label>
+                <Input type="number" min={0} className="h-8 text-xs" value={bulkAdjustQty} onChange={(e) => setBulkAdjustQty(+e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Reason (optional)</Label>
+                <Input className="h-8 text-xs" value={bulkAdjustReason} onChange={(e) => setBulkAdjustReason(e.target.value)} placeholder="e.g. Stocktake correction" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setBulkAdjustOpen(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleBulkAdjust} disabled={bulkAdjusting}>
+                {bulkAdjusting ? "Adjusting..." : `Adjust ${selectedProducts.size} Products`}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

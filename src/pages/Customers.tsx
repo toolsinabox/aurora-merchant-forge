@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCustomers, useCreateCustomer } from "@/hooks/use-data";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2, Merge } from "lucide-react";
+import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2, Merge, Tag, UserCog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -57,6 +57,71 @@ export default function Customers() {
   const [showMerge, setShowMerge] = useState(false);
   const [merging, setMerging] = useState(false);
   const [primaryId, setPrimaryId] = useState<string>("");
+
+  // Bulk tag/group state
+  const [bulkTagInput, setBulkTagInput] = useState("");
+  const [bulkTagAction, setBulkTagAction] = useState<"add" | "remove">("add");
+  const [showBulkTag, setShowBulkTag] = useState(false);
+  const [bulkGroupId, setBulkGroupId] = useState("");
+  const [showBulkGroup, setShowBulkGroup] = useState(false);
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [customerGroups, setCustomerGroups] = useState<any[]>([]);
+
+  // Load customer groups for bulk assignment
+  useState(() => {
+    if (currentStore) {
+      supabase.from("customer_groups").select("id, name").eq("store_id", currentStore.id).order("name").then(({ data }) => {
+        setCustomerGroups(data || []);
+      });
+    }
+  });
+
+  const handleBulkTagUpdate = async () => {
+    if (!bulkTagInput.trim() || selectedForMerge.length === 0 || !currentStore) return;
+    setBulkProcessing(true);
+    const tag = bulkTagInput.trim();
+    try {
+      for (const id of selectedForMerge) {
+        const customer = customers.find(c => c.id === id);
+        if (!customer) continue;
+        const currentTags: string[] = customer.tags || [];
+        const newTags = bulkTagAction === "add"
+          ? [...new Set([...currentTags, tag])]
+          : currentTags.filter(t => t !== tag);
+        await supabase.from("customers").update({ tags: newTags } as any).eq("id", id);
+      }
+      toast.success(`${bulkTagAction === "add" ? "Added" : "Removed"} tag "${tag}" on ${selectedForMerge.length} customers`);
+      setShowBulkTag(false);
+      setBulkTagInput("");
+      setSelectedForMerge([]);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkGroupUpdate = async () => {
+    if (!bulkGroupId || selectedForMerge.length === 0) return;
+    setBulkProcessing(true);
+    try {
+      const groupVal = bulkGroupId === "none" ? null : bulkGroupId;
+      const { error } = await supabase.from("customers")
+        .update({ customer_group_id: groupVal } as any)
+        .in("id", selectedForMerge);
+      if (error) throw error;
+      toast.success(`Updated group for ${selectedForMerge.length} customers`);
+      setShowBulkGroup(false);
+      setBulkGroupId("");
+      setSelectedForMerge([]);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
 
   const toggleMergeSelection = (id: string) => {
     setSelectedForMerge(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
@@ -179,6 +244,16 @@ export default function Customers() {
               <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => { setPrimaryId(selectedForMerge[0]); setShowMerge(true); }}>
                 <Merge className="h-3.5 w-3.5" /> Merge ({selectedForMerge.length})
               </Button>
+            )}
+            {selectedForMerge.length >= 1 && (
+              <>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => setShowBulkTag(true)}>
+                  <Tag className="h-3.5 w-3.5" /> Tags ({selectedForMerge.length})
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => setShowBulkGroup(true)}>
+                  <UserCog className="h-3.5 w-3.5" /> Group ({selectedForMerge.length})
+                </Button>
+              </>
             )}
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> <span className="btn-label">Add Customer</span></Button>
           </div>
@@ -336,6 +411,57 @@ export default function Customers() {
               <Button onClick={handleMerge} disabled={!primaryId || merging} className="gap-1">
                 {merging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Merge className="h-3.5 w-3.5" />}
                 Merge Customers
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Tag Dialog */}
+        <Dialog open={showBulkTag} onOpenChange={setShowBulkTag}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Bulk Tag Assignment</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Add or remove a tag on {selectedForMerge.length} selected customers.</p>
+            <div className="space-y-3 my-2">
+              <div className="flex gap-2">
+                <Select value={bulkTagAction} onValueChange={(v) => setBulkTagAction(v as "add" | "remove")}>
+                  <SelectTrigger className="h-8 w-28 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="add" className="text-xs">Add tag</SelectItem>
+                    <SelectItem value="remove" className="text-xs">Remove tag</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input value={bulkTagInput} onChange={(e) => setBulkTagInput(e.target.value)} placeholder="Tag name" className="h-8 text-xs" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowBulkTag(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleBulkTagUpdate} disabled={!bulkTagInput.trim() || bulkProcessing}>
+                {bulkProcessing ? "Processing..." : `${bulkTagAction === "add" ? "Add" : "Remove"} Tag`}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Group Dialog */}
+        <Dialog open={showBulkGroup} onOpenChange={setShowBulkGroup}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Bulk Group Assignment</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Move {selectedForMerge.length} selected customers to a group.</p>
+            <div className="my-2">
+              <Select value={bulkGroupId} onValueChange={setBulkGroupId}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select group" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none" className="text-xs">No Group</SelectItem>
+                  {customerGroups.map(g => (
+                    <SelectItem key={g.id} value={g.id} className="text-xs">{g.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowBulkGroup(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleBulkGroupUpdate} disabled={!bulkGroupId || bulkProcessing}>
+                {bulkProcessing ? "Processing..." : "Update Group"}
               </Button>
             </DialogFooter>
           </DialogContent>
