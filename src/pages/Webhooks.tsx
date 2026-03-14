@@ -195,6 +195,20 @@ export default function Webhooks() {
                           <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
+                      <TableCell className="py-2">
+                        {(wh.failure_count || 0) > 0 ? (
+                          <Badge variant="destructive" className="text-[10px] gap-0.5">
+                            <AlertTriangle className="h-2.5 w-2.5" /> {wh.failure_count} failures
+                          </Badge>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground">0</span>
+                        )}
+                      </TableCell>
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
                       <TableCell className="py-2 text-muted-foreground">
                         {wh.last_triggered_at ? format(new Date(wh.last_triggered_at), "MMM d, HH:mm") : "Never"}
                       </TableCell>
