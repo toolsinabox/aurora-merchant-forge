@@ -81,11 +81,27 @@ export default function WarehouseDashboard() {
     const processing = orders.filter((o: any) => o.status === "processing");
     const shipped = orders.filter((o: any) => o.fulfillment_status === "fulfilled");
     const itemsToPick = pending.reduce((s: number, o: any) => s + (o.items_count || 0), 0);
+
+    // SLA: average hours from order creation to first shipment (for fulfilled orders)
+    const fulfilledWithDates = orders.filter((o: any) => o.fulfillment_status === "fulfilled" && o.created_at && o.shipped_at);
+    const slaHours = fulfilledWithDates.map((o: any) => {
+      const created = new Date(o.created_at).getTime();
+      const shipped = new Date(o.shipped_at).getTime();
+      return (shipped - created) / 3600000;
+    });
+    const avgSlaHours = slaHours.length > 0 ? slaHours.reduce((s, h) => s + h, 0) / slaHours.length : 0;
+    const slaTarget = 48; // 48-hour target
+    const withinSla = slaHours.filter(h => h <= slaTarget).length;
+    const slaPercent = slaHours.length > 0 ? (withinSla / slaHours.length) * 100 : 0;
+
     return {
       pendingOrders: pending.length,
       processingOrders: processing.length,
       shippedOrders: shipped.length,
       itemsToPick,
+      avgSlaHours,
+      slaPercent,
+      slaTarget,
     };
   }, [orders]);
 
