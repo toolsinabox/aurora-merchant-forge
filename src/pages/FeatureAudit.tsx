@@ -4195,8 +4195,235 @@ const integrationFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 291–310: REMAINING SYSTEMS ═══════
+const remainingFeatures: FeatureCategory[] = [
+  {
+    category: "Marketplace Connections",
+    icon: <Store className="h-5 w-5" />,
+    features: [
+      { name: "Connection CRUD", description: "Create marketplace connections", status: "done", notes: "marketplace_connections table with marketplace, credentials" },
+      { name: "Listing Management", description: "Create/manage marketplace listings", status: "done", notes: "marketplace_listings with product mapping" },
+      { name: "eBay Connection", description: "Connect to eBay", status: "partial", notes: "eBay API credentials config" },
+      { name: "Amazon Connection", description: "Connect to Amazon", status: "partial", notes: "Amazon SP-API config" },
+      { name: "Catch Connection", description: "Connect to Catch marketplace", status: "partial", notes: "Catch API config" },
+      { name: "Google Shopping", description: "Connect to Google Merchant Center", status: "done", notes: "google-shopping-feed edge function" },
+      { name: "Facebook Shop", description: "Connect to Facebook Commerce", status: "partial", notes: "Facebook catalog API config" },
+      { name: "Trade Me", description: "Connect to Trade Me (NZ)", status: "partial", notes: "Trade Me API config" },
+    ],
+  },
+  {
+    category: "Product Shipping Dimensions",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Weight", description: "Product weight for shipping calc", status: "done", notes: "weight column on products and product_shipping" },
+      { name: "Dimensions (L×W×H)", description: "Length, width, height", status: "done", notes: "length, width, height on product_shipping" },
+      { name: "Shipping Class", description: "Assign shipping class", status: "done", notes: "shipping_class column" },
+      { name: "Free Shipping Flag", description: "Mark product as free shipping", status: "done", notes: "free_shipping boolean" },
+      { name: "Oversized Flag", description: "Flag oversized items", status: "done", notes: "is_oversized boolean for surcharge" },
+      { name: "Flat Rate Override", description: "Flat shipping rate per product", status: "done", notes: "flat_rate_shipping column" },
+    ],
+  },
+  {
+    category: "Shipping Zones & Rates",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Zone CRUD", description: "Create shipping zones", status: "done", notes: "shipping_zones table with name, countries" },
+      { name: "Zone Rates", description: "Rate tables per zone", status: "done", notes: "shipping_rates with zone_id, method, price" },
+      { name: "Weight-Based Rates", description: "Rates based on weight brackets", status: "done", notes: "min_weight, max_weight on rates" },
+      { name: "Price-Based Rates", description: "Rates based on order total", status: "done", notes: "min_order, max_order on rates" },
+      { name: "Free Shipping Threshold", description: "Free shipping above amount", status: "done", notes: "free_shipping_threshold on zones" },
+      { name: "Multiple Methods", description: "Standard, express, overnight per zone", status: "done", notes: "method column for shipping speed" },
+    ],
+  },
+  {
+    category: "Customer Segmentation Rules",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Rule CRUD", description: "Create segmentation rules", status: "done", notes: "customer_segmentation_rules table" },
+      { name: "Match Type", description: "Match all or any conditions", status: "done", notes: "match_type column (all/any)" },
+      { name: "Rule Conditions", description: "Order count, spend, recency, location", status: "done", notes: "rules JSONB with conditions" },
+      { name: "Auto-Segment", description: "Auto-assign segment on rule match", status: "done", notes: "segment column updated on match" },
+      { name: "Matched Count", description: "Track number of matched customers", status: "done", notes: "matched_count column" },
+    ],
+  },
+  {
+    category: "Inventory Alerts",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Low Stock Alert", description: "Alert when stock below threshold", status: "done", notes: "inventory_alerts table with alert_type='low_stock'" },
+      { name: "Out of Stock Alert", description: "Alert when stock reaches zero", status: "done", notes: "alert_type='out_of_stock'" },
+      { name: "Alert Resolution", description: "Mark alerts as resolved", status: "done", notes: "is_resolved, resolved_at, resolved_by" },
+      { name: "Email Notification", description: "Email on low stock", status: "done", notes: "low-stock-alert edge function" },
+      { name: "Threshold Config", description: "Per-product low stock threshold", status: "done", notes: "low_stock_threshold on inventory_stock" },
+    ],
+  },
+  {
+    category: "Inventory Forecasting",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Sales Velocity", description: "Calculate avg daily sales", status: "done", notes: "avg_daily_sales on inventory_forecasts" },
+      { name: "Days of Stock", description: "Estimate days until stockout", status: "done", notes: "days_of_stock calculated from velocity" },
+      { name: "Reorder Date", description: "Predicted reorder date", status: "done", notes: "reorder_date based on lead time + stock" },
+      { name: "Safety Stock", description: "Recommended safety stock level", status: "done", notes: "safety_stock column" },
+      { name: "Suggested Reorder Qty", description: "Recommended quantity to order", status: "done", notes: "suggested_reorder_qty column" },
+      { name: "Lead Time", description: "Supplier lead time in days", status: "done", notes: "lead_time_days column" },
+    ],
+  },
+  {
+    category: "Addon Marketplace",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Addon Catalog", description: "Browse available addons", status: "done", notes: "addon_catalog table with name, description, price" },
+      { name: "Addon Categories", description: "Filter by type (shipping, marketing, etc.)", status: "done", notes: "category and addon_type columns" },
+      { name: "Install Count", description: "Track addon popularity", status: "done", notes: "install_count column" },
+      { name: "Store Addons", description: "Track installed addons per store", status: "done", notes: "store_addons table with config JSONB" },
+      { name: "Free/Paid Addons", description: "Support free and paid addons", status: "done", notes: "is_free boolean and price column" },
+      { name: "Versioning", description: "Track addon version", status: "done", notes: "version column on addon_catalog" },
+    ],
+  },
+  {
+    category: "Notification System",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "In-App Notifications", description: "Bell icon with notification list", status: "done", notes: "NotificationBell component in TopBar" },
+      { name: "Notification Types", description: "Order, stock, system notifications", status: "done", notes: "Multiple notification types" },
+      { name: "Read/Unread Status", description: "Track read state", status: "done", notes: "Read state management" },
+      { name: "Notification Count Badge", description: "Unread count badge", status: "done", notes: "Badge count on bell icon" },
+    ],
+  },
+  {
+    category: "Barcode System",
+    icon: <HardDrive className="h-5 w-5" />,
+    features: [
+      { name: "Barcode Scanner", description: "Scan barcodes via camera", status: "done", notes: "BarcodeScanner component" },
+      { name: "Barcode on Products", description: "Barcode/GTIN per product", status: "done", notes: "barcode column on products" },
+      { name: "Barcode on Variants", description: "Barcode per variant", status: "done", notes: "barcode column on product_variants" },
+      { name: "Barcode Label Printing", description: "Print barcode labels", status: "done", notes: "PrintBarcodeLabels page" },
+      { name: "Barcode Lookup", description: "Look up product by barcode scan", status: "done", notes: "Product search by barcode" },
+    ],
+  },
+  {
+    category: "Export Wizard",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Entity Selection", description: "Choose what to export", status: "done", notes: "Admin /export page with entity picker" },
+      { name: "Field Selection", description: "Choose which fields to export", status: "done", notes: "Checkbox field selection" },
+      { name: "Filter Options", description: "Filter data before export", status: "done", notes: "Date range and status filters" },
+      { name: "Format Selection", description: "CSV or JSON export format", status: "done", notes: "Format dropdown" },
+      { name: "Download File", description: "Download generated export file", status: "done", notes: "Browser download of generated file" },
+    ],
+  },
+  {
+    category: "Import Wizard",
+    icon: <Upload className="h-5 w-5" />,
+    features: [
+      { name: "File Upload", description: "Upload CSV for import", status: "done", notes: "Admin /import page with file upload" },
+      { name: "Column Mapping", description: "Map CSV columns to fields", status: "done", notes: "Interactive column mapper" },
+      { name: "Preview Data", description: "Preview imported data before commit", status: "done", notes: "Data preview table" },
+      { name: "Validation", description: "Validate data before import", status: "done", notes: "Row-level validation with error display" },
+      { name: "Import Progress", description: "Track import progress", status: "done", notes: "Progress bar during import" },
+      { name: "Error Report", description: "Download errors after import", status: "done", notes: "Error CSV with row numbers and messages" },
+    ],
+  },
+  {
+    category: "Abandoned Cart Recovery",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Cart Detection", description: "Detect abandoned carts", status: "done", notes: "abandoned_carts table with abandoned_at" },
+      { name: "Recovery Email", description: "Send recovery email", status: "done", notes: "abandoned-cart-email edge function" },
+      { name: "Recovery Status", description: "Track pending/sent/recovered", status: "done", notes: "recovery_status column" },
+      { name: "Cart Total Tracking", description: "Track value of abandoned carts", status: "done", notes: "cart_total column for revenue reporting" },
+      { name: "Recovery Rate", description: "Track successful recovery rate", status: "done", notes: "recovered_at timestamp for analytics" },
+    ],
+  },
+  {
+    category: "Subdomain & Multi-Tenancy Routing",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Subdomain Detection", description: "Detect store from subdomain", status: "done", notes: "getSubdomainSlug() in subdomain.ts" },
+      { name: "Path-Based Routing", description: "Fallback path-based store routing", status: "done", notes: "/store/:slug route pattern" },
+      { name: "CPanel Routing", description: "Admin at /_cpanel on subdomain", status: "done", notes: "/_cpanel prefix for subdomain admin" },
+      { name: "Storefront at Root", description: "Storefront at / on subdomain", status: "done", notes: "Root path serves storefront on subdomain" },
+      { name: "Platform Detection", description: "Detect platform vs store domain", status: "done", notes: "PLATFORM_DOMAINS array for detection" },
+    ],
+  },
+  {
+    category: "Responsive & Mobile Design",
+    icon: <Smartphone className="h-5 w-5" />,
+    features: [
+      { name: "Mobile-First Layout", description: "All pages mobile-responsive", status: "done", notes: "Tailwind responsive breakpoints throughout" },
+      { name: "Mobile Sidebar", description: "Collapsible sidebar on mobile", status: "done", notes: "SidebarProvider with mobile sheet" },
+      { name: "useMobile Hook", description: "Detect mobile viewport", status: "done", notes: "use-mobile.tsx hook" },
+      { name: "Touch-Friendly UI", description: "Appropriate touch targets", status: "done", notes: "Min 44px touch targets on mobile" },
+      { name: "Mobile Search", description: "Full-width search on mobile", status: "done", notes: "Hidden on mobile, full-width on expand" },
+    ],
+  },
+  {
+    category: "Admin Dashboard",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "KPI Cards", description: "Revenue, orders, customers, products", status: "done", notes: "Dashboard page with 4 KPI cards" },
+      { name: "Revenue Chart", description: "Revenue trend chart", status: "done", notes: "Line chart with date range" },
+      { name: "Recent Orders", description: "Latest orders table", status: "done", notes: "Recent orders with status badges" },
+      { name: "Top Products", description: "Best-selling products", status: "done", notes: "Top products by revenue" },
+      { name: "Low Stock Alerts", description: "Products below threshold", status: "done", notes: "Low stock product list" },
+      { name: "Quick Actions", description: "Shortcuts to common actions", status: "done", notes: "Quick action buttons" },
+    ],
+  },
+  {
+    category: "Order Management (Extended)",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Create Order (Admin)", description: "Manually create orders", status: "done", notes: "CreateOrderDialog component" },
+      { name: "Order Detail Page", description: "Full order detail view", status: "done", notes: "OrderDetail page with all tabs" },
+      { name: "Order Notes", description: "Internal notes on orders", status: "done", notes: "order_notes table" },
+      { name: "Order Tags", description: "Tag orders for filtering", status: "done", notes: "tags array on orders" },
+      { name: "Bulk Actions", description: "Bulk update order status", status: "done", notes: "Multi-select with bulk status change" },
+      { name: "Order Filtering", description: "Filter by status, date, customer, channel", status: "done", notes: "Comprehensive filter bar" },
+      { name: "Order Search", description: "Search by order number, customer", status: "done", notes: "Search input on orders page" },
+    ],
+  },
+  {
+    category: "Customer Management (Extended)",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Customer Detail Page", description: "Full customer profile view", status: "done", notes: "CustomerDetail page" },
+      { name: "Customer Tags", description: "Tag customers for segmentation", status: "done", notes: "tags array on customers" },
+      { name: "Customer Notes", description: "Internal notes on customers", status: "done", notes: "notes column" },
+      { name: "Customer Logo", description: "Logo/avatar per customer", status: "done", notes: "logo_url column" },
+      { name: "Order History", description: "View customer order history", status: "done", notes: "Orders tab on customer detail" },
+      { name: "Communication History", description: "View all communications", status: "done", notes: "Communications tab via customer_communications" },
+      { name: "Segment Badge", description: "Visual segment indicator", status: "done", notes: "Segment badge (VIP, Regular, etc.)" },
+    ],
+  },
+  {
+    category: "Bulk Product Edit",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Select Products", description: "Select multiple products", status: "done", notes: "Checkbox selection on products page" },
+      { name: "Bulk Price Update", description: "Update prices in bulk", status: "done", notes: "BulkEditDialog with price field" },
+      { name: "Bulk Status Change", description: "Change status in bulk", status: "done", notes: "Status dropdown in bulk edit" },
+      { name: "Bulk Category Assign", description: "Assign category in bulk", status: "done", notes: "Category select in bulk edit" },
+      { name: "Bulk Tag Add", description: "Add tags in bulk", status: "done", notes: "Tag input in bulk edit" },
+      { name: "Bulk Delete", description: "Delete products in bulk", status: "done", notes: "Bulk delete with confirmation" },
+    ],
+  },
+  {
+    category: "Store Settings",
+    icon: <Settings className="h-5 w-5" />,
+    features: [
+      { name: "General Settings", description: "Store name, email, phone, timezone", status: "done", notes: "Settings page general tab" },
+      { name: "Currency Settings", description: "Default and available currencies", status: "done", notes: "Admin /currencies page" },
+      { name: "Tax Settings", description: "Tax configuration", status: "done", notes: "Admin /tax-rates page" },
+      { name: "Shipping Settings", description: "Shipping zone configuration", status: "done", notes: "Admin /shipping-zones page" },
+      { name: "Notification Settings", description: "Email notification preferences", status: "done", notes: "Notification toggles in settings" },
+      { name: "Theme Settings", description: "Store theme customization", status: "done", notes: "Admin /templates page" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
