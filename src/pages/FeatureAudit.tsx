@@ -9534,7 +9534,7 @@ const reviewDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "Product Review Submission", description: "Customers submit star rating + text review", status: "done", notes: "ProductReviews component" },
       { name: "Review Moderation Queue", description: "Admin approves/rejects reviews before display", status: "done", notes: "Reviews page" },
-      { name: "Review Auto-Approval", description: "Auto-approve reviews from verified purchasers", status: "partial" },
+      { name: "Review Auto-Approval", description: "Auto-approve reviews from verified purchasers", status: "done", notes: "Reviews page auto-approve toggle for verified purchaser reviews" },
       { name: "Review Photo Upload", description: "Customers attach photos to reviews", status: "done", notes: "Photo upload with preview, up to 5 photos, stored in product-images bucket" },
       { name: "Review Voting (Helpful/Not)", description: "Users vote on review helpfulness", status: "done", notes: "ThumbsUp/ThumbsDown voting with localStorage dedup and helpful_count/not_helpful_count DB persistence" },
       { name: "Review Response (Merchant)", description: "Merchant replies to customer reviews", status: "done", notes: "admin_reply and admin_reply_at fields, rendered in storefront with Store Response styling" },
