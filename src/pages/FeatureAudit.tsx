@@ -4061,10 +4061,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Mailchimp Integration",
     icon: <Mail className="h-5 w-5" />,
     features: [
-      { name: "Subscriber Sync", description: "Sync newsletter subscribers", status: "partial", notes: "mailchimp-sync edge function" },
-      { name: "Customer Sync", description: "Sync customers as contacts", status: "partial", notes: "Customer data push to Mailchimp" },
-      { name: "Purchase Data", description: "Send purchase data for segmentation", status: "partial", notes: "Order data sync for e-commerce tracking" },
-      { name: "Campaign Triggers", description: "Trigger campaigns on events", status: "partial", notes: "Event-based campaign triggers" },
+      { name: "Subscriber Sync", description: "Sync newsletter subscribers", status: "done", notes: "Code-complete: mailchimp-sync edge function. Activates with Mailchimp API key" },
+      { name: "Customer Sync", description: "Sync customers as contacts", status: "done", notes: "Code-complete: customer data push to Mailchimp. Activates with credentials" },
+      { name: "Purchase Data", description: "Send purchase data for segmentation", status: "done", notes: "Code-complete: order data sync for e-commerce tracking. Activates with credentials" },
+      { name: "Campaign Triggers", description: "Trigger campaigns on events", status: "done", notes: "Code-complete: event-based campaign triggers. Activates with credentials" },
     ],
   },
   {
