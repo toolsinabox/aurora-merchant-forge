@@ -107,6 +107,8 @@ export default function Analytics() {
   const [repeatPurchaseRate, setRepeatPurchaseRate] = useState<{ rate: number; totalCustomers: number; repeatCustomers: number }>({ rate: 0, totalCustomers: 0, repeatCustomers: 0 });
   const [rfmData, setRfmData] = useState<{ segment: string; count: number; avgMonetary: number }[]>([]);
   const [salesByGroup, setSalesByGroup] = useState<{ group: string; orders: number; revenue: number }[]>([]);
+  const [salesByStaff, setSalesByStaff] = useState<{ staffName: string; orders: number; revenue: number }[]>([]);
+  const [discountUsage, setDiscountUsage] = useState<{ code: string; usedCount: number; revenue: number; discountTotal: number }[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
