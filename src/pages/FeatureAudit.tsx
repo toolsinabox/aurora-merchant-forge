@@ -3759,8 +3759,232 @@ const advancedFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 251–270: FINAL COMMERCE FEATURES ═══════
+const finalFeatures: FeatureCategory[] = [
+  {
+    category: "Warehouse Dashboard",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Warehouse Overview", description: "Dashboard for warehouse operations", status: "done", notes: "Admin /warehouse page with KPIs" },
+      { name: "Pending Pick Count", description: "Orders awaiting picking", status: "done", notes: "Count of unfulfilled orders" },
+      { name: "Pending Pack Count", description: "Orders picked awaiting packing", status: "done", notes: "Pick-Pack workflow tracking" },
+      { name: "Shipment Queue", description: "Orders ready for dispatch", status: "done", notes: "Shipment queue with carrier info" },
+      { name: "Location Overview", description: "Stock levels per warehouse location", status: "done", notes: "inventory_locations with stock summary" },
+    ],
+  },
+  {
+    category: "Pick & Pack",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "Pick List Generation", description: "Generate pick lists from orders", status: "done", notes: "Admin /pick-pack page with batch pick lists" },
+      { name: "Pick Confirmation", description: "Mark items as picked", status: "done", notes: "Per-item pick confirmation" },
+      { name: "Pack Confirmation", description: "Mark orders as packed", status: "done", notes: "Pack step after picking complete" },
+      { name: "Batch Processing", description: "Process multiple orders at once", status: "done", notes: "Batch select and process workflow" },
+      { name: "Barcode Scanning", description: "Scan barcodes to confirm picks", status: "done", notes: "BarcodeScanner component for pick verification" },
+    ],
+  },
+  {
+    category: "POS (Point of Sale)",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "POS Interface", description: "Touch-friendly POS terminal", status: "done", notes: "Admin /pos page with product grid and cart" },
+      { name: "Product Search", description: "Search products by name/SKU/barcode", status: "done", notes: "Quick search in POS" },
+      { name: "Customer Lookup", description: "Look up and assign customer", status: "done", notes: "Customer search and selection" },
+      { name: "Payment Processing", description: "Process cash, card, and split payments", status: "done", notes: "Multiple payment method support" },
+      { name: "Receipt Generation", description: "Generate receipt on sale", status: "done", notes: "PrintPaymentReceipt for POS sales" },
+      { name: "Discount Application", description: "Apply discounts and coupons", status: "done", notes: "Coupon and manual discount in POS" },
+    ],
+  },
+  {
+    category: "Quotes",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Quote Creation", description: "Create quotes for customers", status: "done", notes: "quotes table with items, totals, validity" },
+      { name: "Quote Status", description: "Draft/sent/accepted/rejected/expired", status: "done", notes: "status column with workflow" },
+      { name: "Convert to Order", description: "Convert accepted quote to order", status: "done", notes: "Convert action creates order from quote" },
+      { name: "Quote Validity", description: "Set expiry date on quotes", status: "done", notes: "valid_until column" },
+      { name: "Print Quote", description: "Generate printable quote", status: "done", notes: "PrintQuote page" },
+      { name: "Email Quote", description: "Email quote to customer", status: "done", notes: "Email action with quote PDF attachment" },
+    ],
+  },
+  {
+    category: "Returns Management",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Return Request", description: "Customer initiates return", status: "done", notes: "returns table with reason, status, order_id" },
+      { name: "Return Status", description: "Requested/approved/received/refunded", status: "done", notes: "Status workflow column" },
+      { name: "Return Items", description: "Track which items are returned", status: "done", notes: "return_items with product_id, quantity, condition" },
+      { name: "Refund Processing", description: "Issue refund on return approval", status: "done", notes: "Refund amount calculation and processing" },
+      { name: "Return Label", description: "Generate return shipping label", status: "done", notes: "PrintReturnLabel page" },
+      { name: "Restock on Return", description: "Auto-restock returned items", status: "done", notes: "Restock action updates inventory" },
+    ],
+  },
+  {
+    category: "Supplier Management",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Supplier CRUD", description: "Create and manage suppliers", status: "done", notes: "suppliers table with name, email, contact" },
+      { name: "Supplier Products", description: "Link products to suppliers", status: "done", notes: "supplier_id on products" },
+      { name: "Supplier Lead Time", description: "Lead time per supplier", status: "done", notes: "lead_time_days column" },
+      { name: "Supplier Currency", description: "Default currency per supplier", status: "done", notes: "currency column on suppliers" },
+      { name: "Minimum Order", description: "Minimum order value/qty per supplier", status: "done", notes: "min_order_amount, min_order_quantity" },
+    ],
+  },
+  {
+    category: "Purchase Orders",
+    icon: <ClipboardCopy className="h-5 w-5" />,
+    features: [
+      { name: "PO Creation", description: "Create purchase orders for suppliers", status: "done", notes: "purchase_orders table" },
+      { name: "PO Items", description: "Line items with quantity and cost", status: "done", notes: "purchase_order_items" },
+      { name: "PO Status", description: "Draft/sent/partial/received/cancelled", status: "done", notes: "status workflow" },
+      { name: "Receive Stock", description: "Receive items against PO", status: "done", notes: "quantity_received on PO items" },
+      { name: "PO Number", description: "Auto-generated PO number", status: "done", notes: "po_number with unique constraint" },
+      { name: "Print PO", description: "Printable purchase order", status: "done", notes: "PrintPurchaseOrder page" },
+    ],
+  },
+  {
+    category: "Layby (Lay-Away)",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Layby Plans", description: "Create installment payment plans", status: "done", notes: "layby_plans table with installments, frequency" },
+      { name: "Deposit Collection", description: "Collect initial deposit", status: "done", notes: "deposit_amount column" },
+      { name: "Installment Payments", description: "Track installment payments", status: "done", notes: "layby_payments table per plan" },
+      { name: "Plan Status", description: "Active/completed/cancelled/defaulted", status: "done", notes: "status workflow with completion logic" },
+      { name: "Next Due Date", description: "Track next payment due", status: "done", notes: "next_due_date auto-calculated" },
+      { name: "Release on Completion", description: "Release goods when fully paid", status: "done", notes: "completed_at triggers order fulfillment" },
+    ],
+  },
+  {
+    category: "Redirects (URL Management)",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "301 Redirects", description: "Permanent URL redirects", status: "done", notes: "redirects table with from_path, to_path, type" },
+      { name: "302 Redirects", description: "Temporary redirects", status: "done", notes: "redirect_type='temporary'" },
+      { name: "Bulk Import", description: "Import redirects via CSV", status: "done", notes: "CSV import for bulk redirect creation" },
+      { name: "Redirect Management", description: "Admin page for CRUD", status: "done", notes: "Admin /redirects page" },
+    ],
+  },
+  {
+    category: "Webhooks",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Webhook CRUD", description: "Create webhook endpoints", status: "done", notes: "webhooks table with url, events, signing_secret" },
+      { name: "Event Selection", description: "Subscribe to specific events", status: "done", notes: "events array column" },
+      { name: "Signing Secret", description: "HMAC signature per webhook", status: "done", notes: "signing_secret for payload verification" },
+      { name: "Delivery Logs", description: "Track delivery attempts and responses", status: "done", notes: "webhook_logs table with status_code, response" },
+      { name: "Test Webhook", description: "Send test payload", status: "done", notes: "Test button on Webhooks page" },
+      { name: "Retry Logic", description: "Auto-retry failed deliveries", status: "done", notes: "retry_count with exponential backoff" },
+    ],
+  },
+  {
+    category: "Media Library",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Upload Files", description: "Upload images and documents", status: "done", notes: "Admin /media-library page with upload" },
+      { name: "File Browser", description: "Browse and search uploaded files", status: "done", notes: "Grid/list view with search and filters" },
+      { name: "Image Preview", description: "Preview images before selection", status: "done", notes: "Thumbnail preview in file browser" },
+      { name: "Bulk Upload", description: "Upload multiple files at once", status: "done", notes: "Multi-file upload with progress" },
+      { name: "ZIP Upload", description: "Upload ZIP for bulk image extraction", status: "done", notes: "ZipImageUpload component" },
+      { name: "File Metadata", description: "Track file size, type, dimensions", status: "done", notes: "Metadata stored per file" },
+    ],
+  },
+  {
+    category: "Content Pages & Blog",
+    icon: <BookOpen className="h-5 w-5" />,
+    features: [
+      { name: "Page CRUD", description: "Create and manage content pages", status: "done", notes: "content_pages table with title, slug, content" },
+      { name: "Page Types", description: "Page, blog post, FAQ types", status: "done", notes: "page_type column" },
+      { name: "Rich Text Editor", description: "WYSIWYG content editing", status: "done", notes: "RichTextEditor component" },
+      { name: "Publish Workflow", description: "Draft → published workflow", status: "done", notes: "status and is_published columns" },
+      { name: "SEO Fields", description: "Meta title and description per page", status: "done", notes: "seo_title, seo_description columns" },
+      { name: "Featured Image", description: "Hero image per page", status: "done", notes: "featured_image column" },
+      { name: "Blog Listing", description: "Storefront blog page", status: "done", notes: "StorefrontBlog page" },
+    ],
+  },
+  {
+    category: "Content Blocks",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Block CRUD", description: "Create reusable content blocks", status: "done", notes: "content_blocks table with identifier, content" },
+      { name: "Block Types", description: "HTML, text, banner block types", status: "done", notes: "block_type column" },
+      { name: "Placement", description: "Assign blocks to page positions", status: "done", notes: "placement column (header, footer, sidebar)" },
+      { name: "Active Toggle", description: "Enable/disable blocks", status: "done", notes: "is_active column" },
+      { name: "Sort Order", description: "Control display order", status: "done", notes: "sort_order column" },
+    ],
+  },
+  {
+    category: "Adverts & Banners",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Advert CRUD", description: "Create promotional adverts", status: "done", notes: "adverts table with name, placement, type" },
+      { name: "Advert Types", description: "Image, HTML, banner types", status: "done", notes: "advert_type column" },
+      { name: "Scheduled Visibility", description: "Start/end dates for adverts", status: "done", notes: "starts_at and ends_at columns" },
+      { name: "Placement Control", description: "Homepage, sidebar, header, footer", status: "done", notes: "placement column" },
+      { name: "Click-Through URL", description: "Link advert to destination", status: "done", notes: "link_url column" },
+      { name: "Storefront Rendering", description: "AdvertBanner component on storefront", status: "done", notes: "AdvertBanner with placement filtering" },
+    ],
+  },
+  {
+    category: "Storefront Search",
+    icon: <Search className="h-5 w-5" />,
+    features: [
+      { name: "Product Search", description: "Full-text product search", status: "done", notes: "StorefrontSearch component with instant results" },
+      { name: "Search Suggestions", description: "Auto-suggest as you type", status: "done", notes: "Debounced search with dropdown results" },
+      { name: "Category Filtering", description: "Filter search by category", status: "done", notes: "Category facet in search results" },
+      { name: "Price Range Filter", description: "Filter by price range", status: "done", notes: "Min/max price filter" },
+      { name: "Sort Options", description: "Sort by relevance, price, name, date", status: "done", notes: "Sort dropdown on search results" },
+    ],
+  },
+  {
+    category: "Storefront Checkout (Extended)",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Guest Checkout", description: "Purchase without account", status: "done", notes: "Guest checkout flow on StorefrontCheckout" },
+      { name: "Address Form", description: "Shipping and billing address", status: "done", notes: "Address form with validation" },
+      { name: "Coupon Application", description: "Apply coupon code at checkout", status: "done", notes: "Coupon field with validation" },
+      { name: "Gift Voucher Application", description: "Apply gift voucher balance", status: "done", notes: "Gift voucher code field" },
+      { name: "Store Credit Application", description: "Apply store credit/loyalty points", status: "done", notes: "Points redemption at checkout" },
+      { name: "Order Notes", description: "Customer notes on order", status: "done", notes: "Notes field on checkout" },
+      { name: "Shipping Method Selection", description: "Choose shipping method", status: "done", notes: "Shipping options with rates" },
+      { name: "Payment Method Selection", description: "Choose payment method", status: "done", notes: "Payment method radio/cards" },
+    ],
+  },
+  {
+    category: "Storefront Account",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Account Dashboard", description: "Customer account overview", status: "done", notes: "StorefrontAccount page" },
+      { name: "Order History", description: "View past orders", status: "done", notes: "Orders tab with order list" },
+      { name: "Address Book", description: "Manage saved addresses", status: "done", notes: "Address CRUD in account" },
+      { name: "Profile Edit", description: "Update name, email, phone", status: "done", notes: "Profile form with save" },
+      { name: "Password Change", description: "Change account password", status: "done", notes: "Password change form" },
+      { name: "Digital Downloads", description: "Access purchased downloads", status: "done", notes: "Downloads tab with file links" },
+    ],
+  },
+  {
+    category: "Storefront Auth",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Customer Login", description: "Storefront login page", status: "done", notes: "StorefrontLogin page" },
+      { name: "Customer Signup", description: "Storefront registration", status: "done", notes: "StorefrontSignup page" },
+      { name: "Forgot Username", description: "Recover username by email", status: "done", notes: "StorefrontForgotUsername page" },
+      { name: "Auto-Registration Email", description: "Welcome email on signup", status: "done", notes: "auto-registration-email edge function" },
+    ],
+  },
+  {
+    category: "Wholesale Storefront",
+    icon: <Store className="h-5 w-5" />,
+    features: [
+      { name: "Wholesale Page", description: "Dedicated wholesale ordering page", status: "done", notes: "StorefrontWholesale page" },
+      { name: "Wholesale Pricing", description: "Show wholesale prices to approved customers", status: "done", notes: "Price list filtering by customer group" },
+      { name: "Minimum Order Qty", description: "Enforce minimum quantities", status: "done", notes: "min_order_quantity enforcement" },
+      { name: "Bulk Order Form", description: "Multi-product order form", status: "done", notes: "Grid order form with quantities" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
