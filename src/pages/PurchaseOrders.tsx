@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Search, ClipboardList, Printer, PackageCheck } from "lucide-react";
+import { Plus, Trash2, Search, ClipboardList, Printer, PackageCheck, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface POForm {
@@ -36,7 +36,7 @@ const emptyForm: POForm = {
 };
 
 const statusColors: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  draft: "outline", sent: "secondary", partial: "secondary", received: "default", closed: "default", cancelled: "destructive",
+  draft: "outline", pending_approval: "secondary", sent: "secondary", partial: "secondary", received: "default", closed: "default", cancelled: "destructive",
 };
 
 export default function PurchaseOrders() {
@@ -285,8 +285,8 @@ export default function PurchaseOrders() {
                           <Badge variant={statusColors[p.status] || "outline"} className="text-[10px]">{p.status}</Badge>
                         </SelectTrigger>
                         <SelectContent>
-                          {["draft", "sent", "partial", "received", "closed", "cancelled"].map(s => (
-                            <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>
+                          {["draft", "pending_approval", "sent", "partial", "received", "closed", "cancelled"].map(s => (
+                            <SelectItem key={s} value={s} className="text-xs capitalize">{s.replace("_", " ")}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -296,6 +296,21 @@ export default function PurchaseOrders() {
                     <TableCell className="py-2 text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell className="py-2">
                       <div className="flex gap-1">
+                        {p.status === "pending_approval" && (
+                          <>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-green-600" title="Approve" onClick={() => updateStatus.mutate({ id: p.id, status: "sent" })}>
+                              <CheckCircle className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" title="Reject" onClick={() => updateStatus.mutate({ id: p.id, status: "cancelled" })}>
+                              <XCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          </>
+                        )}
+                        {p.status === "draft" && (
+                          <Button variant="ghost" size="icon" className="h-6 w-6" title="Submit for Approval" onClick={() => updateStatus.mutate({ id: p.id, status: "pending_approval" })}>
+                            <CheckCircle className="h-3 w-3" />
+                          </Button>
+                        )}
                         {["sent", "partial"].includes(p.status) && (
                           <Button variant="ghost" size="icon" className="h-6 w-6" title="Receive Items" onClick={() => openReceiveDialog(p)}>
                             <PackageCheck className="h-3 w-3" />

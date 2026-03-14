@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, Plus, Trash2, FileDown, Link, Eye, Package } from "lucide-react";
+import { Download, Plus, Trash2, FileDown, Link, Eye, Package, Key, Copy, RefreshCw } from "lucide-react";
 import { TablePagination } from "@/components/admin/TablePagination";
 
 export default function DigitalDownloads() {
@@ -24,6 +24,13 @@ export default function DigitalDownloads() {
   const [pageSize, setPageSize] = useState(25);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [form, setForm] = useState({ file_name: "", file_url: "", download_limit: "", expiry_days: "30" });
+  const [licenseKeys, setLicenseKeys] = useState<Record<string, string[]>>(() => {
+    try { return JSON.parse(localStorage.getItem("license_keys_store") || "{}"); } catch { return {}; }
+  });
+  const [showLicenseDialog, setShowLicenseDialog] = useState(false);
+  const [licenseProduct, setLicenseProduct] = useState<any>(null);
+  const [newLicenseKey, setNewLicenseKey] = useState("");
+  const [licenseCount, setLicenseCount] = useState(5);
 
   const { data: downloads = [] } = useQuery({
     queryKey: ["product-downloads", storeId],
@@ -83,6 +90,32 @@ export default function DigitalDownloads() {
     },
   });
 
+  const generateLicenseKey = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const segments = 4;
+    const segLen = 5;
+    return Array.from({ length: segments }, () =>
+      Array.from({ length: segLen }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+    ).join("-");
+  };
+
+  const addLicenseKeys = (productId: string, count: number) => {
+    const existing = licenseKeys[productId] || [];
+    const newKeys = Array.from({ length: count }, () => generateLicenseKey());
+    const updated = { ...licenseKeys, [productId]: [...existing, ...newKeys] };
+    setLicenseKeys(updated);
+    localStorage.setItem("license_keys_store", JSON.stringify(updated));
+    toast.success(`Generated ${count} license keys`);
+  };
+
+  const revokeLicenseKey = (productId: string, key: string) => {
+    const existing = licenseKeys[productId] || [];
+    const updated = { ...licenseKeys, [productId]: existing.filter(k => k !== key) };
+    setLicenseKeys(updated);
+    localStorage.setItem("license_keys_store", JSON.stringify(updated));
+    toast.success("License key revoked");
+  };
+
   const paged = downloads.slice((page - 1) * pageSize, page * pageSize);
 
   return (
@@ -127,7 +160,8 @@ export default function DigitalDownloads() {
                   <TableHead>File</TableHead>
                   <TableHead>Limit</TableHead>
                   <TableHead>Expiry</TableHead>
-                  <TableHead className="w-12"></TableHead>
+                  <TableHead>License Keys</TableHead>
+                  <TableHead className="w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -143,14 +177,24 @@ export default function DigitalDownloads() {
                     <TableCell><Badge variant="outline" className="text-xs">{d.download_limit || "∞"}</Badge></TableCell>
                     <TableCell className="text-sm text-muted-foreground">{d.expiry_days}d</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(d.id)}>
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Badge variant="secondary" className="text-xs">{(licenseKeys[d.product_id] || []).length} keys</Badge>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" title="Manage License Keys" onClick={() => { setLicenseProduct(d); setShowLicenseDialog(true); }}>
+                          <Key className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(d.id)}>
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
                 {paged.length === 0 && (
-                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No download files yet</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No download files yet</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
@@ -233,6 +277,58 @@ export default function DigitalDownloads() {
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
             <Button onClick={() => addMutation.mutate()}>Add File</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* License Key Management Dialog */}
+      <Dialog open={showLicenseDialog} onOpenChange={setShowLicenseDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="text-sm flex items-center gap-2"><Key className="h-4 w-4" /> License Keys — {licenseProduct?.products?.title || licenseProduct?.file_name}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label className="text-xs">Generate Keys</Label>
+                <Input type="number" min={1} max={100} value={licenseCount} onChange={e => setLicenseCount(Number(e.target.value))} className="h-8 text-xs" />
+              </div>
+              <Button size="sm" className="h-8 text-xs" onClick={() => { if (licenseProduct) addLicenseKeys(licenseProduct.product_id, licenseCount); }}>
+                <RefreshCw className="h-3 w-3 mr-1" /> Generate
+              </Button>
+            </div>
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label className="text-xs">Add Manual Key</Label>
+                <Input value={newLicenseKey} onChange={e => setNewLicenseKey(e.target.value)} placeholder="XXXXX-XXXXX-XXXXX-XXXXX" className="h-8 text-xs font-mono" />
+              </div>
+              <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => {
+                if (newLicenseKey && licenseProduct) {
+                  const existing = licenseKeys[licenseProduct.product_id] || [];
+                  const updated = { ...licenseKeys, [licenseProduct.product_id]: [...existing, newLicenseKey] };
+                  setLicenseKeys(updated);
+                  localStorage.setItem("license_keys_store", JSON.stringify(updated));
+                  setNewLicenseKey("");
+                  toast.success("License key added");
+                }
+              }}>Add</Button>
+            </div>
+            <div className="max-h-48 overflow-y-auto border rounded-md">
+              {licenseProduct && (licenseKeys[licenseProduct.product_id] || []).length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No license keys generated yet</p>
+              ) : licenseProduct && (licenseKeys[licenseProduct.product_id] || []).map((key: string, i: number) => (
+                <div key={i} className="flex items-center justify-between px-3 py-1.5 border-b last:border-b-0 text-xs">
+                  <span className="font-mono">{key}</span>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-6 w-6" title="Copy" onClick={() => { navigator.clipboard.writeText(key); toast.success("Copied"); }}>
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" title="Revoke" onClick={() => revokeLicenseKey(licenseProduct.product_id, key)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground">Total: {licenseProduct ? (licenseKeys[licenseProduct.product_id] || []).length : 0} keys available</p>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>

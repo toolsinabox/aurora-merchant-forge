@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Repeat, Pause, Play, Trash2, CalendarDays, Package, TrendingUp, TrendingDown, DollarSign, Users, SkipForward, ArrowLeftRight, Hash } from "lucide-react";
+import { Plus, Repeat, Pause, Play, Trash2, CalendarDays, Package, TrendingUp, TrendingDown, DollarSign, Users, SkipForward, ArrowLeftRight, Hash, Mail } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -178,6 +178,25 @@ export default function Subscriptions() {
       toast.success("Quantity updated");
       setQtyDialogOpen(false);
     },
+  });
+
+  const sendRenewalReminder = useMutation({
+    mutationFn: async (sub: any) => {
+      if (!sub.customers?.email || !storeId) throw new Error("No customer email");
+      const price = Number(sub.unit_price) * Number(sub.quantity) * (1 - Number(sub.discount_percent || 0) / 100);
+      const freq = FREQUENCIES.find(f => f.value === sub.frequency)?.label || sub.frequency;
+      const { error } = await supabase.functions.invoke("send-email", {
+        body: {
+          store_id: storeId,
+          to: sub.customers.email,
+          subject: `Subscription Renewal Reminder — ${sub.products?.title || "Your Subscription"}`,
+          html: `<p>Hi ${sub.customers.name},</p><p>This is a reminder that your <strong>${freq}</strong> subscription for <strong>${sub.products?.title || "your product"}</strong> will renew on <strong>${sub.next_order_date ? new Date(sub.next_order_date).toLocaleDateString() : "soon"}</strong>.</p><p>Amount: <strong>$${price.toFixed(2)}</strong></p><p>If you'd like to make changes, please contact us before the renewal date.</p>`,
+        },
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => toast.success("Renewal reminder sent"),
+    onError: (e: any) => toast.error(e.message),
   });
 
   const activeSubs = subs.filter((s: any) => s.status === "active").length;
@@ -417,6 +436,9 @@ export default function Subscriptions() {
                               </Button>
                               <Button variant="ghost" size="icon" className="h-7 w-7" title="Change Quantity" onClick={() => { setQtyEditSub(s); setNewQty(s.quantity); setQtyDialogOpen(true); }}>
                                 <Hash className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Send Renewal Reminder" onClick={() => sendRenewalReminder.mutate(s)} disabled={sendRenewalReminder.isPending}>
+                                <Mail className="h-3.5 w-3.5" />
                               </Button>
                             </>
                           )}

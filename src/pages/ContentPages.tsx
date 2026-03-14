@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff, History, RotateCcw } from "lucide-react";
+import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff, History, RotateCcw, AlertTriangle, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface ContentVersion {
@@ -214,6 +214,42 @@ export default function ContentPages() {
                 <div>
                   <Label>Content</Label>
                   <RichTextEditor content={form.content} onChange={(html) => setForm({ ...form, content: html })} />
+                  {/* Heading Hierarchy Check */}
+                  {form.content && (() => {
+                    const headingRegex = /<h([1-6])[^>]*>/gi;
+                    const headings: number[] = [];
+                    let match;
+                    while ((match = headingRegex.exec(form.content)) !== null) {
+                      headings.push(parseInt(match[1]));
+                    }
+                    if (headings.length === 0) return null;
+                    const issues: string[] = [];
+                    const h1Count = headings.filter(h => h === 1).length;
+                    if (h1Count > 1) issues.push(`Multiple H1 tags found (${h1Count}). Use only one H1 per page.`);
+                    for (let i = 1; i < headings.length; i++) {
+                      if (headings[i] > headings[i - 1] + 1) {
+                        issues.push(`Heading level skipped: H${headings[i - 1]} → H${headings[i]}. Don't skip levels.`);
+                      }
+                    }
+                    if (headings.length > 0 && headings[0] !== 1 && headings[0] !== 2) {
+                      issues.push(`First heading is H${headings[0]}. Start with H1 or H2.`);
+                    }
+                    return (
+                      <div className={`mt-2 p-2 rounded-md text-xs ${issues.length > 0 ? "bg-yellow-50 border border-yellow-200 dark:bg-yellow-950/20 dark:border-yellow-800" : "bg-green-50 border border-green-200 dark:bg-green-950/20 dark:border-green-800"}`}>
+                        <div className="flex items-center gap-1.5 font-medium mb-1">
+                          {issues.length > 0 ? <AlertTriangle className="h-3.5 w-3.5 text-yellow-600" /> : <CheckCircle className="h-3.5 w-3.5 text-green-600" />}
+                          {issues.length > 0 ? "Heading Hierarchy Issues" : "Heading Hierarchy OK"}
+                        </div>
+                        {issues.length > 0 ? (
+                          <ul className="list-disc pl-4 space-y-0.5 text-muted-foreground">
+                            {issues.map((issue, i) => <li key={i}>{issue}</li>)}
+                          </ul>
+                        ) : (
+                          <p className="text-muted-foreground">Structure: {headings.map(h => `H${h}`).join(" → ")}</p>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="border-t pt-3 space-y-3">
                   <p className="text-sm font-medium text-muted-foreground">SEO</p>
