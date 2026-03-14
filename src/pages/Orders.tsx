@@ -185,7 +185,7 @@ export default function Orders() {
         {/* Bulk Actions Bar */}
         {selected.size > 0 && (
           <Card>
-            <CardContent className="p-3 flex items-center gap-3">
+            <CardContent className="p-2 sm:p-3 flex flex-wrap items-center gap-2 sm:gap-3">
               <CheckSquare className="h-4 w-4 text-primary" />
               <span className="text-xs font-medium">{selected.size} selected</span>
               <Select value={bulkStatus} onValueChange={setBulkStatus}>
