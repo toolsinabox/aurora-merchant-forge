@@ -93,7 +93,7 @@ export default function EmailAutomations() {
   const closeForm = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "" });
+    setForm({ name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "", step_number: "1" });
   };
 
   const editAutomation = (a: any) => {
