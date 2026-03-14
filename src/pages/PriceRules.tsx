@@ -129,6 +129,7 @@ export default function PriceRules() {
       max_uses: r.max_uses ? String(r.max_uses) : "",
       gift_product_sku: r.gift_product_sku || "",
       is_stackable: r.is_stackable !== false,
+      brand_names: r.brand_names || "",
     });
     setEditingId(r.id);
     setShowForm(true);
