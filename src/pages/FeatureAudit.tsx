@@ -8580,7 +8580,7 @@ const quotingFeatures: FeatureCategory[] = [
       { name: "Quote Email to Customer", description: "Email quote to customer for approval", status: "done", notes: "Code-complete: send-email edge function with quote details. Activates with email domain" },
       { name: "Request for Quote (RFQ) Form", description: "Customer-facing RFQ submission form", status: "done", notes: "StorefrontRequestQuote page with name, email, phone, company, message fields, stored in quote_requests table, route at /request-quote" },
       { name: "Quote Negotiation (Revision History)", description: "Track quote revisions and counter-offers", status: "not_started" },
-      { name: "Quote Line Item Discounting", description: "Per-line custom pricing on quotes", status: "partial" },
+      { name: "Quote Line Item Discounting", description: "Per-line custom pricing on quotes", status: "done", notes: "Quotes page line items with editable unit_price and quantity, custom pricing per line" },
       { name: "Quote Approval Workflow", description: "Internal approval for quotes above threshold", status: "not_started" },
       { name: "Quote Templates", description: "Pre-built quote templates for common requests", status: "done", notes: "Quotes page Templates dialog with save current items as template, load template to populate form, delete templates, localStorage persistence" },
     ],
