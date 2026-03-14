@@ -1309,6 +1309,11 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Returns Policy Tab */}
+          <TabsContent value="returns">
+            <ReturnsPolicyTab />
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>

@@ -648,6 +648,24 @@ export default function POS() {
         </TabsContent>
       </Tabs>
 
+      {/* Park Order Dialog */}
+      <Dialog open={showParkDialog} onOpenChange={setShowParkDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Park Current Order</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">{cart.length} item(s) — ${(subtotal + tax).toFixed(2)}</p>
+            <div>
+              <Label className="text-xs">Note (optional)</Label>
+              <Input placeholder="e.g. Customer went to get wallet" value={parkNote} onChange={e => setParkNote(e.target.value)} className="h-8 text-sm" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowParkDialog(false)}>Cancel</Button>
+            <Button size="sm" onClick={parkCurrentOrder} className="gap-1"><PauseCircle className="h-3 w-3" /> Park Order</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Payment Dialog */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>
         <DialogContent>
