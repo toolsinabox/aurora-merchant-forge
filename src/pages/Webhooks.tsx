@@ -204,11 +204,6 @@ export default function Webhooks() {
                           <span className="text-[10px] text-muted-foreground">0</span>
                         )}
                       </TableCell>
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
-                        )}
-                      </TableCell>
                       <TableCell className="py-2 text-muted-foreground">
                         {wh.last_triggered_at ? format(new Date(wh.last_triggered_at), "MMM d, HH:mm") : "Never"}
                       </TableCell>
