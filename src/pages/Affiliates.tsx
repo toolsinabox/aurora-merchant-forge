@@ -94,20 +94,40 @@ export default function Affiliates() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Affiliate Program</h1>
-            <p className="text-muted-foreground">Manage affiliates, referral codes, and commissions</p>
+            <h1 className="text-lg font-semibold">Affiliate Program</h1>
+            <p className="text-xs text-muted-foreground">Manage affiliates, referral codes, and commissions</p>
           </div>
-          <Button onClick={() => setShowCreate(true)} className="gap-2"><Plus className="h-4 w-4" /> Add Affiliate</Button>
+          <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> Add Affiliate</Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Total Affiliates</p><p className="text-2xl font-bold">{totalAffiliates}</p></CardContent></Card>
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Active</p><p className="text-2xl font-bold text-primary">{activeAffiliates}</p></CardContent></Card>
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Referred Revenue</p><p className="text-2xl font-bold">${totalRevenue.toFixed(2)}</p></CardContent></Card>
-          <Card><CardContent className="pt-4 pb-4 text-center"><p className="text-xs text-muted-foreground">Unpaid Commission</p><p className="text-2xl font-bold text-destructive">${unpaidCommission.toFixed(2)}</p></CardContent></Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 stagger-children">
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center"><Users className="h-4 w-4 text-primary" /></div>
+              <div><p className="text-2xs text-muted-foreground">Total</p><p className="text-lg font-bold">{totalAffiliates}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-success/10 flex items-center justify-center"><CheckCircle className="h-4 w-4 text-success" /></div>
+              <div><p className="text-2xs text-muted-foreground">Active</p><p className="text-lg font-bold">{activeAffiliates}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-info/10 flex items-center justify-center"><DollarSign className="h-4 w-4 text-info" /></div>
+              <div><p className="text-2xs text-muted-foreground">Revenue</p><p className="text-lg font-bold">${totalRevenue.toFixed(0)}</p></div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-destructive/10 flex items-center justify-center"><DollarSign className="h-4 w-4 text-destructive" /></div>
+              <div><p className="text-2xs text-muted-foreground">Unpaid</p><p className="text-lg font-bold">${unpaidCommission.toFixed(0)}</p></div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>
