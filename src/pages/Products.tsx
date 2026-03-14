@@ -74,6 +74,8 @@ export default function Products() {
   const [importing, setImporting] = useState(false);
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const filtered = products.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || (p.sku || "").toLowerCase().includes(search.toLowerCase());
