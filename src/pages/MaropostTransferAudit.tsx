@@ -174,11 +174,11 @@ export default function MaropostTransferAudit() {
       { key: "currencies", table: "currencies" },
       { key: "redirects", table: "redirects" },
       { key: "returns", table: "returns" },
-    ] as const;
+    ];
 
     const counts: Record<string, number> = {};
     await Promise.all(tables.map(async ({ key, table }) => {
-      const { count } = await supabase.from(table).select("id", { count: "exact", head: true }) as any;
+      const { count } = await supabase.from(table as any).select("id", { count: "exact", head: true }) as any;
       counts[key] = count || 0;
     }));
     setDbCounts(counts);
