@@ -51,6 +51,9 @@ export default function PickPack() {
   const [step, setStep] = useState<WorkflowStep>("pick");
   const [search, setSearch] = useState("");
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [packVerified, setPackVerified] = useState<Record<string, boolean>>({});
+  const [packingCarton, setPackingCarton] = useState("");
+  const [packWeight, setPackWeight] = useState("");
 
   // Wave picking state
   const [waves, setWaves] = useState<PickWave[]>(() => {
