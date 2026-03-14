@@ -369,6 +369,52 @@ export default function Analytics() {
       const estimatedCheckouts = Math.round(totalPurchases * 1.15);
       setFunnelData({ visitors: estimatedVisitors, carts: totalCarts, checkouts: estimatedCheckouts, purchases: totalPurchases });
 
+      // Sales by Channel
+      const channelMap: Record<string, { orders: number; revenue: number }> = {};
+      (orders_data || []).forEach((o: any) => {
+        const ch = o.order_channel || "web";
+        if (!channelMap[ch]) channelMap[ch] = { orders: 0, revenue: 0 };
+        channelMap[ch].orders++;
+        channelMap[ch].revenue += Number(o.total || 0);
+      });
+      setSalesByChannel(Object.entries(channelMap).map(([channel, d]) => ({ channel, ...d })).sort((a, b) => b.revenue - a.revenue));
+
+      // Sales by Region
+      const regionMap: Record<string, { orders: number; revenue: number }> = {};
+      (orders_data || []).forEach((o: any) => {
+        let region = "Unknown";
+        if (o.shipping_address) {
+          try {
+            const addr = typeof o.shipping_address === "string" ? JSON.parse(o.shipping_address) : o.shipping_address;
+            region = addr?.state || addr?.province || addr?.city || addr?.country || "Unknown";
+          } catch { region = String(o.shipping_address).slice(0, 30) || "Unknown"; }
+        }
+        if (!regionMap[region]) regionMap[region] = { orders: 0, revenue: 0 };
+        regionMap[region].orders++;
+        regionMap[region].revenue += Number(o.total || 0);
+      });
+      setSalesByRegion(Object.entries(regionMap).map(([region, d]) => ({ region, ...d })).sort((a, b) => b.revenue - a.revenue).slice(0, 15));
+
+      // Return Analytics
+      const { data: returnsData } = await supabase
+        .from("returns")
+        .select("reason, refund_amount, status")
+        .eq("store_id", currentStore.id);
+      const reasonMap: Record<string, { count: number; amount: number }> = {};
+      let totalRefunded = 0;
+      (returnsData || []).forEach((r: any) => {
+        const reason = r.reason || "Other";
+        if (!reasonMap[reason]) reasonMap[reason] = { count: 0, amount: 0 };
+        reasonMap[reason].count++;
+        reasonMap[reason].amount += Number(r.refund_amount || 0);
+        totalRefunded += Number(r.refund_amount || 0);
+      });
+      setReturnAnalytics({
+        byReason: Object.entries(reasonMap).map(([reason, d]) => ({ reason, ...d })).sort((a, b) => b.count - a.count),
+        totalReturns: (returnsData || []).length,
+        totalRefunded,
+      });
+
       setLoadingTopProducts(false);
     };
     fetchData();
