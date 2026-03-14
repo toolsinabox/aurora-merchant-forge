@@ -640,7 +640,7 @@ export default function StorefrontCheckout() {
                   <div className="space-y-1.5">
                     <Label>ZIP / Postcode</Label>
                     <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
-                    {form.zip && form.zip.length < 3 && <p className="text-[10px] text-amber-600">Please enter a valid postcode</p>}
+                    {form.zip && form.zip.length < 3 && <p className="text-[10px] text-destructive">Please enter a valid postcode</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label>Country</Label>
