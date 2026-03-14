@@ -113,7 +113,7 @@ export default function ReportBuilder() {
               </div>
               <div>
                 <Label className="text-xs">Date To</Label>
-                <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="h-9" />
+                <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="h-8 text-xs" />
               </div>
               <div>
                 <Label className="text-xs">Status Filter</Label>
