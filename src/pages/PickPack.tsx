@@ -12,10 +12,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers, Copy } from "lucide-react";
+import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers, Copy, MapPin, BoxIcon, Plus, Trash2 } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
-type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves";
+type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves" | "zones" | "cartons";
 
 interface PickWave {
   id: string;
@@ -23,6 +23,23 @@ interface PickWave {
   orderIds: string[];
   createdAt: string;
   status: "open" | "in_progress" | "completed";
+}
+
+interface WarehouseZone {
+  id: string;
+  name: string;
+  description: string;
+  assignedPicker: string;
+  binPrefixes: string[];
+}
+
+interface CartonType {
+  id: string;
+  name: string;
+  lengthCm: number;
+  widthCm: number;
+  heightCm: number;
+  maxWeightKg: number;
 }
 
 export default function PickPack() {
@@ -39,6 +56,38 @@ export default function PickPack() {
   });
   const [waveSelectedOrders, setWaveSelectedOrders] = useState<Record<string, boolean>>({});
   const [waveName, setWaveName] = useState("");
+
+  // Zone state
+  const [zones, setZones] = useState<WarehouseZone[]>(() => {
+    try { return JSON.parse(localStorage.getItem("warehouse_zones") || "[]"); } catch { return []; }
+  });
+  const [zoneForm, setZoneForm] = useState({ name: "", description: "", assignedPicker: "", binPrefixes: "" });
+
+  const saveZones = (updated: WarehouseZone[]) => { setZones(updated); localStorage.setItem("warehouse_zones", JSON.stringify(updated)); };
+  const addZone = () => {
+    if (!zoneForm.name.trim()) { toast.error("Zone name required"); return; }
+    const zone: WarehouseZone = { id: crypto.randomUUID(), name: zoneForm.name.trim(), description: zoneForm.description, assignedPicker: zoneForm.assignedPicker, binPrefixes: zoneForm.binPrefixes.split(",").map(s => s.trim()).filter(Boolean) };
+    saveZones([...zones, zone]);
+    setZoneForm({ name: "", description: "", assignedPicker: "", binPrefixes: "" });
+    toast.success(`Zone "${zone.name}" created`);
+  };
+  const deleteZone = (id: string) => { saveZones(zones.filter(z => z.id !== id)); toast.success("Zone deleted"); };
+
+  // Carton state
+  const [cartons, setCartons] = useState<CartonType[]>(() => {
+    try { return JSON.parse(localStorage.getItem("carton_types") || "[]"); } catch { return []; }
+  });
+  const [cartonForm, setCartonForm] = useState({ name: "", lengthCm: "", widthCm: "", heightCm: "", maxWeightKg: "" });
+
+  const saveCartons = (updated: CartonType[]) => { setCartons(updated); localStorage.setItem("carton_types", JSON.stringify(updated)); };
+  const addCarton = () => {
+    if (!cartonForm.name.trim()) { toast.error("Carton name required"); return; }
+    const c: CartonType = { id: crypto.randomUUID(), name: cartonForm.name.trim(), lengthCm: Number(cartonForm.lengthCm) || 0, widthCm: Number(cartonForm.widthCm) || 0, heightCm: Number(cartonForm.heightCm) || 0, maxWeightKg: Number(cartonForm.maxWeightKg) || 0 };
+    saveCartons([...cartons, c]);
+    setCartonForm({ name: "", lengthCm: "", widthCm: "", heightCm: "", maxWeightKg: "" });
+    toast.success(`Carton "${c.name}" added`);
+  };
+  const deleteCarton = (id: string) => { saveCartons(cartons.filter(c => c.id !== id)); toast.success("Carton deleted"); };
 
   const saveWaves = (updated: PickWave[]) => {
     setWaves(updated);
@@ -149,7 +198,7 @@ export default function PickPack() {
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 flex-wrap">
-          {(["pick", "batch", "pack", "ship", "waves"] as WorkflowStep[]).map((s, i) => (
+          {(["pick", "batch", "pack", "ship", "waves", "zones", "cartons"] as WorkflowStep[]).map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
               <Button
@@ -163,9 +212,11 @@ export default function PickPack() {
                 {s === "pack" && <CheckCircle className="h-3 w-3 mr-1" />}
                 {s === "ship" && <Truck className="h-3 w-3 mr-1" />}
                 {s === "waves" && <Layers className="h-3 w-3 mr-1" />}
-                {s === "batch" ? "Batch Pick" : s === "waves" ? "Waves" : s}
+                {s === "zones" && <MapPin className="h-3 w-3 mr-1" />}
+                {s === "cartons" && <BoxIcon className="h-3 w-3 mr-1" />}
+                {s === "batch" ? "Batch Pick" : s === "waves" ? "Waves" : s === "zones" ? "Zones" : s === "cartons" ? "Cartons" : s}
                 <Badge variant="secondary" className="ml-1.5 text-[10px]">
-                  {s === "pick" ? pendingOrders.length : s === "batch" ? batchPickItems.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : 0}
+                  {s === "pick" ? pendingOrders.length : s === "batch" ? batchPickItems.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : s === "zones" ? zones.length : s === "cartons" ? cartons.length : 0}
                 </Badge>
               </Button>
             </div>
@@ -424,6 +475,113 @@ export default function PickPack() {
                             {w.status === "open" && <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => updateWaveStatus(w.id, "in_progress")}>Start</Button>}
                             {w.status === "in_progress" && <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => updateWaveStatus(w.id, "completed")}>Complete</Button>}
                             <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteWave(w.id)}>Delete</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Zones Step */}
+        {step === "zones" && (
+          <div className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><MapPin className="h-4 w-4" /> Define Warehouse Zones</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <Input placeholder="Zone name *" value={zoneForm.name} onChange={e => setZoneForm({ ...zoneForm, name: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Description" value={zoneForm.description} onChange={e => setZoneForm({ ...zoneForm, description: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Assigned picker" value={zoneForm.assignedPicker} onChange={e => setZoneForm({ ...zoneForm, assignedPicker: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Bin prefixes (A,B,C)" value={zoneForm.binPrefixes} onChange={e => setZoneForm({ ...zoneForm, binPrefixes: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <Button size="sm" className="text-xs" onClick={addZone}><Plus className="h-3 w-3 mr-1" /> Add Zone</Button>
+              </CardContent>
+            </Card>
+            {zones.length > 0 && (
+              <Card>
+                <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Zones ({zones.length})</CardTitle></CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Zone</TableHead>
+                        <TableHead className="text-xs h-8">Description</TableHead>
+                        <TableHead className="text-xs h-8">Picker</TableHead>
+                        <TableHead className="text-xs h-8">Bin Prefixes</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {zones.map(z => (
+                        <TableRow key={z.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{z.name}</TableCell>
+                          <TableCell className="py-1.5 text-muted-foreground">{z.description || "—"}</TableCell>
+                          <TableCell className="py-1.5">{z.assignedPicker || "Unassigned"}</TableCell>
+                          <TableCell className="py-1.5">
+                            <div className="flex flex-wrap gap-1">
+                              {z.binPrefixes.length > 0 ? z.binPrefixes.map(p => <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>) : <span className="text-muted-foreground">—</span>}
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-1.5 text-right">
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteZone(z.id)}><Trash2 className="h-3 w-3" /></Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Cartons Step */}
+        {step === "cartons" && (
+          <div className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><BoxIcon className="h-4 w-4" /> Manage Carton Types</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                  <Input placeholder="Carton name *" value={cartonForm.name} onChange={e => setCartonForm({ ...cartonForm, name: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Length (cm)" type="number" value={cartonForm.lengthCm} onChange={e => setCartonForm({ ...cartonForm, lengthCm: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Width (cm)" type="number" value={cartonForm.widthCm} onChange={e => setCartonForm({ ...cartonForm, widthCm: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Height (cm)" type="number" value={cartonForm.heightCm} onChange={e => setCartonForm({ ...cartonForm, heightCm: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Max weight (kg)" type="number" value={cartonForm.maxWeightKg} onChange={e => setCartonForm({ ...cartonForm, maxWeightKg: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <Button size="sm" className="text-xs" onClick={addCarton}><Plus className="h-3 w-3 mr-1" /> Add Carton</Button>
+              </CardContent>
+            </Card>
+            {cartons.length > 0 && (
+              <Card>
+                <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Carton Types ({cartons.length})</CardTitle></CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Name</TableHead>
+                        <TableHead className="text-xs h-8">L × W × H (cm)</TableHead>
+                        <TableHead className="text-xs h-8">Volume (cm³)</TableHead>
+                        <TableHead className="text-xs h-8">Max Weight</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {cartons.map(c => (
+                        <TableRow key={c.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{c.name}</TableCell>
+                          <TableCell className="py-1.5">{c.lengthCm} × {c.widthCm} × {c.heightCm}</TableCell>
+                          <TableCell className="py-1.5">{(c.lengthCm * c.widthCm * c.heightCm).toLocaleString()}</TableCell>
+                          <TableCell className="py-1.5">{c.maxWeightKg} kg</TableCell>
+                          <TableCell className="py-1.5 text-right">
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteCarton(c.id)}><Trash2 className="h-3 w-3" /></Button>
                           </TableCell>
                         </TableRow>
                       ))}
