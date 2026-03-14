@@ -169,7 +169,7 @@ export default function Returns() {
                 <CardContent className="pt-4 pb-3 text-center">
                   <DollarSign className="h-5 w-5 mx-auto mb-1 text-destructive" />
                   <p className="text-xs text-muted-foreground">Total Refunds</p>
-                  <p className="text-xl font-bold">${rmaStats.totalRefunds.toFixed(2)}</p>
+                  <p className="text-lg font-bold">${rmaStats.totalRefunds.toFixed(2)}</p>
                 </CardContent>
               </Card>
               <Card>
