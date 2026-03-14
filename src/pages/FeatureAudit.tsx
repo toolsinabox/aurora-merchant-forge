@@ -7573,7 +7573,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
     category: "Warehouse — Automation & Rules",
     icon: <Workflow className="h-5 w-5" />,
     features: [
-      { name: "Auto-Assign Warehouse", description: "Route orders to nearest/best warehouse based on rules", status: "not_started" },
+      { name: "Auto-Assign Warehouse", description: "Route orders to nearest/best warehouse based on rules", status: "done", notes: "Settings Fulfillment tab Auto-Assign Warehouse card with country/region-based routing rules, warehouse selection from inventory_locations, priority ordering, CRUD with localStorage persistence" },
       { name: "Fulfillment Priority Rules", description: "Prioritize orders by shipping speed, VIP status, or age", status: "done", notes: "Settings Fulfillment tab with criteria-based rules (express shipping, VIP, order age, high value, backorder) and actions (priority levels, warehouse assignment, hold, split)" },
       { name: "Split Shipment Rules", description: "Auto-split orders when items are in different warehouses", status: "not_started" },
       { name: "Backorder Auto-Creation", description: "Auto-create backorder when stock insufficient at pick time", status: "done", notes: "Backorders table" },
