@@ -177,15 +177,18 @@ export default function EmailTemplates() {
                   </TableHeader>
                   <TableBody>
                     {emailQueue.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No emails sent yet</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-8">
+                        <Send className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                        No emails sent yet
+                      </TableCell></TableRow>
                     ) : emailQueue.map((e: any) => (
-                      <TableRow key={e.id}>
-                        <TableCell>{statusIcon(e.status)}</TableCell>
-                        <TableCell className="text-sm">{e.to_email}</TableCell>
-                        <TableCell className="text-sm truncate max-w-[200px]">{e.subject}</TableCell>
-                        <TableCell className="font-mono text-xs">{e.template_key || "—"}</TableCell>
-                        <TableCell><Badge variant={e.status === "sent" ? "default" : e.status === "failed" ? "destructive" : "outline"} className="text-xs">{e.status}</Badge></TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{e.sent_at ? new Date(e.sent_at).toLocaleString() : "—"}</TableCell>
+                      <TableRow key={e.id} className="text-xs">
+                        <TableCell className="py-2">{statusIcon(e.status)}</TableCell>
+                        <TableCell className="py-2">{e.to_email}</TableCell>
+                        <TableCell className="py-2 text-muted-foreground truncate max-w-[200px]">{e.subject}</TableCell>
+                        <TableCell className="py-2 font-mono">{e.template_key || "—"}</TableCell>
+                        <TableCell className="py-2"><Badge variant={e.status === "sent" ? "default" : e.status === "failed" ? "destructive" : "outline"} className="text-[10px]">{e.status}</Badge></TableCell>
+                        <TableCell className="py-2 text-muted-foreground">{e.sent_at ? new Date(e.sent_at).toLocaleString() : "—"}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
