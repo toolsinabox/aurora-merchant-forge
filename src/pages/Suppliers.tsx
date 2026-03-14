@@ -296,17 +296,17 @@ export default function Suppliers() {
                 ) : filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">No suppliers found</TableCell></TableRow>
                 ) : filtered.map((s: any) => (
-                  <TableRow key={s.id}>
-                    <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{s.contact_name || "—"}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{s.email || "—"}</TableCell>
-                    <TableCell className="text-sm">{s.lead_time_days ? `${s.lead_time_days} days` : "—"}</TableCell>
-                    <TableCell>{s.is_dropship ? <Badge variant="secondary"><Truck className="h-3 w-3 mr-1" />Dropship</Badge> : <Badge variant="outline">Standard</Badge>}</TableCell>
-                    <TableCell><Badge variant={s.is_active ? "default" : "outline"}>{s.is_active ? "Active" : "Inactive"}</Badge></TableCell>
-                    <TableCell>
+                  <TableRow key={s.id} className="text-xs">
+                    <TableCell className="py-2 font-medium">{s.name}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{s.contact_name || "—"}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{s.email || "—"}</TableCell>
+                    <TableCell className="py-2">{s.lead_time_days ? `${s.lead_time_days} days` : "—"}</TableCell>
+                    <TableCell className="py-2">{s.is_dropship ? <Badge variant="secondary" className="text-[10px]"><Truck className="h-2.5 w-2.5 mr-1" />Dropship</Badge> : <Badge variant="outline" className="text-[10px]">Standard</Badge>}</TableCell>
+                    <TableCell className="py-2"><Badge variant={s.is_active ? "default" : "outline"} className="text-[10px]">{s.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                    <TableCell className="py-2">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(s)}><Pencil className="h-3.5 w-3.5" /></Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(s.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(s)}><Pencil className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteMutation.mutate(s.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
