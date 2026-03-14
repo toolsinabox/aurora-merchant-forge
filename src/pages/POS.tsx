@@ -608,6 +608,9 @@ export default function POS() {
                 <Button variant="outline" size="sm" className="h-10 gap-1 text-xs" onClick={() => setShowCustomSale(true)}>
                   <Plus className="h-4 w-4" /> Custom
                 </Button>
+                <Button variant="outline" size="sm" className="h-10 gap-1 text-xs" onClick={() => setShowSellGiftCard(true)}>
+                  <Gift className="h-4 w-4" /> Sell Gift Card
+                </Button>
               </div>
               <div className="flex-1 overflow-y-auto">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
