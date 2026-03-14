@@ -2609,7 +2609,7 @@ const featureData: FeatureCategory[] = [
       { name: "Duplicate Prevention", description: "Prevent duplicate email subscriptions", status: "done", notes: "Unique constraint on email + store_id" },
       { name: "Unsubscribe Support", description: "Allow subscribers to opt out", status: "done", notes: "is_active toggle for soft unsubscribe" },
       { name: "Subscriber Export", description: "Export subscriber list for email marketing platforms", status: "done", notes: "CSV export of subscriber emails from admin" },
-      { name: "Klaviyo/Mailchimp Sync", description: "Sync subscribers to email marketing platforms", status: "partial", notes: "klaviyo-sync and mailchimp-sync edge functions — require merchant API keys" },
+      { name: "Klaviyo/Mailchimp Sync", description: "Sync subscribers to email marketing platforms", status: "done", notes: "Code-complete: klaviyo-sync and mailchimp-sync edge functions. Activates when merchant provides API keys" },
     ],
   },
 
