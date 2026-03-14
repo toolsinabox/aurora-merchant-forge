@@ -7542,7 +7542,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
     category: "Warehouse Management — Advanced",
     icon: <Warehouse className="h-5 w-5" />,
     features: [
-      { name: "Wave Picking", description: "Group multiple orders into pick waves for efficient warehouse walks", status: "not_started" },
+      { name: "Wave Picking", description: "Group multiple orders into pick waves for efficient warehouse walks", status: "done", notes: "PickPack Waves tab with wave creation, order selection, status management, localStorage persistence" },
       { name: "Zone-Based Picking", description: "Divide warehouse into zones; assign pickers per zone", status: "not_started" },
       { name: "Batch Picking", description: "Pick identical SKUs across multiple orders simultaneously", status: "not_started" },
       { name: "Pick Path Optimization", description: "Suggest optimal walking route through warehouse aisles", status: "not_started" },
