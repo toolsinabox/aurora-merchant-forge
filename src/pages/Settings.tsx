@@ -837,6 +837,20 @@ function SecuritySettingsTab() {
   const [maxSessions, setMaxSessions] = useState("5");
   const [loginIpRestriction, setLoginIpRestriction] = useState("");
   const [enforcePasswordChange, setEnforcePasswordChange] = useState(false);
+  const [cspEnabled, setCspEnabled] = useState(false);
+  const [cspDirectives, setCspDirectives] = useState({
+    defaultSrc: "'self'",
+    scriptSrc: "'self' 'unsafe-inline' 'unsafe-eval'",
+    styleSrc: "'self' 'unsafe-inline' https://fonts.googleapis.com",
+    imgSrc: "'self' data: https: blob:",
+    fontSrc: "'self' https://fonts.gstatic.com",
+    connectSrc: "'self' https://*.supabase.co wss://*.supabase.co",
+    frameSrc: "'self' https://www.youtube.com https://player.vimeo.com",
+    objectSrc: "'none'",
+    baseUri: "'self'",
+    formAction: "'self'",
+  });
+  const [cspReportOnly, setCspReportOnly] = useState(true);
 
   useEffect(() => {
     if (!currentStore) return;
@@ -847,6 +861,9 @@ function SecuritySettingsTab() {
       if (saved.maxSessions) setMaxSessions(saved.maxSessions);
       if (saved.loginIpRestriction) setLoginIpRestriction(saved.loginIpRestriction);
       if (saved.enforcePasswordChange) setEnforcePasswordChange(saved.enforcePasswordChange);
+      if (saved.cspEnabled !== undefined) setCspEnabled(saved.cspEnabled);
+      if (saved.cspDirectives) setCspDirectives(saved.cspDirectives);
+      if (saved.cspReportOnly !== undefined) setCspReportOnly(saved.cspReportOnly);
     } catch {}
   }, [currentStore]);
 
@@ -854,6 +871,7 @@ function SecuritySettingsTab() {
     if (!currentStore) return;
     localStorage.setItem(`security_settings_${currentStore.id}`, JSON.stringify({
       sessionTimeout, passwordExpiry, maxSessions, loginIpRestriction, enforcePasswordChange,
+      cspEnabled, cspDirectives, cspReportOnly,
     }));
     toast.success("Security settings saved");
   };
@@ -943,6 +961,61 @@ function SecuritySettingsTab() {
             />
             <p className="text-[10px] text-muted-foreground">Warning: Incorrect IPs may lock you out. Use CIDR ranges for flexibility.</p>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm flex items-center gap-2"><Shield className="h-4 w-4" /> Content Security Policy (CSP)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">Configure CSP headers to protect your storefront against XSS attacks and content injection.</p>
+          <div className="flex items-center gap-2">
+            <Switch checked={cspEnabled} onCheckedChange={setCspEnabled} />
+            <Label className="text-xs">Enable Content Security Policy</Label>
+          </div>
+          {cspEnabled && (
+            <>
+              <div className="flex items-center gap-2">
+                <Switch checked={cspReportOnly} onCheckedChange={setCspReportOnly} />
+                <Label className="text-xs">Report-Only Mode <span className="text-muted-foreground">(recommended for testing — logs violations without blocking)</span></Label>
+              </div>
+              <Separator />
+              <div className="space-y-2">
+                {Object.entries(cspDirectives).map(([key, value]) => {
+                  const labelMap: Record<string, string> = {
+                    defaultSrc: "default-src", scriptSrc: "script-src", styleSrc: "style-src",
+                    imgSrc: "img-src", fontSrc: "font-src", connectSrc: "connect-src",
+                    frameSrc: "frame-src", objectSrc: "object-src", baseUri: "base-uri", formAction: "form-action",
+                  };
+                  return (
+                    <div key={key} className="space-y-0.5">
+                      <Label className="text-xs font-mono">{labelMap[key] || key}</Label>
+                      <Input
+                        className="h-7 text-xs font-mono"
+                        value={value}
+                        onChange={e => setCspDirectives(prev => ({ ...prev, [key]: e.target.value }))}
+                        placeholder={`e.g. 'self' https://example.com`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="bg-muted rounded-md p-3 space-y-1">
+                <p className="text-xs font-medium">Generated CSP Header</p>
+                <p className="text-[10px] font-mono text-muted-foreground break-all">
+                  {cspReportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy"}: {Object.entries(cspDirectives).map(([key, value]) => {
+                    const labelMap: Record<string, string> = {
+                      defaultSrc: "default-src", scriptSrc: "script-src", styleSrc: "style-src",
+                      imgSrc: "img-src", fontSrc: "font-src", connectSrc: "connect-src",
+                      frameSrc: "frame-src", objectSrc: "object-src", baseUri: "base-uri", formAction: "form-action",
+                    };
+                    return value ? `${labelMap[key] || key} ${value}` : null;
+                  }).filter(Boolean).join("; ")}
+                </p>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 

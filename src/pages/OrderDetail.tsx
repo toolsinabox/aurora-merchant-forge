@@ -1043,6 +1043,9 @@ export default function OrderDetail() {
               </CardContent>
             </Card>
 
+            {/* Order Custom Fields */}
+            <OrderCustomFieldsCard orderId={order.id} storeId={(order as any).store_id} />
+
             {/* Tags */}
             {/* Credit Notes */}
             <Card>
