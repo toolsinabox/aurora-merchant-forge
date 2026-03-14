@@ -111,10 +111,10 @@ export default function Customers() {
 
   return (
     <AdminLayout>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-semibold">Customers</h1>
+            <h1 className="text-lg font-bold tracking-tight">Customers</h1>
             <p className="text-xs text-muted-foreground">{customers.length} total customers</p>
           </div>
           <div className="flex gap-2">
@@ -129,17 +129,23 @@ export default function Customers() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Card><CardContent className="p-4 flex items-center gap-3">
-            <Users className="h-8 w-8 text-primary" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 stagger-children">
+          <Card className="card-hover"><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Users className="h-5 w-5 text-primary" />
+            </div>
             <div><p className="text-2xs text-muted-foreground">Total Customers</p><p className="text-lg font-bold">{customers.length}</p></div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 flex items-center gap-3">
-            <DollarSign className="h-8 w-8 text-success" />
+          <Card className="card-hover"><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-success" />
+            </div>
             <div><p className="text-2xs text-muted-foreground">Total Revenue</p><p className="text-lg font-bold">${totalRevenue.toLocaleString()}</p></div>
           </CardContent></Card>
-          <Card><CardContent className="p-4 flex items-center gap-3">
-            <ShoppingCart className="h-8 w-8 text-info" />
+          <Card className="card-hover"><CardContent className="p-4 flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center">
+              <ShoppingCart className="h-5 w-5 text-info" />
+            </div>
             <div><p className="text-2xs text-muted-foreground">Avg. Orders</p><p className="text-lg font-bold">{avgOrders}</p></div>
           </CardContent></Card>
         </div>

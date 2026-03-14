@@ -33,12 +33,19 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     <Badge
       variant="outline"
       className={cn(
-        "text-2xs font-medium capitalize",
+        "text-2xs font-medium capitalize px-2 py-0.5 rounded-md",
         statusStyles[status] || "bg-muted text-muted-foreground",
         className
       )}
     >
-      {status.replace("-", " ")}
+      <span className={cn(
+        "inline-block h-1.5 w-1.5 rounded-full mr-1",
+        status.match(/active|delivered|paid|in-stock|fulfilled/) ? "bg-success" :
+        status.match(/pending|draft|warning|low-stock|unfulfilled|vip/) ? "bg-warning" :
+        status.match(/cancelled|refunded|out-of-stock/) ? "bg-destructive" :
+        "bg-current"
+      )} />
+      {status.replace(/-/g, " ")}
     </Badge>
   );
 }
