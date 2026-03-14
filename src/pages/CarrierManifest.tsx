@@ -6,11 +6,24 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Truck, Printer, Package, Calendar } from "lucide-react";
+import { Truck, Printer, Package, Calendar, Clock } from "lucide-react";
 import { toast } from "sonner";
+
+interface PickupSchedule {
+  id: string;
+  carrier: string;
+  date: string;
+  time: string;
+  notes: string;
+  status: "scheduled" | "completed" | "cancelled";
+}
 
 export default function CarrierManifest() {
   const { currentStore } = useAuth();
@@ -84,6 +97,39 @@ export default function CarrierManifest() {
     toast.success("Manifest opened for printing");
   };
 
+  // Pickup scheduling
+  const [pickups, setPickups] = useState<PickupSchedule[]>(() => {
+    try { return JSON.parse(localStorage.getItem("carrier_pickups") || "[]"); } catch { return []; }
+  });
+  const [showPickupDialog, setShowPickupDialog] = useState(false);
+  const [pickupForm, setPickupForm] = useState({ carrier: "", date: selectedDate, time: "17:00", notes: "" });
+
+  const savePickups = (updated: PickupSchedule[]) => {
+    setPickups(updated);
+    localStorage.setItem("carrier_pickups", JSON.stringify(updated));
+  };
+
+  const schedulePickup = () => {
+    if (!pickupForm.carrier || !pickupForm.date || !pickupForm.time) { toast.error("Carrier, date, and time required"); return; }
+    const pickup: PickupSchedule = {
+      id: crypto.randomUUID(),
+      carrier: pickupForm.carrier,
+      date: pickupForm.date,
+      time: pickupForm.time,
+      notes: pickupForm.notes,
+      status: "scheduled",
+    };
+    savePickups([...pickups, pickup]);
+    setShowPickupDialog(false);
+    setPickupForm({ carrier: "", date: selectedDate, time: "17:00", notes: "" });
+    toast.success(`Pickup scheduled for ${pickupForm.carrier}`);
+  };
+
+  const cancelPickup = (id: string) => savePickups(pickups.map(p => p.id === id ? { ...p, status: "cancelled" as const } : p));
+  const completePickup = (id: string) => savePickups(pickups.map(p => p.id === id ? { ...p, status: "completed" as const } : p));
+
+  const todayPickups = pickups.filter(p => p.date === selectedDate && p.status !== "cancelled");
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -92,9 +138,14 @@ export default function CarrierManifest() {
             <h1 className="text-lg font-semibold">Carrier Manifest</h1>
             <p className="text-xs text-muted-foreground">End-of-day manifest for carrier pickups</p>
           </div>
-          <Button size="sm" className="text-xs h-8 gap-1" onClick={printManifest} disabled={filtered.length === 0}>
-            <Printer className="h-3.5 w-3.5" /> Print Manifest
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" className="text-xs h-8 gap-1" onClick={() => { setPickupForm({ carrier: "", date: selectedDate, time: "17:00", notes: "" }); setShowPickupDialog(true); }}>
+              <Clock className="h-3.5 w-3.5" /> Schedule Pickup
+            </Button>
+            <Button size="sm" className="text-xs h-8 gap-1" onClick={printManifest} disabled={filtered.length === 0}>
+              <Printer className="h-3.5 w-3.5" /> Print Manifest
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-2 items-center">
@@ -177,6 +228,96 @@ export default function CarrierManifest() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Scheduled Pickups */}
+        {todayPickups.length > 0 && (
+          <Card>
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm flex items-center gap-1.5"><Clock className="h-4 w-4" /> Scheduled Pickups — {selectedDate}</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Carrier</TableHead>
+                    <TableHead className="text-xs h-8">Time</TableHead>
+                    <TableHead className="text-xs h-8">Notes</TableHead>
+                    <TableHead className="text-xs h-8">Status</TableHead>
+                    <TableHead className="text-xs h-8">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {todayPickups.map(p => (
+                    <TableRow key={p.id} className="text-xs">
+                      <TableCell className="py-1.5">{p.carrier}</TableCell>
+                      <TableCell className="py-1.5">{p.time}</TableCell>
+                      <TableCell className="py-1.5 text-muted-foreground">{p.notes || "—"}</TableCell>
+                      <TableCell className="py-1.5">
+                        <Badge variant={p.status === "completed" ? "default" : "secondary"} className="text-[10px] capitalize">{p.status}</Badge>
+                      </TableCell>
+                      <TableCell className="py-1.5 space-x-1">
+                        {p.status === "scheduled" && (
+                          <>
+                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" onClick={() => completePickup(p.id)}>Complete</Button>
+                            <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => cancelPickup(p.id)}>Cancel</Button>
+                          </>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Schedule Pickup Dialog */}
+        <Dialog open={showPickupDialog} onOpenChange={setShowPickupDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Schedule Carrier Pickup</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label className="text-sm">Carrier</Label>
+                <Select value={pickupForm.carrier} onValueChange={v => setPickupForm({ ...pickupForm, carrier: v })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select carrier" /></SelectTrigger>
+                  <SelectContent>
+                    {carriers.length > 0 ? carriers.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>) : (
+                      <>
+                        <SelectItem value="Australia Post">Australia Post</SelectItem>
+                        <SelectItem value="StarTrack">StarTrack</SelectItem>
+                        <SelectItem value="DHL">DHL</SelectItem>
+                        <SelectItem value="FedEx">FedEx</SelectItem>
+                        <SelectItem value="UPS">UPS</SelectItem>
+                        <SelectItem value="Aramex">Aramex</SelectItem>
+                        <SelectItem value="Sendle">Sendle</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label className="text-sm">Pickup Date</Label>
+                  <Input type="date" className="h-8 text-xs" value={pickupForm.date} onChange={e => setPickupForm({ ...pickupForm, date: e.target.value })} />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm">Pickup Time</Label>
+                  <Input type="time" className="h-8 text-xs" value={pickupForm.time} onChange={e => setPickupForm({ ...pickupForm, time: e.target.value })} />
+                </div>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-sm">Notes</Label>
+                <Textarea className="min-h-[60px] text-xs" value={pickupForm.notes} onChange={e => setPickupForm({ ...pickupForm, notes: e.target.value })} placeholder="e.g. Rear dock, bay 3" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowPickupDialog(false)}>Cancel</Button>
+              <Button size="sm" onClick={schedulePickup}>Schedule</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

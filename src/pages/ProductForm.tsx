@@ -84,6 +84,7 @@ export default function ProductForm() {
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
     scheduled_publish_at: "", scheduled_unpublish_at: "",
     video_url: "",
+    hs_tariff_code: "", country_of_origin: "",
   });
 
   const [shipping, setShipping] = useState({
@@ -141,6 +142,8 @@ export default function ProductForm() {
         scheduled_publish_at: (existing as any).scheduled_publish_at ? new Date((existing as any).scheduled_publish_at).toISOString().slice(0, 16) : "",
         scheduled_unpublish_at: (existing as any).scheduled_unpublish_at ? new Date((existing as any).scheduled_unpublish_at).toISOString().slice(0, 16) : "",
         video_url: (existing as any).video_url || "",
+        hs_tariff_code: (existing as any).hs_tariff_code || "",
+        country_of_origin: (existing as any).country_of_origin || "",
       });
       setProductImages(existing.images || []);
     }
@@ -929,6 +932,16 @@ export default function ProductForm() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">🌡 Temperature Sensitive</Label>
                       <Switch checked={form.temperature_sensitive} onCheckedChange={(v) => update("temperature_sensitive", v)} />
+                    </div>
+                    <Separator className="my-2" />
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Customs / International</p>
+                    <div className="space-y-1">
+                      <Label className="text-xs">HS / Tariff Code</Label>
+                      <Input className="h-8 text-xs" value={form.hs_tariff_code} onChange={(e) => update("hs_tariff_code", e.target.value)} placeholder="e.g. 6109.10.00" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Country of Origin</Label>
+                      <Input className="h-8 text-xs" value={form.country_of_origin} onChange={(e) => update("country_of_origin", e.target.value)} placeholder="e.g. Australia" />
                     </div>
                   </CardContent>
                 </Card>

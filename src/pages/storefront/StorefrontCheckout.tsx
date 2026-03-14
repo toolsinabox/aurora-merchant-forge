@@ -104,6 +104,8 @@ export default function StorefrontCheckout() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [orderGiftMessage, setOrderGiftMessage] = useState("");
   const [checkoutStep, setCheckoutStep] = useState(1);
+  const [signatureRequired, setSignatureRequired] = useState(false);
+  const [authorityToLeave, setAuthorityToLeave] = useState(false);
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
@@ -545,6 +547,8 @@ export default function StorefrontCheckout() {
             paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
+            signatureRequired ? "[Signature Required]" : null,
+            authorityToLeave ? "[Authority to Leave]" : null,
             form.company ? `[Company: ${form.company}]` : null,
             form.po_number ? `[PO#: ${form.po_number}]` : null,
             form.custom_field_1 ? `[Custom: ${form.custom_field_1}]` : null,
@@ -1017,6 +1021,21 @@ export default function StorefrontCheckout() {
                   <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Delivery Instructions</h2>
                   <Textarea value={form.delivery_instructions} onChange={(e) => update("delivery_instructions", e.target.value)} placeholder="Leave at front door, ring doorbell, etc." className="min-h-[60px]" maxLength={300} />
                   <p className="text-xs text-muted-foreground">{form.delivery_instructions.length}/300 characters</p>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Signature Required</Label>
+                      <p className="text-xs text-muted-foreground">Require signature on delivery</p>
+                    </div>
+                    <Checkbox checked={signatureRequired} onCheckedChange={(v) => { setSignatureRequired(!!v); if (v) setAuthorityToLeave(false); }} />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label className="text-sm font-medium">Authority to Leave (ATL)</Label>
+                      <p className="text-xs text-muted-foreground">Leave parcel without signature if no one is home</p>
+                    </div>
+                    <Checkbox checked={authorityToLeave} onCheckedChange={(v) => { setAuthorityToLeave(!!v); if (v) setSignatureRequired(false); }} />
+                  </div>
                 </div>
               )}
 
