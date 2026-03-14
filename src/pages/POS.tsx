@@ -540,9 +540,12 @@ export default function POS() {
                 {appliedVoucher && <div className="flex justify-between text-xs text-primary"><span>Voucher</span><span>-${voucherDiscount.toFixed(2)}</span></div>}
                 <Separator />
                 <div className="flex justify-between font-bold"><span>Total</span><span className="text-lg">${total.toFixed(2)}</span></div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Button className="h-12 text-sm gap-2" disabled={cart.length === 0} onClick={() => setShowPayment(true)}>
-                    <CreditCard className="h-4 w-4" /> Pay ${total.toFixed(2)}
+                    <CreditCard className="h-4 w-4" /> Pay
+                  </Button>
+                  <Button variant="outline" className="h-12 text-sm gap-2" disabled={cart.length === 0} onClick={() => setShowParkDialog(true)}>
+                    <PauseCircle className="h-4 w-4" /> Park
                   </Button>
                   <Button variant="outline" className="h-12 text-sm gap-2" disabled={cart.length === 0 || !selectedCustomer} onClick={() => setShowLayby(true)}>
                     <Clock className="h-4 w-4" /> Layby
