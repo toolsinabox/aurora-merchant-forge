@@ -7743,7 +7743,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Sell-Through Rate Report", description: "Percentage of inventory sold in a period", status: "done", notes: "InventoryReports sell-through tab with units sold ÷ (sold + on hand)" },
       { name: "ABC Analysis (Inventory)", description: "Classify products by revenue contribution (A/B/C tiers)", status: "done", notes: "InventoryReports ABC tab" },
       { name: "Dead Stock Report", description: "Products with zero sales in configurable period", status: "done", notes: "InventoryReports dead stock tab" },
-      { name: "Customer Lifetime Value (CLV)", description: "Calculate and display customer LTV", status: "partial", notes: "total_spent tracked" },
+      { name: "Customer Lifetime Value (CLV)", description: "Calculate and display customer LTV", status: "done", notes: "Predictive CLV on CustomerDetail: avg order value × purchase frequency/yr × estimated lifespan, historic CLV, avg days between orders, frequency metric" },
       { name: "Customer Cohort Analysis", description: "Retention and spend analysis by signup cohort", status: "done", notes: "Analytics page cohort table showing signup month vs order month with heat-mapped retention percentages" },
       { name: "Customer RFM Segmentation", description: "Recency/Frequency/Monetary segmentation scoring", status: "partial", notes: "Segmentation rules exist" },
       { name: "Sales by Channel Report", description: "Revenue breakdown by sales channel (web, POS, marketplace)", status: "done", notes: "Analytics page Sales by Channel table with orders, revenue, and AOV per channel" },
