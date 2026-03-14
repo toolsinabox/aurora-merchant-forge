@@ -29,6 +29,7 @@ const APPLIES_TO = [
   { value: "all", label: "All Products" },
   { value: "specific_products", label: "Specific Products" },
   { value: "specific_categories", label: "Specific Categories" },
+  { value: "specific_brands", label: "Specific Brands" },
 ];
 
 export default function PriceRules() {
