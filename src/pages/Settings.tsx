@@ -464,6 +464,102 @@ function CurrencyFormatTab() {
     </Card>
   );
 }
+function ReturnsPolicyTab() {
+  const { currentStore } = useAuth();
+  const [returnWindowDays, setReturnWindowDays] = useState("30");
+  const [restockingFeePercent, setRestockingFeePercent] = useState("0");
+  const [requireReason, setRequireReason] = useState(true);
+  const [allowExchanges, setAllowExchanges] = useState(true);
+  const [autoApprove, setAutoApprove] = useState(false);
+  const [nonReturnableCategories, setNonReturnableCategories] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    const saved = localStorage.getItem(`returns_policy_${currentStore.id}`);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setReturnWindowDays(parsed.returnWindowDays || "30");
+        setRestockingFeePercent(parsed.restockingFeePercent || "0");
+        setRequireReason(parsed.requireReason ?? true);
+        setAllowExchanges(parsed.allowExchanges ?? true);
+        setAutoApprove(parsed.autoApprove ?? false);
+        setNonReturnableCategories(parsed.nonReturnableCategories || "");
+      } catch {}
+    }
+  }, [currentStore]);
+
+  const handleSave = () => {
+    if (!currentStore) return;
+    setSaving(true);
+    const policy = { returnWindowDays, restockingFeePercent, requireReason, allowExchanges, autoApprove, nonReturnableCategories };
+    localStorage.setItem(`returns_policy_${currentStore.id}`, JSON.stringify(policy));
+    setTimeout(() => { setSaving(false); toast.success("Returns policy saved"); }, 300);
+  };
+
+  return (
+    <div className="space-y-3">
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm">Returns & Refunds Policy</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs">Return Window (days)</Label>
+              <Input type="number" min="0" max="365" value={returnWindowDays} onChange={e => setReturnWindowDays(e.target.value)} className="h-8 text-sm" />
+              <p className="text-[10px] text-muted-foreground mt-1">How many days after purchase a customer can request a return. Set to 0 to disable returns.</p>
+            </div>
+            <div>
+              <Label className="text-xs">Restocking Fee (%)</Label>
+              <Input type="number" min="0" max="100" value={restockingFeePercent} onChange={e => setRestockingFeePercent(e.target.value)} className="h-8 text-sm" />
+              <p className="text-[10px] text-muted-foreground mt-1">Percentage deducted from refund amount as a restocking fee.</p>
+            </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-xs">Require Return Reason</Label>
+                <p className="text-[10px] text-muted-foreground">Customer must select a reason for return</p>
+              </div>
+              <Switch checked={requireReason} onCheckedChange={setRequireReason} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-xs">Allow Exchanges</Label>
+                <p className="text-[10px] text-muted-foreground">Allow customers to exchange for different size/color</p>
+              </div>
+              <Switch checked={allowExchanges} onCheckedChange={setAllowExchanges} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-xs">Auto-Approve Returns</Label>
+                <p className="text-[10px] text-muted-foreground">Automatically approve return requests (not recommended)</p>
+              </div>
+              <Switch checked={autoApprove} onCheckedChange={setAutoApprove} />
+            </div>
+          </div>
+
+          <Separator />
+
+          <div>
+            <Label className="text-xs">Non-Returnable Categories</Label>
+            <Textarea placeholder="Enter category names, one per line (e.g. Clearance, Underwear, Food)" value={nonReturnableCategories} onChange={e => setNonReturnableCategories(e.target.value)} className="text-sm min-h-[60px]" />
+            <p className="text-[10px] text-muted-foreground mt-1">Products in these categories will be marked as non-returnable.</p>
+          </div>
+
+          <Button size="sm" className="h-8 text-xs gap-1" onClick={handleSave} disabled={saving}>
+            <Save className="h-3.5 w-3.5" /> {saving ? "Saving..." : "Save Returns Policy"}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
@@ -679,6 +775,7 @@ export default function SettingsPage() {
             <TabsTrigger value="inventory" className="text-xs h-7">Inventory</TabsTrigger>
             <TabsTrigger value="payments" className="text-xs h-7">Payments</TabsTrigger>
             <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
+            <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
@@ -1307,6 +1404,11 @@ export default function SettingsPage() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Returns Policy Tab */}
+          <TabsContent value="returns">
+            <ReturnsPolicyTab />
           </TabsContent>
         </Tabs>
       </div>

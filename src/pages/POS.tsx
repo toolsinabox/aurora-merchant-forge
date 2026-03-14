@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Search, Plus, Minus, Trash2, User, CreditCard, Banknote,
-  Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle, WifiOff, Wifi,
+  Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle, WifiOff, Wifi, PauseCircle, Play,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,6 +42,48 @@ export default function POS() {
   const [processing, setProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("sale");
   const [selectedRegister, setSelectedRegister] = useState<string>("");
+
+  // Parked orders state
+  const [parkedOrders, setParkedOrders] = useState<Array<{ id: string; items: CartItem[]; customer: any; parkedAt: string; note: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem("pos_parked_orders") || "[]"); } catch { return []; }
+  });
+  const [parkNote, setParkNote] = useState("");
+  const [showParkDialog, setShowParkDialog] = useState(false);
+
+  const saveParked = (updated: typeof parkedOrders) => {
+    setParkedOrders(updated);
+    localStorage.setItem("pos_parked_orders", JSON.stringify(updated));
+  };
+
+  const parkCurrentOrder = () => {
+    if (cart.length === 0) { toast.error("Cart is empty"); return; }
+    const parked = { id: crypto.randomUUID(), items: [...cart], customer: selectedCustomer, parkedAt: new Date().toISOString(), note: parkNote };
+    saveParked([...parkedOrders, parked]);
+    setCart([]);
+    setSelectedCustomer(null);
+    setParkNote("");
+    setShowParkDialog(false);
+    toast.success("Order parked");
+  };
+
+  const resumeParkedOrder = (parkedId: string) => {
+    const parked = parkedOrders.find(p => p.id === parkedId);
+    if (!parked) return;
+    if (cart.length > 0) {
+      // Merge into existing cart or park current first
+      toast.error("Clear or park current cart first");
+      return;
+    }
+    setCart(parked.items);
+    setSelectedCustomer(parked.customer);
+    saveParked(parkedOrders.filter(p => p.id !== parkedId));
+    toast.success("Order resumed");
+  };
+
+  const deleteParkedOrder = (parkedId: string) => {
+    saveParked(parkedOrders.filter(p => p.id !== parkedId));
+    toast.success("Parked order deleted");
+  };
 
   // Gift voucher state
   const [voucherCode, setVoucherCode] = useState("");
@@ -358,6 +400,7 @@ export default function POS() {
           <div className="flex items-center gap-3">
             <TabsList>
               <TabsTrigger value="sale">New Sale</TabsTrigger>
+              <TabsTrigger value="parked">Parked ({parkedOrders.length})</TabsTrigger>
               <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
             </TabsList>
             {registers.length > 0 && (
@@ -497,9 +540,12 @@ export default function POS() {
                 {appliedVoucher && <div className="flex justify-between text-xs text-primary"><span>Voucher</span><span>-${voucherDiscount.toFixed(2)}</span></div>}
                 <Separator />
                 <div className="flex justify-between font-bold"><span>Total</span><span className="text-lg">${total.toFixed(2)}</span></div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <Button className="h-12 text-sm gap-2" disabled={cart.length === 0} onClick={() => setShowPayment(true)}>
-                    <CreditCard className="h-4 w-4" /> Pay ${total.toFixed(2)}
+                    <CreditCard className="h-4 w-4" /> Pay
+                  </Button>
+                  <Button variant="outline" className="h-12 text-sm gap-2" disabled={cart.length === 0} onClick={() => setShowParkDialog(true)}>
+                    <PauseCircle className="h-4 w-4" /> Park
                   </Button>
                   <Button variant="outline" className="h-12 text-sm gap-2" disabled={cart.length === 0 || !selectedCustomer} onClick={() => setShowLayby(true)}>
                     <Clock className="h-4 w-4" /> Layby
@@ -508,6 +554,51 @@ export default function POS() {
               </div>
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="parked">
+          <Card>
+            <CardContent className="pt-4">
+              {parkedOrders.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <PauseCircle className="h-10 w-10 mx-auto mb-2 opacity-40" />
+                  <p className="text-sm">No parked orders</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Parked At</TableHead>
+                      <TableHead className="text-xs h-8">Customer</TableHead>
+                      <TableHead className="text-xs h-8">Items</TableHead>
+                      <TableHead className="text-xs h-8">Note</TableHead>
+                      <TableHead className="text-xs h-8">Total</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parkedOrders.map(p => (
+                      <TableRow key={p.id} className="text-xs">
+                        <TableCell className="py-1.5">{new Date(p.parkedAt).toLocaleTimeString()}</TableCell>
+                        <TableCell className="py-1.5">{p.customer?.name || "Walk-in"}</TableCell>
+                        <TableCell className="py-1.5">{p.items.reduce((s, i) => s + i.quantity, 0)} items</TableCell>
+                        <TableCell className="py-1.5 max-w-[150px] truncate text-muted-foreground">{p.note || "—"}</TableCell>
+                        <TableCell className="py-1.5 font-medium">${p.items.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</TableCell>
+                        <TableCell className="py-1.5 text-right space-x-1">
+                          <Button size="sm" variant="outline" className="text-xs h-6 gap-1" onClick={() => resumeParkedOrder(p.id)}>
+                            <Play className="h-3 w-3" /> Resume
+                          </Button>
+                          <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteParkedOrder(p.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="today">
@@ -556,6 +647,24 @@ export default function POS() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Park Order Dialog */}
+      <Dialog open={showParkDialog} onOpenChange={setShowParkDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Park Current Order</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <p className="text-sm text-muted-foreground">{cart.length} item(s) — ${(subtotal + tax).toFixed(2)}</p>
+            <div>
+              <Label className="text-xs">Note (optional)</Label>
+              <Input placeholder="e.g. Customer went to get wallet" value={parkNote} onChange={e => setParkNote(e.target.value)} className="h-8 text-sm" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowParkDialog(false)}>Cancel</Button>
+            <Button size="sm" onClick={parkCurrentOrder} className="gap-1"><PauseCircle className="h-3 w-3" /> Park Order</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Payment Dialog */}
       <Dialog open={showPayment} onOpenChange={setShowPayment}>

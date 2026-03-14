@@ -12,10 +12,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine } from "lucide-react";
+import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
-type WorkflowStep = "pick" | "pack" | "ship";
+type WorkflowStep = "pick" | "pack" | "ship" | "waves";
+
+interface PickWave {
+  id: string;
+  name: string;
+  orderIds: string[];
+  createdAt: string;
+  status: "open" | "in_progress" | "completed";
+}
 
 export default function PickPack() {
   const { currentStore } = useAuth();
@@ -24,6 +32,39 @@ export default function PickPack() {
   const [step, setStep] = useState<WorkflowStep>("pick");
   const [search, setSearch] = useState("");
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  // Wave picking state
+  const [waves, setWaves] = useState<PickWave[]>(() => {
+    try { return JSON.parse(localStorage.getItem("pick_waves") || "[]"); } catch { return []; }
+  });
+  const [waveSelectedOrders, setWaveSelectedOrders] = useState<Record<string, boolean>>({});
+  const [waveName, setWaveName] = useState("");
+
+  const saveWaves = (updated: PickWave[]) => {
+    setWaves(updated);
+    localStorage.setItem("pick_waves", JSON.stringify(updated));
+  };
+
+  const createWave = () => {
+    const selectedIds = Object.entries(waveSelectedOrders).filter(([, v]) => v).map(([k]) => k);
+    if (selectedIds.length === 0) { toast.error("Select orders for the wave"); return; }
+    const name = waveName.trim() || `Wave ${waves.length + 1}`;
+    const wave: PickWave = { id: crypto.randomUUID(), name, orderIds: selectedIds, createdAt: new Date().toISOString(), status: "open" };
+    saveWaves([...waves, wave]);
+    setWaveSelectedOrders({});
+    setWaveName("");
+    toast.success(`${name} created with ${selectedIds.length} orders`);
+  };
+
+  const updateWaveStatus = (waveId: string, status: PickWave["status"]) => {
+    saveWaves(waves.map(w => w.id === waveId ? { ...w, status } : w));
+    toast.success(`Wave updated to ${status}`);
+  };
+
+  const deleteWave = (waveId: string) => {
+    saveWaves(waves.filter(w => w.id !== waveId));
+    toast.success("Wave deleted");
+  };
 
   // Get order items for unfulfilled orders
   const pendingOrders = useMemo(() =>
@@ -87,8 +128,8 @@ export default function PickPack() {
         </div>
 
         {/* Step indicator */}
-        <div className="flex items-center gap-2">
-          {(["pick", "pack", "ship"] as WorkflowStep[]).map((s, i) => (
+        <div className="flex items-center gap-2 flex-wrap">
+          {(["pick", "pack", "ship", "waves"] as WorkflowStep[]).map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
               <Button
@@ -100,9 +141,10 @@ export default function PickPack() {
                 {s === "pick" && <Package className="h-3 w-3 mr-1" />}
                 {s === "pack" && <CheckCircle className="h-3 w-3 mr-1" />}
                 {s === "ship" && <Truck className="h-3 w-3 mr-1" />}
-                {s}
+                {s === "waves" && <Layers className="h-3 w-3 mr-1" />}
+                {s === "waves" ? "Waves" : s}
                 <Badge variant="secondary" className="ml-1.5 text-[10px]">
-                  {s === "pick" ? pendingOrders.length : s === "pack" ? processingOrders.length : 0}
+                  {s === "pick" ? pendingOrders.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : 0}
                 </Badge>
               </Button>
             </div>
@@ -238,6 +280,91 @@ export default function PickPack() {
               </p>
             </CardContent>
           </Card>
+        )}
+
+        {/* Waves Step */}
+        {step === "waves" && (
+          <div className="space-y-3">
+            {/* Create wave */}
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Create Pick Wave</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex gap-2">
+                  <Input placeholder="Wave name (optional)" value={waveName} onChange={e => setWaveName(e.target.value)} className="h-8 text-sm max-w-xs" />
+                  <Button size="sm" className="text-xs" onClick={createWave} disabled={Object.values(waveSelectedOrders).filter(Boolean).length === 0}>
+                    Create Wave ({Object.values(waveSelectedOrders).filter(Boolean).length} orders)
+                  </Button>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8 w-8"></TableHead>
+                      <TableHead className="text-xs h-8">Order #</TableHead>
+                      <TableHead className="text-xs h-8">Items</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Total</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingOrders.length === 0 ? (
+                      <TableRow><TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">No unfulfilled orders</TableCell></TableRow>
+                    ) : pendingOrders.map((o: any) => (
+                      <TableRow key={o.id} className={`text-xs ${waveSelectedOrders[o.id] ? "bg-primary/5" : ""}`}>
+                        <TableCell className="py-1.5">
+                          <Checkbox checked={!!waveSelectedOrders[o.id]} onCheckedChange={() => setWaveSelectedOrders(prev => ({ ...prev, [o.id]: !prev[o.id] }))} />
+                        </TableCell>
+                        <TableCell className="py-1.5 font-mono">{o.order_number}</TableCell>
+                        <TableCell className="py-1.5">{o.items_count} items</TableCell>
+                        <TableCell className="py-1.5 text-right">${Number(o.total).toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* Existing waves */}
+            {waves.length > 0 && (
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-sm">Pick Waves ({waves.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Wave</TableHead>
+                        <TableHead className="text-xs h-8">Orders</TableHead>
+                        <TableHead className="text-xs h-8">Created</TableHead>
+                        <TableHead className="text-xs h-8">Status</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {waves.map(w => (
+                        <TableRow key={w.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{w.name}</TableCell>
+                          <TableCell className="py-1.5">{w.orderIds.length}</TableCell>
+                          <TableCell className="py-1.5">{new Date(w.createdAt).toLocaleDateString()}</TableCell>
+                          <TableCell className="py-1.5">
+                            <Badge variant={w.status === "completed" ? "default" : w.status === "in_progress" ? "secondary" : "outline"} className="text-[10px]">
+                              {w.status.replace("_", " ")}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-1.5 text-right space-x-1">
+                            {w.status === "open" && <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => updateWaveStatus(w.id, "in_progress")}>Start</Button>}
+                            {w.status === "in_progress" && <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => updateWaveStatus(w.id, "completed")}>Complete</Button>}
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteWave(w.id)}>Delete</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
       </div>
     </AdminLayout>
