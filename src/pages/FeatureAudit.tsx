@@ -8991,7 +8991,7 @@ const dropshipFeatures: FeatureCategory[] = [
       { name: "Auto-Notify Supplier on Order", description: "Auto-email supplier when order placed", status: "done", notes: "dropship-notification function" },
       { name: "Supplier Order Portal", description: "Supplier can view and fulfill assigned orders", status: "not_started" },
       { name: "Drop Ship Tracking Update", description: "Supplier updates tracking number", status: "not_started" },
-      { name: "Drop Ship Margin Calculation", description: "Calculate margin on drop-ship products", status: "partial" },
+      { name: "Drop Ship Margin Calculation", description: "Calculate margin on drop-ship products", status: "done", notes: "Product cost_price vs sell price margin displayed on Products page and Analytics" },
       { name: "Drop Ship PO Auto-Generation", description: "Auto-create PO to supplier for drop-ship orders", status: "not_started" },
       { name: "Blind Drop Ship (No Branding)", description: "Ship without supplier branding", status: "not_started" },
     ],
