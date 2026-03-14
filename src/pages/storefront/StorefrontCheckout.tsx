@@ -59,6 +59,7 @@ export default function StorefrontCheckout() {
     billing_same: true,
     billing_address: "", billing_city: "", billing_zip: "", billing_country: "",
     notes: "",
+    delivery_instructions: "",
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [shippingZones, setShippingZones] = useState<any[]>([]);
