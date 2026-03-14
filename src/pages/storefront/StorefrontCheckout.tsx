@@ -956,9 +956,24 @@ export default function StorefrontCheckout() {
                        </label>
                      </div>
                    </div>
-                 )}
+                   )}
 
-                 <Separator />
+                   {/* Payment Method */}
+                   <div className="space-y-2 bg-muted/50 rounded-md p-3">
+                     <p className="text-xs font-medium">Payment Method</p>
+                     <div className="flex gap-3">
+                       <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                         <input type="radio" name="payment_method" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} className="accent-primary" />
+                         Credit/Debit Card
+                       </label>
+                       <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                         <input type="radio" name="payment_method" value="cod" checked={paymentMethod === "cod"} onChange={() => setPaymentMethod("cod")} className="accent-primary" />
+                         Cash on Delivery
+                       </label>
+                     </div>
+                   </div>
+
+                   <Separator />
 
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">

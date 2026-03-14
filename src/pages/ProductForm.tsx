@@ -888,6 +888,20 @@ export default function ProductForm() {
                       <Label className="text-xs">Virtual Product (Allow Oversell)</Label>
                       <Switch checked={form.virtual_product} onCheckedChange={(v) => update("virtual_product", v)} />
                     </div>
+                    <Separator className="my-2" />
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Handling Flags</p>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs text-destructive">⚠ Dangerous Goods</Label>
+                      <Switch checked={form.dangerous_goods} onCheckedChange={(v) => update("dangerous_goods", v)} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">📦 Oversized Item</Label>
+                      <Switch checked={form.oversized_item} onCheckedChange={(v) => update("oversized_item", v)} />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">🌡 Temperature Sensitive</Label>
+                      <Switch checked={form.temperature_sensitive} onCheckedChange={(v) => update("temperature_sensitive", v)} />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
