@@ -42,7 +42,7 @@ export default function ShippingZones() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editZone, setEditZone] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge" });
+  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge", blocked_postcodes: "", blocked_message: "Sorry, we cannot ship to this postcode" });
   const [activeTab, setActiveTab] = useState("zones");
 
   // Shipping services
@@ -73,7 +73,7 @@ export default function ShippingZones() {
   const [rateOpen, setRateOpen] = useState(false);
   const [rateForm, setRateForm] = useState({ service_id: "", min_weight: "0", max_weight: "99999", min_order_total: "0", max_order_total: "99999", rate: "0", rate_type: "flat" });
 
-  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge" });
+  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge", blocked_postcodes: "", blocked_message: "Sorry, we cannot ship to this postcode" });
 
   const filtered = (zones as any[]).filter((z) =>
     z.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -115,6 +115,7 @@ export default function ShippingZones() {
       rate_type: z.rate_type || "flat", per_kg_rate: String(z.per_kg_rate || 0),
       surcharge_postcodes: z.surcharge_postcodes || "", surcharge_amount: String(z.surcharge_amount || 0),
       surcharge_label: z.surcharge_label || "Remote area surcharge",
+      blocked_postcodes: z.blocked_postcodes || "", blocked_message: z.blocked_message || "Sorry, we cannot ship to this postcode",
     });
     setEditZone(z);
   };
@@ -608,7 +609,7 @@ function ShippingExclusionsTab({ storeId }: { storeId?: string }) {
 }
 
 function ZoneForm({ form, setForm, onSubmit, loading, label }: {
-  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string; surcharge_postcodes: string; surcharge_amount: string; surcharge_label: string };
+  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string; surcharge_postcodes: string; surcharge_amount: string; surcharge_label: string; blocked_postcodes: string; blocked_message: string };
   setForm: (f: any) => void;
   onSubmit: () => void;
   loading: boolean;
@@ -686,6 +687,18 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
             <Label className="text-xs">Surcharge Label</Label>
             <Input value={form.surcharge_label} onChange={(e) => setForm({ ...form, surcharge_label: e.target.value })} />
           </div>
+        </div>
+      </div>
+      <div className="border-t pt-3 mt-1 space-y-2">
+        <p className="text-xs font-medium flex items-center gap-1.5"><Ban className="h-3.5 w-3.5" /> Blocked Postcodes</p>
+        <p className="text-[10px] text-muted-foreground">Orders with these postcodes will be blocked from checkout.</p>
+        <div>
+          <Label className="text-xs">Blocked Postcode Ranges <span className="text-muted-foreground">(comma-separated e.g. 0800-0899,9000-9999)</span></Label>
+          <Input placeholder="e.g. 0800-0899, 9000-9999" value={form.blocked_postcodes} onChange={(e) => setForm({ ...form, blocked_postcodes: e.target.value })} className="text-xs" />
+        </div>
+        <div>
+          <Label className="text-xs">Blocked Message</Label>
+          <Input value={form.blocked_message} onChange={(e) => setForm({ ...form, blocked_message: e.target.value })} className="text-xs" placeholder="Shown to customer at checkout" />
         </div>
       </div>
       <Button onClick={onSubmit} disabled={loading} className="w-full">{label}</Button>

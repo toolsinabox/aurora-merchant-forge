@@ -29,6 +29,7 @@ const APPLIES_TO = [
   { value: "all", label: "All Products" },
   { value: "specific_products", label: "Specific Products" },
   { value: "specific_categories", label: "Specific Categories" },
+  { value: "specific_brands", label: "Specific Brands" },
 ];
 
 export default function PriceRules() {
@@ -41,8 +42,9 @@ export default function PriceRules() {
     name: "", rule_type: "percentage", discount_value: "10", applies_to: "all",
     min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
     starts_at: "", ends_at: "", priority: "0", max_uses: "",
-    gift_product_sku: "", // for gift_with_purchase type
-    is_stackable: true, // whether this promo stacks with others
+    gift_product_sku: "",
+    is_stackable: true,
+    brand_names: "", // comma-separated brand names for specific_brands
   });
 
   const { data: rules = [] } = useQuery({
@@ -109,7 +111,7 @@ export default function PriceRules() {
     setEditingId(null);
     setForm({ name: "", rule_type: "percentage", discount_value: "10", applies_to: "all",
       min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
-      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "", is_stackable: true });
+      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "", is_stackable: true, brand_names: "" });
   };
 
   const editRule = (r: any) => {
@@ -127,6 +129,7 @@ export default function PriceRules() {
       max_uses: r.max_uses ? String(r.max_uses) : "",
       gift_product_sku: r.gift_product_sku || "",
       is_stackable: r.is_stackable !== false,
+      brand_names: r.brand_names || "",
     });
     setEditingId(r.id);
     setShowForm(true);
@@ -295,6 +298,11 @@ export default function PriceRules() {
                 <SelectContent>{APPLIES_TO.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+            {form.applies_to === "specific_brands" && (
+              <div><Label>Brand Names <span className="text-xs text-muted-foreground">(comma-separated)</span></Label>
+                <Input value={form.brand_names} onChange={e => setForm(f => ({ ...f, brand_names: e.target.value }))} placeholder="e.g. Nike, Adidas, Puma" />
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Min Order Amount ($)</Label><Input type="number" value={form.min_order_amount} onChange={e => setForm(f => ({ ...f, min_order_amount: e.target.value }))} placeholder="Optional" /></div>
               <div><Label>Min Quantity</Label><Input type="number" value={form.min_quantity} onChange={e => setForm(f => ({ ...f, min_quantity: e.target.value }))} placeholder="Optional" /></div>

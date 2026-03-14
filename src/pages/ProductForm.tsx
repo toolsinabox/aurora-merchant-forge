@@ -994,7 +994,15 @@ export default function ProductForm() {
                       <p className="text-2xs text-muted-foreground">{form.seo_title.length}/60 characters</p>
                     </div>
                     <div className="space-y-1">
-                      <FieldLabel label="Meta Description" field="seo_description" />
+                      <div className="flex items-center justify-between">
+                        <FieldLabel label="Meta Description" field="seo_description" />
+                        {!form.seo_description && form.description && (
+                          <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5" onClick={() => {
+                            const plain = form.description.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+                            update("seo_description", plain.slice(0, 160));
+                          }}>Auto-generate</Button>
+                        )}
+                      </div>
                       <Textarea className="text-xs min-h-[60px]" value={form.seo_description} onChange={(e) => update("seo_description", e.target.value)} placeholder="SEO description" />
                       <p className="text-2xs text-muted-foreground">{form.seo_description.length}/160 characters</p>
                     </div>

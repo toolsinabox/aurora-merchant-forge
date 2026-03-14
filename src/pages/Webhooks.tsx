@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Webhook, Zap, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Webhook, Zap, ExternalLink, AlertTriangle, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 
 const WEBHOOK_EVENTS = [
@@ -157,17 +157,18 @@ export default function Webhooks() {
                   <TableHead className="text-xs h-8">URL</TableHead>
                   <TableHead className="text-xs h-8">Events</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8">Failures</TableHead>
                   <TableHead className="text-xs h-8">Last Triggered</TableHead>
                   <TableHead className="text-xs h-8 w-20">Active</TableHead>
-                  <TableHead className="text-xs h-8 w-10"></TableHead>
+                  <TableHead className="text-xs h-8 w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 3 }).map((_, i) => <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : (webhooks as any[]).length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">
                       <Webhook className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
                       No webhooks configured. Add one to receive real-time event notifications.
                     </TableCell>
@@ -194,6 +195,15 @@ export default function Webhooks() {
                           <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
+                      <TableCell className="py-2">
+                        {(wh.failure_count || 0) > 0 ? (
+                          <Badge variant="destructive" className="text-[10px] gap-0.5">
+                            <AlertTriangle className="h-2.5 w-2.5" /> {wh.failure_count} failures
+                          </Badge>
+                        ) : (
+                          <span className="text-[10px] text-muted-foreground">0</span>
+                        )}
+                      </TableCell>
                       <TableCell className="py-2 text-muted-foreground">
                         {wh.last_triggered_at ? format(new Date(wh.last_triggered_at), "MMM d, HH:mm") : "Never"}
                       </TableCell>
@@ -204,9 +214,22 @@ export default function Webhooks() {
                         />
                       </TableCell>
                       <TableCell className="py-2">
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => remove.mutate(wh.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex gap-1">
+                          {(wh.failure_count || 0) > 0 && (
+                            <Button variant="ghost" size="icon" className="h-6 w-6" title="Reset failure count"
+                              onClick={() => {
+                                supabase.from("webhooks" as any).update({ failure_count: 0 }).eq("id", wh.id).then(() => {
+                                  qc.invalidateQueries({ queryKey: ["webhooks"] });
+                                  toast.success("Failure count reset");
+                                });
+                              }}>
+                              <RefreshCw className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => remove.mutate(wh.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
