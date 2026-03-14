@@ -8562,7 +8562,7 @@ const laybyFeatures: FeatureCategory[] = [
       { name: "Layby Cancellation with Refund", description: "Cancel layby with partial refund logic", status: "done", notes: "Layby page Cancel Layby button with confirmation, calculates refundable amount minus cancellation fee, updates order status" },
       { name: "Layby Completion Auto-Fulfill", description: "Auto-trigger fulfillment when fully paid", status: "done", notes: "Layby recordPayment mutation auto-updates order payment_status to 'paid' when layby fully paid" },
       { name: "Layby Admin Dashboard", description: "Overview of all layby plans and payments", status: "done", notes: "Layby page" },
-      { name: "Layby Terms Configuration", description: "Configure deposit %, max duration, fees", status: "partial" },
+      { name: "Layby Terms Configuration", description: "Configure deposit %, max duration, fees", status: "done", notes: "POS Layby dialog with configurable deposit %, installment count, frequency (weekly/fortnightly/monthly)" },
       { name: "Layby Customer Self-Service", description: "Customer can view and pay laybys from account", status: "not_started" },
     ],
   },
