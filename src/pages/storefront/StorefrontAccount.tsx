@@ -322,6 +322,66 @@ export default function StorefrontAccount() {
     toast.success("Address removed");
   };
 
+  const handleReorder = (order: any) => {
+    const items = order.order_items || orderItems;
+    if (!items.length) { toast.error("No items to reorder"); return; }
+    let added = 0;
+    for (const item of items) {
+      addToCart({
+        product_id: item.product_id,
+        variant_id: item.variant_id || null,
+        title: item.title || item.products?.title || "Product",
+        price: Number(item.unit_price),
+        quantity: item.quantity,
+        image: item.products?.images?.[0] || undefined,
+        sku: item.sku || undefined,
+      });
+      added++;
+    }
+    toast.success(`${added} item${added !== 1 ? "s" : ""} added to cart`);
+  };
+
+  const handleSavePreferences = async () => {
+    if (!customer) return;
+    setSavingPrefs(true);
+    try {
+      // Store preferences as customer notes/tags (using existing fields)
+      const { error } = await supabase.from("customers").update({
+        notes: JSON.stringify({ communication_preferences: commPrefs }),
+      }).eq("id", customer.id);
+      if (error) throw error;
+      toast.success("Preferences saved");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") { toast.error("Please type DELETE to confirm"); return; }
+    if (!customer || !user) return;
+    setDeletingAccount(true);
+    try {
+      // Mark customer as inactive (soft delete for data retention compliance)
+      const { error } = await supabase.from("customers").update({
+        notes: JSON.stringify({ deletion_requested: true, deletion_requested_at: new Date().toISOString() }),
+        tags: [...(customer.tags || []), "deletion-requested"],
+      }).eq("id", customer.id);
+      if (error) throw error;
+
+      toast.success("Account deletion request submitted. You will receive a confirmation email.");
+      setDeleteDialogOpen(false);
+      // Sign out
+      await supabase.auth.signOut();
+      navigate(basePath || "/");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   if (!user) return null;
 
   const returnOrderIds = new Set(returns.map((r: any) => r.order_id));
