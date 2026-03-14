@@ -1777,6 +1777,129 @@ export type Database = {
           },
         ]
       }
+      marketplace_connections: {
+        Row: {
+          account_name: string | null
+          created_at: string
+          credentials: Json | null
+          error_message: string | null
+          id: string
+          is_active: boolean
+          last_sync_at: string | null
+          marketplace: string
+          store_id: string
+          sync_settings: Json | null
+          sync_status: string
+          total_listings: number
+          updated_at: string
+        }
+        Insert: {
+          account_name?: string | null
+          created_at?: string
+          credentials?: Json | null
+          error_message?: string | null
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          marketplace: string
+          store_id: string
+          sync_settings?: Json | null
+          sync_status?: string
+          total_listings?: number
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string | null
+          created_at?: string
+          credentials?: Json | null
+          error_message?: string | null
+          id?: string
+          is_active?: boolean
+          last_sync_at?: string | null
+          marketplace?: string
+          store_id?: string
+          sync_settings?: Json | null
+          sync_status?: string
+          total_listings?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_connections_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_listings: {
+        Row: {
+          connection_id: string
+          created_at: string
+          external_listing_id: string | null
+          external_url: string | null
+          id: string
+          last_synced_at: string | null
+          price_override: number | null
+          product_id: string
+          status: string
+          store_id: string
+          sync_error: string | null
+          updated_at: string
+        }
+        Insert: {
+          connection_id: string
+          created_at?: string
+          external_listing_id?: string | null
+          external_url?: string | null
+          id?: string
+          last_synced_at?: string | null
+          price_override?: number | null
+          product_id: string
+          status?: string
+          store_id: string
+          sync_error?: string | null
+          updated_at?: string
+        }
+        Update: {
+          connection_id?: string
+          created_at?: string
+          external_listing_id?: string | null
+          external_url?: string | null
+          id?: string
+          last_synced_at?: string | null
+          price_override?: number | null
+          product_id?: string
+          status?: string
+          store_id?: string
+          sync_error?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_listings_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_listings_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       media_assets: {
         Row: {
           alt_text: string | null
@@ -4316,6 +4439,71 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "store_languages_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_markets: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          custom_domain: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          is_default: boolean
+          language: string
+          name: string
+          price_adjustment_type: string
+          price_adjustment_value: number
+          sort_order: number
+          store_id: string
+          tax_inclusive: boolean
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          custom_domain?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          language?: string
+          name: string
+          price_adjustment_type?: string
+          price_adjustment_value?: number
+          sort_order?: number
+          store_id: string
+          tax_inclusive?: boolean
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          custom_domain?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          language?: string
+          name?: string
+          price_adjustment_type?: string
+          price_adjustment_value?: number
+          sort_order?: number
+          store_id?: string
+          tax_inclusive?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_markets_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"

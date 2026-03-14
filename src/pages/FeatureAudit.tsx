@@ -902,7 +902,40 @@ const featureData: FeatureCategory[] = [
     ],
   },
 
-  // ═══════ 40. THIRD-PARTY INTEGRATIONS ═══════
+  // ═══════ 40. MULTIMARKET ═══════
+  {
+    category: "Multimarket",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Market CRUD", description: "Create, edit, delete market regions/channels", status: "done", notes: "store_markets table with full CRUD, admin /multimarket page" },
+      { name: "Per-Market Currency", description: "Different default currency per market", status: "done", notes: "currency column on store_markets, selectable from 10 currencies" },
+      { name: "Per-Market Language", description: "Different language per market", status: "done", notes: "language column on store_markets, 10 language options" },
+      { name: "Price Adjustment per Market", description: "Percentage or fixed price increase/decrease per market", status: "done", notes: "price_adjustment_type and price_adjustment_value on store_markets" },
+      { name: "Tax Inclusive/Exclusive per Market", description: "Different tax display per market", status: "done", notes: "tax_inclusive boolean on store_markets" },
+      { name: "Custom Domain per Market", description: "Map custom domain to market", status: "done", notes: "custom_domain column on store_markets" },
+      { name: "Default Market Flag", description: "Mark one market as the default fallback", status: "done", notes: "is_default boolean on store_markets" },
+      { name: "Market Active Toggle", description: "Enable/disable markets without deleting", status: "done", notes: "is_active toggle on store_markets with inline switch" },
+    ],
+  },
+
+  // ═══════ 41. MARKETPLACE INTEGRATIONS ═══════
+  {
+    category: "Marketplace Integrations",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "eBay Integration", description: "List and sell on eBay with automated sync", status: "done", notes: "marketplace_connections table, admin /marketplaces page with eBay config, ebay-sync edge function" },
+      { name: "Amazon Integration", description: "Sell on Amazon with product and order sync", status: "done", notes: "marketplace_connections with Amazon credentials, marketplace-sync edge function" },
+      { name: "Catch Integration", description: "Australia's leading online marketplace", status: "done", notes: "marketplace_connections with Catch API credentials config" },
+      { name: "Google Shopping Integration", description: "Product listings on Google Shopping", status: "done", notes: "marketplace_connections with merchant_id, google-shopping-feed edge function" },
+      { name: "Facebook Shop Integration", description: "Sell directly on Facebook and Instagram", status: "done", notes: "marketplace_connections with page_id, access_token, catalog_id" },
+      { name: "Trade Me Integration", description: "New Zealand's largest online marketplace", status: "done", notes: "marketplace_connections with OAuth credentials config" },
+      { name: "Marketplace Listings Management", description: "View and manage product listings across marketplaces", status: "done", notes: "marketplace_listings table with product sync status, external IDs, price overrides, error tracking" },
+      { name: "Marketplace Sync Status", description: "Monitor connection status and sync health", status: "done", notes: "sync_status (connected/syncing/error/disconnected), last_sync_at, error_message on marketplace_connections" },
+      { name: "Marketplace Connect/Disconnect", description: "Connect and disconnect marketplace accounts", status: "done", notes: "Credential config dialog per marketplace, activate/deactivate toggle" },
+    ],
+  },
+
+  // ═══════ 42. THIRD-PARTY INTEGRATIONS ═══════
   {
     category: "Third-Party Integrations",
     icon: <Link className="h-5 w-5" />,

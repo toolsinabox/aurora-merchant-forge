@@ -3,7 +3,7 @@ import {
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
-  Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles,
+  Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -40,6 +40,7 @@ const catalogNav = [
 const salesNav = [
   { title: "Orders", url: `${prefix}/orders`, icon: Package },
   { title: "POS", url: `${prefix}/pos`, icon: Smartphone },
+  { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
   { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
@@ -73,6 +74,7 @@ const systemNav = [
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
   { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
+  { title: "Multimarket", url: `${prefix}/multimarket`, icon: Globe },
   { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "API Keys", url: `${prefix}/api-keys`, icon: Key },
