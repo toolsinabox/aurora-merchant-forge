@@ -1689,6 +1689,11 @@ export default function SettingsPage() {
             <FulfillmentRulesTab />
           </TabsContent>
 
+          {/* Security Tab */}
+          <TabsContent value="security">
+            <SecuritySettingsTab />
+          </TabsContent>
+
           {/* Custom Scripts Tab */}
           <TabsContent value="scripts">
             {(() => {
