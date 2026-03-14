@@ -7780,7 +7780,7 @@ const emailAutomationDeepFeatures: FeatureCategory[] = [
       { name: "Win-Back Campaign", description: "Re-engage inactive customers after configurable period", status: "done", notes: "EmailAutomations winback trigger type for 30+ days inactive customers" },
       { name: "Birthday/Anniversary Email", description: "Automated email on customer birthday with offer", status: "done", notes: "EmailAutomations birthday trigger type using customer birthday field" },
       { name: "Welcome Series (Multi-Step)", description: "Multi-email onboarding sequence for new signups", status: "partial", notes: "Single welcome email exists" },
-      { name: "VIP Tier Upgrade Email", description: "Notify customer when they reach new loyalty tier", status: "not_started" },
+      { name: "VIP Tier Upgrade Email", description: "Notify customer when they reach new loyalty tier", status: "done", notes: "EmailAutomations vip_upgrade trigger type" },
       { name: "Subscription Renewal Reminder", description: "Remind customers before subscription renewal charge", status: "partial" },
       { name: "Email Engagement Tracking", description: "Track opens, clicks, and conversions per email", status: "not_started" },
       { name: "Unsubscribe Management", description: "Global and per-type email unsubscribe preferences", status: "not_started" },
