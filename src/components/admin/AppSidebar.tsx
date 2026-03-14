@@ -61,6 +61,7 @@ const salesNav = [
   { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
+  { title: "Refunds", url: `${prefix}/refunds`, icon: ReceiptText },
   { title: "Batch Invoices", url: `${prefix}/batch-invoices`, icon: Printer },
 ];
 
