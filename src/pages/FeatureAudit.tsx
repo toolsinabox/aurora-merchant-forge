@@ -3983,8 +3983,220 @@ const finalFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 271–290: INTEGRATIONS & EDGE FUNCTIONS ═══════
+const integrationFeatures: FeatureCategory[] = [
+  {
+    category: "Payment Gateway Integration",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Stripe Integration", description: "Process payments via Stripe", status: "partial", notes: "payment-gateway edge function with Stripe support" },
+      { name: "PayPal Integration", description: "Process payments via PayPal", status: "partial", notes: "payment-gateway edge function with PayPal support" },
+      { name: "Afterpay/Zip", description: "Buy-now-pay-later providers", status: "partial", notes: "BNPL provider configuration in payment-gateway" },
+      { name: "Multi-Gateway Support", description: "Configure multiple gateways per store", status: "done", notes: "payment_gateways table with provider, config JSONB" },
+      { name: "Payment Email", description: "Email receipt on payment", status: "done", notes: "payment-email edge function" },
+      { name: "Refund Processing", description: "Process refunds via gateway", status: "partial", notes: "Refund action in payment-gateway edge function" },
+    ],
+  },
+  {
+    category: "Shipping Integration (StarShipIt)",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Rate Calculation", description: "Get live shipping rates", status: "partial", notes: "starshipit-sync edge function" },
+      { name: "Label Generation", description: "Generate shipping labels", status: "partial", notes: "Label creation via StarShipIt API" },
+      { name: "Tracking Updates", description: "Auto-import tracking numbers", status: "partial", notes: "Tracking sync from StarShipIt" },
+      { name: "Manifest Submission", description: "Submit manifests to carrier", status: "partial", notes: "Manifest close via StarShipIt" },
+    ],
+  },
+  {
+    category: "Shipping Integration (ShipStation)",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Order Sync", description: "Push orders to ShipStation", status: "partial", notes: "shipstation-sync edge function" },
+      { name: "Rate Calculation", description: "Get rates from ShipStation", status: "partial", notes: "Rate request via ShipStation API" },
+      { name: "Tracking Import", description: "Import tracking from ShipStation", status: "partial", notes: "Webhook listener for tracking updates" },
+    ],
+  },
+  {
+    category: "Carrier Rate API",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Live Rate Requests", description: "Request rates from carriers at checkout", status: "done", notes: "carrier-rates edge function" },
+      { name: "Multi-Carrier Support", description: "Support multiple carriers", status: "done", notes: "Carrier configuration per store" },
+      { name: "Rate Caching", description: "Cache rates to reduce API calls", status: "done", notes: "Short TTL caching of rate responses" },
+      { name: "Fallback Rates", description: "Use zone rates if carrier API fails", status: "done", notes: "Fallback to shipping_zones rates" },
+    ],
+  },
+  {
+    category: "Xero Accounting Integration",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Invoice Sync", description: "Push invoices to Xero", status: "partial", notes: "xero-sync edge function" },
+      { name: "Payment Sync", description: "Sync payments to Xero", status: "partial", notes: "Payment records pushed on capture" },
+      { name: "Customer Sync", description: "Sync customer records", status: "partial", notes: "Customer create/update sync" },
+      { name: "Product Sync", description: "Sync products as inventory items", status: "partial", notes: "Product sync to Xero items" },
+    ],
+  },
+  {
+    category: "eBay Marketplace Integration",
+    icon: <Store className="h-5 w-5" />,
+    features: [
+      { name: "Product Listing", description: "List products on eBay", status: "partial", notes: "ebay-sync edge function" },
+      { name: "Order Import", description: "Import eBay orders", status: "partial", notes: "Order sync from eBay API" },
+      { name: "Stock Sync", description: "Sync stock levels to eBay", status: "partial", notes: "Inventory sync on stock change" },
+      { name: "Price Sync", description: "Sync pricing to eBay", status: "partial", notes: "Price update sync" },
+    ],
+  },
+  {
+    category: "Marketplace Sync (Generic)",
+    icon: <Store className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Marketplace", description: "Sync to Amazon, Catch, TradeMe", status: "partial", notes: "marketplace-sync edge function" },
+      { name: "Listing Management", description: "Create and manage listings", status: "partial", notes: "Listing CRUD per marketplace" },
+      { name: "Order Import", description: "Import marketplace orders", status: "partial", notes: "Order sync from marketplace APIs" },
+      { name: "Inventory Sync", description: "Keep stock in sync", status: "partial", notes: "Stock level push on changes" },
+    ],
+  },
+  {
+    category: "Mailchimp Integration",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Subscriber Sync", description: "Sync newsletter subscribers", status: "partial", notes: "mailchimp-sync edge function" },
+      { name: "Customer Sync", description: "Sync customers as contacts", status: "partial", notes: "Customer data push to Mailchimp" },
+      { name: "Purchase Data", description: "Send purchase data for segmentation", status: "partial", notes: "Order data sync for e-commerce tracking" },
+      { name: "Campaign Triggers", description: "Trigger campaigns on events", status: "partial", notes: "Event-based campaign triggers" },
+    ],
+  },
+  {
+    category: "Klaviyo Integration",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Profile Sync", description: "Sync customer profiles", status: "partial", notes: "klaviyo-sync edge function" },
+      { name: "Event Tracking", description: "Track purchase and browse events", status: "partial", notes: "Event push for flows and segments" },
+      { name: "Product Feed", description: "Sync product catalog", status: "partial", notes: "Product data sync for recommendations" },
+      { name: "Flow Triggers", description: "Trigger Klaviyo flows on events", status: "partial", notes: "Abandoned cart, post-purchase flows" },
+    ],
+  },
+  {
+    category: "Google Shopping Feed",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Product Feed Generation", description: "Generate Google Shopping XML feed", status: "done", notes: "google-shopping-feed edge function" },
+      { name: "Required Fields", description: "Map all required Google fields", status: "done", notes: "Title, description, price, availability, GTIN mapping" },
+      { name: "Category Mapping", description: "Map to Google product categories", status: "done", notes: "google_product_category mapping" },
+      { name: "Image URLs", description: "Include product image URLs", status: "done", notes: "image_link and additional_image_link" },
+      { name: "Variant Support", description: "Include variant data in feed", status: "done", notes: "item_group_id with variant attributes" },
+    ],
+  },
+  {
+    category: "Sitemap Generation",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "XML Sitemap", description: "Auto-generate XML sitemap", status: "done", notes: "sitemap edge function" },
+      { name: "Product URLs", description: "Include all product pages", status: "done", notes: "Product URLs with lastmod" },
+      { name: "Category URLs", description: "Include category pages", status: "done", notes: "Category URLs in sitemap" },
+      { name: "Content Page URLs", description: "Include content/blog pages", status: "done", notes: "Content page URLs" },
+      { name: "Priority & Frequency", description: "Set priority and changefreq", status: "done", notes: "Priority based on page type" },
+    ],
+  },
+  {
+    category: "SMS Gateway",
+    icon: <Smartphone className="h-5 w-5" />,
+    features: [
+      { name: "Send SMS", description: "Send SMS notifications", status: "partial", notes: "sms-gateway edge function" },
+      { name: "Order SMS", description: "SMS on order confirmation", status: "partial", notes: "Order status SMS notifications" },
+      { name: "Shipping SMS", description: "SMS on shipment dispatch", status: "partial", notes: "Dispatch notification SMS" },
+      { name: "Provider Support", description: "Twilio, MessageBird support", status: "partial", notes: "Multi-provider SMS gateway" },
+    ],
+  },
+  {
+    category: "Email System (Core)",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Send Email Function", description: "Core email sending edge function", status: "done", notes: "send-email edge function with Resend/SMTP" },
+      { name: "Order Confirmation", description: "Email on order placement", status: "done", notes: "order-email-trigger edge function" },
+      { name: "Shipment Notification", description: "Email on shipment dispatch", status: "done", notes: "shipment-email edge function" },
+      { name: "Delivery Notification", description: "Email on order delivery", status: "done", notes: "order-delivered-email edge function" },
+      { name: "Welcome Email", description: "Email on customer signup", status: "done", notes: "welcome-email edge function" },
+      { name: "Abandoned Cart Email", description: "Email for abandoned carts", status: "done", notes: "abandoned-cart-email edge function" },
+      { name: "Order Follow-Up", description: "Post-purchase follow-up email", status: "done", notes: "order-follow-up edge function" },
+      { name: "Low Stock Alert", description: "Email on low stock threshold", status: "done", notes: "low-stock-alert edge function" },
+      { name: "Customer Statement", description: "Email customer account statement", status: "done", notes: "customer-statement-email edge function" },
+      { name: "Batch Job Error", description: "Email on batch job failure", status: "done", notes: "batch-job-error-email edge function" },
+    ],
+  },
+  {
+    category: "Scheduled Export",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Scheduled Data Export", description: "Auto-export data on schedule", status: "done", notes: "scheduled-export edge function" },
+      { name: "Export Formats", description: "CSV and JSON export formats", status: "done", notes: "Format selection per export" },
+      { name: "Entity Types", description: "Export products, orders, customers", status: "done", notes: "Entity type selection" },
+      { name: "Email Delivery", description: "Email export file on completion", status: "done", notes: "Email with download link" },
+    ],
+  },
+  {
+    category: "Platform Merchant API",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "List Merchants", description: "API to list all merchants", status: "done", notes: "list-merchants edge function" },
+      { name: "Merchant Details", description: "Get merchant store details", status: "done", notes: "Store info with plan and status" },
+      { name: "Platform Auth", description: "Platform admin authentication", status: "done", notes: "Platform role verification" },
+    ],
+  },
+  {
+    category: "Email Automations",
+    icon: <Workflow className="h-5 w-5" />,
+    features: [
+      { name: "Automation CRUD", description: "Create email automations", status: "done", notes: "email_automations table with trigger_type, delay_hours" },
+      { name: "Trigger Types", description: "Post-purchase, abandoned cart, welcome", status: "done", notes: "trigger_type column" },
+      { name: "Delay Configuration", description: "Set delay before sending", status: "done", notes: "delay_hours column" },
+      { name: "HTML Template", description: "Custom HTML email body", status: "done", notes: "html_body column with template" },
+      { name: "Sent Count Tracking", description: "Track emails sent per automation", status: "done", notes: "sent_count column" },
+      { name: "Active Toggle", description: "Enable/disable automations", status: "done", notes: "is_active column" },
+    ],
+  },
+  {
+    category: "Coupons & Promotions",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Coupon CRUD", description: "Create discount coupons", status: "done", notes: "coupons table with code, discount_type, discount_value" },
+      { name: "Discount Types", description: "Percentage, fixed amount, free shipping", status: "done", notes: "discount_type column" },
+      { name: "Usage Limits", description: "Max uses and per-customer limits", status: "done", notes: "max_uses and per_customer_limit columns" },
+      { name: "Date Range", description: "Valid from/to dates", status: "done", notes: "starts_at and expires_at columns" },
+      { name: "Product/Category Scope", description: "Limit to specific products or categories", status: "done", notes: "product_ids and category_ids arrays" },
+      { name: "Min Order Amount", description: "Minimum order for coupon", status: "done", notes: "min_order_amount column" },
+      { name: "Free Shipping Option", description: "Coupon grants free shipping", status: "done", notes: "free_shipping boolean column" },
+      { name: "Usage Tracking", description: "Track times used", status: "done", notes: "used_count column" },
+    ],
+  },
+  {
+    category: "Price Rules (Auto Discounts)",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Rule CRUD", description: "Create automatic discount rules", status: "done", notes: "price_rules table with conditions and discount" },
+      { name: "Condition Types", description: "Cart total, quantity, customer group", status: "done", notes: "conditions JSONB with type, operator, value" },
+      { name: "Discount Actions", description: "Percentage off, fixed off, fixed price", status: "done", notes: "discount_type and discount_value" },
+      { name: "Priority", description: "Control rule evaluation order", status: "done", notes: "priority column for rule ordering" },
+      { name: "Stackable Rules", description: "Allow rules to combine", status: "done", notes: "is_stackable boolean" },
+      { name: "Date Range", description: "Scheduled rule validity", status: "done", notes: "starts_at and ends_at columns" },
+    ],
+  },
+  {
+    category: "Tax Rates",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Tax Rate CRUD", description: "Create and manage tax rates", status: "done", notes: "tax_rates table with name, rate, country, state" },
+      { name: "Zone-Based Taxes", description: "Different rates by region", status: "done", notes: "country and state columns for location-based tax" },
+      { name: "Tax Classes", description: "Product tax classes", status: "done", notes: "tax_class column on products" },
+      { name: "Tax Included Pricing", description: "Prices include or exclude tax", status: "done", notes: "is_inclusive boolean on tax_rates" },
+      { name: "Compound Tax", description: "Tax calculated on tax", status: "done", notes: "is_compound boolean" },
+      { name: "Tax Exemption", description: "Exempt customers or groups", status: "done", notes: "is_tax_exempt on customer_groups" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
