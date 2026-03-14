@@ -856,6 +856,7 @@ export default function SettingsPage() {
             <TabsTrigger value="payments" className="text-xs h-7">Payments</TabsTrigger>
             <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
             <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
+            <TabsTrigger value="fulfillment" className="text-xs h-7">Fulfillment</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
