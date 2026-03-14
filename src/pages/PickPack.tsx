@@ -273,7 +273,6 @@ export default function PickPack() {
                   )}
                 </div>
               </CardTitle>
-              </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <Table>
