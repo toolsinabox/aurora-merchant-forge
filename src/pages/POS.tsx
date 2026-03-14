@@ -183,6 +183,45 @@ export default function POS() {
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
   const [voucherLoading, setVoucherLoading] = useState(false);
 
+  // Sell gift card state
+  const [showSellGiftCard, setShowSellGiftCard] = useState(false);
+  const [giftCardValue, setGiftCardValue] = useState("50");
+  const [giftCardRecipient, setGiftCardRecipient] = useState("");
+  const [giftCardSelling, setGiftCardSelling] = useState(false);
+
+  const sellGiftCard = async () => {
+    if (!storeId) return;
+    const value = parseFloat(giftCardValue);
+    if (isNaN(value) || value <= 0) { toast.error("Enter a valid amount"); return; }
+    setGiftCardSelling(true);
+    try {
+      const code = `GC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+      await supabase.from("gift_vouchers").insert({
+        store_id: storeId,
+        code,
+        initial_value: value,
+        balance: value,
+        is_active: true,
+        recipient_name: giftCardRecipient || null,
+        recipient_email: null,
+        sender_name: currentStaff || "POS",
+      });
+      // Add as cart item so it goes through normal POS sale flow
+      setCart(prev => [...prev, {
+        product_id: `giftcard-${Date.now()}`,
+        title: `Gift Card (${code})`,
+        sku: code,
+        price: value,
+        quantity: 1,
+      }]);
+      setShowSellGiftCard(false);
+      setGiftCardValue("50");
+      setGiftCardRecipient("");
+      toast.success(`Gift card ${code} created — $${value.toFixed(2)}`);
+    } catch (err: any) { toast.error(err.message); }
+    finally { setGiftCardSelling(false); }
+  };
+
   // Layby state
   const [showLayby, setShowLayby] = useState(false);
   const [laybyDeposit, setLaybyDeposit] = useState("20");
@@ -568,6 +607,9 @@ export default function POS() {
                 </div>
                 <Button variant="outline" size="sm" className="h-10 gap-1 text-xs" onClick={() => setShowCustomSale(true)}>
                   <Plus className="h-4 w-4" /> Custom
+                </Button>
+                <Button variant="outline" size="sm" className="h-10 gap-1 text-xs" onClick={() => setShowSellGiftCard(true)}>
+                  <Gift className="h-4 w-4" /> Sell Gift Card
                 </Button>
               </div>
               <div className="flex-1 overflow-y-auto">
@@ -1143,6 +1185,33 @@ export default function POS() {
             <Input type="number" min="0" step="0.01" placeholder={discountType === "percent" ? "e.g. 10" : "e.g. 5.00"} value={discountVal} onChange={e => setDiscountVal(e.target.value)} className="h-9" autoFocus />
             <Button className="w-full" onClick={() => discountDialogItem && applyItemDiscount(discountDialogItem)}>Apply Discount</Button>
           </div>
+        </DialogContent>
+      </Dialog>
+      {/* Sell Gift Card Dialog */}
+      <Dialog open={showSellGiftCard} onOpenChange={setShowSellGiftCard}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Gift className="h-4 w-4" /> Sell Gift Card</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Gift Card Value ($)</Label>
+              <div className="grid grid-cols-4 gap-2 mt-1">
+                {["25", "50", "100", "200"].map(v => (
+                  <Button key={v} variant={giftCardValue === v ? "default" : "outline"} size="sm" onClick={() => setGiftCardValue(v)}>${v}</Button>
+                ))}
+              </div>
+              <Input type="number" min="1" step="0.01" value={giftCardValue} onChange={e => setGiftCardValue(e.target.value)} className="h-8 text-sm mt-2" placeholder="Custom amount" />
+            </div>
+            <div>
+              <Label className="text-xs">Recipient Name (optional)</Label>
+              <Input value={giftCardRecipient} onChange={e => setGiftCardRecipient(e.target.value)} className="h-8 text-sm" placeholder="e.g. John Smith" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowSellGiftCard(false)}>Cancel</Button>
+            <Button size="sm" onClick={sellGiftCard} disabled={giftCardSelling} className="gap-1">
+              <Gift className="h-3 w-3" /> {giftCardSelling ? "Creating..." : `Add $${parseFloat(giftCardValue || "0").toFixed(2)} Gift Card`}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </AdminLayout>

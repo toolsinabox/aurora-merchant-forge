@@ -23,6 +23,10 @@ export default function Quotes() {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
+  const [counterOpen, setCounterOpen] = useState<string | null>(null);
+  const [counterItems, setCounterItems] = useState<any[]>([]);
+  const [counterNote, setCounterNote] = useState("");
+  const [counterSaving, setCounterSaving] = useState(false);
   const [customers, setCustomers] = useState<any[]>([]);
   const [form, setForm] = useState({
     customer_id: "",
@@ -109,6 +113,38 @@ export default function Quotes() {
     await supabase.from("order_quotes" as any).update({ status, updated_at: new Date().toISOString() }).eq("id", id);
     toast.success(`Quote ${status}`);
     fetchQuotes();
+  };
+
+  const openCounterOffer = async (quoteId: string) => {
+    const { data: items } = await supabase.from("order_quote_items" as any).select("*").eq("quote_id", quoteId);
+    setCounterItems((items || []).map((i: any) => ({ ...i, new_price: i.unit_price, new_qty: i.quantity })));
+    setCounterNote("");
+    setCounterOpen(quoteId);
+  };
+
+  const submitCounterOffer = async () => {
+    if (!counterOpen || !currentStore) return;
+    setCounterSaving(true);
+    try {
+      for (const item of counterItems) {
+        await supabase.from("order_quote_items" as any).update({
+          unit_price: item.new_price,
+          quantity: item.new_qty,
+          total: item.new_price * item.new_qty,
+        }).eq("id", item.id);
+      }
+      const newTotal = counterItems.reduce((s: number, i: any) => s + i.new_price * i.new_qty, 0);
+      await supabase.from("order_quotes" as any).update({
+        subtotal: newTotal, total: newTotal,
+        status: "sent",
+        notes: counterNote ? `[Counter-offer] ${counterNote}` : undefined,
+        updated_at: new Date().toISOString(),
+      }).eq("id", counterOpen);
+      toast.success("Counter-offer sent to customer");
+      setCounterOpen(null);
+      fetchQuotes();
+    } catch (err: any) { toast.error(err.message); }
+    finally { setCounterSaving(false); }
   };
 
   const convertToOrder = async (quote: any) => {
@@ -314,6 +350,7 @@ export default function Quotes() {
                           {q.status === "sent" && (
                             <>
                               <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => updateStatus(q.id, "approved")}>Approve</Button>
+                              <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => openCounterOffer(q.id)}>Counter</Button>
                               <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => updateStatus(q.id, "rejected")}>Reject</Button>
                             </>
                           )}
@@ -338,6 +375,41 @@ export default function Quotes() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Counter-Offer Dialog */}
+      <Dialog open={!!counterOpen} onOpenChange={(o) => { if (!o) setCounterOpen(null); }}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Counter-Offer</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Adjust pricing or quantities and send back to customer.</p>
+            <div className="space-y-2">
+              {counterItems.map((item: any, i: number) => (
+                <div key={item.id} className="grid grid-cols-[1fr_60px_80px] gap-2 items-center">
+                  <p className="text-xs font-medium truncate">{item.title}</p>
+                  <Input className="h-7 text-xs" type="number" value={item.new_qty} onChange={e => {
+                    const updated = [...counterItems];
+                    updated[i] = { ...updated[i], new_qty: parseInt(e.target.value) || 1 };
+                    setCounterItems(updated);
+                  }} />
+                  <Input className="h-7 text-xs" type="number" step="0.01" value={item.new_price} onChange={e => {
+                    const updated = [...counterItems];
+                    updated[i] = { ...updated[i], new_price: parseFloat(e.target.value) || 0 };
+                    setCounterItems(updated);
+                  }} />
+                </div>
+              ))}
+              <p className="text-xs text-right font-medium">New Total: ${counterItems.reduce((s: number, i: any) => s + i.new_price * i.new_qty, 0).toFixed(2)}</p>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Negotiation Note</Label>
+              <Textarea className="text-xs" rows={2} value={counterNote} onChange={e => setCounterNote(e.target.value)} placeholder="e.g. Best price we can offer with volume discount..." />
+            </div>
+            <Button onClick={submitCounterOffer} disabled={counterSaving} className="w-full">
+              {counterSaving ? "Sending..." : "Send Counter-Offer"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
