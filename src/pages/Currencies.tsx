@@ -113,29 +113,29 @@ export default function Currencies() {
               </TableHeader>
               <TableBody>
                 {currencies.map((c: any) => (
-                  <TableRow key={c.id}>
-                    <TableCell><Badge variant="secondary" className="font-mono">{c.code}</Badge></TableCell>
-                    <TableCell>{c.name}</TableCell>
-                    <TableCell className="text-lg">{c.symbol}</TableCell>
-                    <TableCell>
+                  <TableRow key={c.id} className="text-xs">
+                    <TableCell className="py-2"><Badge variant="secondary" className="font-mono text-[10px]">{c.code}</Badge></TableCell>
+                    <TableCell className="py-2">{c.name}</TableCell>
+                    <TableCell className="py-2 font-medium">{c.symbol}</TableCell>
+                    <TableCell className="py-2">
                       {c.is_default ? (
-                        <span className="text-sm text-muted-foreground">1.0000 (base)</span>
+                        <span className="text-muted-foreground">1.0000 (base)</span>
                       ) : (
-                        <Input type="number" step="0.0001" className="w-28 h-8 text-sm" defaultValue={Number(c.exchange_rate).toFixed(4)}
+                        <Input type="number" step="0.0001" className="w-28 h-7 text-xs" defaultValue={Number(c.exchange_rate).toFixed(4)}
                           onBlur={e => updateRate(c.id, e.target.value)} />
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-2">
                       {c.is_default ? (
-                        <Badge variant="default" className="gap-1"><Star className="h-3 w-3" /> Default</Badge>
+                        <Badge variant="default" className="gap-1 text-[10px]"><Star className="h-2.5 w-2.5" /> Default</Badge>
                       ) : (
                         <Button size="sm" variant="ghost" className="text-xs h-6" onClick={() => setDefault(c.id)}>Set Default</Button>
                       )}
                     </TableCell>
-                    <TableCell><Switch checked={c.is_active} onCheckedChange={() => toggleActive(c.id, c.is_active)} /></TableCell>
-                    <TableCell>
-                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-destructive" onClick={() => deleteCurrency(c.id, c.is_default)}>
-                        <Trash2 className="h-3.5 w-3.5" />
+                    <TableCell className="py-2"><Switch checked={c.is_active} onCheckedChange={() => toggleActive(c.id, c.is_active)} /></TableCell>
+                    <TableCell className="py-2">
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteCurrency(c.id, c.is_default)}>
+                        <Trash2 className="h-3 w-3 text-destructive" />
                       </Button>
                     </TableCell>
                   </TableRow>
