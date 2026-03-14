@@ -128,8 +128,8 @@ export default function PickPack() {
         </div>
 
         {/* Step indicator */}
-        <div className="flex items-center gap-2">
-          {(["pick", "pack", "ship"] as WorkflowStep[]).map((s, i) => (
+        <div className="flex items-center gap-2 flex-wrap">
+          {(["pick", "pack", "ship", "waves"] as WorkflowStep[]).map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
               <Button
