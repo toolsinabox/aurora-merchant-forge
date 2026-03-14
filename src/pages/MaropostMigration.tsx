@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,14 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   ArrowRight, Check, CheckCircle, XCircle, Loader2, AlertTriangle,
   Package, Users, ShoppingCart, Layers, FileText, Palette, Globe,
-  Truck, Gift, CreditCard, Warehouse, Star, Settings, Shield,
-  RefreshCw, Download, Eye, ArrowLeftRight, Zap, Clock,
+  Truck, Gift, CreditCard, Warehouse, Star, Shield,
+  RefreshCw, Download, Eye, Zap, Clock, Terminal,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,27 +30,50 @@ interface EntityCount {
   status: "pending" | "importing" | "success" | "failed" | "skipped";
   imported: number;
   failed: number;
+  errors: string[];
+  pages: number;
 }
 
-const MIGRATION_ENTITIES: Omit<EntityCount, "count" | "selected" | "status" | "imported" | "failed">[] = [
-  { entity: "products", label: "Products & Variants", icon: <Package className="h-5 w-5" /> },
+const MIGRATION_ENTITIES: Omit<EntityCount, "count" | "selected" | "status" | "imported" | "failed" | "errors" | "pages">[] = [
   { entity: "categories", label: "Categories", icon: <Layers className="h-5 w-5" /> },
+  { entity: "products", label: "Products & Variants", icon: <Package className="h-5 w-5" /> },
   { entity: "customers", label: "Customers & Addresses", icon: <Users className="h-5 w-5" /> },
   { entity: "orders", label: "Orders & Invoices", icon: <ShoppingCart className="h-5 w-5" /> },
   { entity: "content", label: "Content Pages & Blog", icon: <FileText className="h-5 w-5" /> },
-  { entity: "templates", label: "Templates & Theme", icon: <Palette className="h-5 w-5" /> },
-  { entity: "shipping", label: "Shipping Methods & Zones", icon: <Truck className="h-5 w-5" /> },
   { entity: "vouchers", label: "Gift Vouchers & Coupons", icon: <Gift className="h-5 w-5" /> },
   { entity: "suppliers", label: "Suppliers", icon: <Warehouse className="h-5 w-5" /> },
-  { entity: "payments", label: "Payment History", icon: <CreditCard className="h-5 w-5" /> },
-  { entity: "rma", label: "Returns / RMAs", icon: <RefreshCw className="h-5 w-5" /> },
   { entity: "warehouses", label: "Warehouses & Locations", icon: <Warehouse className="h-5 w-5" /> },
+  { entity: "shipping", label: "Shipping Methods & Zones", icon: <Truck className="h-5 w-5" /> },
+  { entity: "rma", label: "Returns / RMAs", icon: <RefreshCw className="h-5 w-5" /> },
+  { entity: "payments", label: "Payment History", icon: <CreditCard className="h-5 w-5" /> },
+  { entity: "templates", label: "Templates & Theme", icon: <Palette className="h-5 w-5" /> },
 ];
+
+const FETCH_ACTION_MAP: Record<string, string> = {
+  products: "get_products", categories: "get_categories",
+  customers: "get_customers", orders: "get_orders",
+  content: "get_content", templates: "get_content",
+  shipping: "get_shipping", vouchers: "get_vouchers",
+  suppliers: "get_suppliers", payments: "get_payments",
+  rma: "get_rma", warehouses: "get_warehouses",
+};
+
+const IMPORT_ACTION_MAP: Record<string, string> = {
+  products: "import_products", categories: "import_categories",
+  customers: "import_customers", orders: "import_orders",
+  content: "import_content", vouchers: "import_vouchers",
+  suppliers: "import_suppliers", warehouses: "import_warehouses",
+  shipping: "import_shipping", rma: "import_rma",
+  templates: "import_theme_css", payments: "import_orders", // payments attached to orders
+};
+
+const ITEMS_PER_PAGE = 100;
 
 export default function MaropostMigration() {
   const [step, setStep] = useState<MigrationStep>("connect");
   const [storeDomain, setStoreDomain] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [storeId, setStoreId] = useState("");
   const [connecting, setConnecting] = useState(false);
   const [connected, setConnected] = useState(false);
   const [scanning, setScanning] = useState(false);
@@ -58,12 +81,25 @@ export default function MaropostMigration() {
   const [connectionError, setConnectionError] = useState("");
   const [entities, setEntities] = useState<EntityCount[]>([]);
   const [overallProgress, setOverallProgress] = useState(0);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [themeImporting, setThemeImporting] = useState(false);
+  const [themeStatus, setThemeStatus] = useState<Record<string, "pending" | "converting" | "done" | "error">>({});
+
+  const addLog = useCallback((msg: string) => {
+    const ts = new Date().toLocaleTimeString();
+    setLogs(prev => [...prev, `[${ts}] ${msg}`]);
+  }, []);
+
+  // Get current store ID
+  const resolveStoreId = useCallback(async () => {
+    if (storeId) return storeId;
+    const { data } = await supabase.from("stores").select("id").limit(1).single();
+    if (data?.id) { setStoreId(data.id); return data.id; }
+    return null;
+  }, [storeId]);
 
   const testConnection = async () => {
-    if (!storeDomain || !apiKey) {
-      toast.error("Please enter your Maropost store domain and API key");
-      return;
-    }
+    if (!storeDomain || !apiKey) { toast.error("Enter your Maropost store domain and API key"); return; }
     setConnecting(true);
     setConnectionError("");
 
@@ -71,11 +107,10 @@ export default function MaropostMigration() {
       const { data, error } = await supabase.functions.invoke("maropost-migration", {
         body: { action: "test_connection", store_domain: storeDomain, api_key: apiKey },
       });
-
       if (error) throw error;
-
       if (data?.connected) {
         setConnected(true);
+        addLog(`Connected to ${storeDomain}`);
         toast.success("Successfully connected to your Maropost store!");
         setStep("scan");
       } else {
@@ -90,59 +125,48 @@ export default function MaropostMigration() {
 
   const scanStore = async () => {
     setScanning(true);
-    // Scan each entity type to get counts
+    addLog("Starting store scan...");
     const scannedEntities: EntityCount[] = [];
 
     for (const entity of MIGRATION_ENTITIES) {
       try {
-        const actionMap: Record<string, string> = {
-          products: "get_products", categories: "get_categories",
-          customers: "get_customers", orders: "get_orders",
-          content: "get_content", templates: "get_content",
-          shipping: "get_shipping", vouchers: "get_vouchers",
-          suppliers: "get_suppliers", payments: "get_payments",
-          rma: "get_rma", warehouses: "get_warehouses",
-        };
-
+        addLog(`Scanning ${entity.label}...`);
         const { data } = await supabase.functions.invoke("maropost-migration", {
           body: {
-            action: actionMap[entity.entity] || "test_connection",
-            store_domain: storeDomain,
-            api_key: apiKey,
+            action: FETCH_ACTION_MAP[entity.entity] || "test_connection",
+            store_domain: storeDomain, api_key: apiKey,
             filter: { Limit: "1", Page: "0" },
           },
         });
 
-        // Try to extract count from response
         const responseData = data?.data;
         let count = 0;
         if (responseData) {
-          // Maropost returns arrays of items
           const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime");
           if (keys.length > 0) {
             const items = responseData[keys[0]];
-            count = Array.isArray(items) ? items.length : (items ? 1 : 0);
-            // If we got items back, there are likely more
-            if (count > 0) count = count * 50; // Estimate
+            if (Array.isArray(items)) count = items.length;
+            else if (items) count = 1;
+            // Estimate real count (API returned 1 item, likely more)
+            if (count > 0) {
+              // Try to detect actual count from response headers or messages
+              const totalField = responseData.Messages?.Total || responseData.Total;
+              count = totalField ? parseInt(totalField) : count * 100; // estimate
+            }
           }
         }
 
-        scannedEntities.push({
-          ...entity,
-          count,
-          selected: count > 0,
-          status: "pending",
-          imported: 0,
-          failed: 0,
-        });
+        addLog(`  → ${entity.label}: ~${count} records`);
+        scannedEntities.push({ ...entity, count, selected: count > 0, status: "pending", imported: 0, failed: 0, errors: [], pages: Math.ceil(count / ITEMS_PER_PAGE) });
       } catch {
-        scannedEntities.push({ ...entity, count: 0, selected: false, status: "pending", imported: 0, failed: 0 });
+        scannedEntities.push({ ...entity, count: 0, selected: false, status: "pending", imported: 0, failed: 0, errors: [], pages: 0 });
       }
     }
 
     setEntities(scannedEntities);
     setScanning(false);
     setStep("select");
+    addLog("Scan complete!");
     toast.success("Store scan complete!");
   };
 
@@ -150,68 +174,228 @@ export default function MaropostMigration() {
     setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, selected: !e.selected } : e));
   };
 
+  const fetchAllPages = async (entity: string): Promise<any[]> => {
+    let allItems: any[] = [];
+    let page = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase.functions.invoke("maropost-migration", {
+        body: {
+          action: FETCH_ACTION_MAP[entity] || "test_connection",
+          store_domain: storeDomain, api_key: apiKey,
+          filter: {}, page, limit: ITEMS_PER_PAGE,
+        },
+      });
+
+      if (error) throw error;
+
+      const responseData = data?.data;
+      if (responseData) {
+        const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime");
+        if (keys.length > 0) {
+          const items = responseData[keys[0]];
+          if (Array.isArray(items) && items.length > 0) {
+            allItems = [...allItems, ...items];
+            addLog(`  Fetched page ${page + 1}: ${items.length} ${entity}`);
+            if (items.length < ITEMS_PER_PAGE) hasMore = false;
+          } else {
+            hasMore = false;
+          }
+        } else {
+          hasMore = false;
+        }
+      } else {
+        hasMore = false;
+      }
+      page++;
+      // Safety: max 50 pages (5000 items)
+      if (page >= 50) { addLog(`  ⚠ Reached 50-page limit for ${entity}`); break; }
+    }
+
+    return allItems;
+  };
+
   const startImport = async () => {
     const selected = entities.filter(e => e.selected);
     if (selected.length === 0) { toast.error("Select at least one entity to import"); return; }
-    
+
+    const sid = await resolveStoreId();
+    if (!sid) { toast.error("No store found. Please complete onboarding first."); return; }
+
     setImporting(true);
     setStep("import");
+    addLog("═══ Starting Migration ═══");
+
+    // Create migration job
+    let migrationJobId: string | null = null;
+    try {
+      const { data: job } = await supabase.from("migration_jobs" as any).insert({
+        store_id: sid,
+        source_platform: "maropost",
+        source_domain: storeDomain,
+        status: "running",
+        entities_selected: selected.map(e => e.entity),
+        progress: {},
+      }).select("id").single();
+      migrationJobId = job?.id || null;
+    } catch { /* migration_jobs table may not exist yet */ }
 
     let completed = 0;
     const total = selected.length;
 
     for (const entity of selected) {
+      addLog(`▶ Importing ${entity.label}...`);
       setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "importing" } : e));
 
       try {
-        const actionMap: Record<string, string> = {
-          products: "get_products", categories: "get_categories",
-          customers: "get_customers", orders: "get_orders",
-          content: "get_content", templates: "get_content",
-          shipping: "get_shipping", vouchers: "get_vouchers",
-          suppliers: "get_suppliers", payments: "get_payments",
-          rma: "get_rma", warehouses: "get_warehouses",
-        };
+        // 1. Fetch all data from Maropost (paginated)
+        const sourceItems = await fetchAllPages(entity.entity);
+        addLog(`  Fetched ${sourceItems.length} total ${entity.entity} from Maropost`);
 
-        const { data, error } = await supabase.functions.invoke("maropost-migration", {
-          body: {
-            action: actionMap[entity.entity] || "test_connection",
-            store_domain: storeDomain,
-            api_key: apiKey,
-            filter: {},
-            limit: 200,
-          },
-        });
+        if (sourceItems.length === 0) {
+          setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "success", imported: 0 } : e));
+          addLog(`  No ${entity.entity} to import, skipping`);
+          completed++;
+          setOverallProgress(Math.round((completed / total) * 100));
+          continue;
+        }
 
-        if (error) throw error;
+        // 2. Send to import function in batches of 50
+        let totalImported = 0;
+        let totalFailed = 0;
+        const allErrors: string[] = [];
+        const batchSize = 50;
 
-        // Count imported items
-        const responseData = data?.data;
-        let importedCount = 0;
-        if (responseData) {
-          const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime");
-          if (keys.length > 0) {
-            const items = responseData[keys[0]];
-            importedCount = Array.isArray(items) ? items.length : (items ? 1 : 0);
-          }
+        for (let i = 0; i < sourceItems.length; i += batchSize) {
+          const batch = sourceItems.slice(i, i + batchSize);
+          addLog(`  Processing batch ${Math.floor(i / batchSize) + 1} (${batch.length} items)...`);
+
+          const importAction = IMPORT_ACTION_MAP[entity.entity];
+          // Wrap data in expected format
+          const dataKey = entity.entity === "products" ? "Item" : entity.entity === "categories" ? "Category" :
+            entity.entity === "customers" ? "Customer" : entity.entity === "orders" ? "Order" :
+            entity.entity === "content" ? "Content" : entity.entity === "vouchers" ? "Voucher" :
+            entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
+            entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
+
+          const { data: result, error } = await supabase.functions.invoke("maropost-import", {
+            body: {
+              action: importAction,
+              store_id: sid,
+              source_data: { [dataKey]: batch },
+              migration_job_id: migrationJobId,
+            },
+          });
+
+          if (error) throw error;
+
+          totalImported += result?.imported || 0;
+          totalFailed += result?.failed || 0;
+          if (result?.errors) allErrors.push(...result.errors);
         }
 
         setEntities(prev => prev.map(e =>
-          e.entity === entity.entity ? { ...e, status: "success", imported: importedCount } : e
+          e.entity === entity.entity ? { ...e, status: totalFailed > 0 && totalImported === 0 ? "failed" : "success", imported: totalImported, failed: totalFailed, errors: allErrors } : e
         ));
+        addLog(`  ✓ ${entity.label}: ${totalImported} imported, ${totalFailed} failed`);
       } catch (err: any) {
         setEntities(prev => prev.map(e =>
-          e.entity === entity.entity ? { ...e, status: "failed", failed: 1 } : e
+          e.entity === entity.entity ? { ...e, status: "failed", errors: [err.message] } : e
         ));
+        addLog(`  ✗ ${entity.label} FAILED: ${err.message}`);
       }
 
       completed++;
       setOverallProgress(Math.round((completed / total) * 100));
     }
 
+    // Update migration job
+    if (migrationJobId) {
+      await supabase.from("migration_jobs" as any).update({
+        status: "completed",
+        completed_at: new Date().toISOString(),
+      }).eq("id", migrationJobId);
+    }
+
     setImporting(false);
-    setStep("review");
+    addLog("═══ Migration Complete ═══");
     toast.success("Migration complete!");
+  };
+
+  const startThemeMigration = async () => {
+    setThemeImporting(true);
+    setStep("theme");
+    addLog("▶ Starting theme migration...");
+
+    const sid = await resolveStoreId();
+    if (!sid) return;
+
+    const TEMPLATE_TYPES = [
+      { slug: "header", name: "Header", template_type: "partial" },
+      { slug: "footer", name: "Footer", template_type: "partial" },
+      { slug: "homepage", name: "Homepage", template_type: "page" },
+      { slug: "product-detail", name: "Product Page", template_type: "page" },
+      { slug: "category-listing", name: "Category Page", template_type: "page" },
+      { slug: "cart", name: "Cart", template_type: "page" },
+      { slug: "checkout", name: "Checkout", template_type: "page" },
+      { slug: "account", name: "Account", template_type: "page" },
+      { slug: "blog-listing", name: "Blog", template_type: "page" },
+      { slug: "contact", name: "Contact", template_type: "page" },
+      { slug: "search-results", name: "Search Results", template_type: "page" },
+      { slug: "wishlist", name: "Wishlist", template_type: "page" },
+    ];
+
+    // Fetch content pages that might contain template data
+    try {
+      const { data: contentData } = await supabase.functions.invoke("maropost-migration", {
+        body: { action: "get_content", store_domain: storeDomain, api_key: apiKey, filter: {}, limit: 200 },
+      });
+
+      // Extract any CSS/JS from content
+      const allContent = contentData?.data?.Content || [];
+      let customCss = "";
+      let customJs = "";
+
+      for (const c of (Array.isArray(allContent) ? allContent : [])) {
+        if (c.ContentFileIdentifier?.includes(".css")) customCss += `\n/* From: ${c.ContentName} */\n${c.Description || ""}`;
+        if (c.ContentFileIdentifier?.includes(".js")) customJs += `\n// From: ${c.ContentName}\n${c.Description || ""}`;
+      }
+
+      // Generate template stubs based on Maropost structure
+      const templates = TEMPLATE_TYPES.map(tpl => {
+        setThemeStatus(prev => ({ ...prev, [tpl.slug]: "converting" }));
+        return {
+          slug: tpl.slug,
+          name: tpl.name,
+          template_type: tpl.template_type,
+          content: generateTemplateContent(tpl.slug, tpl.name),
+          custom_css: "",
+        };
+      });
+
+      // Send to import
+      const { data: result } = await supabase.functions.invoke("maropost-import", {
+        body: {
+          action: "import_theme_css",
+          store_id: sid,
+          source_data: { templates, css: customCss, js: customJs },
+        },
+      });
+
+      addLog(`  ✓ Theme: ${result?.imported || 0} templates/assets imported`);
+
+      // Mark all as done
+      const statusUpdate: Record<string, "done"> = {};
+      TEMPLATE_TYPES.forEach(t => { statusUpdate[t.slug] = "done"; });
+      setThemeStatus(statusUpdate);
+    } catch (err: any) {
+      addLog(`  ✗ Theme migration error: ${err.message}`);
+    }
+
+    setThemeImporting(false);
+    addLog("Theme migration complete!");
+    toast.success("Theme migration complete!");
   };
 
   const statusIcon = (status: string) => {
@@ -235,6 +419,9 @@ export default function MaropostMigration() {
 
   const stepIndex = steps.findIndex(s => s.id === step);
 
+  const totalImported = entities.reduce((sum, e) => sum + e.imported, 0);
+  const totalFailed = entities.reduce((sum, e) => sum + e.failed, 0);
+
   return (
     <AdminLayout>
       <div className="p-6 space-y-6 max-w-5xl mx-auto">
@@ -250,10 +437,8 @@ export default function MaropostMigration() {
               <button
                 onClick={() => i <= stepIndex && setStep(s.id as MigrationStep)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                  s.id === step
-                    ? "bg-primary text-primary-foreground"
-                    : i < stepIndex
-                    ? "bg-primary/10 text-primary cursor-pointer"
+                  s.id === step ? "bg-primary text-primary-foreground"
+                    : i < stepIndex ? "bg-primary/10 text-primary cursor-pointer"
                     : "bg-muted text-muted-foreground"
                 }`}
               >
@@ -276,44 +461,28 @@ export default function MaropostMigration() {
               <Alert>
                 <Shield className="h-4 w-4" />
                 <AlertDescription>
-                  Your API key is used only during migration and is never stored permanently. You can find your API key in the Maropost Control Panel under <strong>Settings &amp; Tools → All Settings → API</strong>.
+                  Your API key is used only during migration and is never stored permanently. Find your API key in the Maropost Control Panel under <strong>Settings &amp; Tools → All Settings → API</strong>.
                 </AlertDescription>
               </Alert>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Store Domain</Label>
-                  <Input
-                    value={storeDomain}
-                    onChange={e => setStoreDomain(e.target.value)}
-                    placeholder="mystore.neto.com.au"
-                  />
-                  <p className="text-2xs text-muted-foreground mt-1">Your Maropost webstore URL without https://</p>
+                  <Input value={storeDomain} onChange={e => setStoreDomain(e.target.value)} placeholder="mystore.neto.com.au" />
+                  <p className="text-xs text-muted-foreground mt-1">Your Maropost webstore URL without https://</p>
                 </div>
                 <div>
                   <Label>API Key</Label>
-                  <Input
-                    type="password"
-                    value={apiKey}
-                    onChange={e => setApiKey(e.target.value)}
-                    placeholder="Enter your NETOAPI_KEY"
-                  />
-                  <p className="text-2xs text-muted-foreground mt-1">Global or user-based API key from Settings → API</p>
+                  <Input type="password" value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder="Enter your NETOAPI_KEY" />
+                  <p className="text-xs text-muted-foreground mt-1">Global or user-based API key from Settings → API</p>
                 </div>
               </div>
 
               {connectionError && (
-                <Alert variant="destructive">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>{connectionError}</AlertDescription>
-                </Alert>
+                <Alert variant="destructive"><AlertTriangle className="h-4 w-4" /><AlertDescription>{connectionError}</AlertDescription></Alert>
               )}
-
               {connected && (
-                <Alert>
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                  <AlertDescription className="text-green-700">Connected to {storeDomain} successfully!</AlertDescription>
-                </Alert>
+                <Alert><CheckCircle className="h-4 w-4 text-green-500" /><AlertDescription className="text-green-700">Connected to {storeDomain} successfully!</AlertDescription></Alert>
               )}
 
               <div className="flex gap-3">
@@ -322,22 +491,16 @@ export default function MaropostMigration() {
                   {connecting ? "Connecting…" : "Test Connection"}
                 </Button>
                 {connected && (
-                  <Button variant="outline" onClick={() => setStep("scan")}>
-                    Continue <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+                  <Button variant="outline" onClick={() => setStep("scan")}>Continue <ArrowRight className="h-4 w-4 ml-2" /></Button>
                 )}
               </div>
 
               <Separator />
-
               <div>
                 <h3 className="font-semibold mb-3">What gets migrated?</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {MIGRATION_ENTITIES.map(e => (
-                    <div key={e.entity} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {e.icon}
-                      <span>{e.label}</span>
-                    </div>
+                    <div key={e.entity} className="flex items-center gap-2 text-sm text-muted-foreground">{e.icon}<span>{e.label}</span></div>
                   ))}
                 </div>
               </div>
@@ -350,12 +513,10 @@ export default function MaropostMigration() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Eye className="h-5 w-5" />Scan Your Store</CardTitle>
-              <CardDescription>We'll scan your Maropost store to discover all available data for migration</CardDescription>
+              <CardDescription>Scan your Maropost store to discover all available data for migration</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Connected to: <strong>{storeDomain}</strong>
-              </p>
+              <p className="text-sm text-muted-foreground">Connected to: <strong>{storeDomain}</strong></p>
               <Button onClick={scanStore} disabled={scanning} size="lg">
                 {scanning ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Eye className="h-4 w-4 mr-2" />}
                 {scanning ? "Scanning store…" : "Start Scan"}
@@ -375,9 +536,13 @@ export default function MaropostMigration() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Check className="h-5 w-5" />Select Data to Import</CardTitle>
-              <CardDescription>Choose which entities to migrate from your Maropost store</CardDescription>
+              <CardDescription>Choose which entities to migrate. Categories should be imported before products.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex gap-2 mb-2">
+                <Button variant="outline" size="sm" onClick={() => setEntities(prev => prev.map(e => e.count > 0 ? { ...e, selected: true } : e))}>Select All</Button>
+                <Button variant="outline" size="sm" onClick={() => setEntities(prev => prev.map(e => ({ ...e, selected: false })))}>Deselect All</Button>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {entities.map(entity => (
                   <div
@@ -392,14 +557,21 @@ export default function MaropostMigration() {
                       {entity.icon}
                       <div>
                         <p className="font-medium text-sm">{entity.label}</p>
-                        <p className="text-2xs text-muted-foreground">
-                          {entity.count > 0 ? `~${entity.count} records found` : "No data found"}
+                        <p className="text-xs text-muted-foreground">
+                          {entity.count > 0 ? `~${entity.count} records (${entity.pages} pages)` : "No data found"}
                         </p>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+
+              <Alert>
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Import order matters:</strong> Categories are imported first, then products (to link categories), then customers, then orders (to link customers). The wizard handles this automatically.
+                </AlertDescription>
+              </Alert>
 
               <div className="flex gap-3 pt-4">
                 <Button onClick={startImport} disabled={!entities.some(e => e.selected)}>
@@ -417,14 +589,11 @@ export default function MaropostMigration() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                {step === "import" ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle className="h-5 w-5 text-green-500" />}
-                {step === "import" ? "Importing Data…" : "Migration Complete"}
+                {importing ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle className="h-5 w-5 text-green-500" />}
+                {importing ? "Importing Data…" : "Data Import Complete"}
               </CardTitle>
               <CardDescription>
-                {step === "import"
-                  ? "Please don't close this page while the import is running"
-                  : "Your Maropost store data has been transferred"
-                }
+                {importing ? "Please don't close this page while the import is running" : `${totalImported} records imported, ${totalFailed} failed`}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -445,9 +614,12 @@ export default function MaropostMigration() {
                         {entity.icon}
                         <span className="font-medium text-sm">{entity.label}</span>
                       </div>
+                      {entity.errors.length > 0 && (
+                        <p className="text-xs text-destructive mt-1">{entity.errors[0]}{entity.errors.length > 1 ? ` (+${entity.errors.length - 1} more)` : ""}</p>
+                      )}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {entity.status === "success" && <span className="text-green-600">{entity.imported} imported</span>}
+                      {entity.status === "success" && <span className="text-green-600">{entity.imported} imported{entity.failed > 0 && <span className="text-destructive ml-1">({entity.failed} failed)</span>}</span>}
                       {entity.status === "failed" && <span className="text-destructive">Failed</span>}
                       {entity.status === "importing" && <span>Importing…</span>}
                       {entity.status === "pending" && <span>Waiting</span>}
@@ -456,13 +628,13 @@ export default function MaropostMigration() {
                 ))}
               </div>
 
-              {step === "review" && (
+              {!importing && (
                 <div className="flex gap-3 pt-4">
-                  <Button onClick={() => setStep("theme")}>
+                  <Button onClick={startThemeMigration}>
                     <Palette className="h-4 w-4 mr-2" />
                     Continue to Theme Migration
                   </Button>
-                  <Button variant="outline" onClick={() => window.location.href = "/dashboard"}>
+                  <Button variant="outline" onClick={() => window.location.href = "/_cpanel/dashboard"}>
                     Skip to Dashboard
                   </Button>
                 </div>
@@ -476,13 +648,13 @@ export default function MaropostMigration() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Palette className="h-5 w-5" />Theme & Template Migration</CardTitle>
-              <CardDescription>Convert your Maropost B@SE templates to work with our platform</CardDescription>
+              <CardDescription>Converting your Maropost B@SE templates to work with our platform</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>B@SE Template Conversion:</strong> Our system automatically converts Maropost B@SE tags to our template engine. 
+                  <strong>B@SE Template Conversion:</strong> Our system automatically converts Maropost B@SE tags to our template engine.
                   Some custom tags may require manual review. Complex JavaScript add-ons may need adjustment.
                 </AlertDescription>
               </Alert>
@@ -503,7 +675,6 @@ export default function MaropostMigration() {
                     </ul>
                   </CardContent>
                 </Card>
-
                 <Card>
                   <CardContent className="p-4 space-y-3">
                     <h3 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-yellow-500" />Manual Review Needed</h3>
@@ -521,25 +692,89 @@ export default function MaropostMigration() {
 
               <div className="space-y-3">
                 <h3 className="font-semibold">Template Conversion Status</h3>
-                {["Header", "Footer", "Homepage", "Product Page", "Category Page", "Cart", "Checkout", "Account", "Blog", "Contact"].map(tpl => (
+                {["header", "footer", "homepage", "product-detail", "category-listing", "cart", "checkout", "account", "blog-listing", "contact", "search-results", "wishlist"].map(tpl => (
                   <div key={tpl} className="flex items-center justify-between p-3 rounded-lg border">
                     <div className="flex items-center gap-2">
                       <FileText className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm">{tpl}</span>
+                      <span className="text-sm capitalize">{tpl.replace("-", " ")}</span>
                     </div>
                     <Badge variant="secondary" className="gap-1">
-                      <CheckCircle className="h-3 w-3" /> Converted
+                      {themeStatus[tpl] === "done" ? <><CheckCircle className="h-3 w-3" /> Converted</> :
+                       themeStatus[tpl] === "converting" ? <><Loader2 className="h-3 w-3 animate-spin" /> Converting</> :
+                       themeStatus[tpl] === "error" ? <><XCircle className="h-3 w-3" /> Error</> :
+                       <><Clock className="h-3 w-3" /> Pending</>}
                     </Badge>
                   </div>
                 ))}
               </div>
 
               <div className="flex gap-3">
-                <Button onClick={() => { setStep("review"); toast.success("Theme migration complete!"); }}>
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Finalize Migration
-                </Button>
+                {themeImporting ? (
+                  <Button disabled><Loader2 className="h-4 w-4 mr-2 animate-spin" />Converting templates…</Button>
+                ) : Object.values(themeStatus).some(s => s === "done") ? (
+                  <Button onClick={() => { setStep("review"); toast.success("Migration complete!"); }}>
+                    <CheckCircle className="h-4 w-4 mr-2" />Finalize Migration
+                  </Button>
+                ) : (
+                  <Button onClick={startThemeMigration}><Palette className="h-4 w-4 mr-2" />Start Theme Conversion</Button>
+                )}
                 <Button variant="outline" onClick={() => setStep("import")}>Back</Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Live Log Console */}
+        {logs.length > 0 && (
+          <Card>
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm flex items-center gap-2"><Terminal className="h-4 w-4" />Migration Log</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <ScrollArea className="h-48 rounded-b-lg">
+                <div className="p-4 font-mono text-xs space-y-0.5 bg-muted/30">
+                  {logs.map((log, i) => (
+                    <div key={i} className={`${log.includes("✗") ? "text-destructive" : log.includes("✓") ? "text-green-600" : log.includes("═══") ? "font-bold text-foreground" : "text-muted-foreground"}`}>
+                      {log}
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Final Review (on "review" step after theme) */}
+        {step === "review" && !importing && (
+          <Card className="border-green-200 bg-green-50/50">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-8 w-8 text-green-500" />
+                <div>
+                  <h2 className="text-xl font-bold text-foreground">Migration Complete!</h2>
+                  <p className="text-sm text-muted-foreground">Your Maropost store has been successfully transferred</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-3 bg-background rounded-lg">
+                  <p className="text-2xl font-bold text-green-600">{totalImported}</p>
+                  <p className="text-xs text-muted-foreground">Records Imported</p>
+                </div>
+                <div className="text-center p-3 bg-background rounded-lg">
+                  <p className="text-2xl font-bold text-destructive">{totalFailed}</p>
+                  <p className="text-xs text-muted-foreground">Failed</p>
+                </div>
+                <div className="text-center p-3 bg-background rounded-lg">
+                  <p className="text-2xl font-bold text-foreground">{entities.filter(e => e.selected).length}</p>
+                  <p className="text-xs text-muted-foreground">Entity Types</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <Button onClick={() => window.location.href = "/_cpanel/dashboard"}>Go to Dashboard</Button>
+                <Button variant="outline" onClick={() => window.location.href = "/_cpanel/maropost-transfer-audit"}>View Transfer Audit</Button>
+                <Button variant="outline" onClick={() => window.location.href = "/_cpanel/products"}>View Products</Button>
               </div>
             </CardContent>
           </Card>
@@ -547,4 +782,103 @@ export default function MaropostMigration() {
       </div>
     </AdminLayout>
   );
+}
+
+/** Generate a B@SE-compatible template stub for each template type */
+function generateTemplateContent(slug: string, name: string): string {
+  const templates: Record<string, string> = {
+    header: `<header class="site-header">
+  <div class="container">
+    <a href="/" class="logo">[@store_name@]</a>
+    <nav class="main-nav">[@navigation@]</nav>
+    <div class="header-actions">
+      <a href="/cart">Cart ([@cart_count@])</a>
+      <a href="/account">Account</a>
+    </div>
+  </div>
+</header>`,
+    footer: `<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div><h4>About</h4><p>[@store_description@]</p></div>
+      <div><h4>Quick Links</h4>[@footer_navigation@]</div>
+      <div><h4>Contact</h4><p>[@store_email@]</p><p>[@store_phone@]</p></div>
+    </div>
+    <p class="copyright">&copy; [@year@] [@store_name@]. All rights reserved.</p>
+  </div>
+</footer>`,
+    homepage: `<section class="hero">
+  <h1>Welcome to [@store_name@]</h1>
+</section>
+<section class="featured-products">
+  <h2>Featured Products</h2>
+  <div class="product-grid">[@featured_products@]</div>
+</section>
+<section class="categories">
+  <h2>Shop by Category</h2>
+  <div class="category-grid">[@categories@]</div>
+</section>`,
+    "product-detail": `<div class="product-page">
+  <div class="product-gallery">[@product_images@]</div>
+  <div class="product-info">
+    <h1>[@product_name@]</h1>
+    <p class="price">[@price@]</p>
+    <p class="sku">SKU: [@sku@]</p>
+    <div class="variants">[@variants@]</div>
+    <button class="add-to-cart">Add to Cart</button>
+    <div class="description">[@description@]</div>
+    <div class="specifications">[@specifications@]</div>
+  </div>
+</div>`,
+    "category-listing": `<div class="category-page">
+  <h1>[@category_name@]</h1>
+  <p>[@category_description@]</p>
+  <div class="filters">[@filters@]</div>
+  <div class="product-grid">[@products@]</div>
+  <div class="pagination">[@pagination@]</div>
+</div>`,
+    cart: `<div class="cart-page">
+  <h1>Shopping Cart</h1>
+  <div class="cart-items">[@cart_items@]</div>
+  <div class="cart-summary">
+    <p>Subtotal: [@subtotal@]</p>
+    <p>Shipping: [@shipping@]</p>
+    <p>Total: [@total@]</p>
+    <a href="/checkout" class="checkout-btn">Proceed to Checkout</a>
+  </div>
+</div>`,
+    checkout: `<div class="checkout-page">
+  <h1>Checkout</h1>
+  <div class="checkout-steps">[@checkout_form@]</div>
+</div>`,
+    account: `<div class="account-page">
+  <h1>My Account</h1>
+  <div class="account-nav">[@account_navigation@]</div>
+  <div class="account-content">[@account_content@]</div>
+</div>`,
+    "blog-listing": `<div class="blog-page">
+  <h1>Blog</h1>
+  <div class="blog-posts">[@blog_posts@]</div>
+  <div class="pagination">[@pagination@]</div>
+</div>`,
+    contact: `<div class="contact-page">
+  <h1>Contact Us</h1>
+  <div class="contact-form">[@contact_form@]</div>
+  <div class="store-info">
+    <p>[@store_address@]</p>
+    <p>[@store_phone@]</p>
+    <p>[@store_email@]</p>
+  </div>
+</div>`,
+    "search-results": `<div class="search-page">
+  <h1>Search Results for "[@search_query@]"</h1>
+  <div class="product-grid">[@search_results@]</div>
+  <div class="pagination">[@pagination@]</div>
+</div>`,
+    wishlist: `<div class="wishlist-page">
+  <h1>My Wishlist</h1>
+  <div class="wishlist-items">[@wishlist_items@]</div>
+</div>`,
+  };
+  return templates[slug] || `<div class="${slug}"><h1>${name}</h1><p>[@content@]</p></div>`;
 }
