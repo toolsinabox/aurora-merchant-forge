@@ -7898,10 +7898,10 @@ const checkoutDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "Guest Checkout", description: "Allow checkout without creating account", status: "done" },
       { name: "One-Page Checkout", description: "All checkout steps on single page", status: "done", notes: "StorefrontCheckout page" },
-      { name: "Multi-Step Checkout", description: "Step-by-step checkout wizard (address → shipping → payment)", status: "partial" },
-      { name: "Address Autocomplete (Google Places)", description: "Google Places autocomplete for address fields", status: "partial", notes: "Country dropdown selector with common countries, inline validation for address length, city format, and postcode" },
+      { name: "Multi-Step Checkout", description: "Step-by-step checkout wizard (address → shipping → payment)", status: "done", notes: "StorefrontCheckout 3-step progress indicator (Details → Shipping → Payment) with clickable steps, step state management, and step-based form sections" },
+      { name: "Address Autocomplete (Google Places)", description: "Google Places autocomplete for address fields", status: "partial", notes: "Country dropdown selector with common countries, inline validation for address length, city format, and postcode. Full Google Places API requires API key." },
       { name: "Address Validation", description: "Validate and standardize shipping addresses", status: "done", notes: "Checkout inline validation for short addresses, non-letter city names, and short postcodes with warning messages" },
-      { name: "Saved Addresses (Customer)", description: "Allow customers to save multiple shipping addresses", status: "partial" },
+      { name: "Saved Addresses (Customer)", description: "Allow customers to save multiple shipping addresses", status: "done", notes: "StorefrontCheckout loads customer_addresses from database, shows saved address selector dropdown with MapPin icon, auto-populates form fields from selected address, enables express checkout for returning customers" },
       { name: "Checkout Custom Fields", description: "Add custom fields to checkout (e.g., delivery instructions)", status: "done", notes: "Checkout has Company Name, PO Number, Special Requirements custom fields plus delivery instructions and order notes" },
       { name: "Order Notes / Gift Message", description: "Customer can add order notes or gift message", status: "done", notes: "StorefrontCheckout dedicated Gift Message section with 500-char textarea, included in order notes" },
       { name: "Terms & Conditions Checkbox", description: "Require acceptance of T&C before placing order", status: "done", notes: "StorefrontCheckout T&C checkbox with links to Terms of Service and Privacy Policy, button disabled until accepted" },
