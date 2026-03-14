@@ -54,15 +54,42 @@ serve(async (req) => {
       const items = source_data?.Item || source_data || [];
       const products = Array.isArray(items) ? items : [items];
 
+      // Helper to download and re-host an image to Supabase Storage
+      const rehostImage = async (imageUrl: string, productSlug: string, index: number): Promise<string> => {
+        try {
+          if (!imageUrl || imageUrl.startsWith("data:")) return imageUrl;
+          const fullUrl = imageUrl.startsWith("http") ? imageUrl : `https:${imageUrl}`;
+          const response = await fetch(fullUrl);
+          if (!response.ok) return fullUrl; // Fallback to original URL
+          const blob = await response.blob();
+          const ext = fullUrl.split(".").pop()?.split("?")[0]?.toLowerCase() || "jpg";
+          const path = `${store_id}/${productSlug}/${index}.${ext}`;
+          const { error: uploadErr } = await supabase.storage
+            .from("product-images")
+            .upload(path, blob, { contentType: blob.type || "image/jpeg", upsert: true });
+          if (uploadErr) return fullUrl;
+          const { data: publicUrl } = supabase.storage.from("product-images").getPublicUrl(path);
+          return publicUrl.publicUrl;
+        } catch {
+          return imageUrl; // Fallback to original
+        }
+      };
+
       for (const p of products) {
         try {
-          // Build images array from Maropost Images field
+          // Build images array - download and re-host to our storage
           let imagesArr: string[] = [];
+          const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
+
           if (p.Images) {
             const imgs = Array.isArray(p.Images) ? p.Images : [p.Images];
-            for (const img of imgs) {
+            for (let i = 0; i < imgs.length; i++) {
+              const img = imgs[i];
               const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL;
-              if (url) imagesArr.push(url);
+              if (url) {
+                const rehostedUrl = await rehostImage(url, slug, i);
+                imagesArr.push(rehostedUrl);
+              }
             }
           }
 
