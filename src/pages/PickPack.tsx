@@ -12,10 +12,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers } from "lucide-react";
+import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers, Copy } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
-type WorkflowStep = "pick" | "pack" | "ship" | "waves";
+type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves";
 
 interface PickWave {
   id: string;
@@ -96,6 +96,26 @@ export default function PickPack() {
     return orderItems.filter((item: any) => unfulfilledOrderIds.has(item.order_id));
   }, [orderItems, pendingOrders]);
 
+  // Batch picking: group by SKU across all orders
+  const batchPickItems = useMemo(() => {
+    const skuMap = new Map<string, { sku: string; title: string; totalQty: number; orderCount: number; orders: string[] }>();
+    for (const item of pickItems) {
+      const key = (item as any).sku || (item as any).product_id;
+      const existing = skuMap.get(key);
+      const orderNum = ((item as any).orders as any)?.order_number || "—";
+      if (existing) {
+        existing.totalQty += (item as any).quantity;
+        if (!existing.orders.includes(orderNum)) {
+          existing.orders.push(orderNum);
+          existing.orderCount++;
+        }
+      } else {
+        skuMap.set(key, { sku: (item as any).sku || "—", title: (item as any).title, totalQty: (item as any).quantity, orderCount: 1, orders: [orderNum] });
+      }
+    }
+    return Array.from(skuMap.values()).sort((a, b) => b.totalQty - a.totalQty);
+  }, [pickItems]);
+
   const toggleItem = (id: string) => {
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
@@ -129,7 +149,7 @@ export default function PickPack() {
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 flex-wrap">
-          {(["pick", "pack", "ship", "waves"] as WorkflowStep[]).map((s, i) => (
+          {(["pick", "batch", "pack", "ship", "waves"] as WorkflowStep[]).map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
               <Button
@@ -139,12 +159,13 @@ export default function PickPack() {
                 onClick={() => setStep(s)}
               >
                 {s === "pick" && <Package className="h-3 w-3 mr-1" />}
+                {s === "batch" && <Copy className="h-3 w-3 mr-1" />}
                 {s === "pack" && <CheckCircle className="h-3 w-3 mr-1" />}
                 {s === "ship" && <Truck className="h-3 w-3 mr-1" />}
                 {s === "waves" && <Layers className="h-3 w-3 mr-1" />}
-                {s === "waves" ? "Waves" : s}
+                {s === "batch" ? "Batch Pick" : s === "waves" ? "Waves" : s}
                 <Badge variant="secondary" className="ml-1.5 text-[10px]">
-                  {s === "pick" ? pendingOrders.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : 0}
+                  {s === "pick" ? pendingOrders.length : s === "batch" ? batchPickItems.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : 0}
                 </Badge>
               </Button>
             </div>
@@ -221,6 +242,53 @@ export default function PickPack() {
                       </TableRow>
                     ))
                   )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Batch Pick Step */}
+        {step === "batch" && (
+          <Card>
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Copy className="h-4 w-4" />
+                Batch Pick — {batchPickItems.length} unique SKUs across {pendingOrders.length} orders
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">SKU</TableHead>
+                    <TableHead className="text-xs h-8">Product</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Total Qty</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                    <TableHead className="text-xs h-8">Order #s</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {batchPickItems.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">No items to batch pick</TableCell>
+                    </TableRow>
+                  ) : batchPickItems.map((item, idx) => (
+                    <TableRow key={idx} className="text-xs">
+                      <TableCell className="py-1.5 font-mono text-muted-foreground">{item.sku}</TableCell>
+                      <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{item.title}</TableCell>
+                      <TableCell className="py-1.5 text-right font-bold text-primary">{item.totalQty}</TableCell>
+                      <TableCell className="py-1.5 text-right">{item.orderCount}</TableCell>
+                      <TableCell className="py-1.5">
+                        <div className="flex flex-wrap gap-1">
+                          {item.orders.slice(0, 5).map(o => (
+                            <Badge key={o} variant="outline" className="text-[10px]">{o}</Badge>
+                          ))}
+                          {item.orders.length > 5 && <Badge variant="secondary" className="text-[10px]">+{item.orders.length - 5}</Badge>}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>

@@ -80,6 +80,21 @@ export default function POS() {
     toast.success("Order resumed");
   };
 
+  // Custom sale state
+  const [showCustomSale, setShowCustomSale] = useState(false);
+  const [customTitle, setCustomTitle] = useState("Custom Item");
+  const [customPrice, setCustomPrice] = useState("");
+
+  const addCustomSale = () => {
+    const price = parseFloat(customPrice);
+    if (!customTitle.trim() || isNaN(price) || price <= 0) { toast.error("Enter a valid title and price"); return; }
+    setCart(prev => [...prev, { product_id: `custom-${Date.now()}`, title: customTitle.trim(), sku: "CUSTOM", price, quantity: 1 }]);
+    setShowCustomSale(false);
+    setCustomTitle("Custom Item");
+    setCustomPrice("");
+    toast.success("Custom item added");
+  };
+
   const deleteParkedOrder = (parkedId: string) => {
     saveParked(parkedOrders.filter(p => p.id !== parkedId));
     toast.success("Parked order deleted");
@@ -445,6 +460,9 @@ export default function POS() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search products or scan barcode..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10" />
                 </div>
+                <Button variant="outline" size="sm" className="h-10 gap-1 text-xs" onClick={() => setShowCustomSale(true)}>
+                  <Plus className="h-4 w-4" /> Custom
+                </Button>
               </div>
               <div className="flex-1 overflow-y-auto">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -647,6 +665,27 @@ export default function POS() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Custom Sale Dialog */}
+      <Dialog open={showCustomSale} onOpenChange={setShowCustomSale}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Custom Sale Item</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Item Name</Label>
+              <Input value={customTitle} onChange={e => setCustomTitle(e.target.value)} className="h-8 text-sm" />
+            </div>
+            <div>
+              <Label className="text-xs">Price ($)</Label>
+              <Input type="number" min="0" step="0.01" value={customPrice} onChange={e => setCustomPrice(e.target.value)} className="h-8 text-sm" placeholder="0.00" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowCustomSale(false)}>Cancel</Button>
+            <Button size="sm" onClick={addCustomSale}>Add to Cart</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Park Order Dialog */}
       <Dialog open={showParkDialog} onOpenChange={setShowParkDialog}>

@@ -111,6 +111,7 @@ import EmailAutomations from "./pages/EmailAutomations.tsx";
 import PriceRules from "./pages/PriceRules.tsx";
 import GoLiveChecklist from "./pages/GoLiveChecklist.tsx";
 import InventoryReports from "./pages/InventoryReports.tsx";
+import CarrierManifest from "./pages/CarrierManifest.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -217,6 +218,7 @@ const App = () => (
                   <Route path="/_cpanel/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/_cpanel/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/_cpanel/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
+                  <Route path="/_cpanel/carrier-manifest" element={<RequireAuth><CarrierManifest /></RequireAuth>} />
                   <Route path="/_cpanel/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
                    <Route path="/_cpanel/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
                    <Route path="/_cpanel/loyalty" element={<RequireAuth><LoyaltyProgram /></RequireAuth>} />
@@ -315,6 +317,7 @@ const App = () => (
                   <Route path="/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
+                  <Route path="/carrier-manifest" element={<RequireAuth><CarrierManifest /></RequireAuth>} />
                   <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
                   <Route path="/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
                   <Route path="/loyalty" element={<RequireAuth><LoyaltyProgram /></RequireAuth>} />
