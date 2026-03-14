@@ -3801,7 +3801,7 @@ export default function FeatureAudit() {
       <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Maropost Feature Audit</h1>
-          <p className="text-xs text-muted-foreground">Comprehensive parity tracker — {stats.total} features across {featureData.length} modules</p>
+          <p className="text-xs text-muted-foreground">Comprehensive parity tracker — {stats.total} features across {allFeatureData.length} modules</p>
         </div>
 
         {/* Summary Cards */}
