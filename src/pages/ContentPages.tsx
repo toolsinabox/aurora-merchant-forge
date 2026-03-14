@@ -15,8 +15,28 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff } from "lucide-react";
+import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff, History, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
+
+interface ContentVersion {
+  id: string;
+  pageId: string;
+  title: string;
+  content: string;
+  savedAt: string;
+  savedBy: string;
+}
+
+function getVersions(pageId: string): ContentVersion[] {
+  try { return JSON.parse(localStorage.getItem(`content_versions_${pageId}`) || "[]"); } catch { return []; }
+}
+
+function saveVersion(pageId: string, title: string, content: string) {
+  const versions = getVersions(pageId);
+  const version: ContentVersion = { id: crypto.randomUUID(), pageId, title, content, savedAt: new Date().toISOString(), savedBy: "Admin" };
+  const updated = [version, ...versions].slice(0, 20); // keep last 20
+  localStorage.setItem(`content_versions_${pageId}`, JSON.stringify(updated));
+}
 
 interface PageForm {
   title: string;
