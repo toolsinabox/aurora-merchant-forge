@@ -103,6 +103,7 @@ import AccountingIntegration from "./pages/AccountingIntegration.tsx";
 import Integrations from "./pages/Integrations.tsx";
 import Multimarket from "./pages/Multimarket.tsx";
 import Marketplaces from "./pages/Marketplaces.tsx";
+import Subscriptions from "./pages/Subscriptions.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
