@@ -9252,7 +9252,7 @@ const cartFeatures: FeatureCategory[] = [
       { name: "Cart Empty State", description: "Helpful empty cart message with CTA", status: "done" },
       { name: "Cart Cross-Sell Suggestions", description: "Suggest related products in cart", status: "done", notes: "StorefrontCart related products section showing cross-sell items from product_relations" },
       { name: "Cart Save for Later", description: "Move items to save-for-later list", status: "done", notes: "SavedCarts" },
-      { name: "Cart Merge on Login", description: "Merge guest cart with account cart on login", status: "not_started" },
+      { name: "Cart Merge on Login", description: "Merge guest cart with account cart on login", status: "done", notes: "CartContext merges localStorage guest cart with server-side saved cart on authentication, deduplicates by product ID" },
       { name: "Cart Notes", description: "Add notes to entire cart/order", status: "done", notes: "StorefrontCart order notes textarea, passed through to order record" },
       { name: "Cart Item Custom Options", description: "Display selected options per cart item", status: "done" },
     ],
