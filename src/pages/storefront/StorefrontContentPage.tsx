@@ -122,9 +122,41 @@ export default function StorefrontContentPage() {
     );
   }
 
+  // Extract FAQ pairs from content for JSON-LD
+  const faqItems = useMemo(() => {
+    if (!page?.content) return [];
+    const doc = new DOMParser().parseFromString(page.content, "text/html");
+    const items: { question: string; answer: string }[] = [];
+    const headings = doc.querySelectorAll("h2, h3");
+    headings.forEach((h) => {
+      const text = h.textContent?.trim();
+      if (text && text.endsWith("?")) {
+        let answer = "";
+        let sibling = h.nextElementSibling;
+        while (sibling && !["H2", "H3"].includes(sibling.tagName)) {
+          answer += sibling.textContent?.trim() + " ";
+          sibling = sibling.nextElementSibling;
+        }
+        if (answer.trim()) items.push({ question: text, answer: answer.trim() });
+      }
+    });
+    return items;
+  }, [page?.content]);
+
   return (
     <StorefrontLayout storeName={store?.name}>
       {page.seo_title && <title>{page.seo_title}</title>}
+      {faqItems.length > 0 && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: { "@type": "Answer", text: faq.answer },
+          })),
+        })}} />
+      )}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {page.featured_image && (
           <img src={page.featured_image} alt={page.title} className="w-full rounded-xl mb-8 max-h-[400px] object-cover" />
