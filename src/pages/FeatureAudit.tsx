@@ -7854,7 +7854,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Drag-Reorder Products", description: "Drag to reorder products within category", status: "not_started" },
       { name: "Drag-Reorder Categories", description: "Drag to reorder category display order", status: "partial", notes: "sort_order field exists" },
       { name: "Drag-Reorder Images", description: "Drag to reorder product images", status: "partial" },
-      { name: "Saved Filter Presets", description: "Save and recall filter combinations on list pages", status: "not_started" },
+      { name: "Saved Filter Presets", description: "Save and recall filter combinations on list pages", status: "done", notes: "Products page Presets popover with save/load/delete using localStorage" },
       { name: "Column Visibility Toggle", description: "Show/hide columns on admin tables", status: "done", notes: "Products page Columns dropdown with localStorage persistence" },
       { name: "Column Reorder (Drag)", description: "Drag to reorder table columns", status: "not_started" },
       { name: "Inline Editing on Tables", description: "Click cell to edit value directly in table view", status: "not_started" },
