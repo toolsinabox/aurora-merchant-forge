@@ -8051,7 +8051,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
       { name: "Customer Purchase History", description: "Full order history on customer profile", status: "done" },
       { name: "Customer Wishlist (Backend)", description: "Server-side wishlist storage", status: "partial", notes: "Client-side context" },
       { name: "Customer Saved Carts", description: "Save cart for later retrieval", status: "done", notes: "SavedCarts page" },
-      { name: "Customer Referral Tracking", description: "Track customer referrals and attribute sales", status: "not_started" },
+      { name: "Customer Referral Tracking", description: "Track customer referrals and attribute sales", status: "done", notes: "referral_code and referred_by columns on customers table, editable in CustomerDetail form" },
       { name: "Customer Birthday Auto-Email", description: "Automated birthday greeting email", status: "done", notes: "EmailAutomations birthday trigger type using customer birthday field" },
       { name: "Customer Win-Back Campaigns", description: "Auto-email lapsed customers after X days", status: "done", notes: "EmailAutomations winback trigger type for 30+ days inactive customers" },
       { name: "Customer Account Approval", description: "Require admin approval for new B2B accounts", status: "done", notes: "is_approved + requires_approval columns" },
