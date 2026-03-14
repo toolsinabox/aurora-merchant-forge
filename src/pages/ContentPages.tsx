@@ -98,6 +98,9 @@ export default function ContentPages() {
         published_at: form.is_published ? new Date().toISOString() : null,
       };
       if (editId) {
+        // Save current version before overwriting
+        const existing = pages.find((p: any) => p.id === editId);
+        if (existing) saveVersion(editId, existing.title, existing.content || "");
         const { error } = await supabase.from("content_pages").update(payload).eq("id", editId);
         if (error) throw error;
       } else {
