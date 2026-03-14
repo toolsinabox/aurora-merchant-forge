@@ -13,7 +13,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <AppSidebar />
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar />
-          <main className="flex-1 overflow-auto p-4">
+          <main className="flex-1 overflow-auto p-4 animate-fade-in">
             {children}
           </main>
         </div>
