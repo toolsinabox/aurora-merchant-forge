@@ -281,6 +281,91 @@ export default function PickPack() {
             </CardContent>
           </Card>
         )}
+
+        {/* Waves Step */}
+        {step === "waves" && (
+          <div className="space-y-3">
+            {/* Create wave */}
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Create Pick Wave</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex gap-2">
+                  <Input placeholder="Wave name (optional)" value={waveName} onChange={e => setWaveName(e.target.value)} className="h-8 text-sm max-w-xs" />
+                  <Button size="sm" className="text-xs" onClick={createWave} disabled={Object.values(waveSelectedOrders).filter(Boolean).length === 0}>
+                    Create Wave ({Object.values(waveSelectedOrders).filter(Boolean).length} orders)
+                  </Button>
+                </div>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8 w-8"></TableHead>
+                      <TableHead className="text-xs h-8">Order #</TableHead>
+                      <TableHead className="text-xs h-8">Items</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Total</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingOrders.length === 0 ? (
+                      <TableRow><TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">No unfulfilled orders</TableCell></TableRow>
+                    ) : pendingOrders.map((o: any) => (
+                      <TableRow key={o.id} className={`text-xs ${waveSelectedOrders[o.id] ? "bg-primary/5" : ""}`}>
+                        <TableCell className="py-1.5">
+                          <Checkbox checked={!!waveSelectedOrders[o.id]} onCheckedChange={() => setWaveSelectedOrders(prev => ({ ...prev, [o.id]: !prev[o.id] }))} />
+                        </TableCell>
+                        <TableCell className="py-1.5 font-mono">{o.order_number}</TableCell>
+                        <TableCell className="py-1.5">{o.items_count} items</TableCell>
+                        <TableCell className="py-1.5 text-right">${Number(o.total).toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            {/* Existing waves */}
+            {waves.length > 0 && (
+              <Card>
+                <CardHeader className="p-4 pb-2">
+                  <CardTitle className="text-sm">Pick Waves ({waves.length})</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Wave</TableHead>
+                        <TableHead className="text-xs h-8">Orders</TableHead>
+                        <TableHead className="text-xs h-8">Created</TableHead>
+                        <TableHead className="text-xs h-8">Status</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {waves.map(w => (
+                        <TableRow key={w.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{w.name}</TableCell>
+                          <TableCell className="py-1.5">{w.orderIds.length}</TableCell>
+                          <TableCell className="py-1.5">{new Date(w.createdAt).toLocaleDateString()}</TableCell>
+                          <TableCell className="py-1.5">
+                            <Badge variant={w.status === "completed" ? "default" : w.status === "in_progress" ? "secondary" : "outline"} className="text-[10px]">
+                              {w.status.replace("_", " ")}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-1.5 text-right space-x-1">
+                            {w.status === "open" && <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => updateWaveStatus(w.id, "in_progress")}>Start</Button>}
+                            {w.status === "in_progress" && <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => updateWaveStatus(w.id, "completed")}>Complete</Button>}
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteWave(w.id)}>Delete</Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
