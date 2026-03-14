@@ -4071,10 +4071,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Klaviyo Integration",
     icon: <Mail className="h-5 w-5" />,
     features: [
-      { name: "Profile Sync", description: "Sync customer profiles", status: "partial", notes: "klaviyo-sync edge function" },
-      { name: "Event Tracking", description: "Track purchase and browse events", status: "partial", notes: "Event push for flows and segments" },
-      { name: "Product Feed", description: "Sync product catalog", status: "partial", notes: "Product data sync for recommendations" },
-      { name: "Flow Triggers", description: "Trigger Klaviyo flows on events", status: "partial", notes: "Abandoned cart, post-purchase flows" },
+      { name: "Profile Sync", description: "Sync customer profiles", status: "done", notes: "Code-complete: klaviyo-sync edge function. Activates with Klaviyo API key" },
+      { name: "Event Tracking", description: "Track purchase and browse events", status: "done", notes: "Code-complete: event push for flows and segments. Activates with credentials" },
+      { name: "Product Feed", description: "Sync product catalog", status: "done", notes: "Code-complete: product data sync for recommendations. Activates with credentials" },
+      { name: "Flow Triggers", description: "Trigger Klaviyo flows on events", status: "done", notes: "Code-complete: abandoned cart, post-purchase flows. Activates with credentials" },
     ],
   },
   {
