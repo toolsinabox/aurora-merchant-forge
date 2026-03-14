@@ -489,6 +489,64 @@ export default function MaropostMigration() {
     toast.success("Theme migration complete!");
   };
 
+  // Export migration log as CSV
+  const exportMigrationCSV = useCallback(() => {
+    const rows = [["Entity", "Label", "Count", "Imported", "Failed", "Status", "Errors"]];
+    for (const e of entities) {
+      rows.push([e.entity, e.label, String(e.count), String(e.imported), String(e.failed), e.status, e.errors.join("; ")]);
+    }
+    rows.push([]);
+    rows.push(["--- Migration Log ---"]);
+    for (const log of logs) {
+      rows.push([log]);
+    }
+    const csv = rows.map(r => r.map(c => `"${(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `maropost-migration-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Migration report downloaded");
+  }, [entities, logs]);
+
+  // Rollback: delete all data for current store (destructive)
+  const rollbackMigration = async () => {
+    const confirmed = window.confirm(
+      "⚠️ This will DELETE all imported data (products, categories, customers, orders, content, vouchers, suppliers, shipping zones) for the current store. This cannot be undone.\n\nAre you sure?"
+    );
+    if (!confirmed) return;
+
+    const sid = await resolveStoreId();
+    if (!sid) { toast.error("No store found"); return; }
+
+    addLog("═══ Starting Rollback ═══");
+    const tables = [
+      "order_items", "order_payments", "orders",
+      "customer_addresses", "customer_communications", "customers",
+      "product_variants", "product_shipping", "product_pricing_tiers",
+      "product_specifics", "product_relations", "inventory_stock", "products",
+      "categories", "content_pages", "gift_vouchers", "suppliers",
+      "inventory_locations", "shipping_zones", "returns", "redirects", "currencies",
+    ];
+
+    for (const table of tables) {
+      try {
+        const { error } = await supabase.from(table as any).delete().eq("store_id", sid);
+        if (error) { addLog(`  ⚠ ${table}: ${error.message}`); } 
+        else { addLog(`  ✓ Cleared ${table}`); }
+      } catch (err: any) {
+        addLog(`  ✗ ${table}: ${err.message}`);
+      }
+    }
+
+    setEntities(prev => prev.map(e => ({ ...e, status: "pending", imported: 0, failed: 0, errors: [] })));
+    setOverallProgress(0);
+    addLog("═══ Rollback Complete ═══");
+    toast.success("All imported data has been deleted");
+  };
+
   const statusIcon = (status: string) => {
     switch (status) {
       case "success": return <CheckCircle className="h-5 w-5 text-green-500" />;
