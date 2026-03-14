@@ -177,14 +177,24 @@ export default function DigitalDownloads() {
                     <TableCell><Badge variant="outline" className="text-xs">{d.download_limit || "∞"}</Badge></TableCell>
                     <TableCell className="text-sm text-muted-foreground">{d.expiry_days}d</TableCell>
                     <TableCell>
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(d.id)}>
-                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                      </Button>
+                      <div className="flex items-center gap-1">
+                        <Badge variant="secondary" className="text-xs">{(licenseKeys[d.product_id] || []).length} keys</Badge>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" title="Manage License Keys" onClick={() => { setLicenseProduct(d); setShowLicenseDialog(true); }}>
+                          <Key className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(d.id)}>
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
                 {paged.length === 0 && (
-                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No download files yet</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No download files yet</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
