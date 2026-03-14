@@ -52,8 +52,11 @@ const marketingNav = [
   { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
+  { title: "Loyalty", url: `${prefix}/loyalty`, icon: Heart },
+  { title: "Affiliates", url: `${prefix}/affiliates`, icon: UserPlus },
   { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
   { title: "Analytics", url: `${prefix}/analytics`, icon: BarChart3 },
+  { title: "Report Builder", url: `${prefix}/report-builder`, icon: PieChart },
 ];
 
 const contentNav = [
