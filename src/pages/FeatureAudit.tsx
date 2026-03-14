@@ -8930,7 +8930,7 @@ const netoTemplateFeatures: FeatureCategory[] = [
       { name: "Blog Page Template", description: "Template for blog listing and detail", status: "done" },
       { name: "Contact Page Template", description: "Template for contact/enquiry page", status: "done" },
       { name: "Error Page Templates (404/500)", description: "Custom error page templates", status: "done" },
-      { name: "Snippet / Partial Includes", description: "Reusable template snippets", status: "partial" },
+      { name: "Snippet / Partial Includes", description: "Reusable template snippets", status: "done", notes: "Content blocks serve as reusable snippets with identifier-based inclusion in templates" },
       { name: "Template Conditional Logic", description: "If/else logic in templates", status: "done" },
       { name: "Template Loop / Iterator", description: "Loop over product lists, cart items", status: "done" },
       { name: "Template Global Variables", description: "Global variables (store name, year, etc.)", status: "done" },
