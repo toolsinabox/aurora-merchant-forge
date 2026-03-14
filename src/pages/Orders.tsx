@@ -275,6 +275,17 @@ export default function Orders() {
                   <SelectItem value="cancelled" className="text-xs">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
+              {allTags.length > 0 && (
+                <Select value={tagFilter} onValueChange={setTagFilter}>
+                  <SelectTrigger className="h-8 w-32 text-xs">
+                    <SelectValue placeholder="Filter by tag..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="" className="text-xs">All Tags</SelectItem>
+                    {allTags.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             <div className="table-scroll">
             <Table>
