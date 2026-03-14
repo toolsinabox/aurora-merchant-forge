@@ -156,7 +156,8 @@ serve(async (req) => {
       : (OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection);
 
     // Enforce max page sizes per entity to avoid Maropost response size limits
-    const maxLimit = MAX_PAGE_SIZE[action] || 100;
+    const pageLimits = scan_mode ? SCAN_MAX_PAGE_SIZE : MAX_PAGE_SIZE;
+    const maxLimit = pageLimits[action] || 100;
     const effectiveLimit = Math.min(limit, maxLimit);
     
     // Maropost API requires specific filter keys per entity type to return data
