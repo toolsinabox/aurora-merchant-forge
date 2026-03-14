@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
-type WorkflowStep = "pick" | "pack" | "ship" | "waves";
+type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves";
 
 interface PickWave {
   id: string;
