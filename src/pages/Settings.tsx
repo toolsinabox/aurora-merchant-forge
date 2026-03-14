@@ -858,6 +858,7 @@ export default function SettingsPage() {
             <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
             <TabsTrigger value="fulfillment" className="text-xs h-7">Fulfillment</TabsTrigger>
             <TabsTrigger value="scripts" className="text-xs h-7">Scripts</TabsTrigger>
+            <TabsTrigger value="config" className="text-xs h-7">Config</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
