@@ -317,6 +317,7 @@ const App = () => (
                   <Route path="/permissions" element={<RequireAuth><RolePermissions /></RequireAuth>} />
                   <Route path="/pick-pack" element={<RequireAuth><PickPack /></RequireAuth>} />
                   <Route path="/adverts" element={<RequireAuth><Adverts /></RequireAuth>} />
+                  <Route path="/carrier-manifest" element={<RequireAuth><CarrierManifest /></RequireAuth>} />
                   <Route path="/sessions" element={<RequireAuth><Sessions /></RequireAuth>} />
                   <Route path="/email-templates" element={<RequireAuth><EmailTemplates /></RequireAuth>} />
                   <Route path="/loyalty" element={<RequireAuth><LoyaltyProgram /></RequireAuth>} />
