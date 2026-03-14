@@ -8639,7 +8639,7 @@ const accessibilityFeatures: FeatureCategory[] = [
       { name: "Screen Reader Support", description: "ARIA labels and roles on all interactive elements", status: "partial" },
       { name: "Focus Management (Modals/Dialogs)", description: "Focus trap and restore in modals", status: "done", notes: "Radix UI handles" },
       { name: "Color Contrast (WCAG AA)", description: "All text meets WCAG AA contrast ratios", status: "partial" },
-      { name: "Skip to Content Link", description: "Skip navigation link for keyboard users", status: "not_started" },
+      { name: "Skip to Content Link", description: "Skip navigation link for keyboard users", status: "done", notes: "StorefrontLayout skip-to-content link" },
       { name: "Form Error Announcements", description: "Screen reader announces form validation errors", status: "partial" },
       { name: "Responsive Font Sizing", description: "Text scales appropriately across devices", status: "done" },
       { name: "Alt Text on All Images", description: "All images have descriptive alt text", status: "partial" },
