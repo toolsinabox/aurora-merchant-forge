@@ -14,7 +14,7 @@ import {
   useShippingZones, useCreateShippingZone, useDeleteShippingZone, useTeamMembers,
   useCustomerGroups, useCreateCustomerGroup, useDeleteCustomerGroup,
 } from "@/hooks/use-data";
-import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell, CreditCard, Scissors } from "lucide-react";
+import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell, CreditCard, Scissors, Shield, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -830,6 +830,129 @@ function AutoAssignWarehouseCard() {
   );
 }
 
+function SecuritySettingsTab() {
+  const { currentStore } = useAuth();
+  const [sessionTimeout, setSessionTimeout] = useState("30");
+  const [passwordExpiry, setPasswordExpiry] = useState("0");
+  const [maxSessions, setMaxSessions] = useState("5");
+  const [loginIpRestriction, setLoginIpRestriction] = useState("");
+  const [enforcePasswordChange, setEnforcePasswordChange] = useState(false);
+
+  useEffect(() => {
+    if (!currentStore) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem(`security_settings_${currentStore.id}`) || "{}");
+      if (saved.sessionTimeout) setSessionTimeout(saved.sessionTimeout);
+      if (saved.passwordExpiry) setPasswordExpiry(saved.passwordExpiry);
+      if (saved.maxSessions) setMaxSessions(saved.maxSessions);
+      if (saved.loginIpRestriction) setLoginIpRestriction(saved.loginIpRestriction);
+      if (saved.enforcePasswordChange) setEnforcePasswordChange(saved.enforcePasswordChange);
+    } catch {}
+  }, [currentStore]);
+
+  const saveSettings = () => {
+    if (!currentStore) return;
+    localStorage.setItem(`security_settings_${currentStore.id}`, JSON.stringify({
+      sessionTimeout, passwordExpiry, maxSessions, loginIpRestriction, enforcePasswordChange,
+    }));
+    toast.success("Security settings saved");
+  };
+
+  return (
+    <div className="space-y-3">
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm flex items-center gap-2"><Clock className="h-4 w-4" /> Session Timeout</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">Auto-logout inactive staff after a period of inactivity. Protects against unattended sessions.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Inactivity Timeout (minutes)</Label>
+              <Select value={sessionTimeout} onValueChange={setSessionTimeout}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="15" className="text-xs">15 minutes</SelectItem>
+                  <SelectItem value="30" className="text-xs">30 minutes</SelectItem>
+                  <SelectItem value="60" className="text-xs">1 hour</SelectItem>
+                  <SelectItem value="120" className="text-xs">2 hours</SelectItem>
+                  <SelectItem value="480" className="text-xs">8 hours (full shift)</SelectItem>
+                  <SelectItem value="0" className="text-xs">Never (not recommended)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Max Concurrent Sessions</Label>
+              <Select value={maxSessions} onValueChange={setMaxSessions}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1" className="text-xs">1 (strictest)</SelectItem>
+                  <SelectItem value="3" className="text-xs">3</SelectItem>
+                  <SelectItem value="5" className="text-xs">5 (default)</SelectItem>
+                  <SelectItem value="10" className="text-xs">10</SelectItem>
+                  <SelectItem value="0" className="text-xs">Unlimited</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm flex items-center gap-2"><Shield className="h-4 w-4" /> Password Policy</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">Enforce password rotation and complexity requirements for staff accounts.</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Password Expiry (days)</Label>
+              <Select value={passwordExpiry} onValueChange={setPasswordExpiry}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0" className="text-xs">Never expires</SelectItem>
+                  <SelectItem value="30" className="text-xs">30 days</SelectItem>
+                  <SelectItem value="60" className="text-xs">60 days</SelectItem>
+                  <SelectItem value="90" className="text-xs">90 days</SelectItem>
+                  <SelectItem value="180" className="text-xs">180 days</SelectItem>
+                  <SelectItem value="365" className="text-xs">1 year</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2 pt-4">
+              <Switch checked={enforcePasswordChange} onCheckedChange={setEnforcePasswordChange} />
+              <Label className="text-xs">Force password change on first login</Label>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm flex items-center gap-2"><Shield className="h-4 w-4" /> IP Restrictions</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">Restrict admin login to specific IP addresses. Leave empty to allow all IPs.</p>
+          <div className="space-y-1">
+            <Label className="text-xs">Allowed IPs (comma-separated, supports CIDR notation)</Label>
+            <Input
+              placeholder="e.g. 203.0.113.0/24, 198.51.100.5"
+              value={loginIpRestriction}
+              onChange={e => setLoginIpRestriction(e.target.value)}
+              className="h-8 text-xs font-mono"
+            />
+            <p className="text-[10px] text-muted-foreground">Warning: Incorrect IPs may lock you out. Use CIDR ranges for flexibility.</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Button size="sm" className="gap-1.5" onClick={saveSettings}>
+        <Save className="h-3.5 w-3.5" /> Save Security Settings
+      </Button>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
   const updateStore = useUpdateStore();
@@ -1046,6 +1169,7 @@ export default function SettingsPage() {
             <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
             <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
             <TabsTrigger value="fulfillment" className="text-xs h-7">Fulfillment</TabsTrigger>
+            <TabsTrigger value="security" className="text-xs h-7">Security</TabsTrigger>
             <TabsTrigger value="scripts" className="text-xs h-7">Scripts</TabsTrigger>
             <TabsTrigger value="config" className="text-xs h-7">Config</TabsTrigger>
           </TabsList>
@@ -1686,6 +1810,11 @@ export default function SettingsPage() {
           {/* Fulfillment Rules Tab */}
           <TabsContent value="fulfillment">
             <FulfillmentRulesTab />
+          </TabsContent>
+
+          {/* Security Tab */}
+          <TabsContent value="security">
+            <SecuritySettingsTab />
           </TabsContent>
 
           {/* Custom Scripts Tab */}

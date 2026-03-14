@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useShippingZones, useCreateShippingZone, useDeleteShippingZone } from "@/hooks/use-data";
-import { Plus, Trash2, Truck, Search, Package, ChevronRight, Settings2 } from "lucide-react";
+import { Plus, Trash2, Truck, Search, Package, ChevronRight, Settings2, Ban } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -183,6 +183,7 @@ export default function ShippingZones() {
             <TabsTrigger value="zones" className="text-xs h-7">Zones ({(zones as any[]).length})</TabsTrigger>
             <TabsTrigger value="services" className="text-xs h-7">Services ({(services as any[]).length})</TabsTrigger>
             <TabsTrigger value="rates" className="text-xs h-7">Rate Matrix ({(rates as any[]).length})</TabsTrigger>
+            <TabsTrigger value="exclusions" className="text-xs h-7">Exclusions</TabsTrigger>
           </TabsList>
 
           {/* ── Zones Tab ── */}
@@ -482,6 +483,11 @@ export default function ShippingZones() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* ── Exclusions Tab ── */}
+          <TabsContent value="exclusions" className="space-y-3 mt-3">
+            <ShippingExclusionsTab storeId={storeId} />
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -493,6 +499,111 @@ export default function ShippingZones() {
         </DialogContent>
       </Dialog>
     </AdminLayout>
+  );
+}
+
+function ShippingExclusionsTab({ storeId }: { storeId?: string }) {
+  const [exclusions, setExclusions] = useState<Array<{ id: string; name: string; match_type: string; match_value: string; excluded_methods: string; is_active: boolean }>>([]);
+  const [form, setForm] = useState({ name: "", match_type: "category", match_value: "", excluded_methods: "all" });
+
+  useEffect(() => {
+    if (!storeId) return;
+    try { setExclusions(JSON.parse(localStorage.getItem(`shipping_exclusions_${storeId}`) || "[]")); } catch {}
+  }, [storeId]);
+
+  const save = (updated: typeof exclusions) => {
+    setExclusions(updated);
+    if (storeId) localStorage.setItem(`shipping_exclusions_${storeId}`, JSON.stringify(updated));
+  };
+
+  const addExclusion = () => {
+    if (!form.name.trim() || !form.match_value.trim()) { toast.error("Name and match value required"); return; }
+    save([...exclusions, { id: crypto.randomUUID(), name: form.name, match_type: form.match_type, match_value: form.match_value, excluded_methods: form.excluded_methods, is_active: true }]);
+    setForm({ name: "", match_type: "category", match_value: "", excluded_methods: "all" });
+    toast.success("Shipping exclusion rule added");
+  };
+
+  const matchTypeLabels: Record<string, string> = {
+    category: "Product Category",
+    tag: "Product Tag",
+    sku_prefix: "SKU Prefix",
+    brand: "Brand",
+    weight_above: "Weight Above (kg)",
+    product_type: "Product Type",
+  };
+
+  const methodLabels: Record<string, string> = {
+    all: "All shipping methods",
+    express: "Express only",
+    standard: "Standard only",
+    international: "International only",
+    same_day: "Same-day delivery",
+    click_collect: "Click & Collect",
+  };
+
+  return (
+    <div className="space-y-3">
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm flex items-center gap-2"><Ban className="h-4 w-4" /> Shipping Exclusion Rules</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">Exclude specific products or categories from certain shipping methods. E.g. prevent oversized items from same-day delivery, or block hazmat from air freight.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <Input placeholder="Rule name (e.g. No express for bulky)" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="h-8 text-sm" />
+            <Select value={form.match_type} onValueChange={v => setForm({ ...form, match_type: v })}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(matchTypeLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <Input placeholder={form.match_type === "weight_above" ? "e.g. 30" : "e.g. Furniture, hazmat, BULK-"} value={form.match_value} onChange={e => setForm({ ...form, match_value: e.target.value })} className="h-8 text-sm" />
+            <Select value={form.excluded_methods} onValueChange={v => setForm({ ...form, excluded_methods: v })}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(methodLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" className="text-xs h-7" onClick={addExclusion}><Plus className="h-3 w-3 mr-1" /> Add Exclusion</Button>
+
+          {exclusions.length > 0 && (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Rule</TableHead>
+                  <TableHead className="text-xs h-8">Match</TableHead>
+                  <TableHead className="text-xs h-8">Value</TableHead>
+                  <TableHead className="text-xs h-8">Excluded Method</TableHead>
+                  <TableHead className="text-xs h-8">Active</TableHead>
+                  <TableHead className="text-xs h-8 w-12"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {exclusions.map(r => (
+                  <TableRow key={r.id} className="text-xs">
+                    <TableCell className="py-1.5 font-medium">{r.name}</TableCell>
+                    <TableCell className="py-1.5"><Badge variant="outline" className="text-[10px]">{matchTypeLabels[r.match_type] || r.match_type}</Badge></TableCell>
+                    <TableCell className="py-1.5 font-mono text-muted-foreground">{r.match_value}</TableCell>
+                    <TableCell className="py-1.5"><Badge variant="secondary" className="text-[10px]">{methodLabels[r.excluded_methods] || r.excluded_methods}</Badge></TableCell>
+                    <TableCell className="py-1.5">
+                      <Switch checked={r.is_active} onCheckedChange={v => save(exclusions.map(x => x.id === r.id ? { ...x, is_active: v } : x))} />
+                    </TableCell>
+                    <TableCell className="py-1.5">
+                      <Button size="sm" variant="ghost" className="h-6 w-6 text-destructive p-0" onClick={() => save(exclusions.filter(x => x.id !== r.id))}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
