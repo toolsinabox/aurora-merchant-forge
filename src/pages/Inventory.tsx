@@ -34,6 +34,54 @@ export default function Inventory() {
   const [newLoc, setNewLoc] = useState({ name: "", type: "warehouse", address: "" });
   const [showHistory, setShowHistory] = useState(false);
 
+  // Bulk adjustment state
+  const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
+  const [bulkAdjustOpen, setBulkAdjustOpen] = useState(false);
+  const [bulkAdjustQty, setBulkAdjustQty] = useState(0);
+  const [bulkAdjustReason, setBulkAdjustReason] = useState("");
+  const [bulkAdjustType, setBulkAdjustType] = useState<"set" | "add" | "subtract">("add");
+  const [bulkAdjusting, setBulkAdjusting] = useState(false);
+
+  const toggleProductSelect = (id: string) => {
+    setSelectedProducts(prev => { const next = new Set(prev); next.has(id) ? next.delete(id) : next.add(id); return next; });
+  };
+  const toggleAllProducts = () => {
+    if (selectedProducts.size === inventoryItems.length) setSelectedProducts(new Set());
+    else setSelectedProducts(new Set(inventoryItems.map(p => p.id)));
+  };
+
+  const handleBulkAdjust = async () => {
+    if (selectedProducts.size === 0 || !currentStore || !user) return;
+    setBulkAdjusting(true);
+    try {
+      let updated = 0;
+      for (const productId of selectedProducts) {
+        const product = products.find(p => p.id === productId);
+        if (!product) continue;
+        // Update all variants for this product
+        const variants = product.product_variants || [];
+        if (variants.length > 0) {
+          for (const v of variants) {
+            const currentStock = v.stock || 0;
+            const newStock = bulkAdjustType === "set" ? bulkAdjustQty : bulkAdjustType === "add" ? currentStock + bulkAdjustQty : Math.max(0, currentStock - bulkAdjustQty);
+            await supabase.from("product_variants").update({ stock: newStock }).eq("id", v.id);
+          }
+        }
+        updated++;
+      }
+      toast.success(`Adjusted stock for ${updated} products`);
+      setBulkAdjustOpen(false);
+      setSelectedProducts(new Set());
+      setBulkAdjustQty(0);
+      setBulkAdjustReason("");
+      qc.invalidateQueries({ queryKey: ["products"] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBulkAdjusting(false);
+    }
+  };
+
   // Transfer dialog
   const [transferOpen, setTransferOpen] = useState(false);
   const [transferForm, setTransferForm] = useState({
