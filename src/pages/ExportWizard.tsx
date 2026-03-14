@@ -590,14 +590,14 @@ export default function ExportWizard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" />
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-3.5 w-3.5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Export Data</h1>
-            <p className="text-muted-foreground text-sm">Export products, orders, categories, or reviews as CSV</p>
+            <h1 className="text-lg font-semibold">Export Data</h1>
+            <p className="text-xs text-muted-foreground">Export products, orders, categories, or reviews as CSV</p>
           </div>
         </div>
 

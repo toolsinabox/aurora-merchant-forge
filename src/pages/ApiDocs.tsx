@@ -173,11 +173,11 @@ export default function ApiDocs() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">API Documentation</h1>
-            <p className="text-muted-foreground">REST API reference for your store</p>
+            <h1 className="text-lg font-semibold">API Documentation</h1>
+            <p className="text-xs text-muted-foreground">REST API reference for your store</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
