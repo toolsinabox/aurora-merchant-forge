@@ -116,7 +116,6 @@ export default function StorefrontCheckout() {
   // Shipping insurance
   const [shippingInsurance, setShippingInsurance] = useState(false);
   const INSURANCE_RATE = 0.03; // 3% of subtotal
-  const insurancePremium = Math.max(2.95, Math.round(subtotalAfterDiscount * INSURANCE_RATE * 100) / 100);
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
