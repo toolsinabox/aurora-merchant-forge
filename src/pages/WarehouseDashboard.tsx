@@ -114,8 +114,8 @@ export default function WarehouseDashboard() {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Package className="h-4 w-4 text-blue-500" />
+              <div className="h-9 w-9 rounded-lg bg-info/10 flex items-center justify-center">
+                <Package className="h-4 w-4 text-info" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Items to Pick</p>
