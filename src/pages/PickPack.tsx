@@ -140,10 +140,21 @@ export default function PickPack() {
     },
   });
 
+  // Pick path optimization: sort by bin location for optimal warehouse walking route
+  const [pickPathOptimized, setPickPathOptimized] = useState(false);
+
   const pickItems = useMemo(() => {
     const unfulfilledOrderIds = new Set(pendingOrders.map((o: any) => o.id));
-    return orderItems.filter((item: any) => unfulfilledOrderIds.has(item.order_id));
-  }, [orderItems, pendingOrders]);
+    const items = orderItems.filter((item: any) => unfulfilledOrderIds.has(item.order_id));
+    if (pickPathOptimized) {
+      return [...items].sort((a: any, b: any) => {
+        const binA = (a.bin_location || a.sku || "ZZZ").toLowerCase();
+        const binB = (b.bin_location || b.sku || "ZZZ").toLowerCase();
+        return binA.localeCompare(binB);
+      });
+    }
+    return items;
+  }, [orderItems, pendingOrders, pickPathOptimized]);
 
   // Batch picking: group by SKU across all orders
   const batchPickItems = useMemo(() => {
