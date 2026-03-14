@@ -806,6 +806,25 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
+              {/* Custom Fields */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold">Additional Information</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-sm">Company Name <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                    <Input value={form.company} onChange={(e) => update("company", e.target.value)} placeholder="Your company" />
+                  </div>
+                  <div>
+                    <Label className="text-sm">PO Number <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                    <Input value={form.po_number} onChange={(e) => update("po_number", e.target.value)} placeholder="Purchase order #" />
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-sm">Special Requirements <span className="text-xs text-muted-foreground">(optional)</span></Label>
+                  <Input value={form.custom_field_1} onChange={(e) => update("custom_field_1", e.target.value)} placeholder="Any special requirements..." />
+                </div>
+              </div>
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
