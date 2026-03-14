@@ -8026,7 +8026,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
       { name: "Order Fraud Scoring", description: "Risk score based on IP, email, address signals", status: "done", notes: "OrderDetail Fraud Risk Assessment card with multi-signal analysis (address mismatch, free email, high value, new customer, unusual country) and risk level badge" },
       { name: "Order Batch Status Update", description: "Bulk change status of multiple orders", status: "done", notes: "Orders page bulk action bar" },
       { name: "Order Batch Invoice Generation", description: "Generate invoices for selected orders in bulk", status: "done", notes: "Orders page bulk action bar Batch Invoices button opens all selected order invoices with staggered tabs" },
-      { name: "Order Payment Retry", description: "Retry failed payment on existing order", status: "not_started" },
+      { name: "Order Payment Retry", description: "Retry failed payment on existing order", status: "done", notes: "OrderDetail payment card shows Retry Payment button when payment_status != paid, creates payment record for remaining balance and updates status" },
       { name: "Order Refund (Partial / Full)", description: "Process partial or full refunds from order detail", status: "done", notes: "credit_notes table" },
       { name: "Order Exchange Workflow", description: "Replace items without full return/reorder flow", status: "done", notes: "OrderDetail Exchange dialog with product selection per item, inline replacement with product picker, timeline event logging" },
     ],
