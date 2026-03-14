@@ -131,37 +131,107 @@ export default function MaropostTransferAudit() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [dbCounts, setDbCounts] = useState<Record<string, number>>({});
+  const [sourceCounts, setSourceCounts] = useState<Record<string, number>>(() => {
+    try { const s = sessionStorage.getItem("maropost_source_counts"); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const [integrityIssues, setIntegrityIssues] = useState<string[]>([]);
+  const [autoRefresh, setAutoRefresh] = useState(false);
+
+  // Load source counts from migration wizard session
+  useEffect(() => {
+    try {
+      const entities = sessionStorage.getItem("maropost_entities");
+      if (entities) {
+        const parsed = JSON.parse(entities);
+        const counts: Record<string, number> = {};
+        for (const e of parsed) {
+          counts[e.entity] = e.count || 0;
+        }
+        setSourceCounts(counts);
+        sessionStorage.setItem("maropost_source_counts", JSON.stringify(counts));
+      }
+    } catch {}
+  }, []);
 
   // Fetch live record counts from the database
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const tables = [
-        { key: "products", table: "products" },
-        { key: "categories", table: "categories" },
-        { key: "customers", table: "customers" },
-        { key: "orders", table: "orders" },
-        { key: "content_pages", table: "content_pages" },
-        { key: "gift_vouchers", table: "gift_vouchers" },
-        { key: "suppliers", table: "suppliers" },
-        { key: "inventory_locations", table: "inventory_locations" },
-        { key: "shipping_zones", table: "shipping_zones" },
-        { key: "product_variants", table: "product_variants" },
-        { key: "product_relations", table: "product_relations" },
-        { key: "customer_addresses", table: "customer_addresses" },
-        { key: "order_items", table: "order_items" },
-        { key: "product_specifics", table: "product_specifics" },
-        { key: "inventory_stock", table: "inventory_stock" },
-      ] as const;
+  const fetchCounts = async () => {
+    const tables = [
+      { key: "products", table: "products" },
+      { key: "categories", table: "categories" },
+      { key: "customers", table: "customers" },
+      { key: "orders", table: "orders" },
+      { key: "content_pages", table: "content_pages" },
+      { key: "gift_vouchers", table: "gift_vouchers" },
+      { key: "suppliers", table: "suppliers" },
+      { key: "inventory_locations", table: "inventory_locations" },
+      { key: "shipping_zones", table: "shipping_zones" },
+      { key: "product_variants", table: "product_variants" },
+      { key: "product_relations", table: "product_relations" },
+      { key: "customer_addresses", table: "customer_addresses" },
+      { key: "order_items", table: "order_items" },
+      { key: "product_specifics", table: "product_specifics" },
+      { key: "inventory_stock", table: "inventory_stock" },
+      { key: "currencies", table: "currencies" },
+      { key: "redirects", table: "redirects" },
+      { key: "returns", table: "returns" },
+    ];
 
-      const counts: Record<string, number> = {};
-      await Promise.all(tables.map(async ({ key, table }) => {
-        const { count } = await supabase.from(table).select("id", { count: "exact", head: true }) as any;
-        counts[key] = count || 0;
-      }));
-      setDbCounts(counts);
-    };
-    fetchCounts();
-  }, []);
+    const counts: Record<string, number> = {};
+    await Promise.all(tables.map(async ({ key, table }) => {
+      const { count } = await supabase.from(table as any).select("id", { count: "exact", head: true }) as any;
+      counts[key] = count || 0;
+    }));
+    setDbCounts(counts);
+
+    // Run integrity checks
+    const issues: string[] = [];
+    // Check for orphan order_items (orders without customer)
+    const { count: orphanOrders } = await supabase.from("orders").select("id", { count: "exact", head: true }).is("customer_id", null) as any;
+    if (orphanOrders > 0) issues.push(`${orphanOrders} orders have no linked customer`);
+    // Check products without category
+    const { count: noCatProducts } = await supabase.from("products").select("id", { count: "exact", head: true }).is("category_id", null) as any;
+    if (noCatProducts > 0) issues.push(`${noCatProducts} products have no category assigned`);
+    // Check products without images
+    const { data: noImgProducts } = await supabase.from("products").select("id, images").limit(500) as any;
+    const emptyImgCount = (noImgProducts || []).filter((p: any) => !p.images || (Array.isArray(p.images) && p.images.length === 0)).length;
+    if (emptyImgCount > 0) issues.push(`${emptyImgCount} products have no images`);
+    setIntegrityIssues(issues);
+  };
+
+  useEffect(() => { fetchCounts(); }, []);
+
+  // Auto-refresh every 10 seconds
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(fetchCounts, 10000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
+
+  // Export audit as CSV
+  const exportAuditCSV = () => {
+    const rows = [["Feature", "Maropost API", "Celora Table", "Status", "Category", "Notes"]];
+    for (const item of TRANSFER_ITEMS) {
+      rows.push([item.feature, item.maropostName, item.celoraEquivalent, STATUS_CONFIG[item.status].label, item.category, item.notes]);
+    }
+    rows.push([]);
+    rows.push(["--- Live Database Counts ---"]);
+    for (const [key, val] of Object.entries(dbCounts)) {
+      rows.push([key, String(val)]);
+    }
+    if (integrityIssues.length > 0) {
+      rows.push([]);
+      rows.push(["--- Integrity Issues ---"]);
+      for (const issue of integrityIssues) rows.push([issue]);
+    }
+    const csv = rows.map(r => r.map(c => `"${(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transfer-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const filtered = useMemo(() => {
     return TRANSFER_ITEMS.filter(item => {
@@ -195,10 +265,11 @@ export default function MaropostTransferAudit() {
               Complete mapping of Maropost Commerce Cloud features and their transfer status to our platform
             </p>
           </div>
-          <Button onClick={() => window.location.href = window.location.pathname.replace("maropost-transfer-audit", "maropost-migration")}>
-            <ArrowRight className="h-4 w-4 mr-2" />
-            Start Migration
+          <Button variant="outline" onClick={fetchCounts}><RefreshCw className="h-4 w-4 mr-2" />Refresh Counts</Button>
+          <Button variant="outline" onClick={() => setAutoRefresh(!autoRefresh)}>
+            {autoRefresh ? <><Activity className="h-4 w-4 mr-2 animate-pulse" />Auto-Refresh ON</> : <><Clock className="h-4 w-4 mr-2" />Auto-Refresh OFF</>}
           </Button>
+          <Button variant="outline" onClick={exportAuditCSV}><Archive className="h-4 w-4 mr-2" />Export CSV</Button>
         </div>
 
         {/* Stats Cards */}
@@ -256,30 +327,62 @@ export default function MaropostTransferAudit() {
               <CardTitle className="text-base">Imported Records (Live)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
                 {[
-                  { key: "products", label: "Products" },
-                  { key: "product_variants", label: "Variants" },
-                  { key: "categories", label: "Categories" },
-                  { key: "customers", label: "Customers" },
-                  { key: "customer_addresses", label: "Addresses" },
-                  { key: "orders", label: "Orders" },
-                  { key: "order_items", label: "Line Items" },
-                  { key: "content_pages", label: "Pages" },
-                  { key: "gift_vouchers", label: "Vouchers" },
-                  { key: "suppliers", label: "Suppliers" },
-                  { key: "inventory_locations", label: "Warehouses" },
-                  { key: "inventory_stock", label: "Stock Records" },
-                  { key: "shipping_zones", label: "Shipping" },
-                  { key: "product_relations", label: "Relations" },
-                  { key: "product_specifics", label: "Specifics" },
-                ].map(({ key, label }) => (
-                  <div key={key} className="text-center p-2 rounded-lg bg-muted/50">
-                    <p className="text-lg font-bold text-foreground">{dbCounts[key] || 0}</p>
-                    <p className="text-2xs text-muted-foreground">{label}</p>
-                  </div>
-                ))}
+                  { key: "products", label: "Products", srcKey: "products" },
+                  { key: "product_variants", label: "Variants", srcKey: "" },
+                  { key: "categories", label: "Categories", srcKey: "categories" },
+                  { key: "customers", label: "Customers", srcKey: "customers" },
+                  { key: "customer_addresses", label: "Addresses", srcKey: "" },
+                  { key: "orders", label: "Orders", srcKey: "orders" },
+                  { key: "order_items", label: "Line Items", srcKey: "" },
+                  { key: "content_pages", label: "Pages", srcKey: "content" },
+                  { key: "gift_vouchers", label: "Vouchers", srcKey: "vouchers" },
+                  { key: "suppliers", label: "Suppliers", srcKey: "suppliers" },
+                  { key: "inventory_locations", label: "Warehouses", srcKey: "warehouses" },
+                  { key: "inventory_stock", label: "Stock Records", srcKey: "" },
+                  { key: "shipping_zones", label: "Shipping", srcKey: "shipping" },
+                  { key: "product_relations", label: "Relations", srcKey: "" },
+                  { key: "product_specifics", label: "Specifics", srcKey: "" },
+                  { key: "currencies", label: "Currencies", srcKey: "currency" },
+                  { key: "redirects", label: "Redirects", srcKey: "redirects" },
+                  { key: "returns", label: "Returns", srcKey: "rma" },
+                ].map(({ key, label, srcKey }) => {
+                  const imported = dbCounts[key] || 0;
+                  const source = srcKey ? (sourceCounts[srcKey] || 0) : 0;
+                  const pct = source > 0 ? Math.min(100, Math.round((imported / source) * 100)) : null;
+                  return (
+                    <div key={key} className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold text-foreground">{imported}</p>
+                      {source > 0 && (
+                        <p className="text-[10px] text-muted-foreground">
+                          of {source} <span className={pct === 100 ? "text-green-600" : pct && pct > 80 ? "text-yellow-600" : "text-destructive"}>({pct}%)</span>
+                        </p>
+                      )}
+                      <p className="text-[10px] text-muted-foreground">{label}</p>
+                    </div>
+                  );
+                })}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Data Integrity Checks */}
+        {integrityIssues.length > 0 && (
+          <Card className="border-yellow-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-yellow-600" />Data Integrity Warnings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-1 text-sm">
+                {integrityIssues.map((issue, i) => (
+                  <li key={i} className="flex items-center gap-2 text-muted-foreground">
+                    <AlertTriangle className="h-3.5 w-3.5 text-yellow-500 shrink-0" />
+                    {issue}
+                  </li>
+                ))}
+              </ul>
             </CardContent>
           </Card>
         )}
