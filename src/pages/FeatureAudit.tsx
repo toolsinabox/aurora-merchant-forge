@@ -8600,7 +8600,7 @@ const returnPortalFeatures: FeatureCategory[] = [
       { name: "Refund to Original Payment", description: "Refund back to original payment method", status: "not_started" },
       { name: "Refund to Store Credit", description: "Issue store credit instead of refund", status: "not_started" },
       { name: "Exchange Workflow", description: "Exchange returned item for different variant/product", status: "not_started" },
-      { name: "Return Restocking Fee", description: "Deduct restocking fee from refund", status: "not_started" },
+      { name: "Return Restocking Fee", description: "Deduct restocking fee from refund", status: "done", notes: "Returns detail panel has restocking fee input alongside refund amount, auto-deducts fee from refund total" },
       { name: "Return Stock Re-Integration", description: "Auto-add returned stock back to inventory", status: "not_started" },
       { name: "Return Analytics", description: "Track return rates, reasons, costs", status: "done", notes: "Analytics page Return Analytics" },
       { name: "Warranty Claim Tracking", description: "Track warranty claims separate from returns", status: "not_started" },
