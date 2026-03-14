@@ -8368,7 +8368,7 @@ const paymentGatewayDeepFeatures: FeatureCategory[] = [
       { name: "Manual / Bank Transfer Payment", description: "Offline payment method (bank deposit, cheque)", status: "done", notes: "StorefrontCheckout bank transfer payment option with instructions display, order created as pending payment" },
       { name: "Cash on Delivery (COD)", description: "COD payment option", status: "done", notes: "StorefrontCheckout payment method radio with card/COD options" },
       { name: "Store Credit Payment", description: "Pay using store credit balance", status: "done", notes: "StorefrontCheckout store credit checkbox with balance display" },
-      { name: "Gift Voucher Payment", description: "Redeem gift voucher at checkout", status: "partial", notes: "gift_vouchers table" },
+      { name: "Gift Voucher Payment", description: "Redeem gift voucher at checkout", status: "done", notes: "StorefrontCheckout gift voucher code input with balance lookup and deduction from cart total, gift_vouchers table balance update" },
       { name: "Split Payment (Multiple Methods)", description: "Pay partially with voucher + card", status: "not_started" },
       { name: "Payment Tokenization (Saved Cards)", description: "Save card tokens for repeat purchases", status: "not_started" },
       { name: "3D Secure / SCA Compliance", description: "Strong Customer Authentication support", status: "not_started" },
