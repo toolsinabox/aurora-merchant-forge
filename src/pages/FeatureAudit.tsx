@@ -4002,10 +4002,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Shipping Integration (StarShipIt)",
     icon: <Truck className="h-5 w-5" />,
     features: [
-      { name: "Rate Calculation", description: "Get live shipping rates", status: "partial", notes: "starshipit-sync edge function" },
-      { name: "Label Generation", description: "Generate shipping labels", status: "partial", notes: "Label creation via StarShipIt API" },
-      { name: "Tracking Updates", description: "Auto-import tracking numbers", status: "partial", notes: "Tracking sync from StarShipIt" },
-      { name: "Manifest Submission", description: "Submit manifests to carrier", status: "partial", notes: "Manifest close via StarShipIt" },
+      { name: "Rate Calculation", description: "Get live shipping rates", status: "done", notes: "Code-complete: starshipit-sync edge function with rates action. Activates when merchant provides StarShipIt API key" },
+      { name: "Label Generation", description: "Generate shipping labels", status: "done", notes: "Code-complete: label creation via StarShipIt API. Activates with valid credentials" },
+      { name: "Tracking Updates", description: "Auto-import tracking numbers", status: "done", notes: "Code-complete: tracking sync from StarShipIt. Activates with valid credentials" },
+      { name: "Manifest Submission", description: "Submit manifests to carrier", status: "done", notes: "Code-complete: manifest close via StarShipIt. Activates with valid credentials" },
     ],
   },
   {
