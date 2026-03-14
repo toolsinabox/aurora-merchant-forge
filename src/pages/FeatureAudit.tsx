@@ -7250,8 +7250,132 @@ const templateAndChromeFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 711–750: TEMPLATE ENGINE DEEP, ADVANCED PRODUCT, & REMAINING SYSTEMS ═══════
+const templateDeepFeatures: FeatureCategory[] = [
+  {
+    category: "B@SE Template Engine — Advanced",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "Include Tags", description: "[!include!] for recursive template inclusion", status: "done", notes: "Recursive include resolution in base-template-engine" },
+      { name: "Thumblist Iterator", description: "[%thumblist%] for image thumbnail loops", status: "done", notes: "Thumblist block rendering product image galleries" },
+      { name: "Thumb Block", description: "Individual thumb rendering within thumblist", status: "done", notes: "Thumb block with image URL, alt, and index context" },
+      { name: "Scheduled Blocks", description: "Template blocks visible only within date range", status: "done", notes: "Date-aware block rendering for promotions" },
+      { name: "AJAX Partial Rendering", description: "Fetch and render template partials via AJAX", status: "done", notes: "Dynamic partial loading for page segment updates" },
+      { name: "Context-Aware Data Injection", description: "Inject product/variant/tier data into templates", status: "done", notes: "Context object with product, variants, specifics, pricing tiers" },
+      { name: "Nested Variable Access", description: "Dot notation for nested objects: product.category.name", status: "done", notes: "Recursive dot-path resolution in variable interpolation" },
+      { name: "Default Value Fallback", description: "{{ var | default: 'fallback' }} syntax", status: "done", notes: "Default filter for undefined variables" },
+    ],
+  },
+  {
+    category: "Template Data Contexts",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "Product Context", description: "Product data available in templates", status: "done", notes: "title, price, description, images, SKU, status" },
+      { name: "Variant Context", description: "Variant data injected into templates", status: "done", notes: "variant.name, variant.sku, variant.price, variant.stock" },
+      { name: "Specifics Context", description: "Product specifics/attributes in templates", status: "done", notes: "Specifics as key-value pairs for spec tables" },
+      { name: "Pricing Tier Context", description: "Quantity-break pricing tiers in templates", status: "done", notes: "Tier array with qty, price for bulk pricing display" },
+      { name: "Category Context", description: "Category data for collection pages", status: "done", notes: "category.name, category.description, category.image" },
+      { name: "Store Context", description: "Store-level data: name, logo, currency", status: "done", notes: "Global store context available in all templates" },
+      { name: "Cart Context", description: "Current cart data in templates", status: "done", notes: "cart.items, cart.total, cart.item_count" },
+      { name: "Customer Context", description: "Logged-in customer data in templates", status: "done", notes: "customer.name, customer.email, customer.group" },
+    ],
+  },
+  {
+    category: "Product Scheduling & Visibility",
+    icon: <Timer className="h-5 w-5" />,
+    features: [
+      { name: "Publish Date", description: "Schedule product to go live at future date", status: "done", notes: "published_at date on products for timed visibility" },
+      { name: "Unpublish Date", description: "Auto-hide product after end date", status: "done", notes: "End date for automatic product removal from storefront" },
+      { name: "Draft Status", description: "Keep product as draft until ready", status: "done", notes: "status=draft hides product from storefront" },
+      { name: "Visibility Toggle", description: "Manual show/hide product toggle", status: "done", notes: "is_active toggle on products" },
+      { name: "Channel Visibility", description: "Show product on specific channels only", status: "done", notes: "Channel flags: storefront, POS, marketplace visibility" },
+    ],
+  },
+  {
+    category: "Product Pricing — Advanced",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Cost Price Tracking", description: "Track cost price for margin calculation", status: "done", notes: "cost_price column on products" },
+      { name: "Compare-At Price", description: "Original price for sale display", status: "done", notes: "compare_at_price for strikethrough pricing" },
+      { name: "Sale Price with Dates", description: "Scheduled sale pricing", status: "done", notes: "Sale price with starts_at and expires_at" },
+      { name: "Margin Calculation", description: "Auto-calculate profit margin", status: "done", notes: "Margin = (price - cost_price) / price × 100" },
+      { name: "Price per Unit", description: "Unit pricing for bulk/weight products", status: "done", notes: "Price per kg/litre/unit display" },
+      { name: "Tax-Inclusive Toggle", description: "Display prices including or excluding tax", status: "done", notes: "Tax-inclusive pricing display based on store setting" },
+    ],
+  },
+  {
+    category: "Product SEO & Metadata",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "SEO Title per Product", description: "Custom SEO title override", status: "done", notes: "seo_title column on products" },
+      { name: "SEO Description per Product", description: "Custom meta description override", status: "done", notes: "seo_description column on products" },
+      { name: "URL Slug", description: "SEO-friendly URL slug per product", status: "done", notes: "slug column with auto-generation from title" },
+      { name: "Canonical URL", description: "Prevent duplicate content for variants", status: "done", notes: "Canonical URL pointing to main product page" },
+      { name: "Product Schema Markup", description: "JSON-LD Product schema for rich results", status: "done", notes: "Structured data with name, price, availability, reviews" },
+    ],
+  },
+  {
+    category: "Product Relations & Cross-Sell",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "Related Products", description: "Manually linked related products", status: "done", notes: "product_relations table with relation_type=related" },
+      { name: "Cross-Sell Products", description: "Suggested add-ons at checkout", status: "done", notes: "relation_type=cross_sell for checkout suggestions" },
+      { name: "Up-Sell Products", description: "Higher-value alternatives on product page", status: "done", notes: "relation_type=up_sell for premium alternatives" },
+      { name: "Also Bought Together", description: "Products frequently purchased together", status: "done", notes: "Algorithmic or manual 'bought together' associations" },
+      { name: "Accessory Products", description: "Compatible accessories linkage", status: "done", notes: "relation_type=accessory for compatible items" },
+    ],
+  },
+  {
+    category: "Product Tags & Badges",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Product Tagging", description: "Apply tags for filtering and grouping", status: "done", notes: "tags array column on products" },
+      { name: "Tag-Based Filtering", description: "Filter products by tags on storefront", status: "done", notes: "Tag filter in storefront product listing" },
+      { name: "BaseTag Component", description: "Reusable tag display component", status: "done", notes: "BaseTag component with color-coded tag display" },
+      { name: "New Badge", description: "Auto 'New' badge for recent products", status: "done", notes: "ProductBadges shows 'New' for recently created items" },
+      { name: "Sale Badge", description: "Sale badge when compare-at price is set", status: "done", notes: "ProductBadges shows 'Sale' with discount percentage" },
+      { name: "Out of Stock Badge", description: "Badge when product is unavailable", status: "done", notes: "ProductBadges shows 'Out of Stock' on zero inventory" },
+      { name: "Custom Badges", description: "Admin-defined custom product badges", status: "done", notes: "Custom badge text and color via product metadata" },
+    ],
+  },
+  {
+    category: "Accounting Integration Details",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Xero Invoice Sync", description: "Push invoices to Xero", status: "partial", notes: "xero-sync edge function, requires Xero API credentials" },
+      { name: "Xero Payment Sync", description: "Sync payments to Xero invoices", status: "partial", notes: "Payment reconciliation with Xero" },
+      { name: "Xero Contact Sync", description: "Sync customers as Xero contacts", status: "partial", notes: "Customer-to-contact mapping" },
+      { name: "MYOB Integration", description: "Sync orders and invoices to MYOB", status: "partial", notes: "MYOB sync structure, requires MYOB API key" },
+      { name: "Chart of Accounts Mapping", description: "Map store accounts to accounting software", status: "done", notes: "Account code mapping configuration" },
+      { name: "Tax Code Mapping", description: "Map store tax rates to accounting tax codes", status: "done", notes: "Tax code mapping for accounting sync" },
+    ],
+  },
+  {
+    category: "Google Shopping Feed",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Feed Generation", description: "Generate Google Merchant Center feed", status: "done", notes: "google-shopping-feed edge function generating XML feed" },
+      { name: "Feed Product Mapping", description: "Map product fields to Google attributes", status: "done", notes: "Title, description, price, image, availability mapping" },
+      { name: "Feed Category Mapping", description: "Map categories to Google product taxonomy", status: "done", notes: "Google product category assignment" },
+      { name: "Feed Filtering", description: "Include/exclude products from feed", status: "done", notes: "Active, in-stock products included by default" },
+      { name: "Feed URL Endpoint", description: "Public URL for Google Merchant to fetch", status: "done", notes: "Edge function URL as feed endpoint" },
+    ],
+  },
+  {
+    category: "Sitemap & Crawlability",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Dynamic Sitemap Generation", description: "Auto-generate XML sitemap from live data", status: "done", notes: "sitemap edge function querying products, categories, pages" },
+      { name: "Product URLs in Sitemap", description: "All active product URLs included", status: "done", notes: "Product slug-based URLs with lastmod dates" },
+      { name: "Category URLs in Sitemap", description: "Category page URLs included", status: "done", notes: "Category slug-based URLs" },
+      { name: "Content Page URLs", description: "CMS page URLs in sitemap", status: "done", notes: "Published content page URLs" },
+      { name: "Sitemap Index", description: "Sitemap index for large sites", status: "done", notes: "Index sitemap referencing sub-sitemaps" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
