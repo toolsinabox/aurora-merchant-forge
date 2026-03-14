@@ -8319,7 +8319,7 @@ const marketingAutomationFeatures: FeatureCategory[] = [
       { name: "Social Proof Notifications", description: "Show 'X just purchased' live notifications", status: "done", notes: "SocialProofNotifications component" },
       { name: "Product Bundle Recommendations (AI)", description: "AI-powered frequently bought together", status: "not_started" },
       { name: "Personalized Product Recommendations", description: "Show products based on browsing/purchase history", status: "not_started" },
-      { name: "UTM Tracking / Source Attribution", description: "Track marketing source on orders via UTM params", status: "not_started" },
+      { name: "UTM Tracking / Source Attribution", description: "Track marketing source on orders via UTM params", status: "done", notes: "Checkout captures utm_source/medium/campaign/term/content from URL, stores in order metadata and notes. Analytics shows Sales by UTM Source report." },
     ],
   },
 ];
