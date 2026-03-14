@@ -118,6 +118,8 @@ import StoreLocator from "./pages/StoreLocator.tsx";
 import Notifications from "./pages/Notifications.tsx";
 import CreditNotes from "./pages/CreditNotes.tsx";
 import BatchInvoicePrint from "./pages/BatchInvoicePrint.tsx";
+import OrderHolds from "./pages/OrderHolds.tsx";
+import CustomerSegments from "./pages/CustomerSegments.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
