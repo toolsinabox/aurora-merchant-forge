@@ -7660,7 +7660,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
       { name: "Cash on Delivery", description: "COD payment option", status: "done", notes: "StorefrontCheckout payment method radio with card/COD options, COD note added to order" },
       { name: "Store Credit / Account Balance", description: "Allow customers to pay from store credit balance", status: "done", notes: "StorefrontCheckout loads store_credit_transactions balance, checkbox to apply credit, deducts from total, creates debit transaction on order placement" },
       { name: "Gift Voucher as Payment", description: "Redeem gift voucher at checkout to reduce balance", status: "done", notes: "Gift vouchers system" },
-      { name: "Loyalty Points as Payment", description: "Redeem loyalty points as partial/full payment", status: "partial", notes: "Loyalty system exists" },
+      { name: "Loyalty Points as Payment", description: "Redeem loyalty points as partial/full payment", status: "done", notes: "Loyalty system with points earn/redeem, loyalty_transactions table, checkout integration via store credit conversion" },
       { name: "Multiple Payment Methods", description: "Split payment across multiple methods (e.g., card + gift card)", status: "not_started" },
       { name: "Saved Cards (Tokenization)", description: "Save customer card tokens for faster checkout", status: "not_started" },
       { name: "3D Secure / SCA Compliance", description: "Strong Customer Authentication for European payments", status: "not_started" },
