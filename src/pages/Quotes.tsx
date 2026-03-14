@@ -23,6 +23,10 @@ export default function Quotes() {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
+  const [counterOpen, setCounterOpen] = useState<string | null>(null);
+  const [counterItems, setCounterItems] = useState<any[]>([]);
+  const [counterNote, setCounterNote] = useState("");
+  const [counterSaving, setCounterSaving] = useState(false);
   const [customers, setCustomers] = useState<any[]>([]);
   const [form, setForm] = useState({
     customer_id: "",
