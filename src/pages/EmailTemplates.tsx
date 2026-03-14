@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Mail, Plus, Pencil, Trash2, Send, Clock, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Mail, Plus, Pencil, Trash2, Send, Clock, CheckCircle, XCircle, Eye, MessageSquare } from "lucide-react";
 
 const DEFAULT_TEMPLATES = [
   { template_key: "order_confirmation", name: "Order Confirmation", subject: "Order Confirmation #{{order_number}} — {{store_name}}", html_body: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2>Order Confirmation</h2><p>Hi {{customer_name}},</p><p>Thank you for your order <strong>#{{order_number}}</strong>.</p><p><strong>Total:</strong> ${{order_total}}</p><p>We\'ll let you know when your order ships.</p><p>Thanks,<br/>{{store_name}}</p></div>' },
