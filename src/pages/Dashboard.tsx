@@ -347,10 +347,10 @@ export default function Dashboard() {
                   </Table>
                   </div>
                 </CardContent>
-              </Card>
+              </Card>}
 
               {/* Top Products */}
-              <Card>
+              {w("topProducts") && <Card>
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                   <CardTitle className="text-sm font-medium">Top Products</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/products")}>
