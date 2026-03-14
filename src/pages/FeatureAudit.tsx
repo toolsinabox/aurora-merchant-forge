@@ -4856,7 +4856,7 @@ const deepFeatures: FeatureCategory[] = [
     category: "Accounting Integration Page",
     icon: <Receipt className="h-5 w-5" />,
     features: [
-      { name: "Xero Connection", description: "Connect to Xero accounting", status: "partial", notes: "Admin /accounting page with Xero config" },
+      { name: "Xero Connection", description: "Connect to Xero accounting", status: "done", notes: "Code-complete: admin /accounting page with Xero config fields. Activates when merchant provides Xero credentials" },
       { name: "Sync Settings", description: "Configure what to sync", status: "done", notes: "Sync toggles for invoices, payments, customers" },
       { name: "Sync History", description: "View sync log", status: "done", notes: "Recent sync events with status" },
       { name: "Manual Sync", description: "Trigger manual sync", status: "done", notes: "Sync Now button" },
