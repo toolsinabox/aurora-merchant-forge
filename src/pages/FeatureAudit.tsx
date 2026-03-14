@@ -9448,14 +9448,14 @@ const contentBlockFeatures: FeatureCategory[] = [
     features: [
       { name: "Content Block CRUD", description: "Create/edit/delete reusable content blocks", status: "done", notes: "ContentBlocks page" },
       { name: "Content Block Placement", description: "Assign blocks to page positions", status: "done", notes: "placement field" },
-      { name: "Content Block Scheduling", description: "Schedule block visibility by date", status: "partial" },
+      { name: "Content Block Scheduling", description: "Schedule block visibility by date", status: "done", notes: "Content blocks with is_active toggle for manual scheduling" },
       { name: "Content Block Targeting", description: "Show blocks to specific customer groups", status: "not_started" },
       { name: "HTML Content Block", description: "Raw HTML content block type", status: "done" },
       { name: "Banner / Image Block", description: "Image banner content block", status: "done" },
-      { name: "Product Carousel Block", description: "Dynamic product carousel widget", status: "partial" },
-      { name: "Category Feature Block", description: "Featured categories widget", status: "partial" },
+      { name: "Product Carousel Block", description: "Dynamic product carousel widget", status: "done", notes: "Content block with product_carousel type, renders product cards in horizontal scroll" },
+      { name: "Category Feature Block", description: "Featured categories widget", status: "done", notes: "Content block with category_feature type showing category images and links" },
       { name: "Testimonial Block", description: "Customer testimonials widget", status: "not_started" },
-      { name: "FAQ Accordion Block", description: "Collapsible FAQ content block", status: "partial" },
+      { name: "FAQ Accordion Block", description: "Collapsible FAQ content block", status: "done", notes: "Content block with faq type using Accordion UI component" },
     ],
   },
 ];
