@@ -84,6 +84,8 @@ export default function StorefrontCheckout() {
   const [taxMode, setTaxMode] = useState("standard");
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [shippingServices, setShippingServices] = useState<any[]>([]);
+  const [selectedServiceId, setSelectedServiceId] = useState<string>("");
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
   const [storeCreditBalance, setStoreCreditBalance] = useState(0);
   const [useStoreCredit, setUseStoreCredit] = useState(false);
@@ -124,10 +126,13 @@ export default function StorefrontCheckout() {
       const { data: zones } = await supabase.from("shipping_zones").select("*").order("name");
       if (zones && zones.length > 0) setShippingZones(zones);
 
+      // Load shipping services
+      const { data: svcData } = await supabase.from("shipping_services").select("*").eq("is_active", true).order("sort_order");
+      if (svcData) setShippingServices(svcData);
+
       // Load default tax rate and tax mode
-      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default").order("is_default", { ascending: false });
+      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default, is_compound, is_inclusive, priority, applies_to").order("priority", { ascending: false });
       if (taxRates && taxRates.length > 0) {
-        // Store all rates for address-based lookup later, use default for now
         setAllTaxRates(taxRates as any[]);
         const defaultRate = (taxRates as any[]).find((r: any) => r.is_default) || taxRates[0];
         setTaxRate(Number((defaultRate as any).rate) / 100);
@@ -215,7 +220,39 @@ export default function StorefrontCheckout() {
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
   const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost;
-  const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
+
+  // Compound tax calculation: apply taxes in priority order, compound taxes use accumulated base
+  const taxAmount = (() => {
+    if (isTaxExempt) return 0;
+    // If we have detailed rates matched for current address
+    const matchedRates = allTaxRates.filter((r: any) => {
+      if (r.region && form.country) {
+        return (r.region && form.city && form.city.toLowerCase().includes(r.region.toLowerCase())) ||
+          (r.country && form.country.toLowerCase() === r.country.toLowerCase());
+      }
+      return r.is_default;
+    });
+    const ratesToApply = matchedRates.length > 0 ? matchedRates : allTaxRates.filter((r: any) => r.is_default);
+    if (ratesToApply.length === 0) return Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
+
+    // Sort by priority descending (higher priority applied first)
+    const sorted = [...ratesToApply].sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0));
+    let totalTax = 0;
+    let runningBase = subtotalAfterDiscount;
+    for (const rate of sorted) {
+      const appliesTo = rate.applies_to || "all";
+      let base = 0;
+      if (appliesTo === "products") base = rate.is_compound ? runningBase : subtotalAfterDiscount;
+      else if (appliesTo === "shipping") base = actualShipping;
+      else base = rate.is_compound ? runningBase + actualShipping : subtotalAfterDiscount + actualShipping;
+      
+      const tax = base * (Number(rate.rate) / 100);
+      totalTax += tax;
+      if (rate.is_compound) runningBase += tax;
+    }
+    return Math.round(totalTax * 100) / 100;
+  })();
+
   const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
   const voucherAmount = appliedVoucher?.amountUsed ?? 0;
   const storeCreditAmount = useStoreCredit ? Math.min(storeCreditBalance, totalBeforeVoucher - voucherAmount) : 0;
@@ -223,13 +260,38 @@ export default function StorefrontCheckout() {
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
+    setSelectedServiceId("");
     const zone = shippingZones.find((z) => z.id === zoneId);
     if (zone) {
       const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
-      setShippingCost(isFree ? 0 : Number(zone.flat_rate));
-      // Estimate delivery: 3-7 business days from now
-      const minDate = addBusinessDays(new Date(), 3);
-      const maxDate = addBusinessDays(new Date(), 7);
+      // Check if zone has services
+      const zoneSvcs = shippingServices.filter((s: any) => s.zone_id === zoneId);
+      if (zoneSvcs.length > 0) {
+        // Default to first service, user can pick
+        setSelectedServiceId(zoneSvcs[0].id);
+        setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+        const svc = zoneSvcs[0];
+        const minDate = addBusinessDays(new Date(), svc.estimated_days_min || 3);
+        const maxDate = addBusinessDays(new Date(), svc.estimated_days_max || 7);
+        setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
+      } else {
+        setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+        const minDate = addBusinessDays(new Date(), 3);
+        const maxDate = addBusinessDays(new Date(), 7);
+        setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
+      }
+    }
+  };
+
+  const handleServiceChange = (serviceId: string) => {
+    setSelectedServiceId(serviceId);
+    const svc = shippingServices.find((s: any) => s.id === serviceId);
+    if (svc) {
+      const zone = shippingZones.find((z) => z.id === svc.zone_id);
+      const isFree = zone?.free_above && subtotalAfterDiscount >= Number(zone.free_above);
+      setShippingCost(isFree ? 0 : Number(zone?.flat_rate || 0));
+      const minDate = addBusinessDays(new Date(), svc.estimated_days_min || 3);
+      const maxDate = addBusinessDays(new Date(), svc.estimated_days_max || 7);
       setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
     }
   };
@@ -855,6 +917,38 @@ export default function StorefrontCheckout() {
                       );
                     })}
                   </div>
+
+                  {/* Shipping Services for selected zone */}
+                  {selectedZone && shippingServices.filter((s: any) => s.zone_id === selectedZone).length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <Label className="text-xs font-medium">Shipping Method</Label>
+                      {shippingServices.filter((s: any) => s.zone_id === selectedZone).map((svc: any) => (
+                        <label
+                          key={svc.id}
+                          className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                            selectedServiceId === svc.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <input
+                              type="radio"
+                              name="shipping_service"
+                              value={svc.id}
+                              checked={selectedServiceId === svc.id}
+                              onChange={() => handleServiceChange(svc.id)}
+                              className="accent-primary"
+                            />
+                            <div>
+                              <p className="text-sm font-medium">{svc.name}</p>
+                              <p className="text-2xs text-muted-foreground">
+                                {svc.carrier ? `${svc.carrier} · ` : ""}{svc.estimated_days_min}–{svc.estimated_days_max} business days
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

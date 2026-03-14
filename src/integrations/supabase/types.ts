@@ -6415,34 +6415,49 @@ export type Database = {
       }
       tax_rates: {
         Row: {
+          applies_to: string | null
           country: string | null
           created_at: string
           id: string
+          is_compound: boolean | null
           is_default: boolean | null
+          is_inclusive: boolean | null
           name: string
+          priority: number | null
           rate: number
           region: string
           store_id: string
+          updated_at: string | null
         }
         Insert: {
+          applies_to?: string | null
           country?: string | null
           created_at?: string
           id?: string
+          is_compound?: boolean | null
           is_default?: boolean | null
+          is_inclusive?: boolean | null
           name: string
+          priority?: number | null
           rate?: number
           region: string
           store_id: string
+          updated_at?: string | null
         }
         Update: {
+          applies_to?: string | null
           country?: string | null
           created_at?: string
           id?: string
+          is_compound?: boolean | null
           is_default?: boolean | null
+          is_inclusive?: boolean | null
           name?: string
+          priority?: number | null
           rate?: number
           region?: string
           store_id?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
