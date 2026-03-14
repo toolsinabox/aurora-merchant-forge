@@ -7965,7 +7965,7 @@ const securityComplianceFeatures: FeatureCategory[] = [
       { name: "Password Strength Enforcement", description: "Enforce minimum password complexity", status: "done", notes: "Signup page password strength meter with 5-criteria check (length, uppercase, lowercase, number, special), visual bar, and per-criterion feedback" },
       { name: "Brute Force Protection", description: "Lock accounts after X failed login attempts", status: "done", notes: "Login page tracks failed attempts in localStorage, locks account for 15 minutes after 5 failed attempts, shows remaining attempts warning" },
       { name: "Staff Role Permissions (Granular)", description: "Per-feature permission toggles per role", status: "done", notes: "RolePermissions page" },
-      { name: "Content Security Policy Headers", description: "Configure CSP headers for XSS protection", status: "not_started" },
+      { name: "Content Security Policy Headers", description: "Configure CSP headers for XSS protection", status: "done", notes: "Settings Security tab CSP section with per-directive configuration (default-src, script-src, style-src, img-src, font-src, connect-src, frame-src, object-src, base-uri, form-action), report-only mode toggle, live CSP header preview" },
       { name: "HTTPS Enforcement", description: "Force all traffic through HTTPS", status: "done" },
     ],
   },
