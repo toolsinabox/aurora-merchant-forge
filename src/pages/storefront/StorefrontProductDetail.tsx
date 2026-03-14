@@ -544,9 +544,12 @@ export default function StorefrontProductDetail() {
             )}
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Quantity</label>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Quantity</label>
+                {moq > 1 && <span className="text-xs text-muted-foreground">Min: {moq}</span>}
+              </div>
               <div className="flex items-center gap-3">
-                <Button variant="outline" size="icon" className="h-10 w-10" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                <Button variant="outline" size="icon" className="h-10 w-10" onClick={() => setQuantity(Math.max(moq, quantity - 1))}>
                   <Minus className="h-4 w-4" />
                 </Button>
                 <span className="text-lg font-medium w-8 text-center">{quantity}</span>
@@ -555,6 +558,59 @@ export default function StorefrontProductDetail() {
                 </Button>
               </div>
             </div>
+
+            {/* Size Guide */}
+            {(product.product_type?.toLowerCase().includes("apparel") || product.product_type?.toLowerCase().includes("clothing") || product.tags?.some((t: string) => ["clothing", "apparel", "shoes", "footwear"].includes(t.toLowerCase())) || specifics.some((s: any) => s.name?.toLowerCase().includes("size"))) && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="link" className="h-auto p-0 text-sm gap-1.5">
+                    <Ruler className="h-4 w-4" /> Size Guide
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Size Guide</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="overflow-auto">
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2 px-3 font-medium">Size</th>
+                            <th className="text-center py-2 px-3 font-medium">Chest (cm)</th>
+                            <th className="text-center py-2 px-3 font-medium">Waist (cm)</th>
+                            <th className="text-center py-2 px-3 font-medium">Hip (cm)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { size: "XS", chest: "76-81", waist: "61-66", hip: "84-89" },
+                            { size: "S", chest: "86-91", waist: "71-76", hip: "91-97" },
+                            { size: "M", chest: "97-102", waist: "81-86", hip: "99-104" },
+                            { size: "L", chest: "107-112", waist: "91-97", hip: "107-112" },
+                            { size: "XL", chest: "117-122", waist: "102-107", hip: "114-119" },
+                            { size: "XXL", chest: "127-132", waist: "112-117", hip: "122-127" },
+                          ].map((row) => (
+                            <tr key={row.size} className="border-b last:border-0">
+                              <td className="py-2 px-3 font-medium">{row.size}</td>
+                              <td className="py-2 px-3 text-center text-muted-foreground">{row.chest}</td>
+                              <td className="py-2 px-3 text-center text-muted-foreground">{row.waist}</td>
+                              <td className="py-2 px-3 text-center text-muted-foreground">{row.hip}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-1">
+                      <p><strong>How to measure:</strong></p>
+                      <p>• <strong>Chest:</strong> Measure around the fullest part of your chest</p>
+                      <p>• <strong>Waist:</strong> Measure around your natural waistline</p>
+                      <p>• <strong>Hip:</strong> Measure around the fullest part of your hips</p>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
 
             {/* Low stock urgency indicator */}
             {(() => {
