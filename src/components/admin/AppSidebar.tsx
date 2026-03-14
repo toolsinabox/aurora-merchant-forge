@@ -2,7 +2,8 @@ import {
   LayoutDashboard, Package, Layers, Warehouse, Users, Megaphone,
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
-  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Megaphone as MegaphoneIcon, Mail, Puzzle, Book,
+  CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
+  Heart, PieChart, Smartphone, UserPlus, DollarSign,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -37,6 +38,7 @@ const catalogNav = [
 
 const salesNav = [
   { title: "Orders", url: `${prefix}/orders`, icon: Package },
+  { title: "POS", url: `${prefix}/pos`, icon: Smartphone },
   { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
@@ -51,8 +53,11 @@ const marketingNav = [
   { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
+  { title: "Loyalty", url: `${prefix}/loyalty`, icon: Heart },
+  { title: "Affiliates", url: `${prefix}/affiliates`, icon: UserPlus },
   { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
   { title: "Analytics", url: `${prefix}/analytics`, icon: BarChart3 },
+  { title: "Report Builder", url: `${prefix}/report-builder`, icon: PieChart },
 ];
 
 const contentNav = [
@@ -65,6 +70,7 @@ const contentNav = [
 const systemNav = [
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
+  { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
   { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
   { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
