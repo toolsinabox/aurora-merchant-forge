@@ -7902,7 +7902,7 @@ const checkoutDeepFeatures: FeatureCategory[] = [
       { name: "Address Autocomplete (Google Places)", description: "Google Places autocomplete for address fields", status: "not_started" },
       { name: "Address Validation", description: "Validate and standardize shipping addresses", status: "not_started" },
       { name: "Saved Addresses (Customer)", description: "Allow customers to save multiple shipping addresses", status: "partial" },
-      { name: "Checkout Custom Fields", description: "Add custom fields to checkout (e.g., delivery instructions)", status: "not_started" },
+      { name: "Checkout Custom Fields", description: "Add custom fields to checkout (e.g., delivery instructions)", status: "done", notes: "Checkout has Company Name, PO Number, Special Requirements custom fields plus delivery instructions and order notes" },
       { name: "Order Notes / Gift Message", description: "Customer can add order notes or gift message", status: "partial" },
       { name: "Terms & Conditions Checkbox", description: "Require acceptance of T&C before placing order", status: "partial" },
       { name: "Age Verification Gate", description: "Age gate for restricted products (alcohol, etc.)", status: "not_started" },
