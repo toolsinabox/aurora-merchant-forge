@@ -420,9 +420,9 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
 
-              <Card>
+              {w("orderStatus") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium">Order Status</CardTitle>
                 </CardHeader>
