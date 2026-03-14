@@ -8549,7 +8549,171 @@ const thirdPartyIntegrationFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures]);
+// ═══════ WAVE 8 — ABSOLUTE FINAL GAPS ═══════
+
+const laybyFeatures: FeatureCategory[] = [
+  {
+    category: "Layby / Lay-Away — Deep",
+    icon: <Timer className="h-5 w-5" />,
+    features: [
+      { name: "Layby Plan Creation", description: "Create layby plans with deposit + installments", status: "done", notes: "layby_plans table" },
+      { name: "Layby Payment Recording", description: "Record installment payments against plans", status: "done", notes: "layby_payments table" },
+      { name: "Layby Auto-Reminder Emails", description: "Email reminders for upcoming installments", status: "not_started" },
+      { name: "Layby Cancellation with Refund", description: "Cancel layby with partial refund logic", status: "partial" },
+      { name: "Layby Completion Auto-Fulfill", description: "Auto-trigger fulfillment when fully paid", status: "not_started" },
+      { name: "Layby Admin Dashboard", description: "Overview of all layby plans and payments", status: "done", notes: "Layby page" },
+      { name: "Layby Terms Configuration", description: "Configure deposit %, max duration, fees", status: "partial" },
+      { name: "Layby Customer Self-Service", description: "Customer can view and pay laybys from account", status: "not_started" },
+    ],
+  },
+];
+
+const quotingFeatures: FeatureCategory[] = [
+  {
+    category: "Quoting & RFQ",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Quote Creation (Admin)", description: "Create quotes for customers from admin", status: "done", notes: "Quotes page" },
+      { name: "Quote to Order Conversion", description: "Convert accepted quote to order", status: "done" },
+      { name: "Quote Expiry Date", description: "Set expiry on quotes", status: "done" },
+      { name: "Quote PDF Generation", description: "Generate printable quote PDF", status: "done", notes: "PrintQuote page" },
+      { name: "Quote Email to Customer", description: "Email quote to customer for approval", status: "partial" },
+      { name: "Request for Quote (RFQ) Form", description: "Customer-facing RFQ submission form", status: "not_started" },
+      { name: "Quote Negotiation (Revision History)", description: "Track quote revisions and counter-offers", status: "not_started" },
+      { name: "Quote Line Item Discounting", description: "Per-line custom pricing on quotes", status: "partial" },
+      { name: "Quote Approval Workflow", description: "Internal approval for quotes above threshold", status: "not_started" },
+      { name: "Quote Templates", description: "Pre-built quote templates for common requests", status: "not_started" },
+    ],
+  },
+];
+
+const returnPortalFeatures: FeatureCategory[] = [
+  {
+    category: "Returns Portal & RMA — Deep",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Customer Self-Service Returns", description: "Customer initiates return from account", status: "partial" },
+      { name: "Return Reason Selection", description: "Predefined return reason categories", status: "done", notes: "returns table" },
+      { name: "Return Photo Upload", description: "Customer uploads photos of damaged items", status: "not_started" },
+      { name: "Return Label Generation", description: "Auto-generate return shipping label", status: "done", notes: "PrintReturnLabel page" },
+      { name: "Return Approval / Rejection", description: "Admin approves or rejects return requests", status: "done" },
+      { name: "Refund to Original Payment", description: "Refund back to original payment method", status: "not_started" },
+      { name: "Refund to Store Credit", description: "Issue store credit instead of refund", status: "not_started" },
+      { name: "Exchange Workflow", description: "Exchange returned item for different variant/product", status: "not_started" },
+      { name: "Return Restocking Fee", description: "Deduct restocking fee from refund", status: "not_started" },
+      { name: "Return Stock Re-Integration", description: "Auto-add returned stock back to inventory", status: "not_started" },
+      { name: "Return Analytics", description: "Track return rates, reasons, costs", status: "not_started" },
+      { name: "Warranty Claim Tracking", description: "Track warranty claims separate from returns", status: "not_started" },
+    ],
+  },
+];
+
+const performanceFeatures: FeatureCategory[] = [
+  {
+    category: "Performance & Infrastructure",
+    icon: <HardDrive className="h-5 w-5" />,
+    features: [
+      { name: "Edge Function Deployment", description: "Serverless functions at the edge", status: "done", notes: "40+ edge functions" },
+      { name: "Database Connection Pooling", description: "Efficient database connection management", status: "done" },
+      { name: "CDN Asset Delivery", description: "Static assets served via CDN", status: "done" },
+      { name: "Image Optimization Pipeline", description: "Auto-optimize images on upload", status: "partial" },
+      { name: "Database Query Optimization", description: "Indexed queries for large datasets", status: "done" },
+      { name: "Caching Strategy (API)", description: "Cache frequently accessed data", status: "partial" },
+      { name: "Realtime Subscriptions", description: "Postgres realtime for live updates", status: "done", notes: "Supabase Realtime" },
+      { name: "Background Job Processing", description: "Async processing for heavy operations", status: "partial" },
+      { name: "Error Monitoring / Logging", description: "Centralized error tracking and logging", status: "partial" },
+      { name: "Uptime Monitoring", description: "Monitor service availability", status: "not_started" },
+      { name: "Load Testing", description: "Performance benchmarks under load", status: "not_started" },
+      { name: "Database Backup & Restore", description: "Automated database backups", status: "done", notes: "Supabase managed" },
+    ],
+  },
+];
+
+const accessibilityFeatures: FeatureCategory[] = [
+  {
+    category: "Accessibility (A11y)",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Keyboard Navigation (Admin)", description: "Full keyboard nav in admin panel", status: "partial" },
+      { name: "Keyboard Navigation (Storefront)", description: "Full keyboard nav on storefront", status: "partial" },
+      { name: "Screen Reader Support", description: "ARIA labels and roles on all interactive elements", status: "partial" },
+      { name: "Focus Management (Modals/Dialogs)", description: "Focus trap and restore in modals", status: "done", notes: "Radix UI handles" },
+      { name: "Color Contrast (WCAG AA)", description: "All text meets WCAG AA contrast ratios", status: "partial" },
+      { name: "Skip to Content Link", description: "Skip navigation link for keyboard users", status: "not_started" },
+      { name: "Form Error Announcements", description: "Screen reader announces form validation errors", status: "partial" },
+      { name: "Responsive Font Sizing", description: "Text scales appropriately across devices", status: "done" },
+      { name: "Alt Text on All Images", description: "All images have descriptive alt text", status: "partial" },
+      { name: "Reduced Motion Support", description: "Respect prefers-reduced-motion media query", status: "not_started" },
+    ],
+  },
+];
+
+const mobileAppFeatures: FeatureCategory[] = [
+  {
+    category: "Mobile & Responsive",
+    icon: <Smartphone className="h-5 w-5" />,
+    features: [
+      { name: "Responsive Admin Panel", description: "Admin works on tablet and mobile", status: "done" },
+      { name: "Responsive Storefront", description: "Storefront works on all screen sizes", status: "done" },
+      { name: "Touch-Friendly Controls", description: "Buttons and inputs sized for touch", status: "done" },
+      { name: "Mobile Product Quick View", description: "Quick view modal optimized for mobile", status: "done", notes: "ProductQuickView" },
+      { name: "Mobile Checkout Optimization", description: "Simplified checkout flow on mobile", status: "partial" },
+      { name: "Mobile Search (Full Screen)", description: "Full-screen search overlay on mobile", status: "partial" },
+      { name: "Mobile Sidebar Navigation", description: "Slide-out navigation on mobile", status: "done", notes: "StorefrontSidebar" },
+      { name: "Mobile POS Mode", description: "POS interface optimized for tablet", status: "partial" },
+      { name: "Push Notification Support", description: "Browser push notifications for orders", status: "not_started" },
+      { name: "Offline Cart Persistence", description: "Cart persists when device goes offline", status: "partial", notes: "localStorage cart" },
+    ],
+  },
+];
+
+const dataPrivacyFeatures: FeatureCategory[] = [
+  {
+    category: "Data Privacy & Compliance — Deep",
+    icon: <Fingerprint className="h-5 w-5" />,
+    features: [
+      { name: "GDPR Right to Access", description: "Export all data held about a customer", status: "not_started" },
+      { name: "GDPR Right to Erasure", description: "Delete all customer PII on request", status: "not_started" },
+      { name: "GDPR Consent Management", description: "Track marketing consent per customer", status: "partial" },
+      { name: "CCPA Do Not Sell", description: "Honor CCPA opt-out of data sale", status: "not_started" },
+      { name: "Data Retention Policies", description: "Auto-purge old data per retention schedule", status: "not_started" },
+      { name: "PCI DSS Compliance", description: "No card data stored (delegated to gateway)", status: "done", notes: "Stripe handles card data" },
+      { name: "Privacy Impact Assessment", description: "Document data processing activities", status: "not_started" },
+      { name: "Cookie Category Management", description: "Granular cookie consent (essential, analytics, marketing)", status: "done", notes: "CookieConsentBanner" },
+      { name: "Data Processing Agreement (DPA)", description: "DPA documentation for merchants", status: "not_started" },
+      { name: "Audit Log Retention", description: "Configurable retention period for audit logs", status: "not_started" },
+    ],
+  },
+];
+
+const configSettingsFeatures: FeatureCategory[] = [
+  {
+    category: "Settings & Configuration — Comprehensive",
+    icon: <Settings className="h-5 w-5" />,
+    features: [
+      { name: "Store Name & Details", description: "Configure store name, address, phone, email", status: "done", notes: "Settings page" },
+      { name: "Store Logo Upload", description: "Upload and manage store logo", status: "done" },
+      { name: "Store Favicon", description: "Custom favicon for storefront", status: "done", notes: "public/favicon.ico" },
+      { name: "Default Currency", description: "Set default store currency", status: "done" },
+      { name: "Weight Unit (kg/lb)", description: "Set default weight unit", status: "done" },
+      { name: "Dimension Unit (cm/in)", description: "Set default dimension unit", status: "done" },
+      { name: "Date Format Configuration", description: "Configure date display format", status: "partial" },
+      { name: "Timezone Setting", description: "Set store timezone", status: "partial" },
+      { name: "Order Number Format", description: "Configure order number prefix/sequence", status: "partial" },
+      { name: "Invoice Number Format", description: "Configure invoice number format", status: "partial" },
+      { name: "Low Stock Threshold (Global)", description: "Default low stock threshold for all products", status: "done" },
+      { name: "Checkout Settings", description: "Toggle guest checkout, minimum order, etc.", status: "partial" },
+      { name: "Email Sender Configuration", description: "Set from name/email for store emails", status: "partial" },
+      { name: "Social Media Links", description: "Configure social media profile URLs", status: "done" },
+      { name: "Google Analytics ID", description: "Set GA4 measurement ID", status: "partial" },
+      { name: "Custom CSS Injection", description: "Add custom CSS to storefront", status: "partial" },
+      { name: "Custom JavaScript Injection", description: "Add custom JS to storefront head/body", status: "not_started" },
+      { name: "Maintenance Mode Toggle", description: "Enable/disable maintenance mode", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
