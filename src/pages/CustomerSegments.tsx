@@ -147,20 +147,63 @@ export default function CustomerSegments() {
     qc.invalidateQueries({ queryKey: ["segmentation_rules"] });
   };
 
+  // RFM Analysis
+  const [rfmData, setRfmData] = useState<any[]>([]);
+  const [rfmLoading, setRfmLoading] = useState(false);
+
+  const runRfmAnalysis = async () => {
+    if (!storeId) return;
+    setRfmLoading(true);
+    try {
+      const { data: customers } = await supabase.from("customers").select("id, name, email, total_orders, total_spent, segment").eq("store_id", storeId).order("total_spent", { ascending: false }).limit(200);
+      if (!customers || customers.length === 0) { toast.info("No customers found"); setRfmLoading(false); return; }
+      const { data: orders } = await supabase.from("orders").select("customer_id, created_at").eq("store_id", storeId).order("created_at", { ascending: false });
+      const now = Date.now();
+      const lastOrderMap: Record<string, number> = {};
+      (orders || []).forEach((o: any) => {
+        if (!lastOrderMap[o.customer_id]) lastOrderMap[o.customer_id] = new Date(o.created_at).getTime();
+      });
+      const scored = customers.map((c: any) => {
+        const lastOrder = lastOrderMap[c.id];
+        const recencyDays = lastOrder ? Math.floor((now - lastOrder) / (1000 * 60 * 60 * 24)) : 999;
+        const frequency = c.total_orders || 0;
+        const monetary = c.total_spent || 0;
+        // Score 1-5 (5 = best)
+        const rScore = recencyDays <= 7 ? 5 : recencyDays <= 30 ? 4 : recencyDays <= 90 ? 3 : recencyDays <= 180 ? 2 : 1;
+        const fScore = frequency >= 20 ? 5 : frequency >= 10 ? 4 : frequency >= 5 ? 3 : frequency >= 2 ? 2 : 1;
+        const mScore = monetary >= 5000 ? 5 : monetary >= 1000 ? 4 : monetary >= 500 ? 3 : monetary >= 100 ? 2 : 1;
+        const rfmSegment = rScore >= 4 && fScore >= 4 ? "Champion" :
+          rScore >= 3 && fScore >= 3 ? "Loyal" :
+          rScore >= 4 && fScore <= 2 ? "New" :
+          rScore <= 2 && fScore >= 3 ? "At Risk" :
+          rScore <= 2 && fScore <= 2 ? "Lost" : "Potential";
+        return { ...c, recencyDays, rScore, fScore, mScore, rfmSegment };
+      });
+      setRfmData(scored);
+      toast.success(`RFM analysis complete for ${scored.length} customers`);
+    } catch (err: any) { toast.error(err.message); }
+    finally { setRfmLoading(false); }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Customer Segments</h1>
-            <p className="text-xs text-muted-foreground">Automated segmentation rules to classify customers</p>
+            <p className="text-xs text-muted-foreground">Automated segmentation rules & RFM analysis</p>
           </div>
-          <Button size="sm" className="text-xs h-8 gap-1" onClick={() => {
-            setForm({ name: "", segment: "vip", match_type: "all", is_active: true, conditions: [{ field: "total_spent", operator: "gt", value: "" }] });
-            setEditingId(null); setShowForm(true);
-          }}>
-            <Plus className="h-3.5 w-3.5" /> New Rule
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" className="text-xs h-8 gap-1" onClick={runRfmAnalysis} disabled={rfmLoading}>
+              <Target className="h-3.5 w-3.5" /> {rfmLoading ? "Analyzing..." : "RFM Analysis"}
+            </Button>
+            <Button size="sm" className="text-xs h-8 gap-1" onClick={() => {
+              setForm({ name: "", segment: "vip", match_type: "all", is_active: true, conditions: [{ field: "total_spent", operator: "gt", value: "" }] });
+              setEditingId(null); setShowForm(true);
+            }}>
+              <Plus className="h-3.5 w-3.5" /> New Rule
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
@@ -168,6 +211,59 @@ export default function CustomerSegments() {
           <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Active</p><p className="text-xl font-bold text-primary">{rules.filter((r: any) => r.is_active).length}</p></CardContent></Card>
           <Card><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Matched</p><p className="text-xl font-bold">{rules.reduce((s: number, r: any) => s + (r.matched_count || 0), 0)}</p></CardContent></Card>
         </div>
+
+        {/* RFM Results */}
+        {rfmData.length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm">RFM Segmentation Results</CardTitle>
+                <Badge variant="outline" className="text-[10px]">{rfmData.length} customers</Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-2 p-4 pb-2">
+                {["Champion", "Loyal", "Potential", "New", "At Risk", "Lost"].map(seg => {
+                  const count = rfmData.filter(d => d.rfmSegment === seg).length;
+                  return (
+                    <div key={seg} className="text-center p-2 rounded-md bg-muted/50">
+                      <p className="text-lg font-bold">{count}</p>
+                      <p className="text-[10px] text-muted-foreground">{seg}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Customer</TableHead>
+                    <TableHead className="text-xs h-8 text-center">R</TableHead>
+                    <TableHead className="text-xs h-8 text-center">F</TableHead>
+                    <TableHead className="text-xs h-8 text-center">M</TableHead>
+                    <TableHead className="text-xs h-8">Segment</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Last Order</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rfmData.slice(0, 20).map((c: any) => (
+                    <TableRow key={c.id} className="text-xs">
+                      <TableCell className="py-1.5">{c.name}</TableCell>
+                      <TableCell className="py-1.5 text-center font-mono">{c.rScore}</TableCell>
+                      <TableCell className="py-1.5 text-center font-mono">{c.fScore}</TableCell>
+                      <TableCell className="py-1.5 text-center font-mono">{c.mScore}</TableCell>
+                      <TableCell className="py-1.5">
+                        <Badge variant={c.rfmSegment === "Champion" ? "default" : c.rfmSegment === "At Risk" || c.rfmSegment === "Lost" ? "destructive" : "secondary"} className="text-[10px]">
+                          {c.rfmSegment}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-1.5 text-right text-muted-foreground">{c.recencyDays < 999 ? `${c.recencyDays}d ago` : "Never"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardContent className="p-0">

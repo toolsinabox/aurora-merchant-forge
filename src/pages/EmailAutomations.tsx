@@ -167,7 +167,10 @@ export default function EmailAutomations() {
                   const trigger = TRIGGER_TYPES.find(t => t.value === a.trigger_type);
                   return (
                     <TableRow key={a.id}>
-                      <TableCell className="font-medium text-sm">{a.name}</TableCell>
+                      <TableCell className="font-medium text-sm">
+                        {a.name}
+                        {(a.step_number || 1) > 1 && <Badge variant="secondary" className="ml-1 text-[10px]">Step {a.step_number}</Badge>}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-xs">{trigger?.label || a.trigger_type}</Badge>
                       </TableCell>
