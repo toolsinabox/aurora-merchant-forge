@@ -135,6 +135,7 @@ export default function ProductForm() {
         misc5: (existing as any).misc5 || "",
         scheduled_publish_at: (existing as any).scheduled_publish_at ? new Date((existing as any).scheduled_publish_at).toISOString().slice(0, 16) : "",
         scheduled_unpublish_at: (existing as any).scheduled_unpublish_at ? new Date((existing as any).scheduled_unpublish_at).toISOString().slice(0, 16) : "",
+        video_url: (existing as any).video_url || "",
       });
       setProductImages(existing.images || []);
     }
