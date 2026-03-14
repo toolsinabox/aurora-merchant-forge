@@ -8316,7 +8316,7 @@ const marketingAutomationFeatures: FeatureCategory[] = [
       { name: "Affiliate / Referral Program", description: "Track affiliate signups, clicks, commissions", status: "done", notes: "Affiliates page + affiliates table" },
       { name: "Newsletter Signup Widget", description: "Configurable newsletter signup form", status: "done", notes: "NewsletterSignup component" },
       { name: "Exit-Intent Popup", description: "Show popup when user is about to leave", status: "done", notes: "PromoPopup component" },
-      { name: "Social Proof Notifications", description: "Show 'X just purchased' live notifications", status: "not_started" },
+      { name: "Social Proof Notifications", description: "Show 'X just purchased' live notifications", status: "done", notes: "SocialProofNotifications component" },
       { name: "Product Bundle Recommendations (AI)", description: "AI-powered frequently bought together", status: "not_started" },
       { name: "Personalized Product Recommendations", description: "Show products based on browsing/purchase history", status: "not_started" },
       { name: "UTM Tracking / Source Attribution", description: "Track marketing source on orders via UTM params", status: "not_started" },
