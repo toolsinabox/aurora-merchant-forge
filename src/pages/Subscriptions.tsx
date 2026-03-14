@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Repeat, Pause, Play, Trash2, CalendarDays, Package, TrendingUp, TrendingDown, DollarSign, Users } from "lucide-react";
+import { Plus, Repeat, Pause, Play, Trash2, CalendarDays, Package, TrendingUp, TrendingDown, DollarSign, Users, SkipForward, ArrowLeftRight, Hash } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -42,6 +42,14 @@ export default function Subscriptions() {
     frequency: "monthly", interval_count: 1, unit_price: 0,
     discount_percent: 0, next_order_date: "", payment_method: "card", notes: "",
   });
+  const [skipDialogOpen, setSkipDialogOpen] = useState(false);
+  const [skippingSubId, setSkippingSubId] = useState<string | null>(null);
+  const [swapDialogOpen, setSwapDialogOpen] = useState(false);
+  const [swappingSub, setSwappingSub] = useState<any>(null);
+  const [swapProductId, setSwapProductId] = useState("");
+  const [qtyDialogOpen, setQtyDialogOpen] = useState(false);
+  const [qtyEditSub, setQtyEditSub] = useState<any>(null);
+  const [newQty, setNewQty] = useState(1);
 
   const { data: subs = [], isLoading } = useQuery({
     queryKey: ["subscription_plans", storeId],
@@ -121,6 +129,54 @@ export default function Subscriptions() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["subscription_plans"] });
       toast.success("Subscription deleted");
+    },
+  });
+
+  const skipDelivery = useMutation({
+    mutationFn: async (id: string) => {
+      const sub = subs.find((s: any) => s.id === id);
+      if (!sub?.next_order_date) throw new Error("No next order date set");
+      const freqDays: Record<string, number> = {
+        weekly: 7, fortnightly: 14, monthly: 30, bimonthly: 60, quarterly: 90, biannual: 180, annual: 365,
+      };
+      const days = freqDays[sub.frequency] || 30;
+      const next = new Date(sub.next_order_date);
+      next.setDate(next.getDate() + days);
+      const { error } = await supabase.from("subscription_plans" as any)
+        .update({ next_order_date: next.toISOString().split("T")[0] }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["subscription_plans"] });
+      toast.success("Next delivery skipped");
+      setSkipDialogOpen(false);
+    },
+  });
+
+  const swapProduct = useMutation({
+    mutationFn: async ({ id, productId }: { id: string; productId: string }) => {
+      const product = products.find((p: any) => p.id === productId);
+      const { error } = await supabase.from("subscription_plans" as any)
+        .update({ product_id: productId, unit_price: product?.price || 0 }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["subscription_plans"] });
+      toast.success("Product swapped");
+      setSwapDialogOpen(false);
+    },
+  });
+
+  const changeQty = useMutation({
+    mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
+      const { error } = await supabase.from("subscription_plans" as any)
+        .update({ quantity }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["subscription_plans"] });
+      toast.success("Quantity updated");
+      setQtyDialogOpen(false);
     },
   });
 
@@ -347,11 +403,22 @@ export default function Subscriptions() {
                       <TableCell className="text-xs">{s.total_orders_created}</TableCell>
                       <TableCell>{statusBadge(s.status)}</TableCell>
                       <TableCell>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-wrap">
                           {s.status === "active" && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7" title="Pause" onClick={() => updateStatus.mutate({ id: s.id, status: "paused" })}>
-                              <Pause className="h-3.5 w-3.5" />
-                            </Button>
+                            <>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Pause" onClick={() => updateStatus.mutate({ id: s.id, status: "paused" })}>
+                                <Pause className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Skip Next Delivery" onClick={() => { setSkippingSubId(s.id); setSkipDialogOpen(true); }}>
+                                <SkipForward className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Swap Product" onClick={() => { setSwappingSub(s); setSwapProductId(s.product_id || ""); setSwapDialogOpen(true); }}>
+                                <ArrowLeftRight className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Change Quantity" onClick={() => { setQtyEditSub(s); setNewQty(s.quantity); setQtyDialogOpen(true); }}>
+                                <Hash className="h-3.5 w-3.5" />
+                              </Button>
+                            </>
                           )}
                           {s.status === "paused" && (
                             <Button variant="ghost" size="icon" className="h-7 w-7" title="Resume" onClick={() => updateStatus.mutate({ id: s.id, status: "active" })}>
@@ -396,6 +463,52 @@ export default function Subscriptions() {
               setCancelDialogOpen(false);
               setCancellingSubId(null);
             }}>Confirm Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Skip Delivery Dialog */}
+      <Dialog open={skipDialogOpen} onOpenChange={setSkipDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Skip Next Delivery</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">This will push the next order date forward by one billing cycle. The subscription will remain active.</p>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setSkipDialogOpen(false)}>Cancel</Button>
+            <Button size="sm" disabled={skipDelivery.isPending} onClick={() => { if (skippingSubId) skipDelivery.mutate(skippingSubId); }}>Skip Delivery</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Swap Product Dialog */}
+      <Dialog open={swapDialogOpen} onOpenChange={setSwapDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Swap Subscription Product</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">Change the product for this subscription. The price will update to the new product's price.</p>
+          <div>
+            <Label className="text-xs">New Product</Label>
+            <Select value={swapProductId} onValueChange={setSwapProductId}>
+              <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
+              <SelectContent>{products.map((p: any) => <SelectItem key={p.id} value={p.id}>{p.title} — ${p.price}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setSwapDialogOpen(false)}>Cancel</Button>
+            <Button size="sm" disabled={!swapProductId || swapProduct.isPending} onClick={() => { if (swappingSub) swapProduct.mutate({ id: swappingSub.id, productId: swapProductId }); }}>Swap Product</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Quantity Dialog */}
+      <Dialog open={qtyDialogOpen} onOpenChange={setQtyDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Change Subscription Quantity</DialogTitle></DialogHeader>
+          <div>
+            <Label className="text-xs">New Quantity</Label>
+            <Input type="number" min={1} value={newQty} onChange={e => setNewQty(Number(e.target.value))} className="h-8 text-xs" />
+          </div>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setQtyDialogOpen(false)}>Cancel</Button>
+            <Button size="sm" disabled={newQty < 1 || changeQty.isPending} onClick={() => { if (qtyEditSub) changeQty.mutate({ id: qtyEditSub.id, quantity: newQty }); }}>Update Quantity</Button>
           </div>
         </DialogContent>
       </Dialog>

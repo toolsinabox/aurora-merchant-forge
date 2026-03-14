@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, DollarSign, Calendar, CreditCard } from "lucide-react";
+import { Search, DollarSign, Calendar, CreditCard, Mail } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -89,6 +89,24 @@ export default function Layby() {
       qc.invalidateQueries({ queryKey: ["layby_plans"] });
       toast.success("Layby plan cancelled");
     },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const sendReminder = useMutation({
+    mutationFn: async (plan: any) => {
+      if (!plan.customer?.email || !currentStore) throw new Error("No customer email");
+      const remaining = Number(plan.total_amount) - Number(plan.amount_paid);
+      const { error } = await supabase.functions.invoke("send-email", {
+        body: {
+          store_id: currentStore.id,
+          to: plan.customer.email,
+          subject: `Layby Payment Reminder — ${plan.order?.order_number || "Your Plan"}`,
+          html: `<p>Hi ${plan.customer.name},</p><p>This is a friendly reminder that your next layby installment of <strong>$${plan.installment_amount?.toFixed(2)}</strong> is due soon.</p><p>Outstanding balance: <strong>$${remaining.toFixed(2)}</strong></p><p>Installments completed: ${plan.installments_paid} of ${plan.installments_count}</p><p>Thank you for your continued payments.</p>`,
+        },
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => toast.success("Payment reminder sent"),
     onError: (e: any) => toast.error(e.message),
   });
 
@@ -206,6 +224,9 @@ export default function Layby() {
                             <div className="flex gap-1">
                               <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" onClick={() => { setPayDialog(plan); setPayAmount(String(plan.installment_amount)); }}>
                                 <DollarSign className="h-3 w-3 mr-0.5" /> Pay
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" title="Send Reminder" onClick={() => sendReminder.mutate(plan)} disabled={sendReminder.isPending}>
+                                <Mail className="h-3 w-3" />
                               </Button>
                               <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => cancelPlan.mutate(plan.id)}>
                                 Cancel
