@@ -12,7 +12,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles, Timer } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 import { addBusinessDays, format } from "date-fns";
 
