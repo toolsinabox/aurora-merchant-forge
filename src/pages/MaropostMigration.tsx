@@ -826,7 +826,6 @@ export default function MaropostMigration() {
                     {entity.status === "importing" && (
                       <Progress value={entity.batchProgress || 0} className="h-1.5" />
                     )}
-                    </div>
                     {entity.errors.length > 0 && (
                       <details className="text-xs">
                         <summary className="text-destructive cursor-pointer">{entity.errors.length} error(s) — click to expand</summary>
