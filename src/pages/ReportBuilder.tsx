@@ -92,7 +92,7 @@ export default function ReportBuilder() {
           <p className="text-xs text-muted-foreground">Build custom reports with filters and date ranges</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2"><Filter className="h-4 w-4" /> Config</CardTitle>
