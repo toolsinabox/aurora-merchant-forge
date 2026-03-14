@@ -246,6 +246,20 @@
     @apply flex-1 overflow-auto p-3 sm:p-4 animate-fade-in;
   }
 
+  /* Normalize spacing — tighten outer containers on mobile */
+  .admin-main > div {
+    @apply space-y-3 !important;
+  }
+
+  /* Normalize h1 sizes within admin */
+  .admin-main h1 {
+    @apply text-lg font-semibold leading-tight;
+  }
+  /* Normalize subtitle text below h1 */
+  .admin-main h1 + p {
+    @apply text-xs text-muted-foreground;
+  }
+
   /* Page header — stacks on mobile, row on desktop */
   .page-header {
     @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
