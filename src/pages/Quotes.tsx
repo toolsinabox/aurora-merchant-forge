@@ -350,6 +350,7 @@ export default function Quotes() {
                           {q.status === "sent" && (
                             <>
                               <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => updateStatus(q.id, "approved")}>Approve</Button>
+                              <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => openCounterOffer(q.id)}>Counter</Button>
                               <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => updateStatus(q.id, "rejected")}>Reject</Button>
                             </>
                           )}
