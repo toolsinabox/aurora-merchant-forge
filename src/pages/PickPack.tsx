@@ -96,6 +96,26 @@ export default function PickPack() {
     return orderItems.filter((item: any) => unfulfilledOrderIds.has(item.order_id));
   }, [orderItems, pendingOrders]);
 
+  // Batch picking: group by SKU across all orders
+  const batchPickItems = useMemo(() => {
+    const skuMap = new Map<string, { sku: string; title: string; totalQty: number; orderCount: number; orders: string[] }>();
+    for (const item of pickItems) {
+      const key = (item as any).sku || (item as any).product_id;
+      const existing = skuMap.get(key);
+      const orderNum = ((item as any).orders as any)?.order_number || "—";
+      if (existing) {
+        existing.totalQty += (item as any).quantity;
+        if (!existing.orders.includes(orderNum)) {
+          existing.orders.push(orderNum);
+          existing.orderCount++;
+        }
+      } else {
+        skuMap.set(key, { sku: (item as any).sku || "—", title: (item as any).title, totalQty: (item as any).quantity, orderCount: 1, orders: [orderNum] });
+      }
+    }
+    return Array.from(skuMap.values()).sort((a, b) => b.totalQty - a.totalQty);
+  }, [pickItems]);
+
   const toggleItem = (id: string) => {
     setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
