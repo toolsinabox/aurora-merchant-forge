@@ -176,7 +176,7 @@ export default function Returns() {
                 <CardContent className="pt-4 pb-3 text-center">
                   <TrendingUp className="h-5 w-5 mx-auto mb-1 text-amber-500" />
                   <p className="text-xs text-muted-foreground">Pending</p>
-                  <p className="text-xl font-bold">{rmaStats.byStatus["requested"] || 0}</p>
+                  <p className="text-lg font-bold">{rmaStats.byStatus["requested"] || 0}</p>
                 </CardContent>
               </Card>
               <Card>
