@@ -471,6 +471,22 @@ serve(async (req) => {
             }
           }
 
+          // Import newsletter subscriber
+          if (c.NewsletterSubscriber === "True" && (c.EmailAddress || c.Email)) {
+            await supabase.from("newsletter_subscribers").upsert({
+              store_id,
+              email: c.EmailAddress || c.Email,
+              is_active: true,
+            } as any, { onConflict: "store_id,email" }).catch(() => {
+              // May not have unique constraint, try insert
+              supabase.from("newsletter_subscribers").insert({
+                store_id,
+                email: c.EmailAddress || c.Email,
+                is_active: true,
+              }).catch(() => {});
+            });
+          }
+
           await logEntity("customer", c.Username || c.EmailAddress || c.Email, inserted.id);
           imported++;
         } catch (err: any) {
@@ -515,6 +531,18 @@ serve(async (req) => {
           // Link shipping/billing address as JSON
           if (o.ShipAddress) orderData.shipping_address = o.ShipAddress;
           if (o.BillAddress) orderData.billing_address = o.BillAddress;
+
+          // Link to existing customer by email
+          const orderEmail = o.Email || o.Username;
+          if (orderEmail) {
+            const { data: cust } = await supabase
+              .from("customers")
+              .select("id")
+              .eq("store_id", store_id)
+              .eq("email", orderEmail)
+              .maybeSingle();
+            if (cust) orderData.customer_id = cust.id;
+          }
 
           const { data: inserted, error } = await supabase
             .from("orders").insert(orderData).select("id").single();
@@ -717,6 +745,38 @@ serve(async (req) => {
         } catch (err: any) {
           failed++;
           errors.push(`RMA ${r.RmaID}: ${err.message}`);
+        }
+      }
+    }
+
+    // ── IMPORT REDIRECTS (301) ──
+    else if (action === "import_redirects") {
+      const items = source_data?.Redirect || source_data || [];
+      const redirects = Array.isArray(items) ? items : [items];
+
+      for (const r of redirects) {
+        try {
+          const fromPath = r.OldURL || r.FromPath || r.old_url;
+          const toPath = r.NewURL || r.ToPath || r.new_url;
+          if (fromPath && toPath) {
+            await supabase.from("redirects").upsert({
+              store_id,
+              from_path: fromPath.startsWith("/") ? fromPath : `/${fromPath}`,
+              to_path: toPath.startsWith("/") ? toPath : toPath.startsWith("http") ? toPath : `/${toPath}`,
+              is_active: true,
+            } as any, { onConflict: "store_id,from_path" }).catch(() => {
+              return supabase.from("redirects").insert({
+                store_id,
+                from_path: fromPath.startsWith("/") ? fromPath : `/${fromPath}`,
+                to_path: toPath.startsWith("/") ? toPath : toPath.startsWith("http") ? toPath : `/${toPath}`,
+                is_active: true,
+              });
+            });
+            imported++;
+          }
+        } catch (err: any) {
+          failed++;
+          errors.push(`Redirect ${r.OldURL || r.FromPath}: ${err.message}`);
         }
       }
     }

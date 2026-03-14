@@ -47,6 +47,7 @@ const MIGRATION_ENTITIES: Omit<EntityCount, "count" | "selected" | "status" | "i
   { entity: "rma", label: "Returns / RMAs", icon: <RefreshCw className="h-5 w-5" /> },
   { entity: "payments", label: "Payment History", icon: <CreditCard className="h-5 w-5" /> },
   { entity: "currency", label: "Currencies & Exchange Rates", icon: <Globe className="h-5 w-5" /> },
+  { entity: "redirects", label: "301 Redirects (SEO)", icon: <ArrowRight className="h-5 w-5" /> },
   { entity: "templates", label: "Templates & Theme", icon: <Palette className="h-5 w-5" /> },
 ];
 
@@ -67,7 +68,7 @@ const IMPORT_ACTION_MAP: Record<string, string> = {
   suppliers: "import_suppliers", warehouses: "import_warehouses",
   shipping: "import_shipping", rma: "import_rma",
   templates: "import_theme_css", payments: "import_orders",
-  currency: "import_currencies",
+  currency: "import_currencies", redirects: "import_redirects",
 };
 
 const ITEMS_PER_PAGE = 20; // Maropost API has response size limits, products especially need small pages
@@ -655,6 +656,39 @@ export default function MaropostMigration() {
                   </div>
                 ))}
               </div>
+
+              {/* Pre-import validation summary */}
+              {entities.some(e => e.selected) && (
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardContent className="p-4 space-y-2">
+                    <h4 className="font-semibold text-sm flex items-center gap-2"><Shield className="h-4 w-4" />Pre-Import Summary</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">{entities.filter(e => e.selected).reduce((s, e) => s + e.count, 0).toLocaleString()}</p>
+                        <p className="text-muted-foreground">Total Records</p>
+                      </div>
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">{entities.filter(e => e.selected).length}</p>
+                        <p className="text-muted-foreground">Entity Types</p>
+                      </div>
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">{entities.filter(e => e.selected).reduce((s, e) => s + e.pages, 0)}</p>
+                        <p className="text-muted-foreground">API Pages</p>
+                      </div>
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">~{Math.ceil(entities.filter(e => e.selected).reduce((s, e) => s + e.pages, 0) * 3 / 60)}m</p>
+                        <p className="text-muted-foreground">Est. Duration</p>
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-1 pt-1">
+                      <p>• Categories → Products → Customers → Orders (auto-ordered for relationship linking)</p>
+                      <p>• Products will be linked to categories and relations (cross-sell/upsell) post-import</p>
+                      <p>• Orders will be linked to customers by email match</p>
+                      <p>• Newsletter subscribers auto-extracted from customer data</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               <Alert>
                 <AlertTriangle className="h-4 w-4" />

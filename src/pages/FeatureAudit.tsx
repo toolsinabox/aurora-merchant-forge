@@ -9675,6 +9675,10 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Customer Communication Log Import", description: "Import CustomerLog entries to customer_communications table", status: "done", notes: "Logs imported with channel, subject, body, and date" },
       { name: "Currency Entity in Migration Wizard", description: "Currencies appear in scan/select/import UI alongside other entities", status: "done", notes: "Added to MIGRATION_ENTITIES and FETCH_ACTION_MAP" },
       { name: "Live Database Counts in Transfer Audit", description: "Transfer audit page shows real imported record counts from the database", status: "done", notes: "15 entity counts fetched live via Supabase queries" },
+      { name: "301 Redirect Import", description: "Import URL redirects for SEO continuity during migration", status: "done", notes: "Maps old/new URLs to redirects table with from_path/to_path" },
+      { name: "Order-Customer Linking", description: "Link imported orders to existing customers by email match", status: "done", notes: "Queries customers table by email during order import" },
+      { name: "Newsletter Subscriber Import", description: "Extract newsletter subscribers from customer NewsletterSubscriber flag", status: "done", notes: "Auto-creates newsletter_subscribers entries during customer import" },
+      { name: "Pre-Import Validation Summary", description: "Shows total records, pages, estimated duration before import starts", status: "done", notes: "Validation card in select step with relationship linking info" },
     ],
   },
 ];
