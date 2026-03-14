@@ -3773,7 +3773,7 @@ export default function FeatureAudit() {
 
   const stats = useMemo(() => {
     let done = 0, partial = 0, not_started = 0;
-    featureData.forEach(c => c.features.forEach(f => {
+    allFeatureData.forEach(c => c.features.forEach(f => {
       if (f.status === "done") done++;
       else if (f.status === "partial") partial++;
       else not_started++;
