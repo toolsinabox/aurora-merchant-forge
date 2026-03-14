@@ -266,9 +266,9 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
-      <footer className="border-t bg-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+      <footer className="border-t bg-card/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
             <div>
               <h3 className="font-bold text-sm mb-3">{storeName || "Store"}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -277,7 +277,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
             </div>
             <div>
               <h3 className="font-bold text-sm mb-3">Quick Links</h3>
-              <nav className="flex flex-col gap-2">
+              <nav className="flex flex-col gap-2.5">
                 <Link to={basePath || "/"} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Home</Link>
                 <Link to={`${basePath}/products`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">All Products</Link>
                 <Link to={`${basePath}/blog`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
@@ -290,7 +290,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
             </div>
             <div>
               <h3 className="font-bold text-sm mb-3">Account</h3>
-              <nav className="flex flex-col gap-2">
+              <nav className="flex flex-col gap-2.5">
                 {user ? (
                   <Link to={`${basePath}/account`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">My Account</Link>
                 ) : (
@@ -301,7 +301,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                 )}
               </nav>
               {storeId && (
-                <div className="mt-4">
+                <div className="mt-5">
                   <h3 className="font-bold text-sm mb-2">Newsletter</h3>
                   <NewsletterSignup storeId={storeId} />
                 </div>
@@ -310,7 +310,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
           </div>
           {/* Social Links */}
           {Object.keys(socialLinks).length > 0 && (
-            <div className="flex justify-center gap-4 mb-6">
+            <div className="flex justify-center gap-5 mb-6">
               {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Facebook</a>}
               {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Instagram</a>}
               {socialLinks.twitter && <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Twitter</a>}
