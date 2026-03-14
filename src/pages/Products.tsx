@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,10 +8,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProducts, useDeleteProducts, useUpdateProduct, useCategories } from "@/hooks/use-data";
-import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil } from "lucide-react";
+import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil, Columns3, Save, BookmarkCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
+  DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,7 @@ import { toast } from "sonner";
 import { BulkEditDialog } from "@/components/products/BulkEditDialog";
 import { ZipImageUpload } from "@/components/products/ZipImageUpload";
 import { TablePagination } from "@/components/admin/TablePagination";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
@@ -76,6 +78,38 @@ export default function Products() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+
+  // Column visibility
+  type ColKey = "sku" | "status" | "stock" | "price";
+  const COLUMN_STORAGE_KEY = "products-visible-columns";
+  const defaultCols: Record<ColKey, boolean> = { sku: true, status: true, stock: true, price: true };
+  const [visibleCols, setVisibleCols] = useState<Record<ColKey, boolean>>(() => {
+    try { const s = localStorage.getItem(COLUMN_STORAGE_KEY); return s ? JSON.parse(s) : defaultCols; } catch { return defaultCols; }
+  });
+  useEffect(() => { localStorage.setItem(COLUMN_STORAGE_KEY, JSON.stringify(visibleCols)); }, [visibleCols]);
+  const toggleCol = (col: ColKey) => setVisibleCols(prev => ({ ...prev, [col]: !prev[col] }));
+
+  // Saved filter presets
+  const FILTER_PRESET_KEY = "products-filter-presets";
+  const [filterPresets, setFilterPresets] = useState<{ name: string; search: string; status: string }[]>(() => {
+    try { const s = localStorage.getItem(FILTER_PRESET_KEY); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+  useEffect(() => { localStorage.setItem(FILTER_PRESET_KEY, JSON.stringify(filterPresets)); }, [filterPresets]);
+
+  const saveFilterPreset = () => {
+    const name = prompt("Preset name:");
+    if (!name) return;
+    setFilterPresets(prev => [...prev.filter(p => p.name !== name), { name, search, status: statusFilter }]);
+    toast.success(`Saved preset "${name}"`);
+  };
+  const loadFilterPreset = (preset: { search: string; status: string }) => {
+    setSearch(preset.search);
+    setStatusFilter(preset.status);
+  };
+  const deleteFilterPreset = (name: string) => {
+    setFilterPresets(prev => prev.filter(p => p.name !== name));
+    toast.success(`Deleted preset "${name}"`);
+  };
 
   const filtered = products.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || (p.sku || "").toLowerCase().includes(search.toLowerCase());
@@ -204,6 +238,45 @@ export default function Products() {
                   <SelectItem value="archived" className="text-xs">Archived</SelectItem>
                 </SelectContent>
               </Select>
+              {/* Column visibility toggle */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 text-xs gap-1"><Columns3 className="h-3.5 w-3.5" /> Columns</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel className="text-xs">Visible Columns</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {(["sku", "status", "stock", "price"] as ColKey[]).map(col => (
+                    <DropdownMenuCheckboxItem key={col} className="text-xs capitalize" checked={visibleCols[col]} onCheckedChange={() => toggleCol(col)}>
+                      {col}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {/* Saved filter presets */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 text-xs gap-1"><BookmarkCheck className="h-3.5 w-3.5" /> Presets</Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2" align="end">
+                  <div className="space-y-1">
+                    <Button variant="ghost" size="sm" className="w-full justify-start text-xs gap-1" onClick={saveFilterPreset}>
+                      <Save className="h-3 w-3" /> Save Current Filters
+                    </Button>
+                    {filterPresets.length > 0 && <div className="border-t border-border my-1" />}
+                    {filterPresets.map(preset => (
+                      <div key={preset.name} className="flex items-center justify-between">
+                        <Button variant="ghost" size="sm" className="flex-1 justify-start text-xs truncate" onClick={() => loadFilterPreset(preset)}>
+                          {preset.name}
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => deleteFilterPreset(preset.name)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
               {selected.length > 0 && (
                 <div className="flex items-center gap-2 ml-2">
                   <span className="text-xs text-muted-foreground">{selected.length} selected</span>
@@ -239,20 +312,20 @@ export default function Products() {
                 <TableRow>
                   <TableHead className="w-10 h-9"><Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} /></TableHead>
                   <TableHead className="text-xs h-9">Product</TableHead>
-                  <TableHead className="text-xs h-9">SKU</TableHead>
-                  <TableHead className="text-xs h-9">Status</TableHead>
-                  <TableHead className="text-xs h-9">Stock</TableHead>
-                  <TableHead className="text-xs h-9 text-right">Price</TableHead>
+                  {visibleCols.sku && <TableHead className="text-xs h-9">SKU</TableHead>}
+                  {visibleCols.status && <TableHead className="text-xs h-9">Status</TableHead>}
+                  {visibleCols.stock && <TableHead className="text-xs h-9">Stock</TableHead>}
+                  {visibleCols.price && <TableHead className="text-xs h-9 text-right">Price</TableHead>}
                   <TableHead className="text-xs h-9 w-10"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}><TableCell colSpan={7} className="py-3"><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+                    <TableRow key={i}><TableCell colSpan={3 + Object.values(visibleCols).filter(Boolean).length} className="py-3"><Skeleton className="h-4 w-full" /></TableCell></TableRow>
                   ))
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="py-8 text-center text-xs text-muted-foreground">
+                  <TableRow><TableCell colSpan={3 + Object.values(visibleCols).filter(Boolean).length} className="py-8 text-center text-xs text-muted-foreground">
                     {products.length === 0 ? "No products yet. Add your first product." : "No products match your filters."}
                   </TableCell></TableRow>
                 ) : (
@@ -272,22 +345,22 @@ export default function Products() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-2 font-mono text-muted-foreground">{product.sku || "—"}</TableCell>
-                      <TableCell className="py-2"><StatusBadge status={product.status} /></TableCell>
-                      <TableCell className="py-2">
+                      {visibleCols.sku && <TableCell className="py-2 font-mono text-muted-foreground">{product.sku || "—"}</TableCell>}
+                      {visibleCols.status && <TableCell className="py-2"><StatusBadge status={product.status} /></TableCell>}
+                      {visibleCols.stock && <TableCell className="py-2">
                         {product.product_variants && product.product_variants.length > 0 ? (
                           <div className="flex items-center gap-1.5">
                             <span>{getTotalStock(product.product_variants)}</span>
                             <StatusBadge status={getStockStatus(product.product_variants)} />
                           </div>
                         ) : "—"}
-                      </TableCell>
-                      <TableCell className="py-2 text-right font-medium">
+                      </TableCell>}
+                      {visibleCols.price && <TableCell className="py-2 text-right font-medium">
                         ${Number(product.price).toFixed(2)}
                         {product.compare_at_price && (
                           <span className="ml-1 text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                         )}
-                      </TableCell>
+                      </TableCell>}
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

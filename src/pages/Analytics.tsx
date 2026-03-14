@@ -99,6 +99,7 @@ export default function Analytics() {
   const [inventoryValuation, setInventoryValuation] = useState<{ totalRetail: number; totalCost: number; totalUnits: number; items: any[] }>({ totalRetail: 0, totalCost: 0, totalUnits: 0, items: [] });
   const [channelData, setChannelData] = useState<any[]>([]);
   const [funnelData, setFunnelData] = useState<{ visitors: number; carts: number; checkouts: number; purchases: number }>({ visitors: 0, carts: 0, checkouts: 0, purchases: 0 });
+  const [salesByBrand, setSalesByBrand] = useState<any[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -131,7 +132,7 @@ export default function Analytics() {
         .eq("store_id", currentStore.id);
       const { data: prods } = await supabase
         .from("products")
-        .select("id, category_id")
+        .select("id, category_id, brand")
         .eq("store_id", currentStore.id);
       
       const catMap: Record<string, string> = {};
@@ -148,6 +149,19 @@ export default function Analytics() {
         Object.entries(catRevenue).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
       );
 
+      // Sales by brand
+      const prodBrandMap: Record<string, string> = {};
+      (prods || []).forEach((p: any) => { if (p.brand) prodBrandMap[p.id] = p.brand; });
+      const brandRevenue: Record<string, { revenue: number; units: number }> = {};
+      (items || []).forEach((item: any) => {
+        const brand = prodBrandMap[item.product_id] || "Unbranded";
+        if (!brandRevenue[brand]) brandRevenue[brand] = { revenue: 0, units: 0 };
+        brandRevenue[brand].revenue += Number(item.total);
+        brandRevenue[brand].units += item.quantity;
+      });
+      setSalesByBrand(
+        Object.entries(brandRevenue).map(([name, d]) => ({ name, ...d })).sort((a, b) => b.revenue - a.revenue).slice(0, 15)
+      );
       // Coupon usage stats
       const { data: coupons } = await supabase
         .from("coupons")
@@ -762,6 +776,35 @@ export default function Analytics() {
                     </Table>
                   );
                 })()
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Sales by Brand Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Brand</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : salesByBrand.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No brand data available</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Brand</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {salesByBrand.map((b: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium">{b.name}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{b.units}</TableCell>
+                        <TableCell className="py-1.5 text-right font-medium">${b.revenue.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </CardContent>
           </Card>
