@@ -109,7 +109,7 @@ export default function PriceRules() {
     setEditingId(null);
     setForm({ name: "", rule_type: "percentage", discount_value: "10", applies_to: "all",
       min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
-      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "" });
+      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "", is_stackable: true });
   };
 
   const editRule = (r: any) => {
