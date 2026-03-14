@@ -8103,7 +8103,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Sales by Geography Report", description: "Revenue by state/country", status: "not_started" },
       { name: "Sales by Payment Method Report", description: "Payment method usage breakdown", status: "not_started" },
       { name: "Sales Tax Report", description: "Tax collected breakdown by jurisdiction", status: "not_started" },
-      { name: "Profit & Loss by Product", description: "Per-product P&L using cost price", status: "not_started" },
+      { name: "Profit & Loss by Product", description: "Per-product P&L using cost price", status: "done", notes: "Analytics page Profit Margin by Product with revenue, cost, profit, margin per product" },
       { name: "COGS Report", description: "Cost of goods sold over period", status: "done", notes: "Analytics page Profit Margin by Product section" },
       { name: "Gross Margin Report", description: "Gross margin by product/category/brand", status: "done", notes: "Analytics page Profit Margin table with margin % column" },
       { name: "ABC Analysis (Inventory)", description: "Classify products as A/B/C by sales contribution", status: "done", notes: "InventoryReports ABC tab" },
