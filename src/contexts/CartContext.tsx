@@ -13,31 +13,45 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
+  savedItems: CartItem[];
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   removeItem: (product_id: string, variant_id?: string | null) => void;
   updateQuantity: (product_id: string, variant_id: string | null | undefined, quantity: number) => void;
   clearCart: () => void;
+  saveForLater: (product_id: string, variant_id?: string | null) => void;
+  moveToCart: (product_id: string, variant_id?: string | null) => void;
+  removeSaved: (product_id: string, variant_id?: string | null) => void;
   totalItems: number;
   totalPrice: number;
 }
 
 const CartContext = createContext<CartContextType>({
-  items: [], addItem: () => {}, removeItem: () => {},
+  items: [], savedItems: [], addItem: () => {}, removeItem: () => {},
   updateQuantity: () => {}, clearCart: () => {},
+  saveForLater: () => {}, moveToCart: () => {}, removeSaved: () => {},
   totalItems: 0, totalPrice: 0,
 });
 
 const CART_KEY = "storefront_cart";
+const SAVED_KEY = "storefront_saved";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
     try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
     catch { return []; }
   });
+  const [savedItems, setSavedItems] = useState<CartItem[]>(() => {
+    try { return JSON.parse(localStorage.getItem(SAVED_KEY) || "[]"); }
+    catch { return []; }
+  });
 
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
   }, [items]);
+
+  useEffect(() => {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(savedItems));
+  }, [savedItems]);
 
   const addItem = useCallback((item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     setItems((prev) => {
@@ -64,11 +78,41 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = useCallback(() => setItems([]), []);
 
+  const saveForLater = useCallback((product_id: string, variant_id?: string | null) => {
+    setItems((prev) => {
+      const item = prev.find((i) => i.product_id === product_id && i.variant_id === variant_id);
+      if (item) {
+        setSavedItems((s) => {
+          const exists = s.find((i) => i.product_id === product_id && i.variant_id === variant_id);
+          return exists ? s : [...s, item];
+        });
+      }
+      return prev.filter((i) => !(i.product_id === product_id && i.variant_id === variant_id));
+    });
+  }, []);
+
+  const moveToCart = useCallback((product_id: string, variant_id?: string | null) => {
+    setSavedItems((prev) => {
+      const item = prev.find((i) => i.product_id === product_id && i.variant_id === variant_id);
+      if (item) {
+        setItems((c) => {
+          const exists = c.find((i) => i.product_id === product_id && i.variant_id === variant_id);
+          return exists ? c.map((i) => i.product_id === product_id && i.variant_id === variant_id ? { ...i, quantity: i.quantity + item.quantity } : i) : [...c, item];
+        });
+      }
+      return prev.filter((i) => !(i.product_id === product_id && i.variant_id === variant_id));
+    });
+  }, []);
+
+  const removeSaved = useCallback((product_id: string, variant_id?: string | null) => {
+    setSavedItems((prev) => prev.filter((i) => !(i.product_id === product_id && i.variant_id === variant_id)));
+  }, []);
+
   const totalItems = items.reduce((s, i) => s + i.quantity, 0);
   const totalPrice = items.reduce((s, i) => s + i.price * i.quantity, 0);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clearCart, totalItems, totalPrice }}>
+    <CartContext.Provider value={{ items, savedItems, addItem, removeItem, updateQuantity, clearCart, saveForLater, moveToCart, removeSaved, totalItems, totalPrice }}>
       {children}
     </CartContext.Provider>
   );

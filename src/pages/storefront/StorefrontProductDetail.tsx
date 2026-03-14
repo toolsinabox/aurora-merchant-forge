@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home, Package, Shield, Truck, Clock, Bell, MapPin, FileText } from "lucide-react";
+import { ShoppingBag, Minus, Plus, Check, Heart, ChevronRight, Home, Package, Shield, Truck, Clock, Bell, MapPin, FileText, AlertTriangle as AlertTriangleIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { ProductReviews } from "@/components/storefront/ProductReviews";
@@ -452,6 +452,21 @@ export default function StorefrontProductDetail() {
                 </Button>
               </div>
             </div>
+
+            {/* Low stock urgency indicator */}
+            {(() => {
+              const stock = currentVariant ? currentVariant.stock : product?.stock;
+              const threshold = product?.low_stock_threshold || 10;
+              if (stock !== undefined && stock !== null && stock > 0 && stock <= threshold) {
+                return (
+                  <div className="flex items-center gap-2 text-sm font-medium text-destructive bg-destructive/10 px-3 py-2 rounded-lg">
+                    <AlertTriangleIcon className="h-4 w-4" />
+                    {stock <= 3 ? `Only ${stock} left in stock — order soon!` : `Low stock — only ${stock} remaining`}
+                  </div>
+                );
+              }
+              return null;
+            })()}
 
             {!product.poa && (() => {
               const isOutOfStock = currentVariant ? currentVariant.stock <= 0 : false;

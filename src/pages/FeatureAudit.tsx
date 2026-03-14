@@ -9694,6 +9694,9 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Field Mapping Preview", description: "Review and toggle Maropost-to-platform field mappings before import", status: "done", notes: "New 'mapping' step with per-entity tabs showing source→target field table with toggle" },
       { name: "Post-Migration Verification", description: "Automated checks for count matching, orphan orders, missing images, SEO, categories", status: "done", notes: "10 verification checks with pass/warn/fail status after import, results included in CSV export" },
       { name: "8-Step Migration Wizard", description: "Expanded wizard: Connect → Scan → Field Map → Select → Import → Verify → Theme → Review", status: "done", notes: "Added mapping and verify steps to the 6-step wizard" },
+      { name: "Save for Later (Cart)", description: "Move cart items to a saved-for-later list and restore them back to cart", status: "done", notes: "CartContext extended with savedItems, saveForLater, moveToCart, removeSaved" },
+      { name: "Low Stock Urgency Indicator", description: "Show stock countdown warning on product detail when quantity is below threshold", status: "done", notes: "Displays 'Only X left' or 'Low stock' based on low_stock_threshold" },
+      { name: "Multi-Currency Cart Display", description: "Cart totals displayed in selected currency using store currency settings", status: "done", notes: "Cart and checkout respect store currency code" },
     ],
   },
 ];

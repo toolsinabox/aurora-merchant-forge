@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
-import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, Tag, X, Loader2 } from "lucide-react";
+import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, Tag, X, Loader2, Bookmark, ShoppingCart } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ export default function StorefrontCart() {
   const { storeSlug: paramSlug } = useParams();
   const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
+  const { items, removeItem, updateQuantity, totalPrice, totalItems, savedItems, saveForLater, moveToCart, removeSaved } = useCart();
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
@@ -85,7 +85,7 @@ export default function StorefrontCart() {
     setCouponCode("");
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && savedItems.length === 0) {
     return (
       <StorefrontLayout>
         <div className="max-w-2xl mx-auto px-4 py-24 text-center animate-fade-in">
@@ -132,6 +132,9 @@ export default function StorefrontCart() {
                     <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
                     <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.product_id, item.variant_id, item.quantity + 1)}>
                       <Plus className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={() => saveForLater(item.product_id, item.variant_id)}>
+                      <Bookmark className="h-3 w-3" /> Save for later
                     </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto text-destructive" onClick={() => removeItem(item.product_id, item.variant_id)}>
                       <Trash2 className="h-3.5 w-3.5" />
@@ -204,6 +207,43 @@ export default function StorefrontCart() {
             </div>
           </div>
         </div>
+
+        {/* Saved for Later */}
+        {savedItems.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Bookmark className="h-4 w-4" /> Saved for Later ({savedItems.length})
+            </h2>
+            <div className="border rounded-lg divide-y">
+              {savedItems.map((item) => (
+                <div key={`saved-${item.product_id}-${item.variant_id}`} className="flex gap-4 p-4">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted border flex-shrink-0">
+                    {item.image ? (
+                      <img src={getImageUrl(item.image)} alt={item.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">No img</div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Link to={`${basePath}/product/${item.product_id}`} className="font-medium text-sm hover:text-primary line-clamp-1">
+                      {item.title}
+                    </Link>
+                    {item.variant_name && <p className="text-xs text-muted-foreground">{item.variant_name}</p>}
+                    <p className="text-sm font-semibold mt-1">${Number(item.price).toFixed(2)}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" className="h-8 gap-1 text-xs" onClick={() => moveToCart(item.product_id, item.variant_id)}>
+                      <ShoppingCart className="h-3 w-3" /> Move to Cart
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => removeSaved(item.product_id, item.variant_id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </StorefrontLayout>
   );
