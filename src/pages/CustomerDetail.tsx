@@ -275,7 +275,7 @@ export default function CustomerDetail() {
   const { data: customerGroups = [] } = useCustomerGroups();
 
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "", logo_url: "" });
+  const [editForm, setEditForm] = useState<Record<string, any>>({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "", logo_url: "" });
   const [addrOpen, setAddrOpen] = useState(false);
   const [mergeOpen, setMergeOpen] = useState(false);
   const [mergeEmail, setMergeEmail] = useState("");
@@ -302,6 +302,10 @@ export default function CustomerDetail() {
       tags: (customer.tags || []).join(", "),
       customer_group_id: (customer as any).customer_group_id || "",
       logo_url: (customer as any).logo_url || "",
+      sales_rep: (customer as any).sales_rep || "",
+      referral_code: (customer as any).referral_code || "",
+      referred_by: (customer as any).referred_by || "",
+      tax_exempt_cert_url: (customer as any).tax_exempt_cert_url || "",
     });
     setEditing(true);
   };
@@ -322,6 +326,10 @@ export default function CustomerDetail() {
         payment_terms: (editForm as any).payment_terms || null,
         credit_limit: (editForm as any).credit_limit ?? null,
         abn_vat_number: (editForm as any).abn_vat_number || null,
+        sales_rep: (editForm as any).sales_rep || null,
+        referral_code: (editForm as any).referral_code || null,
+        referred_by: (editForm as any).referred_by || null,
+        tax_exempt_cert_url: (editForm as any).tax_exempt_cert_url || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
@@ -554,6 +562,10 @@ export default function CustomerDetail() {
                     </div>
                     <div><Label className="text-xs">Credit Limit ($)</Label><Input className="h-8 text-xs" type="number" min="0" step="0.01" value={(editForm as any).credit_limit ?? ""} onChange={(e) => setEditForm({ ...editForm, credit_limit: e.target.value ? Number(e.target.value) : null } as any)} placeholder="No limit" /></div>
                     <div><Label className="text-xs">ABN / VAT Number</Label><Input className="h-8 text-xs" value={(editForm as any).abn_vat_number || ""} onChange={(e) => setEditForm({ ...editForm, abn_vat_number: e.target.value } as any)} placeholder="e.g. 12345678901" /></div>
+                    <div><Label className="text-xs">Sales Rep</Label><Input className="h-8 text-xs" value={(editForm as any).sales_rep || ""} onChange={(e) => setEditForm({ ...editForm, sales_rep: e.target.value } as any)} placeholder="Sales rep name" /></div>
+                    <div><Label className="text-xs">Referral Code</Label><Input className="h-8 text-xs" value={(editForm as any).referral_code || ""} onChange={(e) => setEditForm({ ...editForm, referral_code: e.target.value } as any)} placeholder="Auto or manual code" /></div>
+                    <div><Label className="text-xs">Referred By (Code)</Label><Input className="h-8 text-xs" value={(editForm as any).referred_by || ""} onChange={(e) => setEditForm({ ...editForm, referred_by: e.target.value } as any)} placeholder="Referrer's code" /></div>
+                    <div><Label className="text-xs">Tax Exemption Certificate URL</Label><Input className="h-8 text-xs" value={(editForm as any).tax_exempt_cert_url || ""} onChange={(e) => setEditForm({ ...editForm, tax_exempt_cert_url: e.target.value } as any)} placeholder="https://..." /></div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 text-xs" onClick={saveEdit}><Save className="h-3 w-3 mr-1" />Save</Button>
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditing(false)}>Cancel</Button>
@@ -584,7 +596,7 @@ export default function CustomerDetail() {
                         <img src={(customer as any).logo_url} alt="Customer logo" className="h-12 mt-1 rounded border object-contain" />
                       </div>
                     )}
-                    {((customer as any).payment_terms || (customer as any).credit_limit != null) && (
+                    {((customer as any).payment_terms || (customer as any).credit_limit != null || (customer as any).sales_rep || (customer as any).referral_code || (customer as any).tax_exempt_cert_url) && (
                       <div className="mt-2 space-y-1 border-t pt-2">
                         {(customer as any).payment_terms && (
                           <div className="flex items-center gap-2 text-xs">
@@ -596,6 +608,30 @@ export default function CustomerDetail() {
                           <div className="flex items-center gap-2 text-xs">
                             <span className="text-muted-foreground">Credit Limit:</span>
                             <span className="font-medium">${Number((customer as any).credit_limit).toLocaleString()}</span>
+                          </div>
+                        )}
+                        {(customer as any).sales_rep && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Sales Rep:</span>
+                            <span className="font-medium">{(customer as any).sales_rep}</span>
+                          </div>
+                        )}
+                        {(customer as any).referral_code && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Referral Code:</span>
+                            <Badge variant="secondary" className="text-[10px]">{(customer as any).referral_code}</Badge>
+                          </div>
+                        )}
+                        {(customer as any).referred_by && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Referred By:</span>
+                            <span className="font-medium">{(customer as any).referred_by}</span>
+                          </div>
+                        )}
+                        {(customer as any).tax_exempt_cert_url && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Tax Exempt Cert:</span>
+                            <a href={(customer as any).tax_exempt_cert_url} target="_blank" rel="noopener noreferrer" className="text-primary underline">View</a>
                           </div>
                         )}
                       </div>
