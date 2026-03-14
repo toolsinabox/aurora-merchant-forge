@@ -484,18 +484,37 @@ function ReturnsReceivingTab() {
   const processReceived = (returnId: string) => {
     const item = receivedItems[returnId];
     if (!item) return;
-    const adminNotes = `Received: ${item.condition} condition${item.notes ? `. Notes: ${item.notes}` : ""}. Received at ${format(new Date(item.receivedAt), "MMM d, yyyy HH:mm")}`;
+    const isDamaged = item.condition === "damaged" || item.condition === "defective";
+    const adminNotes = `Received: ${item.condition} condition${isDamaged ? " [QUARANTINED]" : ""}${item.notes ? `. Notes: ${item.notes}` : ""}. Received at ${format(new Date(item.receivedAt), "MMM d, yyyy HH:mm")}`;
     updateReturn.mutate({
       id: returnId,
-      status: "refunded",
+      status: isDamaged ? "approved" : "refunded",
       admin_notes: adminNotes,
     });
+    if (isDamaged) {
+      // Track quarantined items in localStorage
+      const quarantined = JSON.parse(localStorage.getItem("quarantined_goods") || "[]");
+      const ret = approvedReturns.find(r => r.id === returnId);
+      quarantined.push({
+        id: crypto.randomUUID(),
+        return_id: returnId,
+        order_number: (ret as any)?.orders?.order_number || "—",
+        customer: (ret as any)?.customers?.name || "—",
+        condition: item.condition,
+        notes: item.notes,
+        quarantined_at: new Date().toISOString(),
+        disposition: "pending", // pending, write_off, repair, resell
+      });
+      localStorage.setItem("quarantined_goods", JSON.stringify(quarantined));
+      toast.warning(`Item quarantined (${item.condition}) — requires disposition decision`);
+    } else {
+      toast.success("Return processed and marked for refund");
+    }
     setReceivedItems(prev => {
       const copy = { ...prev };
       delete copy[returnId];
       return copy;
     });
-    toast.success("Return processed and marked for refund");
   };
 
   const receivedCount = Object.keys(receivedItems).length;
