@@ -272,8 +272,8 @@ export default function Suppliers() {
 
           <TabsContent value="list">
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search suppliers..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input placeholder="Search suppliers..." value={search} onChange={e => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
         </div>
 
         <Card className="mt-4">
