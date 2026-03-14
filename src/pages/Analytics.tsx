@@ -517,6 +517,20 @@ export default function Analytics() {
       }
       setDiscountUsage(Object.values(couponRevMap).filter(c => c.usedCount > 0).sort((a, b) => b.usedCount - a.usedCount));
 
+      // ── Search Analytics ──
+      const { data: searchData } = await supabase.from("search_queries" as any).select("query, results_count").eq("store_id", currentStore.id).order("created_at", { ascending: false }).limit(1000);
+      if (searchData && searchData.length > 0) {
+        const queryMap: Record<string, { count: number; totalResults: number }> = {};
+        (searchData as any[]).forEach((s: any) => {
+          const q = s.query.toLowerCase().trim();
+          if (!queryMap[q]) queryMap[q] = { count: 0, totalResults: 0 };
+          queryMap[q].count++;
+          queryMap[q].totalResults += s.results_count;
+        });
+        setTopSearches(Object.entries(queryMap).map(([query, d]) => ({ query, count: d.count, avgResults: Math.round(d.totalResults / d.count) })).sort((a, b) => b.count - a.count).slice(0, 20));
+        setZeroResultSearches(Object.entries(queryMap).filter(([, d]) => d.totalResults === 0).map(([query, d]) => ({ query, count: d.count })).sort((a, b) => b.count - a.count).slice(0, 15));
+      }
+
       setLoadingTopProducts(false);
     };
     fetchData();
