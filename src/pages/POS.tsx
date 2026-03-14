@@ -1126,6 +1126,25 @@ export default function POS() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Line Item Discount Dialog */}
+      <Dialog open={!!discountDialogItem} onOpenChange={(o) => { if (!o) setDiscountDialogItem(null); }}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader><DialogTitle className="text-sm">Apply Discount</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <Button variant={discountType === "percent" ? "default" : "outline"} size="sm" className="flex-1 gap-1" onClick={() => setDiscountType("percent")}>
+                <Percent className="h-3.5 w-3.5" /> Percentage
+              </Button>
+              <Button variant={discountType === "fixed" ? "default" : "outline"} size="sm" className="flex-1 gap-1" onClick={() => setDiscountType("fixed")}>
+                <DollarSign className="h-3.5 w-3.5" /> Fixed
+              </Button>
+            </div>
+            <Input type="number" min="0" step="0.01" placeholder={discountType === "percent" ? "e.g. 10" : "e.g. 5.00"} value={discountVal} onChange={e => setDiscountVal(e.target.value)} className="h-9" autoFocus />
+            <Button className="w-full" onClick={() => discountDialogItem && applyItemDiscount(discountDialogItem)}>Apply Discount</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
