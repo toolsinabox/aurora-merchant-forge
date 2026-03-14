@@ -261,7 +261,17 @@ export default function PickPack() {
           <Card>
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center justify-between">
-                Pick Items ({pickItems.length} items from {pendingOrders.length} orders)
+                <span>Pick Items ({pickItems.length} items from {pendingOrders.length} orders)</span>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant={pickPathOptimized ? "default" : "outline"} className="text-xs gap-1" onClick={() => setPickPathOptimized(!pickPathOptimized)}>
+                    <MapPin className="h-3 w-3" /> {pickPathOptimized ? "Path Optimized" : "Optimize Path"}
+                  </Button>
+                  {checkedCount > 0 && (
+                    <Button size="sm" className="text-xs" onClick={markAsPacked}>
+                      Mark {checkedCount} Picked → Pack
+                    </Button>
+                  )}
+                </div>
                 {checkedCount > 0 && (
                   <Button size="sm" className="text-xs" onClick={markAsPacked}>
                     Mark {checkedCount} Picked → Pack
