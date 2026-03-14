@@ -134,7 +134,7 @@ export default function Layby() {
             <p className="text-xs text-muted-foreground">Outstanding</p>
           </CardContent></Card>
           <Card><CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{(plans as any[]).filter((p) => p.status === "completed").length}</p>
+            <p className="text-lg font-bold">{(plans as any[]).filter((p) => p.status === "completed").length}</p>
             <p className="text-xs text-muted-foreground">Completed</p>
           </CardContent></Card>
         </div>

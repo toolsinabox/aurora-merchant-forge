@@ -999,7 +999,7 @@ export default function FeatureAudit() {
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Progress</p>
-              <p className="text-2xl font-bold">{stats.pct}%</p>
+              <p className="text-lg font-bold">{stats.pct}%</p>
               <Progress value={stats.pct} className="mt-2 h-2" />
             </CardContent>
           </Card>

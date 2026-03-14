@@ -687,7 +687,7 @@ export default function ImportWizard() {
                     <p className="text-xs text-muted-foreground">Imported</p>
                   </div>
                   <div className="rounded-md bg-destructive/10 p-3 text-center">
-                    <p className="text-2xl font-bold text-destructive">{results.errors.length}</p>
+                    <p className="text-lg font-bold text-destructive">{results.errors.length}</p>
                     <p className="text-xs text-muted-foreground">Errors</p>
                   </div>
                 </div>
