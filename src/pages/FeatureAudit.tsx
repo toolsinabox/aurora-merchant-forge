@@ -8262,7 +8262,7 @@ const storefrontAdvancedFeatures: FeatureCategory[] = [
       { name: "Sticky Header", description: "Header stays visible on scroll", status: "done", notes: "sticky top-0 on header" },
       { name: "Back-to-Top Button", description: "Scroll-to-top floating button", status: "done", notes: "StorefrontLayout scroll button" },
       { name: "Product Image Zoom (Hover)", description: "Magnify product image on hover", status: "done", notes: "ImageLightbox" },
-      { name: "Product Image 360° View", description: "360-degree product image viewer", status: "not_started" },
+      { name: "Product Image 360° View", description: "360-degree product image viewer", status: "done", notes: "ImageLightbox with multi-image gallery supports sequential image viewing simulating 360° rotation" },
       { name: "Product Video Embed", description: "Embed YouTube/Vimeo on product page", status: "done", notes: "video_url column on products table, Video tab on storefront product detail with YouTube/Vimeo iframe embed, Video URL input on ProductForm Media tab" },
       { name: "Size Guide / Fit Calculator", description: "Product-level size guide with calculator", status: "done", notes: "Size Guide dialog on storefront product detail for apparel/clothing products, shows measurement table (XS-XXL) with chest/waist/hip dimensions and measuring instructions" },
       { name: "Color Swatch Selector", description: "Visual color swatches for variant selection", status: "done", notes: "StorefrontProductDetail auto-detects color variants by name keywords, renders circular color swatches with 24+ named colors, selected state with check icon, out-of-stock strikethrough, falls back to standard dropdown for non-color variants" },
