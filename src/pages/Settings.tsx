@@ -664,7 +664,7 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="store">
-          <TabsList className="h-8 flex-wrap">
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
             <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
             <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
