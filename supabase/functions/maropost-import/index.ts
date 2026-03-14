@@ -576,9 +576,29 @@ serve(async (req) => {
             if (cust) orderData.customer_id = cust.id;
           }
 
-          const { data: inserted, error } = await supabase
-            .from("orders").insert(orderData).select("id").single();
-          if (error) throw error;
+          // Dedup: check if order with same order_number exists
+          const orderNumber = `MP-${o.OrderID}`;
+          const { data: existingOrder } = await supabase
+            .from("orders")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("order_number", orderNumber)
+            .maybeSingle();
+
+          let orderId: string;
+          if (existingOrder) {
+            if (!dry_run) {
+              await supabase.from("orders").update(orderData).eq("id", existingOrder.id);
+            }
+            orderId = existingOrder.id;
+          } else if (!dry_run) {
+            const { data: ins, error } = await supabase
+              .from("orders").insert(orderData).select("id").single();
+            if (error) throw error;
+            orderId = ins.id;
+          } else {
+            orderId = "dry-run";
+          }
 
           // Import order line items
           if (o.OrderLine) {
