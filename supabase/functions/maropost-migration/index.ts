@@ -120,7 +120,7 @@ serve(async (req) => {
   }
 
   try {
-    const { action, store_domain, api_key, filter, page = 0, limit = 100 }: MaropostRequest = await req.json();
+    const { action, store_domain, api_key, filter, page = 0, limit = 100, scan_mode = false }: MaropostRequest = await req.json();
 
     if (!store_domain || !api_key) {
       return new Response(JSON.stringify({ error: "store_domain and api_key are required" }), {
@@ -135,11 +135,16 @@ serve(async (req) => {
       });
     }
 
-    // Build the Maropost API request
-    const outputSelector = OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection;
+    // Use scan selectors for counting (small response) vs full selectors for import
+    const outputSelector = scan_mode
+      ? (SCAN_SELECTORS[action] || SCAN_SELECTORS.test_connection)
+      : (OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection);
+
+    // Enforce max page sizes per entity to avoid Maropost response size limits
+    const maxLimit = MAX_PAGE_SIZE[action] || 100;
+    const effectiveLimit = Math.min(limit, maxLimit);
     
     // Maropost API requires specific filter keys per entity type to return data
-    // Without these, the API returns empty arrays
     const DEFAULT_FILTERS: Record<string, Record<string, unknown>> = {
       get_products: { IsActive: ["True"] },
       get_categories: { Active: ["True"] },
@@ -162,7 +167,7 @@ serve(async (req) => {
       Filter: {
         ...mergedFilter,
         Page: String(page),
-        Limit: String(limit),
+        Limit: String(effectiveLimit),
         OutputSelector: outputSelector,
       },
     };
