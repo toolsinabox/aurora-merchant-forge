@@ -334,6 +334,82 @@ export default function OrderDetail() {
                 )}
               </DialogContent>
             </Dialog>
+            {/* Exchange Items */}
+            <Dialog open={exchangeOpen} onOpenChange={(o) => {
+              setExchangeOpen(o);
+              if (o && exchangeProducts.length === 0) {
+                supabase.from("products").select("id, title, price").eq("store_id", order.store_id).eq("status", "active").order("title").limit(200)
+                  .then(({ data }) => setExchangeProducts(data || []));
+              }
+              if (!o) setExchangeItems({});
+            }}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="text-xs gap-1"><RefreshCw className="h-3.5 w-3.5" /> Exchange</Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+                <DialogHeader><DialogTitle className="text-base">Exchange Items</DialogTitle></DialogHeader>
+                <p className="text-xs text-muted-foreground">Replace items in this order without creating a return. Select items to exchange and pick replacement products.</p>
+                <div className="border rounded-md divide-y max-h-[250px] overflow-y-auto">
+                  {orderItems.map((item: any) => (
+                    <div key={item.id} className="p-2 text-xs space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Checkbox checked={!!exchangeItems[item.id]} onCheckedChange={(c) => {
+                          if (c) {
+                            setExchangeItems(prev => ({ ...prev, [item.id]: { newProductId: "", newTitle: "", newPrice: 0 } }));
+                          } else {
+                            setExchangeItems(prev => { const { [item.id]: _, ...rest } = prev; return rest; });
+                          }
+                        }} />
+                        <span className="font-medium">{item.title} × {item.quantity}</span>
+                        <span className="text-muted-foreground">${Number(item.unit_price).toFixed(2)}</span>
+                      </div>
+                      {exchangeItems[item.id] && (
+                        <Select value={exchangeItems[item.id].newProductId} onValueChange={(v) => {
+                          const prod = exchangeProducts.find(p => p.id === v);
+                          if (prod) {
+                            setExchangeItems(prev => ({ ...prev, [item.id]: { newProductId: v, newTitle: prod.title, newPrice: Number(prod.price) } }));
+                          }
+                        }}>
+                          <SelectTrigger className="h-7 text-xs ml-6"><SelectValue placeholder="Select replacement product..." /></SelectTrigger>
+                          <SelectContent>
+                            {exchangeProducts.map(p => (
+                              <SelectItem key={p.id} value={p.id} className="text-xs">{p.title} — ${Number(p.price).toFixed(2)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Button size="sm" className="w-full text-xs" disabled={exchanging || Object.values(exchangeItems).every(v => !v.newProductId)} onClick={async () => {
+                  setExchanging(true);
+                  try {
+                    for (const [itemId, exchange] of Object.entries(exchangeItems)) {
+                      if (!exchange.newProductId) continue;
+                      await supabase.from("order_items").update({
+                        product_id: exchange.newProductId,
+                        title: exchange.newTitle,
+                        unit_price: exchange.newPrice,
+                        total: exchange.newPrice * (orderItems.find((i: any) => i.id === itemId)?.quantity || 1),
+                      }).eq("id", itemId);
+                    }
+                    await createTimelineEvent.mutateAsync({
+                      order_id: order.id,
+                      event_type: "note",
+                      title: "Items exchanged",
+                      description: `${Object.keys(exchangeItems).length} item(s) replaced`,
+                    });
+                    queryClient.invalidateQueries({ queryKey: ["order", id] });
+                    toast.success("Items exchanged successfully");
+                    setExchangeOpen(false);
+                  } catch (err: any) {
+                    toast.error(err.message);
+                  } finally {
+                    setExchanging(false);
+                  }
+                }}>{exchanging ? "Processing..." : "Exchange Selected Items"}</Button>
+              </DialogContent>
+            </Dialog>
             <Dialog open={shipDialogOpen} onOpenChange={setShipDialogOpen}>
               <DialogTrigger asChild>
                 <Button size="sm" className="text-xs gap-1"><Truck className="h-3.5 w-3.5" /> Create Shipment</Button>
