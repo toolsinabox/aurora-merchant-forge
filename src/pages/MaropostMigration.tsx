@@ -694,24 +694,36 @@ export default function MaropostMigration() {
               </div>
 
               <div className="space-y-2">
-                {entities.filter(e => e.selected).map(entity => (
-                  <div key={entity.entity} className="flex items-center gap-3 p-3 rounded-lg border">
-                    {statusIcon(entity.status)}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        {entity.icon}
-                        <span className="font-medium text-sm">{entity.label}</span>
+               {entities.filter(e => e.selected).map(entity => (
+                  <div key={entity.entity} className="p-3 rounded-lg border space-y-2">
+                    <div className="flex items-center gap-3">
+                      {statusIcon(entity.status)}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          {entity.icon}
+                          <span className="font-medium text-sm">{entity.label}</span>
+                        </div>
                       </div>
-                      {entity.errors.length > 0 && (
-                        <p className="text-xs text-destructive mt-1">{entity.errors[0]}{entity.errors.length > 1 ? ` (+${entity.errors.length - 1} more)` : ""}</p>
-                      )}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {entity.status === "success" && <span className="text-green-600">{entity.imported} imported{entity.failed > 0 && <span className="text-destructive ml-1">({entity.failed} failed)</span>}</span>}
+                        {entity.status === "failed" && (
+                          <>
+                            <span className="text-destructive">Failed</span>
+                            {!importing && <Button variant="outline" size="sm" onClick={() => retryEntity(entity.entity)}><RefreshCw className="h-3 w-3 mr-1" />Retry</Button>}
+                          </>
+                        )}
+                        {entity.status === "importing" && <span>Importing…</span>}
+                        {entity.status === "pending" && <span>Waiting</span>}
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {entity.status === "success" && <span className="text-green-600">{entity.imported} imported{entity.failed > 0 && <span className="text-destructive ml-1">({entity.failed} failed)</span>}</span>}
-                      {entity.status === "failed" && <span className="text-destructive">Failed</span>}
-                      {entity.status === "importing" && <span>Importing…</span>}
-                      {entity.status === "pending" && <span>Waiting</span>}
-                    </div>
+                    {entity.errors.length > 0 && (
+                      <details className="text-xs">
+                        <summary className="text-destructive cursor-pointer">{entity.errors.length} error(s) — click to expand</summary>
+                        <div className="mt-1 space-y-0.5 max-h-32 overflow-y-auto pl-4 text-muted-foreground">
+                          {entity.errors.map((err, i) => <div key={i}>• {err}</div>)}
+                        </div>
+                      </details>
+                    )}
                   </div>
                 ))}
               </div>
