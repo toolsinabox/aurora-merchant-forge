@@ -482,9 +482,9 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
 
-              <Card>
+              {w("inventoryAlerts") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     {lowStockProducts > 0 && <AlertTriangle className="h-4 w-4 text-warning" />}
