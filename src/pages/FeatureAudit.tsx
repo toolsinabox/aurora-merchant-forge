@@ -1774,6 +1774,212 @@ const featureData: FeatureCategory[] = [
       { name: "Staff Attribution", description: "Track which staff member counted each item", status: "done", notes: "counted_by and counted_at columns on stocktake_items" },
     ],
   },
+
+  // ═══════ 103. STORE CREDITS ═══════
+  {
+    category: "Store Credits",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Store Credit Balance", description: "Per-customer store credit balance tracking", status: "done", notes: "store_credits table with balance, lifetime_credited, lifetime_debited per customer" },
+      { name: "Credit Transactions", description: "Record credit/debit transactions against customer accounts", status: "done", notes: "store_credit_transactions table with amount, type (credit/debit), description, order_id link" },
+      { name: "Staff Attribution", description: "Track who issued each credit transaction", status: "done", notes: "created_by column on store_credit_transactions" },
+      { name: "Order-Linked Credits", description: "Link credit transactions to specific orders (refunds, rewards)", status: "done", notes: "order_id foreign key on store_credit_transactions" },
+      { name: "Lifetime Totals", description: "Track lifetime credited and debited amounts", status: "done", notes: "lifetime_credited and lifetime_debited columns on store_credits" },
+    ],
+  },
+
+  // ═══════ 104. POS REGISTERS & SESSIONS ═══════
+  {
+    category: "POS Registers & Sessions",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Register Management", description: "Create and manage POS register terminals", status: "done", notes: "pos_registers table with name, is_active, location_id linking to inventory_locations" },
+      { name: "Register Sessions (Open/Close)", description: "Open and close cash register sessions with float tracking", status: "done", notes: "pos_register_sessions table with opening_float, opened_at, closed_at, status (open/closed)" },
+      { name: "Cash Reconciliation", description: "Track expected vs actual cash at close", status: "done", notes: "expected_cash, actual_cash, cash_difference columns for drawer reconciliation" },
+      { name: "Payment Breakdown", description: "Break down sales by payment method", status: "done", notes: "cash_total, card_total, voucher_total, other_total columns on sessions" },
+      { name: "Session Totals", description: "Track total orders and sales per session", status: "done", notes: "total_orders and total_sales columns on pos_register_sessions" },
+      { name: "Close Notes", description: "Add notes when closing a register session", status: "done", notes: "notes text field on pos_register_sessions" },
+    ],
+  },
+
+  // ═══════ 105. SAVED CARTS ═══════
+  {
+    category: "Saved Carts",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Save Cart for Later", description: "Customers can save their cart and return to it", status: "done", notes: "saved_carts table with cart_items JSONB, cart_total, linked to customer_id" },
+      { name: "Named Carts", description: "Give saved carts a name for easy identification", status: "done", notes: "name column on saved_carts (default 'My Cart')" },
+      { name: "Cart Restoration", description: "Restore a saved cart back to the active shopping cart", status: "done", notes: "Admin /saved-carts page with cart management" },
+    ],
+  },
+
+  // ═══════ 106. WARRANTY DISPUTES ═══════
+  {
+    category: "Warranty Disputes",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Dispute CRUD", description: "Create and manage warranty/product disputes", status: "done", notes: "warranty_disputes table with dispute_type, reason, description, status" },
+      { name: "Dispute Types", description: "Categorize disputes (warranty, defective, wrong item, etc.)", status: "done", notes: "dispute_type column for classification" },
+      { name: "Dispute Status Workflow", description: "Open → investigating → resolved / rejected lifecycle", status: "done", notes: "status column with full workflow" },
+      { name: "Resolution Tracking", description: "Record resolution details and date", status: "done", notes: "resolution text and resolved_at timestamp columns" },
+      { name: "Admin Notes", description: "Internal staff notes on disputes", status: "done", notes: "admin_notes text field on warranty_disputes" },
+      { name: "Linked Entities", description: "Link disputes to orders, products, and customers", status: "done", notes: "order_id, product_id, customer_id foreign keys" },
+      { name: "Dispute Email Notification", description: "Notify admin of new disputes via email", status: "done", notes: "dispute-email edge function" },
+    ],
+  },
+
+  // ═══════ 107. WHOLESALE APPLICATIONS ═══════
+  {
+    category: "Wholesale Applications",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Wholesale Application Form", description: "B2B customers apply for wholesale access", status: "done", notes: "wholesale_applications table with business_name, contact_name, email, phone, abn_tax_id, message" },
+      { name: "Application Review Workflow", description: "Pending → approved / rejected lifecycle", status: "done", notes: "status column (pending/approved/rejected) with reviewed_at and reviewed_by" },
+      { name: "Tax ID / ABN Capture", description: "Capture business tax identification number", status: "done", notes: "abn_tax_id column on wholesale_applications" },
+      { name: "Admin Review Attribution", description: "Track which admin reviewed the application", status: "done", notes: "reviewed_by and reviewed_at columns" },
+    ],
+  },
+
+  // ═══════ 108. CUSTOMER COMMUNICATIONS ═══════
+  {
+    category: "Customer Communications",
+    icon: <MessageSquare className="h-5 w-5" />,
+    features: [
+      { name: "Communication Log", description: "Track all communications with customers", status: "done", notes: "customer_communications table with channel, direction, subject, body, status" },
+      { name: "Multi-Channel Support", description: "Track email, phone, SMS, and chat communications", status: "done", notes: "channel column (email/phone/sms/chat)" },
+      { name: "Inbound / Outbound Direction", description: "Track communication direction", status: "done", notes: "direction column (inbound/outbound)" },
+      { name: "Linked to Entities", description: "Link communications to orders, returns, or other entities", status: "done", notes: "related_entity_type and related_entity_id columns" },
+      { name: "Staff Attribution", description: "Track who sent outbound communications", status: "done", notes: "sent_by column on customer_communications" },
+    ],
+  },
+
+  // ═══════ 109. DIGITAL DOWNLOADS ═══════
+  {
+    category: "Digital Downloads",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Product Download Files", description: "Attach downloadable files to products", status: "done", notes: "product_downloads table with file_name, file_url, file_size, sort_order" },
+      { name: "Download Limits", description: "Set maximum download count per purchase", status: "done", notes: "download_limit column on product_downloads" },
+      { name: "Expiry Period", description: "Set download expiry in days after purchase", status: "done", notes: "expiry_days column on product_downloads" },
+      { name: "Customer Download Access", description: "Grant download access after purchase with unique token", status: "done", notes: "customer_downloads table with download_token, download_count, max_downloads, expires_at" },
+      { name: "Download Count Tracking", description: "Track how many times each file was downloaded", status: "done", notes: "download_count column on customer_downloads" },
+    ],
+  },
+
+  // ═══════ 110. PRODUCT SCHEDULING & VISIBILITY ═══════
+  {
+    category: "Product Scheduling & Visibility",
+    icon: <Clock className="h-5 w-5" />,
+    features: [
+      { name: "Scheduled Publish", description: "Auto-publish product at a future date/time", status: "done", notes: "scheduled_publish_at datetime column on products table" },
+      { name: "Scheduled Unpublish", description: "Auto-unpublish product at a future date/time", status: "done", notes: "scheduled_unpublish_at datetime column on products table" },
+      { name: "Visibility Groups", description: "Restrict product visibility to specific customer groups", status: "done", notes: "visibility_groups string array on products table" },
+      { name: "Price on Application (POA)", description: "Hide price and show 'Contact for Price' instead", status: "done", notes: "poa boolean on products table" },
+      { name: "Reorder Quantity", description: "Set reorder point quantity for automated PO suggestions", status: "done", notes: "reorder_quantity column on products table" },
+      { name: "Restock Quantity", description: "Default restock quantity for purchase orders", status: "done", notes: "restock_quantity column on products table" },
+      { name: "Search Keywords", description: "Hidden search keywords for improved product findability", status: "done", notes: "search_keywords text field on products table" },
+    ],
+  },
+
+  // ═══════ 111. TRACKING & ANALYTICS PIXELS ═══════
+  {
+    category: "Tracking & Analytics Pixels",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Google Analytics Integration", description: "GA tracking ID for storefront analytics", status: "done", notes: "ga_tracking_id column on stores table" },
+      { name: "Google Tag Manager", description: "GTM container ID for tag management", status: "done", notes: "gtm_container_id column on stores table" },
+      { name: "Facebook Pixel", description: "FB pixel ID for conversion tracking and retargeting", status: "done", notes: "fb_pixel_id column on stores table" },
+      { name: "Google Ads Tracking", description: "Google Ads conversion tracking", status: "done", notes: "google_ads_id and google_ads_conversion_label columns on stores table" },
+      { name: "Live Chat Widget", description: "Embed third-party chat widget code", status: "done", notes: "chat_widget_code column on stores table for injecting chat JS snippets" },
+    ],
+  },
+
+  // ═══════ 112. STOCK ADJUSTMENTS ═══════
+  {
+    category: "Stock Adjustments",
+    icon: <ClipboardCopy className="h-5 w-5" />,
+    features: [
+      { name: "Manual Stock Adjustment", description: "Adjust stock quantities with reason tracking", status: "done", notes: "stock_adjustments table with inventory_stock_id, quantity_change, reason" },
+      { name: "Adjustment Reason", description: "Record reason for each adjustment (damaged, lost, correction)", status: "done", notes: "reason text field on stock_adjustments" },
+      { name: "Staff Attribution", description: "Track who made each stock adjustment", status: "done", notes: "adjusted_by column on stock_adjustments" },
+      { name: "Admin Stock Adjustments Page", description: "View history of all stock adjustments", status: "done", notes: "Admin /stock-adjustments page with adjustment log" },
+    ],
+  },
+
+  // ═══════ 113. THIRD-PARTY SYNC INTEGRATIONS ═══════
+  {
+    category: "Third-Party Sync Integrations",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Google Shopping Feed", description: "Generate product feed for Google Merchant Center", status: "done", notes: "google-shopping-feed edge function generating XML product feed" },
+      { name: "Klaviyo Sync", description: "Sync customers and orders to Klaviyo for email marketing", status: "partial", notes: "klaviyo-sync edge function — requires merchant API key" },
+      { name: "Mailchimp Sync", description: "Sync subscribers and customers to Mailchimp", status: "partial", notes: "mailchimp-sync edge function — requires merchant API key" },
+      { name: "StarShipIt Sync", description: "Sync orders and shipments with StarShipIt", status: "partial", notes: "starshipit-sync edge function — requires merchant API key" },
+      { name: "ShipStation Sync", description: "Sync orders with ShipStation for fulfillment", status: "partial", notes: "shipstation-sync edge function — requires merchant API key" },
+      { name: "eBay Sync", description: "Sync product listings with eBay marketplace", status: "partial", notes: "ebay-sync edge function — requires merchant API key" },
+      { name: "Marketplace Sync", description: "Generic marketplace product and order sync", status: "partial", notes: "marketplace-sync edge function for additional channels" },
+    ],
+  },
+
+  // ═══════ 114. USER PROFILES ═══════
+  {
+    category: "User Profiles",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Auto-Create Profile on Signup", description: "Automatically create user profile on auth signup", status: "done", notes: "handle_new_user() trigger creates profiles row with display_name from email or full_name" },
+      { name: "Display Name", description: "Customizable display name for admin users", status: "done", notes: "display_name column on profiles table" },
+      { name: "Avatar URL", description: "Profile avatar image support", status: "done", notes: "avatar_url column on profiles table" },
+    ],
+  },
+
+  // ═══════ 115. REDIRECT ANALYTICS ═══════
+  {
+    category: "Redirect Analytics",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "Redirect Hit Counter", description: "Track how many times each redirect is triggered", status: "done", notes: "hit_count column on redirects table, incremented on each redirect match" },
+      { name: "Active/Inactive Toggle", description: "Enable or disable individual redirects", status: "done", notes: "is_active boolean on redirects table" },
+    ],
+  },
+
+  // ═══════ 116. STORE TEMPLATES ═══════
+  {
+    category: "Store Templates",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Template CRUD", description: "Create and edit storefront HTML templates", status: "done", notes: "store_templates table with name, slug, content, template_type, context_type" },
+      { name: "Template Types", description: "Support page, partial, email, and layout template types", status: "done", notes: "template_type column for template classification" },
+      { name: "Context Binding", description: "Bind templates to specific data contexts (product, category, cart)", status: "done", notes: "context_type column maps template to data source" },
+      { name: "Per-Template CSS", description: "Custom CSS per template for isolated styling", status: "done", notes: "custom_css column on store_templates with CSS editor tab" },
+      { name: "Template Active Toggle", description: "Enable/disable templates without deletion", status: "done", notes: "is_active boolean on store_templates" },
+      { name: "Admin Templates Page", description: "Full template management interface", status: "done", notes: "Admin /templates page with code editor and live preview" },
+    ],
+  },
+
+  // ═══════ 117. STORE THEME CUSTOMIZATION ═══════
+  {
+    category: "Store Theme Customization",
+    icon: <Palette className="h-5 w-5" />,
+    features: [
+      { name: "Theme Colors", description: "Primary, secondary, accent, background, and text color configuration", status: "done", notes: "store_themes table with primary_color, secondary_color, accent_color, background_color, text_color" },
+      { name: "Font Selection", description: "Heading and body font family configuration", status: "done", notes: "heading_font and body_font columns on store_themes" },
+      { name: "Layout Options", description: "Button radius, layout style, hero style, product card style, footer style", status: "done", notes: "button_radius, layout_style, hero_style, product_card_style, footer_style columns" },
+      { name: "Theme Custom CSS", description: "Global custom CSS injection per theme", status: "done", notes: "custom_css column on store_themes" },
+      { name: "Theme Presets", description: "Pre-built theme presets (Classic, Modern Dark, Minimal, Boutique, Tech)", status: "done", notes: "theme_presets table with is_system flag and theme_config JSONB" },
+      { name: "One-Click Theme Apply", description: "Apply a preset theme to overwrite current settings", status: "done", notes: "Apply preset action maps theme_config to store_themes columns" },
+    ],
+  },
+
+  // ═══════ 118. CURRENCY FORMATTING ═══════
+  {
+    category: "Currency Formatting",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Decimal Places Configuration", description: "Set number of decimal places for currency display", status: "done", notes: "currency_decimal_places column on stores table (default 2)" },
+      { name: "Symbol Position", description: "Configure currency symbol position (before/after amount)", status: "done", notes: "currency_symbol_position column on stores table" },
+      { name: "Tax Mode", description: "Configure tax-inclusive or tax-exclusive pricing display", status: "done", notes: "tax_mode column on stores table" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
