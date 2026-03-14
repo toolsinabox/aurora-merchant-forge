@@ -7864,7 +7864,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Autosave Drafts", description: "Auto-save form progress as draft", status: "done", notes: "ProductForm auto-saves new product drafts to localStorage every 2 seconds, restores on page load, clears on successful save" },
       { name: "Form Dirty State Warning", description: "Warn before navigating away from unsaved changes", status: "done", notes: "Admin form patterns" },
       { name: "Recent Activity Feed", description: "Global activity feed showing recent changes across store", status: "done", notes: "ActivityLog page" },
-      { name: "Staff @Mentions in Notes", description: "Tag staff members in order/customer notes", status: "not_started" },
+      { name: "Staff @Mentions in Notes", description: "Tag staff members in order/customer notes", status: "done", notes: "OrderDetail comment input with @mention autocomplete, loads team members from user_roles + profiles, keyboard navigation (up/down/enter/escape), dropdown popup with matching staff, inserts @name into comment text" },
       { name: "Admin Dark Mode Toggle", description: "Dark mode for admin panel", status: "done", notes: "Theme system exists" },
       { name: "Admin Multi-Language UI", description: "Translate admin interface to other languages", status: "not_started" },
       { name: "Dashboard Widget Customization", description: "Add/remove/reorder dashboard widgets", status: "done", notes: "Dashboard Widgets popover with localStorage persistence for show/hide each widget section" },
