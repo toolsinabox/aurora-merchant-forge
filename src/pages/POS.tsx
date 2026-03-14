@@ -1187,6 +1187,33 @@ export default function POS() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Sell Gift Card Dialog */}
+      <Dialog open={showSellGiftCard} onOpenChange={setShowSellGiftCard}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><Gift className="h-4 w-4" /> Sell Gift Card</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Gift Card Value ($)</Label>
+              <div className="grid grid-cols-4 gap-2 mt-1">
+                {["25", "50", "100", "200"].map(v => (
+                  <Button key={v} variant={giftCardValue === v ? "default" : "outline"} size="sm" onClick={() => setGiftCardValue(v)}>${v}</Button>
+                ))}
+              </div>
+              <Input type="number" min="1" step="0.01" value={giftCardValue} onChange={e => setGiftCardValue(e.target.value)} className="h-8 text-sm mt-2" placeholder="Custom amount" />
+            </div>
+            <div>
+              <Label className="text-xs">Recipient Name (optional)</Label>
+              <Input value={giftCardRecipient} onChange={e => setGiftCardRecipient(e.target.value)} className="h-8 text-sm" placeholder="e.g. John Smith" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowSellGiftCard(false)}>Cancel</Button>
+            <Button size="sm" onClick={sellGiftCard} disabled={giftCardSelling} className="gap-1">
+              <Gift className="h-3 w-3" /> {giftCardSelling ? "Creating..." : `Add $${parseFloat(giftCardValue || "0").toFixed(2)} Gift Card`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
