@@ -7566,7 +7566,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Carrier Pickup Scheduling", description: "Schedule carrier pickups from warehouse", status: "done", notes: "CarrierManifest Schedule Pickup dialog with carrier select, date/time, notes, localStorage persistence, pickup table with complete/cancel actions" },
       { name: "Returns Receiving", description: "Scan and receive returned items back into inventory", status: "done", notes: "Returns Receiving tab with order number scan/entry, approved returns queue, scanned items with condition selection (good/damaged/defective/opened), per-item notes, Process button marks as refunded with receiving details in admin_notes" },
       { name: "Damaged Goods Processing", description: "Flag and quarantine damaged items during receiving", status: "done", notes: "Returns Damaged Goods tab with quarantine queue, disposition actions (write off, repair, resell, return to supplier), KPI cards, resolved history, auto-quarantine from receiving tab when condition is damaged/defective" },
-      { name: "Warehouse User Roles", description: "Restrict warehouse staff to pick/pack only (no admin access)", status: "partial", notes: "Role system exists" },
+      { name: "Warehouse User Roles", description: "Restrict warehouse staff to pick/pack only (no admin access)", status: "done", notes: "Role-based access control via user_roles table with staff role, role_permissions matrix with per-resource CRUD control including warehouse/inventory modules" },
     ],
   },
   {
