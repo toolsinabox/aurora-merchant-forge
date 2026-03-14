@@ -42,7 +42,7 @@ export default function ShippingZones() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editZone, setEditZone] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge" });
+  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge", blocked_postcodes: "", blocked_message: "Sorry, we cannot ship to this postcode" });
   const [activeTab, setActiveTab] = useState("zones");
 
   // Shipping services
