@@ -13,10 +13,14 @@ export interface CartItem {
 
 interface CartContextType {
   items: CartItem[];
+  savedItems: CartItem[];
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   removeItem: (product_id: string, variant_id?: string | null) => void;
   updateQuantity: (product_id: string, variant_id: string | null | undefined, quantity: number) => void;
   clearCart: () => void;
+  saveForLater: (product_id: string, variant_id?: string | null) => void;
+  moveToCart: (product_id: string, variant_id?: string | null) => void;
+  removeSaved: (product_id: string, variant_id?: string | null) => void;
   totalItems: number;
   totalPrice: number;
 }
