@@ -58,6 +58,71 @@ export default function Customers() {
   const [merging, setMerging] = useState(false);
   const [primaryId, setPrimaryId] = useState<string>("");
 
+  // Bulk tag/group state
+  const [bulkTagInput, setBulkTagInput] = useState("");
+  const [bulkTagAction, setBulkTagAction] = useState<"add" | "remove">("add");
+  const [showBulkTag, setShowBulkTag] = useState(false);
+  const [bulkGroupId, setBulkGroupId] = useState("");
+  const [showBulkGroup, setShowBulkGroup] = useState(false);
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [customerGroups, setCustomerGroups] = useState<any[]>([]);
+
+  // Load customer groups for bulk assignment
+  useState(() => {
+    if (currentStore) {
+      supabase.from("customer_groups").select("id, name").eq("store_id", currentStore.id).order("name").then(({ data }) => {
+        setCustomerGroups(data || []);
+      });
+    }
+  });
+
+  const handleBulkTagUpdate = async () => {
+    if (!bulkTagInput.trim() || selectedForMerge.length === 0 || !currentStore) return;
+    setBulkProcessing(true);
+    const tag = bulkTagInput.trim();
+    try {
+      for (const id of selectedForMerge) {
+        const customer = customers.find(c => c.id === id);
+        if (!customer) continue;
+        const currentTags: string[] = customer.tags || [];
+        const newTags = bulkTagAction === "add"
+          ? [...new Set([...currentTags, tag])]
+          : currentTags.filter(t => t !== tag);
+        await supabase.from("customers").update({ tags: newTags } as any).eq("id", id);
+      }
+      toast.success(`${bulkTagAction === "add" ? "Added" : "Removed"} tag "${tag}" on ${selectedForMerge.length} customers`);
+      setShowBulkTag(false);
+      setBulkTagInput("");
+      setSelectedForMerge([]);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  const handleBulkGroupUpdate = async () => {
+    if (!bulkGroupId || selectedForMerge.length === 0) return;
+    setBulkProcessing(true);
+    try {
+      const groupVal = bulkGroupId === "none" ? null : bulkGroupId;
+      const { error } = await supabase.from("customers")
+        .update({ customer_group_id: groupVal } as any)
+        .in("id", selectedForMerge);
+      if (error) throw error;
+      toast.success(`Updated group for ${selectedForMerge.length} customers`);
+      setShowBulkGroup(false);
+      setBulkGroupId("");
+      setSelectedForMerge([]);
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
   const toggleMergeSelection = (id: string) => {
     setSelectedForMerge(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
   };
