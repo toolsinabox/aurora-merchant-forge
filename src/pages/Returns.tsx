@@ -162,7 +162,7 @@ export default function Returns() {
                 <CardContent className="pt-4 pb-3 text-center">
                   <BarChart3 className="h-5 w-5 mx-auto mb-1 text-primary" />
                   <p className="text-xs text-muted-foreground">Total Returns</p>
-                  <p className="text-xl font-bold">{rmaStats.total}</p>
+                  <p className="text-lg font-bold">{rmaStats.total}</p>
                 </CardContent>
               </Card>
               <Card>
