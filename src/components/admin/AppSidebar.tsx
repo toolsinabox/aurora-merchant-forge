@@ -93,6 +93,7 @@ const systemNav = [
   { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
   { title: "Email Automations", url: `${prefix}/email-automations`, icon: Zap },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
+  { title: "Go-Live Checklist", url: `${prefix}/go-live`, icon: Sparkles },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
 ];
