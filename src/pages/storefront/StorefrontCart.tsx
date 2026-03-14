@@ -25,7 +25,7 @@ export default function StorefrontCart() {
   const { storeSlug: paramSlug } = useParams();
   const { basePath } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, totalPrice, totalItems } = useCart();
+  const { items, removeItem, updateQuantity, totalPrice, totalItems, savedItems, saveForLater, moveToCart, removeSaved } = useCart();
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
