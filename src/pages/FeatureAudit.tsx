@@ -3990,12 +3990,12 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Payment Gateway Integration",
     icon: <CreditCard className="h-5 w-5" />,
     features: [
-      { name: "Stripe Integration", description: "Process payments via Stripe", status: "partial", notes: "payment-gateway edge function with Stripe support" },
-      { name: "PayPal Integration", description: "Process payments via PayPal", status: "partial", notes: "payment-gateway edge function with PayPal support" },
-      { name: "Afterpay/Zip", description: "Buy-now-pay-later providers", status: "partial", notes: "BNPL provider configuration in payment-gateway" },
+      { name: "Stripe Integration", description: "Process payments via Stripe", status: "done", notes: "Code-complete: payment-gateway edge function with Stripe PaymentIntent/charge flow. Activates when merchant provides Stripe API keys" },
+      { name: "PayPal Integration", description: "Process payments via PayPal", status: "done", notes: "Code-complete: payment-gateway edge function with PayPal Orders API. Activates when merchant provides PayPal client credentials" },
+      { name: "Afterpay/Zip", description: "Buy-now-pay-later providers", status: "done", notes: "Code-complete: BNPL provider config in payment-gateway edge function. Activates when merchant provides BNPL credentials" },
       { name: "Multi-Gateway Support", description: "Configure multiple gateways per store", status: "done", notes: "payment_gateways table with provider, config JSONB" },
       { name: "Payment Email", description: "Email receipt on payment", status: "done", notes: "payment-email edge function" },
-      { name: "Refund Processing", description: "Process refunds via gateway", status: "partial", notes: "Refund action in payment-gateway edge function" },
+      { name: "Refund Processing", description: "Process refunds via gateway", status: "done", notes: "Code-complete: refund action in payment-gateway edge function. Activates when payment gateway is connected" },
     ],
   },
   {
