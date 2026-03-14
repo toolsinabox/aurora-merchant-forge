@@ -9161,7 +9161,7 @@ const internationalFeatures: FeatureCategory[] = [
     features: [
       { name: "Duties & Tariff Calculation", description: "Calculate import duties at checkout", status: "not_started" },
       { name: "HS Code per Product", description: "Harmonized System codes for customs", status: "not_started" },
-      { name: "Country of Origin", description: "Country of origin field per product", status: "partial" },
+      { name: "Country of Origin", description: "Country of origin field per product", status: "done", notes: "country_of_origin field on products table" },
       { name: "Commercial Invoice Generation", description: "Generate customs commercial invoices", status: "not_started" },
       { name: "Restricted Countries", description: "Block orders from specific countries", status: "not_started" },
       { name: "Country-Specific Product Restrictions", description: "Hide products restricted in certain countries", status: "not_started" },
