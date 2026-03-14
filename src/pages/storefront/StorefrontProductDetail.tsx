@@ -652,6 +652,7 @@ export default function StorefrontProductDetail() {
               {product.specifications && <TabsTrigger value="specifications">Specifications</TabsTrigger>}
               {shipping && <TabsTrigger value="shipping">Shipping</TabsTrigger>}
               {product.warranty && <TabsTrigger value="warranty">Warranty</TabsTrigger>}
+              {product.video_url && <TabsTrigger value="video">Video</TabsTrigger>}
             </TabsList>
             {product.description && (
               <TabsContent value="description" className="mt-4 prose prose-sm max-w-none text-muted-foreground">
