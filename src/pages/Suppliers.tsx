@@ -229,7 +229,7 @@ export default function Suppliers() {
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(emptyForm); setEditId(null); } }}>
             <DialogTrigger asChild>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />Add Supplier</Button>
+              <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Supplier</Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
               <DialogHeader>
