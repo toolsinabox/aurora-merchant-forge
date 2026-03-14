@@ -1105,6 +1105,161 @@ const featureData: FeatureCategory[] = [
       { name: "Copy Link Button", description: "Copy product URL to clipboard", status: "done", notes: "navigator.clipboard.writeText with success toast and check icon feedback" },
     ],
   },
+
+  // ═══════ 54. PRINT DOCUMENTS ═══════
+  {
+    category: "Print Documents",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Print Invoice", description: "Generate printable invoice for orders", status: "done", notes: "PrintInvoice page with order details, line items, totals, and print CSS" },
+      { name: "Print Packing Slip", description: "Print packing slip for warehouse fulfillment", status: "done", notes: "PrintPackingSlip page with item checklist and shipping address" },
+      { name: "Print Pick List", description: "Consolidated pick list for batch order fulfillment", status: "done", notes: "PrintPickList page grouping items across orders for warehouse picking" },
+      { name: "Print Shipping Label", description: "Generate shipping labels", status: "done", notes: "PrintShippingLabel page with carrier and address formatting" },
+      { name: "Print Quote", description: "Print formal quote document for B2B customers", status: "done", notes: "PrintQuote page with quote terms, validity period, and line items" },
+      { name: "Print Purchase Order", description: "Print purchase order for suppliers", status: "done", notes: "PrintPurchaseOrder page with supplier details and PO items" },
+      { name: "Print Customer Statement", description: "Print customer account statement", status: "done", notes: "PrintCustomerStatement page with order history and balance summary" },
+      { name: "Print Payment Receipt", description: "Print payment confirmation receipt", status: "done", notes: "PrintPaymentReceipt page with payment details and confirmation" },
+      { name: "Print Gift Voucher", description: "Print gift voucher with code and value", status: "done", notes: "PrintGiftVoucher page with voucher code, amount, and optional message" },
+      { name: "Print Barcode Labels", description: "Generate barcode labels for products", status: "done", notes: "PrintBarcodeLabels page with SKU barcode generation and print layout" },
+      { name: "Print Return Label", description: "Generate pre-paid return shipping labels", status: "done", notes: "PrintReturnLabel page with return address and RMA number" },
+    ],
+  },
+
+  // ═══════ 55. STOREFRONT SEARCH & DISCOVERY ═══════
+  {
+    category: "Storefront Search & Discovery",
+    icon: <Search className="h-5 w-5" />,
+    features: [
+      { name: "Global Product Search", description: "Full-text search across products from storefront header", status: "done", notes: "StorefrontSearch component with real-time results dropdown, searches title/sku/description" },
+      { name: "Product Compare", description: "Compare up to 4 products side-by-side", status: "done", notes: "CompareContext with add/remove, StorefrontCompare page with feature comparison table" },
+      { name: "Wishlist", description: "Save products to wishlist for later", status: "done", notes: "WishlistContext with localStorage persistence, StorefrontWishlist page, heart icon on product cards" },
+      { name: "Recently Viewed Products", description: "Track and display recently viewed products", status: "done", notes: "use-recently-viewed hook with localStorage, shown on product detail page" },
+      { name: "Quick View Modal", description: "Preview product details without navigating away", status: "done", notes: "ProductQuickView component with image, price, add-to-cart in a modal overlay" },
+      { name: "Image Lightbox", description: "Full-screen product image gallery with zoom", status: "done", notes: "ImageLightbox component with keyboard nav and swipe support" },
+    ],
+  },
+
+  // ═══════ 56. COOKIE CONSENT / GDPR ═══════
+  {
+    category: "Cookie Consent / GDPR",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    features: [
+      { name: "Cookie Consent Banner", description: "GDPR-compliant cookie consent banner on storefront", status: "done", notes: "CookieConsentBanner component with Accept All / Decline buttons, persists choice to localStorage" },
+      { name: "Consent Persistence", description: "Remember cookie consent choice across sessions", status: "done", notes: "localStorage key 'cookie-consent' stores accepted/declined state" },
+    ],
+  },
+
+  // ═══════ 57. NEWSLETTER & PROMO ═══════
+  {
+    category: "Newsletter & Promo Popups",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Newsletter Signup Form", description: "Email newsletter signup in storefront footer", status: "done", notes: "NewsletterSignup component in footer, saves to newsletter_subscribers table with duplicate detection" },
+      { name: "Promo Welcome Popup", description: "Welcome popup offering first-order discount", status: "done", notes: "PromoPopup component with 3s delay, dismissable, localStorage persistence, links to signup" },
+      { name: "Announcement Banner", description: "Top-of-page promotional banner with scheduling", status: "done", notes: "banner_text, banner_start, banner_end fields on stores table; scheduled display in StorefrontLayout" },
+    ],
+  },
+
+  // ═══════ 58. MEDIA LIBRARY ═══════
+  {
+    category: "Media Library",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Media Upload & Management", description: "Upload, organize, and manage media assets", status: "done", notes: "Admin /media page with upload, folder management, file type/size tracking via media_assets table" },
+      { name: "Folder Organization", description: "Organize media into folders", status: "done", notes: "folder column on media_assets, filterable folder list in admin" },
+      { name: "Alt Text", description: "Set alt text for accessibility and SEO", status: "done", notes: "alt_text field on media_assets" },
+      { name: "File Metadata", description: "Track file size, dimensions, and type", status: "done", notes: "file_size, width, height, file_type columns on media_assets" },
+    ],
+  },
+
+  // ═══════ 59. CONTENT BLOCKS ═══════
+  {
+    category: "Content Blocks",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Content Block CRUD", description: "Create reusable content blocks for storefront", status: "done", notes: "Admin /content-blocks page, content_blocks table with identifier, placement, sort_order" },
+      { name: "HTML / Rich Text Content", description: "Support HTML content in blocks", status: "done", notes: "content field with HTML support, block_type (html, text, banner)" },
+      { name: "Placement Targeting", description: "Assign blocks to specific page locations", status: "done", notes: "placement column for targeting (header, footer, sidebar, homepage)" },
+      { name: "Active Toggle", description: "Enable/disable blocks without deleting", status: "done", notes: "is_active boolean toggle on content_blocks" },
+    ],
+  },
+
+  // ═══════ 60. URL REDIRECTS ═══════
+  {
+    category: "URL Redirects",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "301/302 Redirect Management", description: "Manage URL redirects for SEO migration", status: "done", notes: "Admin /redirects page with source_path, target_path, redirect_type (301/302)" },
+      { name: "Bulk Redirect Import", description: "Import redirects from CSV", status: "done", notes: "Import functionality on redirects page" },
+    ],
+  },
+
+  // ═══════ 61. STOREFRONT PAGES ═══════
+  {
+    category: "Storefront Pages",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Quick Order Form (B2B)", description: "Bulk order form for B2B customers with SKU entry", status: "done", notes: "StorefrontQuickOrder page with SKU lookup, quantity input, and bulk add-to-cart" },
+      { name: "Wholesale Portal", description: "Wholesale-only products and pricing for approved customers", status: "done", notes: "StorefrontWholesale page with customer group-based access and wholesale pricing" },
+      { name: "Store Finder / Locations", description: "Physical store locator with addresses", status: "done", notes: "StorefrontStoreFinder page with location cards and map integration" },
+      { name: "Blog / News", description: "Blog/news content pages for content marketing", status: "done", notes: "StorefrontBlog page pulling content_pages where page_type = 'blog'" },
+      { name: "Contact Form", description: "Customer contact form with email notification", status: "done", notes: "StorefrontContact page with name/email/subject/message, saves to contact_submissions, triggers contact-email edge function" },
+      { name: "Gift Voucher Purchase", description: "Buy gift vouchers from storefront", status: "done", notes: "StorefrontGiftVouchers page with denomination selection, recipient details, and checkout" },
+      { name: "Order Tracking", description: "Track order status by order number", status: "done", notes: "StorefrontTrackOrder page with order lookup and status timeline" },
+      { name: "Forgot Username Recovery", description: "Recover username/email via phone or order details", status: "done", notes: "StorefrontForgotUsername page" },
+    ],
+  },
+
+  // ═══════ 62. CUSTOMER ACCOUNT PORTAL ═══════
+  {
+    category: "Customer Account Portal",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Order History", description: "View past orders with status tracking", status: "done", notes: "StorefrontAccount page with order list, status timeline, and order detail expansion" },
+      { name: "Return Requests", description: "Submit return/RMA requests from account", status: "done", notes: "Return request dialog with reason selection and notes on StorefrontAccount" },
+      { name: "Address Book", description: "Manage multiple shipping/billing addresses", status: "done", notes: "Address management section with add/edit/delete and default address toggle" },
+      { name: "Wishlist Management", description: "View and manage saved wishlist items", status: "done", notes: "StorefrontWishlist page linked from account navigation" },
+      { name: "Digital Downloads Access", description: "Download purchased digital products", status: "done", notes: "Downloads tab on StorefrontAccount showing purchased files with download links" },
+      { name: "Quote Requests", description: "Request quotes from account portal", status: "done", notes: "Quote request form on StorefrontAccount for B2B customers" },
+      { name: "Layby Plans", description: "View active layby payment plans", status: "done", notes: "Layby section on StorefrontAccount showing active plans and payment progress" },
+      { name: "Store Credit Balance", description: "View store credit balance and transactions", status: "done", notes: "Store credit display on StorefrontAccount with balance and recent transactions" },
+    ],
+  },
+
+  // ═══════ 63. IMPORT / EXPORT ═══════
+  {
+    category: "Import / Export",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "CSV Import Wizard", description: "Step-by-step CSV import with field mapping", status: "done", notes: "ImportWizard page with file upload, column mapping, preview, and batch insert; import_logs and import_templates tables" },
+      { name: "Import Templates", description: "Save and reuse import field mappings", status: "done", notes: "import_templates table with field_mappings, delimiter, transformations" },
+      { name: "Export Wizard", description: "Export data to CSV with field selection", status: "done", notes: "ExportWizard page with entity type selection, field picker, and CSV generation" },
+      { name: "Scheduled Exports", description: "Configure automated recurring exports", status: "done", notes: "scheduled-export edge function with cron support" },
+      { name: "Import Error Handling", description: "Track and display import errors per row", status: "done", notes: "errors JSONB column on import_logs, error_count tracking" },
+    ],
+  },
+
+  // ═══════ 64. BARCODE & LABEL MANAGEMENT ═══════
+  {
+    category: "Barcode & Label Management",
+    icon: <HardDrive className="h-5 w-5" />,
+    features: [
+      { name: "Barcode Scanner", description: "Scan barcodes for quick product lookup", status: "done", notes: "BarcodeScanner component with camera-based barcode scanning, used in POS and inventory" },
+      { name: "Barcode Label Printing", description: "Generate and print barcode labels for products", status: "done", notes: "PrintBarcodeLabels page with product selection, label format, and batch printing" },
+      { name: "SKU-based Lookup", description: "Find products by scanning SKU barcode", status: "done", notes: "Barcode scan triggers product lookup by SKU in products table" },
+    ],
+  },
+
+  // ═══════ 65. CURRENCY & LANGUAGE ═══════
+  {
+    category: "Currency & Language",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Currency Support", description: "Display prices in multiple currencies with live rates", status: "done", notes: "Admin /currencies page, CurrencySwitcher component on storefront, exchange rate management" },
+      { name: "Currency Switcher on Storefront", description: "Customer-facing currency selector", status: "done", notes: "CurrencySwitcher component in storefront header with flag icons" },
+      { name: "Language Switcher", description: "Multi-language support on storefront", status: "done", notes: "LanguageSwitcher component with LanguageProvider context for i18n" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
