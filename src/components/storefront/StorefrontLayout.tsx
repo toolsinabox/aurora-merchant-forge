@@ -14,6 +14,8 @@ import { PromoPopup } from "./PromoPopup";
 import { CurrencySwitcher, useCurrency } from "./CurrencySwitcher";
 import { LanguageSwitcher, useLanguage, LanguageProvider } from "./LanguageSwitcher";
 import { supabase } from "@/integrations/supabase/client";
+import { SocialProofNotifications } from "./SocialProofNotifications";
+import { MobileBottomNav } from "./MobileBottomNav";
 
 interface StorefrontLayoutProps {
   children: ReactNode;
