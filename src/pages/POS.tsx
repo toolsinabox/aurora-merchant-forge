@@ -27,6 +27,9 @@ interface CartItem {
   price: number;
   quantity: number;
   image_url?: string;
+  discount?: number; // percentage discount
+  discount_type?: "percent" | "fixed";
+  discount_value?: number;
 }
 
 export default function POS() {
