@@ -24,7 +24,7 @@ interface Notification {
 export function NotificationBell() {
   const { currentStore } = useAuth();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<OrderNotification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Load recent orders as initial notifications
@@ -35,37 +35,70 @@ export function NotificationBell() {
       .select("id, order_number, total, created_at")
       .eq("store_id", currentStore.id)
       .order("created_at", { ascending: false })
-      .limit(10)
+      .limit(8)
       .then(({ data }) => {
         if (data) {
-          const notifs = data.map((o) => ({ ...o, read: true }));
+          const notifs: Notification[] = data.map((o) => ({
+            id: o.id, type: "order" as const,
+            title: `New order ${o.order_number}`,
+            detail: `$${Number(o.total).toFixed(2)}`,
+            created_at: o.created_at, read: true,
+            link: `/orders/${o.id}`,
+          }));
           setNotifications(notifs);
         }
       });
   }, [currentStore]);
 
-  // Listen for realtime new orders
+  // Listen for realtime new orders, customers, and reviews
   useEffect(() => {
     if (!currentStore) return;
 
     const channel = supabase
-      .channel(`orders-${currentStore.id}`)
+      .channel(`notifications-${currentStore.id}`)
       .on(
         "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-          filter: `store_id=eq.${currentStore.id}`,
-        },
+        { event: "INSERT", schema: "public", table: "orders", filter: `store_id=eq.${currentStore.id}` },
         (payload) => {
-          const newOrder = payload.new as any;
-          const notif: OrderNotification = {
-            id: newOrder.id,
-            order_number: newOrder.order_number,
-            total: newOrder.total,
-            created_at: newOrder.created_at,
-            read: false,
+          const n = payload.new as any;
+          const notif: Notification = {
+            id: n.id, type: "order",
+            title: `New order ${n.order_number}`,
+            detail: `$${Number(n.total).toFixed(2)}`,
+            created_at: n.created_at, read: false,
+            link: `/orders/${n.id}`,
+          };
+          setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+          setUnreadCount((c) => c + 1);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "customers", filter: `store_id=eq.${currentStore.id}` },
+        (payload) => {
+          const n = payload.new as any;
+          const notif: Notification = {
+            id: n.id, type: "customer",
+            title: `New customer signup`,
+            detail: n.name || n.email || "Unknown",
+            created_at: n.created_at, read: false,
+            link: `/customers/${n.id}`,
+          };
+          setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+          setUnreadCount((c) => c + 1);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "product_reviews", filter: `store_id=eq.${currentStore.id}` },
+        (payload) => {
+          const n = payload.new as any;
+          const notif: Notification = {
+            id: n.id, type: "review",
+            title: `New review submitted`,
+            detail: `${n.rating}★ — ${(n.title || "").slice(0, 30)}`,
+            created_at: n.created_at, read: false,
+            link: `/reviews`,
           };
           setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
           setUnreadCount((c) => c + 1);
