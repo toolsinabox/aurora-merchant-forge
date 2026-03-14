@@ -80,7 +80,7 @@ export default function ApiKeys() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["api_keys"] });
-      setForm({ name: "", scopes: [] });
+      setForm({ name: "", scopes: [], ip_whitelist: "" });
       toast.success("API key created — copy it now, it won't be shown again");
     },
     onError: (e: any) => toast.error(e.message),
