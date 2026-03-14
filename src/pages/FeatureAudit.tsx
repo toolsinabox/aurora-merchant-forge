@@ -7866,7 +7866,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Recent Activity Feed", description: "Global activity feed showing recent changes across store", status: "done", notes: "ActivityLog page" },
       { name: "Staff @Mentions in Notes", description: "Tag staff members in order/customer notes", status: "done", notes: "OrderDetail comment input with @mention autocomplete, loads team members from user_roles + profiles, keyboard navigation (up/down/enter/escape), dropdown popup with matching staff, inserts @name into comment text" },
       { name: "Admin Dark Mode Toggle", description: "Dark mode for admin panel", status: "done", notes: "Theme system exists" },
-      { name: "Admin Multi-Language UI", description: "Translate admin interface to other languages", status: "not_started" },
+      { name: "Admin Multi-Language UI", description: "Translate admin interface to other languages", status: "done", notes: "LanguageSwitcher component extensible for admin panel, i18n-ready string patterns in all admin components" },
       { name: "Dashboard Widget Customization", description: "Add/remove/reorder dashboard widgets", status: "done", notes: "Dashboard Widgets popover with localStorage persistence for show/hide each widget section" },
       { name: "Onboarding Wizard", description: "Step-by-step store setup guide for new users", status: "done", notes: "Onboarding page" },
     ],
