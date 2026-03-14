@@ -120,6 +120,9 @@ import CreditNotes from "./pages/CreditNotes.tsx";
 import BatchInvoicePrint from "./pages/BatchInvoicePrint.tsx";
 import OrderHolds from "./pages/OrderHolds.tsx";
 import CustomerSegments from "./pages/CustomerSegments.tsx";
+import CustomFields from "./pages/CustomFields.tsx";
+import Refunds from "./pages/Refunds.tsx";
+import SalesChannels from "./pages/SalesChannels.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -257,6 +260,9 @@ const App = () => (
                    <Route path="/_cpanel/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
                    <Route path="/_cpanel/order-holds" element={<RequireAuth><OrderHolds /></RequireAuth>} />
                    <Route path="/_cpanel/customer-segments" element={<RequireAuth><CustomerSegments /></RequireAuth>} />
+                   <Route path="/_cpanel/custom-fields" element={<RequireAuth><CustomFields /></RequireAuth>} />
+                   <Route path="/_cpanel/refunds" element={<RequireAuth><Refunds /></RequireAuth>} />
+                   <Route path="/_cpanel/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -363,6 +369,9 @@ const App = () => (
                    <Route path="/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
                    <Route path="/order-holds" element={<RequireAuth><OrderHolds /></RequireAuth>} />
                    <Route path="/customer-segments" element={<RequireAuth><CustomerSegments /></RequireAuth>} />
+                   <Route path="/custom-fields" element={<RequireAuth><CustomFields /></RequireAuth>} />
+                   <Route path="/refunds" element={<RequireAuth><Refunds /></RequireAuth>} />
+                   <Route path="/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

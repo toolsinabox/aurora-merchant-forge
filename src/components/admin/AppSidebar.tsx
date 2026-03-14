@@ -5,6 +5,7 @@ import {
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
   FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer, Target,
+  FormInput, ReceiptText, Share2,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -60,6 +61,7 @@ const salesNav = [
   { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
+  { title: "Refunds", url: `${prefix}/refunds`, icon: ReceiptText },
   { title: "Batch Invoices", url: `${prefix}/batch-invoices`, icon: Printer },
 ];
 
@@ -94,6 +96,7 @@ const marketingNav = [
   { title: "Price Lists", url: `${prefix}/price-lists`, icon: List },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
   { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
+  { title: "Sales Channels", url: `${prefix}/sales-channels`, icon: Share2 },
 ];
 
 // ── Analytics & Reports ──
@@ -129,6 +132,7 @@ const systemNav = [
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
+  { title: "Custom Fields", url: `${prefix}/custom-fields`, icon: FormInput },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Go-Live Checklist", url: `${prefix}/go-live`, icon: Sparkles },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
