@@ -111,6 +111,25 @@ export default function Products() {
     toast.success(`Deleted preset "${name}"`);
   };
 
+  // Inline editing
+  const [editingCell, setEditingCell] = useState<{ id: string; field: "price" | "status" } | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const handleInlineEdit = async (id: string, field: "price" | "status", value: string) => {
+    setEditingCell(null);
+    const update: any = {};
+    if (field === "price") {
+      const num = parseFloat(value);
+      if (isNaN(num) || num < 0) return;
+      update.price = num;
+    } else {
+      update.status = value;
+    }
+    try {
+      await updateProduct.mutateAsync({ id, ...update });
+      toast.success(`Updated ${field}`);
+    } catch { toast.error("Update failed"); }
+  };
+
   const filtered = products.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || (p.sku || "").toLowerCase().includes(search.toLowerCase());
     const matchesStatus = statusFilter === "all" || p.status === statusFilter;
