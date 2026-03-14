@@ -230,14 +230,14 @@ export default function MaropostMigration() {
     // Create migration job
     let migrationJobId: string | null = null;
     try {
-      const { data: job } = await supabase.from("migration_jobs" as any).insert({
+      const { data: job } = await (supabase.from("migration_jobs" as any).insert({
         store_id: sid,
         source_platform: "maropost",
         source_domain: storeDomain,
         status: "running",
         entities_selected: selected.map(e => e.entity),
         progress: {},
-      }).select("id").single();
+      } as any).select("id").single() as any);
       migrationJobId = job?.id || null;
     } catch { /* migration_jobs table may not exist yet */ }
 
