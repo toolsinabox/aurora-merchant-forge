@@ -176,7 +176,88 @@ function CustomerFilesCard({ customerId, storeId }: { customerId: string; storeI
   );
 }
 
-export default function CustomerDetail() {
+function CustomerCommunicationsCard({ customerId, storeId }: { customerId: string; storeId: string }) {
+  const qc = useQueryClient();
+  const { user } = useAuth();
+  const [sendOpen, setSendOpen] = useState(false);
+  const [subject, setSubject] = useState("");
+  const [body, setBody] = useState("");
+
+  const { data: comms = [], isLoading } = useQuery({
+    queryKey: ["customer_comms", customerId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("customer_communications" as any)
+        .select("*")
+        .eq("customer_id", customerId)
+        .order("created_at", { ascending: false })
+        .limit(20);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const logComm = useMutation({
+    mutationFn: async () => {
+      if (!subject) throw new Error("Subject required");
+      const { error } = await supabase.from("customer_communications" as any).insert({
+        store_id: storeId, customer_id: customerId, channel: "email", direction: "outbound",
+        subject, body, status: "sent", sent_by: user?.id,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["customer_comms", customerId] });
+      setSendOpen(false); setSubject(""); setBody("");
+      toast.success("Communication logged");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+        <CardTitle className="text-sm">Communication Log</CardTitle>
+        <Dialog open={sendOpen} onOpenChange={setSendOpen}>
+          <DialogTrigger asChild>
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1"><Mail className="h-3 w-3" />Log</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Log Communication</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div><Label className="text-xs">Subject</Label><Input value={subject} onChange={e => setSubject(e.target.value)} /></div>
+              <div><Label className="text-xs">Message</Label><Textarea value={body} onChange={e => setBody(e.target.value)} rows={4} /></div>
+              <Button className="w-full" onClick={() => logComm.mutate()} disabled={logComm.isPending}>Log Communication</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        {isLoading ? <Skeleton className="h-12 w-full" /> : (comms as any[]).length === 0 ? (
+          <p className="text-xs text-muted-foreground text-center py-4">No communications logged yet.</p>
+        ) : (
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {(comms as any[]).map((c: any) => (
+              <div key={c.id} className="border rounded-md px-3 py-2 text-xs">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-1.5">
+                    <Mail className="h-3 w-3 text-muted-foreground" />
+                    <span className="font-medium">{c.subject || "No subject"}</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px]">{c.direction}</Badge>
+                </div>
+                {c.body && <p className="text-muted-foreground text-[10px] line-clamp-2">{c.body}</p>}
+                <p className="text-[10px] text-muted-foreground mt-1">{new Date(c.created_at).toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentStore } = useAuth();
