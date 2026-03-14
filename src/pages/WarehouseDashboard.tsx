@@ -103,8 +103,8 @@ export default function WarehouseDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Clock className="h-4 w-4 text-orange-500" />
+              <div className="h-9 w-9 rounded-lg bg-warning/10 flex items-center justify-center">
+                <Clock className="h-4 w-4 text-warning" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Awaiting Pick</p>
