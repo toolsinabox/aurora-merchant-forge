@@ -87,13 +87,13 @@ export default function DigitalDownloads() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Digital Downloads</h1>
-            <p className="text-sm text-muted-foreground">Manage downloadable files attached to products</p>
+            <h1 className="text-lg font-semibold">Digital Downloads</h1>
+            <p className="text-xs text-muted-foreground">Manage downloadable files attached to products</p>
           </div>
-          <Button size="sm" onClick={() => setShowAdd(true)}><Plus className="h-4 w-4 mr-1" /> Add Download</Button>
+          <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowAdd(true)}><Plus className="h-3.5 w-3.5" /> Add Download</Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -45,10 +45,10 @@ export default function SavedCarts() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-xl font-bold text-foreground">Saved Carts</h1>
-          <p className="text-sm text-muted-foreground">Customer carts saved for later purchase</p>
+          <h1 className="text-lg font-semibold">Saved Carts</h1>
+          <p className="text-xs text-muted-foreground">Customer carts saved for later purchase</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

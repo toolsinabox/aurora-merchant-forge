@@ -96,7 +96,7 @@ export default function Marketing() {
         </div>
 
         <Tabs defaultValue="campaigns" className="space-y-3">
-          <TabsList>
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="campaigns" className="text-xs"><Mail className="h-3.5 w-3.5 mr-1" />Campaigns</TabsTrigger>
             <TabsTrigger value="abandoned" className="text-xs"><ShoppingCart className="h-3.5 w-3.5 mr-1" />Abandoned Carts</TabsTrigger>
             <TabsTrigger value="segments" className="text-xs"><Users className="h-3.5 w-3.5 mr-1" />Segments</TabsTrigger>

@@ -122,7 +122,7 @@ export default function Customers() {
       <div className="space-y-3">
         <div className="page-header">
           <div>
-            <h1 className="text-lg font-bold tracking-tight">Customers</h1>
+            <h1 className="text-lg font-semibold">Customers</h1>
             <p className="text-xs text-muted-foreground">{customers.length} total customers</p>
           </div>
           <div className="page-header-actions">
