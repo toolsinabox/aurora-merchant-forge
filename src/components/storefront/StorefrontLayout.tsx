@@ -377,4 +377,5 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
         </button>
       )}
     </div>
+  );
 }
