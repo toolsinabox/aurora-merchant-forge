@@ -115,6 +115,7 @@ export default function ShippingZones() {
       rate_type: z.rate_type || "flat", per_kg_rate: String(z.per_kg_rate || 0),
       surcharge_postcodes: z.surcharge_postcodes || "", surcharge_amount: String(z.surcharge_amount || 0),
       surcharge_label: z.surcharge_label || "Remote area surcharge",
+      blocked_postcodes: z.blocked_postcodes || "", blocked_message: z.blocked_message || "Sorry, we cannot ship to this postcode",
     });
     setEditZone(z);
   };
