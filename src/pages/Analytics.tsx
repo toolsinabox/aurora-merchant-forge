@@ -564,6 +564,32 @@ export default function Analytics() {
   const topProds = useMemo(() => getTopProducts(filteredOrders, products), [filteredOrders, products]);
   const segments = useMemo(() => getCustomerSegments(customers), [customers]);
 
+  // Comparison period calculation
+  const compOrders = useMemo(() => {
+    const days = Number(range);
+    const now = new Date();
+    let compStart: Date, compEnd: Date;
+    if (compPeriod === "yoy") {
+      compEnd = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      compStart = new Date(compEnd);
+      compStart.setDate(compStart.getDate() - days);
+    } else {
+      compEnd = new Date(now);
+      compEnd.setDate(compEnd.getDate() - days);
+      compStart = new Date(compEnd);
+      compStart.setDate(compStart.getDate() - days);
+    }
+    return orders.filter((o: any) => {
+      const d = new Date(o.created_at);
+      return d >= compStart && d <= compEnd;
+    });
+  }, [orders, range, compPeriod]);
+
+  const compRevenue = compOrders.reduce((s: number, o: any) => s + Number(o.total), 0);
+  const compAvgOV = compOrders.length > 0 ? compRevenue / compOrders.length : 0;
+  const pctChange = (curr: number, prev: number) => prev ? ((curr - prev) / prev) * 100 : curr > 0 ? 100 : 0;
+  const compLabel = compPeriod === "yoy" ? "last year" : "prior period";
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -572,22 +598,31 @@ export default function Analytics() {
             <h1 className="text-lg font-semibold">Analytics</h1>
             <p className="text-xs text-muted-foreground">Sales performance and insights</p>
           </div>
-          <Select value={range} onValueChange={setRange}>
-            <SelectTrigger className="h-8 w-36 text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7" className="text-xs">Last 7 days</SelectItem>
-              <SelectItem value="30" className="text-xs">Last 30 days</SelectItem>
-              <SelectItem value="90" className="text-xs">Last 90 days</SelectItem>
-              <SelectItem value="365" className="text-xs">Last year</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            <Select value={compPeriod} onValueChange={(v) => setCompPeriod(v as any)}>
+              <SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="prior" className="text-xs">vs Prior Period</SelectItem>
+                <SelectItem value="yoy" className="text-xs">vs Year Ago</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={range} onValueChange={setRange}>
+              <SelectTrigger className="h-8 w-36 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7" className="text-xs">Last 7 days</SelectItem>
+                <SelectItem value="30" className="text-xs">Last 30 days</SelectItem>
+                <SelectItem value="90" className="text-xs">Last 90 days</SelectItem>
+                <SelectItem value="365" className="text-xs">Last year</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-          <MetricCard title="Revenue" value={`$${totalRevenue.toFixed(2)}`} icon={DollarSign} loading={loading} />
-          <MetricCard title="Orders" value={filteredOrders.length.toString()} icon={ShoppingCart} loading={loading} />
-          <MetricCard title="Avg Order Value" value={`$${avgOrderValue.toFixed(2)}`} icon={TrendingUp} loading={loading} />
+          <MetricCard title="Revenue" value={`$${totalRevenue.toFixed(2)}`} icon={DollarSign} loading={loading} change={pctChange(totalRevenue, compRevenue)} compLabel={compLabel} />
+          <MetricCard title="Orders" value={filteredOrders.length.toString()} icon={ShoppingCart} loading={loading} change={pctChange(filteredOrders.length, compOrders.length)} compLabel={compLabel} />
+          <MetricCard title="Avg Order Value" value={`$${avgOrderValue.toFixed(2)}`} icon={TrendingUp} loading={loading} change={pctChange(avgOrderValue, compAvgOV)} compLabel={compLabel} />
           <MetricCard title="Customers" value={customers.length.toString()} icon={Users} loading={loading} />
           <MetricCard title="Active Products" value={products.filter((p) => p.status === "active").length.toString()} icon={Package} loading={loading} />
         </div>
