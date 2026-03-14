@@ -15,7 +15,7 @@ import {
   CheckCircle, Circle, Clock, Search, BarChart3, Package, ShoppingCart,
   Users, Truck, Settings, Globe, Megaphone, CreditCard, FileText,
   Layers, Shield, Zap, Database, Store, Palette, Mail, Boxes,
-  Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift, Sparkles, Puzzle, UserPlus,
+  Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift, Sparkles, Puzzle, UserPlus, ClipboardCopy, ClipboardCheck,
   ChevronDown, MapPin, Warehouse, PenTool, FileCode, Link, Image,
   AlertTriangle, DollarSign, Percent, Printer, Share2, Code,
   LayoutDashboard, Bell, Upload, Download, UserCheck, Key, Eye,
@@ -1608,6 +1608,170 @@ const featureData: FeatureCategory[] = [
       { name: "Newsletter Signup", description: "Capture email subscribers from storefront", status: "done", notes: "newsletter_subscribers table, NewsletterSignup component in footer" },
       { name: "Duplicate Prevention", description: "Prevent duplicate email signups", status: "done", notes: "Unique constraint on email + store_id, client-side duplicate detection with toast" },
       { name: "Subscriber Status", description: "Track active/unsubscribed status", status: "done", notes: "is_active boolean on newsletter_subscribers" },
+    ],
+  },
+
+  // ═══════ 91. ORDER SHIPMENTS & FULFILLMENT ═══════
+  {
+    category: "Order Shipments & Fulfillment",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Shipment CRUD", description: "Create and manage shipments per order", status: "done", notes: "order_shipments table with carrier, tracking_number, tracking_url, shipment_number" },
+      { name: "Shipment Items", description: "Track which items are in each shipment", status: "done", notes: "shipment_items table linking order_items to shipments with quantity" },
+      { name: "Tracking Number & URL", description: "Carrier tracking number and URL per shipment", status: "done", notes: "tracking_number and tracking_url columns on order_shipments" },
+      { name: "Shipment Status Workflow", description: "Pending → shipped → in_transit → delivered lifecycle", status: "done", notes: "status column with shipped_at and delivered_at timestamps" },
+      { name: "Shipment Email Notification", description: "Email customer when order is shipped", status: "done", notes: "shipment-email edge function sends tracking info to customer" },
+      { name: "Delivery Confirmation Email", description: "Email customer when order is delivered", status: "done", notes: "order-delivered-email edge function triggered on delivery" },
+    ],
+  },
+
+  // ═══════ 92. ORDER PAYMENTS & REFUNDS ═══════
+  {
+    category: "Order Payments & Refunds",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Record Manual Payments", description: "Record payments against orders", status: "done", notes: "order_payments table with amount, payment_method, reference, recorded_by" },
+      { name: "Multiple Payments per Order", description: "Support split payments and partial payments", status: "done", notes: "One-to-many: multiple order_payments per order" },
+      { name: "Payment Email Notification", description: "Email customer on payment receipt", status: "done", notes: "payment-email edge function sends payment confirmation" },
+      { name: "Refund Processing", description: "Process full or partial refunds on orders", status: "done", notes: "order_refunds table with amount, reason, refunded_by, status" },
+      { name: "Refund Status Tracking", description: "Track refund status (pending/processed/failed)", status: "done", notes: "status column on order_refunds" },
+    ],
+  },
+
+  // ═══════ 93. ORDER TIMELINE / AUDIT TRAIL ═══════
+  {
+    category: "Order Timeline / Audit Trail",
+    icon: <Clock className="h-5 w-5" />,
+    features: [
+      { name: "Order Event Timeline", description: "Chronological log of all events on an order", status: "done", notes: "order_timeline table with event_type, title, description, metadata, user_id" },
+      { name: "Event Types", description: "Track status changes, notes, payments, shipments, etc.", status: "done", notes: "event_type column: status_change, note, payment, shipment, refund, etc." },
+      { name: "User Attribution", description: "Track which user triggered each event", status: "done", notes: "user_id column on order_timeline" },
+      { name: "Timeline Display on Order Detail", description: "Visual timeline on order detail page", status: "done", notes: "Order detail page renders timeline events chronologically" },
+    ],
+  },
+
+  // ═══════ 94. SERIAL NUMBER TRACKING ═══════
+  {
+    category: "Serial Number Tracking",
+    icon: <HardDrive className="h-5 w-5" />,
+    features: [
+      { name: "Serial Number Registration", description: "Register serial numbers per product/variant", status: "done", notes: "serial_numbers table with serial_number, product_id, variant_id, location_id" },
+      { name: "Serial Number Status", description: "Track status: available, sold, returned, reserved", status: "done", notes: "status column on serial_numbers" },
+      { name: "Link Serial to Order", description: "Associate serial numbers with sold orders", status: "done", notes: "order_id foreign key on serial_numbers" },
+      { name: "Location Tracking", description: "Track which warehouse location holds the serial", status: "done", notes: "location_id foreign key linking to inventory_locations" },
+    ],
+  },
+
+  // ═══════ 95. STOCKIST / STORE FINDER ═══════
+  {
+    category: "Stockist / Store Finder",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Stockist Listings", description: "Manage physical retail locations that carry products", status: "done", notes: "stockist_listings table with business_name, address, city, state, country, postcode" },
+      { name: "Geolocation (Lat/Lng)", description: "Store latitude/longitude for map display", status: "done", notes: "latitude and longitude columns on stockist_listings" },
+      { name: "Approval Workflow", description: "Approve or reject stockist applications", status: "done", notes: "is_approved boolean on stockist_listings" },
+      { name: "Active Toggle", description: "Enable/disable stockist visibility", status: "done", notes: "is_active boolean on stockist_listings" },
+      { name: "Storefront Store Finder", description: "Public-facing store locator page", status: "done", notes: "StorefrontStoreFinder page with location cards and contact details" },
+    ],
+  },
+
+  // ═══════ 96. PURCHASE ORDERS ═══════
+  {
+    category: "Purchase Orders",
+    icon: <ClipboardCopy className="h-5 w-5" />,
+    features: [
+      { name: "Purchase Order CRUD", description: "Create and manage purchase orders to suppliers", status: "done", notes: "purchase_orders table with po_number, supplier_id, status, totals; admin /purchase-orders page" },
+      { name: "PO Line Items", description: "Add products with quantities and unit costs", status: "done", notes: "purchase_order_items table with product_id, quantity_ordered, quantity_received, unit_cost" },
+      { name: "PO Status Workflow", description: "Draft → sent → partial → received → cancelled lifecycle", status: "done", notes: "status column with workflow transitions" },
+      { name: "Goods Receipt", description: "Record received quantities against PO items", status: "done", notes: "quantity_received tracking on purchase_order_items" },
+      { name: "Expected Delivery Date", description: "Track expected delivery date per PO", status: "done", notes: "expected_date column on purchase_orders" },
+      { name: "Print Purchase Order", description: "Generate printable PO document", status: "done", notes: "PrintPurchaseOrder page with supplier details and PO items" },
+      { name: "Supplier Product Catalog", description: "Track which suppliers provide which products", status: "done", notes: "supplier_products table with supplier_id, product_id, supplier_sku, supplier_cost, is_preferred" },
+    ],
+  },
+
+  // ═══════ 97. TRANSLATIONS / I18N ═══════
+  {
+    category: "Translations / i18n",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Store Languages", description: "Configure available languages per store", status: "done", notes: "store_languages table with locale, name, is_default, is_active per store" },
+      { name: "Entity Translations", description: "Translate product titles, descriptions, and other content per locale", status: "done", notes: "store_translations table with entity_type, entity_id, field_name, locale, translated_value" },
+      { name: "Default Language", description: "Set default language for store", status: "done", notes: "is_default boolean on store_languages" },
+      { name: "Storefront Language Switcher", description: "Customer-facing language selector", status: "done", notes: "LanguageSwitcher component in storefront header" },
+    ],
+  },
+
+  // ═══════ 98. SHIPPING RULES ENGINE ═══════
+  {
+    category: "Shipping Rules Engine",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Shipping Rule CRUD", description: "Create conditional shipping rules per zone", status: "done", notes: "shipping_rules table with condition_type, condition_operator, condition_value, rule_type" },
+      { name: "Condition Types", description: "Rules based on weight, price, quantity, or item count", status: "done", notes: "condition_type: weight, price, quantity, item_count" },
+      { name: "Rule Types", description: "Free shipping, surcharge, flat rate override, or disable", status: "done", notes: "rule_type: free_shipping, surcharge, flat_rate, disable" },
+      { name: "Shipping Methods", description: "Define shipping methods with carrier and estimated delivery", status: "done", notes: "shipping_methods table with name, carrier, base_rate, method_type, estimated_days_min/max" },
+      { name: "Carrier Rate API", description: "Real-time carrier rate calculation", status: "done", notes: "carrier-rates edge function for dynamic rate calculation" },
+      { name: "Warehouse Routing Rules", description: "Route orders to nearest/priority warehouse", status: "done", notes: "warehouse_routing_rules table with location_id, country, region, priority, is_active" },
+    ],
+  },
+
+  // ═══════ 99. EMAIL QUEUE & DELIVERY ═══════
+  {
+    category: "Email Queue & Delivery",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Email Queue", description: "Queue outbound emails for batch delivery", status: "done", notes: "email_queue table with to_email, subject, html_body, template_key, status" },
+      { name: "Send Status Tracking", description: "Track sent/failed/pending email status", status: "done", notes: "status column (pending/sent/failed) with sent_at timestamp" },
+      { name: "Error Logging", description: "Log email delivery errors", status: "done", notes: "error column on email_queue for failed delivery messages" },
+      { name: "Send Email Edge Function", description: "Centralized email sending via edge function", status: "done", notes: "send-email edge function handles all outbound email delivery" },
+      { name: "Welcome Email", description: "Auto-send welcome email on signup", status: "done", notes: "welcome-email edge function" },
+      { name: "Order Confirmation Email", description: "Auto-send order confirmation", status: "done", notes: "order-email-trigger edge function sends confirmation + admin notification" },
+      { name: "Order Follow-Up Email", description: "Post-purchase follow-up email", status: "done", notes: "order-follow-up edge function" },
+      { name: "Import Notification Email", description: "Notify imported customers with login details", status: "done", notes: "import-notification-email edge function" },
+      { name: "Wishlist Reminder Email", description: "Remind customers about wishlisted items", status: "done", notes: "wishlist-reminder edge function" },
+      { name: "Dispute Email", description: "Notify admin of order disputes", status: "done", notes: "dispute-email edge function" },
+      { name: "Customer Statement Email", description: "Send account statement to customer", status: "done", notes: "customer-statement-email edge function" },
+      { name: "Batch Job Error Email", description: "Alert admin of failed batch operations", status: "done", notes: "batch-job-error-email edge function" },
+      { name: "Scheduled Report Email", description: "Send scheduled analytics reports", status: "done", notes: "scheduled-report-email edge function" },
+      { name: "Auto-Registration Email", description: "Send credentials for auto-created guest accounts", status: "done", notes: "auto-registration-email edge function" },
+    ],
+  },
+
+  // ═══════ 100. CONTENT REVIEWS ═══════
+  {
+    category: "Content Reviews",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Blog/Page Reviews", description: "Allow customer reviews on content pages (blogs, articles)", status: "done", notes: "content_reviews table with rating, body, author_name, linked to content_pages" },
+      { name: "Review Moderation", description: "Approve or reject content reviews", status: "done", notes: "is_approved boolean on content_reviews" },
+      { name: "Rating System", description: "Star rating per content review", status: "done", notes: "rating column (1-5) on content_reviews" },
+    ],
+  },
+
+  // ═══════ 101. PAYMENT GATEWAYS ═══════
+  {
+    category: "Payment Gateways",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Gateway Support", description: "Configure multiple payment processors per store", status: "done", notes: "payment_gateways table with gateway_type, config JSONB, is_enabled, sort_order" },
+      { name: "Gateway Types", description: "Support Stripe, PayPal, Square, eWAY, Braintree, Afterpay, Bank Transfer", status: "done", notes: "7 gateway types with per-gateway credential fields" },
+      { name: "Test/Live Mode", description: "Toggle between sandbox and production", status: "done", notes: "is_test_mode boolean on payment_gateways" },
+      { name: "Payment Processing Edge Function", description: "Server-side payment processing", status: "done", notes: "payment-gateway edge function handles payment intents and processing" },
+      { name: "SMS Gateway", description: "Send SMS notifications for orders and alerts", status: "done", notes: "sms-gateway edge function for SMS delivery" },
+    ],
+  },
+
+  // ═══════ 102. STOCKTAKE / CYCLE COUNTING ═══════
+  {
+    category: "Stocktake / Cycle Counting",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "Stocktake CRUD", description: "Create and manage physical stock count sessions", status: "done", notes: "stocktakes table with name, status, started_at, completed_at, created_by; admin /stocktake page" },
+      { name: "Stocktake Items", description: "Track expected vs counted quantities per product", status: "done", notes: "stocktake_items table with product_id, expected_quantity, counted_quantity, counted_by, counted_at" },
+      { name: "Stocktake Status Workflow", description: "In progress → completed lifecycle", status: "done", notes: "status column: in_progress, completed with completed_at timestamp" },
+      { name: "Variance Reporting", description: "Calculate difference between expected and counted stock", status: "done", notes: "Client-side variance calculation (counted - expected) with color-coded display" },
+      { name: "Staff Attribution", description: "Track which staff member counted each item", status: "done", notes: "counted_by and counted_at columns on stocktake_items" },
     ],
   },
 ];
