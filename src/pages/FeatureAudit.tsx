@@ -7833,7 +7833,7 @@ const posDeepFeatures: FeatureCategory[] = [
       { name: "POS End-of-Day Report", description: "Cash up and reconciliation at end of shift", status: "done", notes: "POS page End of Day dialog with cash reconciliation" },
       { name: "POS Multi-Register Support", description: "Multiple registers with separate cash drawers", status: "not_started" },
       { name: "POS Gift Card Sell/Redeem", description: "Sell and redeem gift cards at POS", status: "done", notes: "Sell Gift Card button in POS creates new gift_voucher with auto-generated code and adds to cart; Redeem via voucher code input deducts balance from cart total" },
-      { name: "POS Layby Creation", description: "Create layby plans from POS interface", status: "partial", notes: "Layby system exists" },
+      { name: "POS Layby Creation", description: "Create layby plans from POS interface", status: "done", notes: "POS Layby button with deposit %, installment count, frequency (weekly/fortnightly/monthly) dialog; creates order + layby_plan + initial layby_payment; requires customer attached" },
       { name: "POS Hold/Park Order", description: "Park current sale and start new one", status: "done", notes: "Park button on POS cart, Parked tab with resume/delete, localStorage persistence with notes" },
       { name: "POS Returns/Exchanges", description: "Process returns and exchanges at POS", status: "done", notes: "POS Returns tab with order search, item-level return qty selection, reason codes, refund total calculation, and return processing" },
       { name: "POS Custom Sale (No SKU)", description: "Enter custom item with price for miscellaneous sales", status: "done", notes: "Custom Sale button + dialog on POS with custom title and price, adds to cart as CUSTOM SKU" },
