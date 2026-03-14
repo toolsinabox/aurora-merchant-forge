@@ -80,6 +80,7 @@ export default function ProductForm() {
     warranty: "", availability_description: "",
     reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
+    scheduled_publish_at: "", scheduled_unpublish_at: "",
   });
 
   const [shipping, setShipping] = useState({
