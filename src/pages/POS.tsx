@@ -745,7 +745,90 @@ export default function POS() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Returns Tab */}
+        <TabsContent value="returns">
+          <Card>
+            <CardContent className="pt-4 space-y-4">
+              <div className="flex gap-2">
+                <Input placeholder="Search order number..." value={returnOrderSearch} onChange={e => setReturnOrderSearch(e.target.value)} className="h-9 max-w-xs" onKeyDown={e => e.key === "Enter" && searchReturnOrder()} />
+                <Button size="sm" onClick={searchReturnOrder}><Search className="h-3.5 w-3.5 mr-1" /> Find Order</Button>
+              </div>
+              {returnOrder && (
+                <div className="border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-mono font-medium">{returnOrder.order_number}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(returnOrder.created_at).toLocaleDateString()} — ${Number(returnOrder.total).toFixed(2)}</p>
+                    </div>
+                    <Select value={returnReason} onValueChange={setReturnReason}>
+                      <SelectTrigger className="w-40 h-8 text-xs"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="defective">Defective</SelectItem>
+                        <SelectItem value="wrong_item">Wrong Item</SelectItem>
+                        <SelectItem value="not_as_described">Not as Described</SelectItem>
+                        <SelectItem value="changed_mind">Changed Mind</SelectItem>
+                        <SelectItem value="damaged">Damaged</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Product</TableHead>
+                        <TableHead className="text-xs h-8">SKU</TableHead>
+                        <TableHead className="text-xs h-8 text-center">Ordered</TableHead>
+                        <TableHead className="text-xs h-8 text-center">Return Qty</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Refund</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {returnOrder.items.map((item: any) => (
+                        <TableRow key={item.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{item.title}</TableCell>
+                          <TableCell className="py-1.5 font-mono text-muted-foreground">{item.sku || "—"}</TableCell>
+                          <TableCell className="py-1.5 text-center">{item.quantity}</TableCell>
+                          <TableCell className="py-1.5 text-center">
+                            <Input type="number" min="0" max={item.quantity} value={returnItems[item.id] || 0} onChange={e => setReturnItems(prev => ({ ...prev, [item.id]: Math.min(item.quantity, Number(e.target.value)) }))} className="h-7 w-16 text-center text-xs mx-auto" />
+                          </TableCell>
+                          <TableCell className="py-1.5 text-right">${((returnItems[item.id] || 0) * Number(item.unit_price)).toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <p className="text-sm font-medium">
+                      Refund Total: ${Object.entries(returnItems).reduce((s, [id, qty]) => {
+                        const item = returnOrder.items.find((i: any) => i.id === id);
+                        return s + (item ? Number(item.unit_price) * qty : 0);
+                      }, 0).toFixed(2)}
+                    </p>
+                    <Button size="sm" onClick={processReturn} disabled={returnProcessing}>
+                      <RotateCcw className="h-3.5 w-3.5 mr-1" /> {returnProcessing ? "Processing..." : "Process Return"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+              {!returnOrder && <p className="text-sm text-muted-foreground text-center py-8">Search for an order to process a return</p>}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+
+      {/* Staff PIN Dialog */}
+      <Dialog open={showPinLogin} onOpenChange={setShowPinLogin}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader><DialogTitle className="flex items-center gap-2"><KeyRound className="h-4 w-4" /> Staff Login</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <Input type="password" placeholder="Enter PIN" value={staffPin} onChange={e => setStaffPin(e.target.value)} className="h-10 text-center text-lg tracking-widest" maxLength={6} onKeyDown={e => e.key === "Enter" && staffPinLogin()} autoFocus />
+            <p className="text-[10px] text-muted-foreground text-center">Configure PINs in Settings → Team</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowPinLogin(false)}>Cancel</Button>
+            <Button size="sm" onClick={staffPinLogin}>Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Custom Sale Dialog */}
       <Dialog open={showCustomSale} onOpenChange={setShowCustomSale}>
