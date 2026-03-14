@@ -101,6 +101,9 @@ export default function Analytics() {
   const [funnelData, setFunnelData] = useState<{ visitors: number; carts: number; checkouts: number; purchases: number }>({ visitors: 0, carts: 0, checkouts: 0, purchases: 0 });
   const [salesByBrand, setSalesByBrand] = useState<any[]>([]);
   const [cohortData, setCohortData] = useState<{ months: string[]; cohorts: { label: string; counts: number[]; total: number }[] }>({ months: [], cohorts: [] });
+  const [salesByChannel, setSalesByChannel] = useState<{ channel: string; orders: number; revenue: number }[]>([]);
+  const [salesByRegion, setSalesByRegion] = useState<{ region: string; orders: number; revenue: number }[]>([]);
+  const [returnAnalytics, setReturnAnalytics] = useState<{ byReason: { reason: string; count: number; amount: number }[]; totalReturns: number; totalRefunded: number }>({ byReason: [], totalReturns: 0, totalRefunded: 0 });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -365,6 +368,52 @@ export default function Analytics() {
       const estimatedVisitors = Math.max(totalCarts * 4, totalPurchases * 8, 1);
       const estimatedCheckouts = Math.round(totalPurchases * 1.15);
       setFunnelData({ visitors: estimatedVisitors, carts: totalCarts, checkouts: estimatedCheckouts, purchases: totalPurchases });
+
+      // Sales by Channel (detailed)
+      const channelDetailMap: Record<string, { orders: number; revenue: number }> = {};
+      (orders as any[]).forEach((o: any) => {
+        const ch = o.order_channel || "web";
+        if (!channelDetailMap[ch]) channelDetailMap[ch] = { orders: 0, revenue: 0 };
+        channelDetailMap[ch].orders++;
+        channelDetailMap[ch].revenue += Number(o.total || 0);
+      });
+      setSalesByChannel(Object.entries(channelDetailMap).map(([channel, d]) => ({ channel, ...d })).sort((a, b) => b.revenue - a.revenue));
+
+      // Sales by Region
+      const regionMap: Record<string, { orders: number; revenue: number }> = {};
+      (orders as any[]).forEach((o: any) => {
+        let region = "Unknown";
+        if (o.shipping_address) {
+          try {
+            const addr = typeof o.shipping_address === "string" ? JSON.parse(o.shipping_address) : o.shipping_address;
+            region = addr?.state || addr?.province || addr?.city || addr?.country || "Unknown";
+          } catch { region = String(o.shipping_address).slice(0, 30) || "Unknown"; }
+        }
+        if (!regionMap[region]) regionMap[region] = { orders: 0, revenue: 0 };
+        regionMap[region].orders++;
+        regionMap[region].revenue += Number(o.total || 0);
+      });
+      setSalesByRegion(Object.entries(regionMap).map(([region, d]) => ({ region, ...d })).sort((a, b) => b.revenue - a.revenue).slice(0, 15));
+
+      // Return Analytics
+      const { data: returnsData } = await supabase
+        .from("returns")
+        .select("reason, refund_amount, status")
+        .eq("store_id", currentStore.id);
+      const reasonMap: Record<string, { count: number; amount: number }> = {};
+      let totalRefunded = 0;
+      (returnsData || []).forEach((r: any) => {
+        const reason = r.reason || "Other";
+        if (!reasonMap[reason]) reasonMap[reason] = { count: 0, amount: 0 };
+        reasonMap[reason].count++;
+        reasonMap[reason].amount += Number(r.refund_amount || 0);
+        totalRefunded += Number(r.refund_amount || 0);
+      });
+      setReturnAnalytics({
+        byReason: Object.entries(reasonMap).map(([reason, d]) => ({ reason, ...d })).sort((a, b) => b.count - a.count),
+        totalReturns: (returnsData || []).length,
+        totalRefunded,
+      });
 
       setLoadingTopProducts(false);
     };
@@ -1020,6 +1069,79 @@ export default function Analytics() {
                   </TableBody>
                 </Table>
               </div>
+            )}
+          </CardContent>
+        </Card>
+        {/* Sales by Channel */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Channel</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[150px]" /> : salesByChannel.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No channel data</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead className="text-xs h-8">Channel</TableHead><TableHead className="text-xs h-8 text-right">Orders</TableHead><TableHead className="text-xs h-8 text-right">Revenue</TableHead><TableHead className="text-xs h-8 text-right">AOV</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {salesByChannel.map(ch => (
+                    <TableRow key={ch.channel} className="text-xs">
+                      <TableCell className="py-1.5 font-medium capitalize">{ch.channel}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{ch.orders}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${ch.revenue.toFixed(2)}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${ch.orders > 0 ? (ch.revenue / ch.orders).toFixed(2) : "0.00"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sales by Region */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Region</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[150px]" /> : salesByRegion.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No region data</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead className="text-xs h-8">Region</TableHead><TableHead className="text-xs h-8 text-right">Orders</TableHead><TableHead className="text-xs h-8 text-right">Revenue</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {salesByRegion.map(r => (
+                    <TableRow key={r.region} className="text-xs">
+                      <TableCell className="py-1.5 font-medium">{r.region}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{r.orders}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${r.revenue.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Return Analytics */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Return Analytics</CardTitle>
+            <p className="text-xs text-muted-foreground">{returnAnalytics.totalReturns} returns · ${returnAnalytics.totalRefunded.toFixed(2)} refunded</p>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[150px]" /> : returnAnalytics.byReason.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No return data</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead className="text-xs h-8">Reason</TableHead><TableHead className="text-xs h-8 text-right">Count</TableHead><TableHead className="text-xs h-8 text-right">Refunded</TableHead><TableHead className="text-xs h-8 text-right">% of Returns</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {returnAnalytics.byReason.map(r => (
+                    <TableRow key={r.reason} className="text-xs">
+                      <TableCell className="py-1.5 font-medium capitalize">{r.reason}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{r.count}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${r.amount.toFixed(2)}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{returnAnalytics.totalReturns > 0 ? ((r.count / returnAnalytics.totalReturns) * 100).toFixed(1) : 0}%</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
