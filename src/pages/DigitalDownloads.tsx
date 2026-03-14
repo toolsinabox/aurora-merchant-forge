@@ -279,6 +279,58 @@ export default function DigitalDownloads() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* License Key Management Dialog */}
+      <Dialog open={showLicenseDialog} onOpenChange={setShowLicenseDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="text-sm flex items-center gap-2"><Key className="h-4 w-4" /> License Keys — {licenseProduct?.products?.title || licenseProduct?.file_name}</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label className="text-xs">Generate Keys</Label>
+                <Input type="number" min={1} max={100} value={licenseCount} onChange={e => setLicenseCount(Number(e.target.value))} className="h-8 text-xs" />
+              </div>
+              <Button size="sm" className="h-8 text-xs" onClick={() => { if (licenseProduct) addLicenseKeys(licenseProduct.product_id, licenseCount); }}>
+                <RefreshCw className="h-3 w-3 mr-1" /> Generate
+              </Button>
+            </div>
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Label className="text-xs">Add Manual Key</Label>
+                <Input value={newLicenseKey} onChange={e => setNewLicenseKey(e.target.value)} placeholder="XXXXX-XXXXX-XXXXX-XXXXX" className="h-8 text-xs font-mono" />
+              </div>
+              <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => {
+                if (newLicenseKey && licenseProduct) {
+                  const existing = licenseKeys[licenseProduct.product_id] || [];
+                  const updated = { ...licenseKeys, [licenseProduct.product_id]: [...existing, newLicenseKey] };
+                  setLicenseKeys(updated);
+                  localStorage.setItem("license_keys_store", JSON.stringify(updated));
+                  setNewLicenseKey("");
+                  toast.success("License key added");
+                }
+              }}>Add</Button>
+            </div>
+            <div className="max-h-48 overflow-y-auto border rounded-md">
+              {licenseProduct && (licenseKeys[licenseProduct.product_id] || []).length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">No license keys generated yet</p>
+              ) : licenseProduct && (licenseKeys[licenseProduct.product_id] || []).map((key: string, i: number) => (
+                <div key={i} className="flex items-center justify-between px-3 py-1.5 border-b last:border-b-0 text-xs">
+                  <span className="font-mono">{key}</span>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="icon" className="h-6 w-6" title="Copy" onClick={() => { navigator.clipboard.writeText(key); toast.success("Copied"); }}>
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" title="Revoke" onClick={() => revokeLicenseKey(licenseProduct.product_id, key)}>
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground">Total: {licenseProduct ? (licenseKeys[licenseProduct.product_id] || []).length : 0} keys available</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
