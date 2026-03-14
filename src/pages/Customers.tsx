@@ -204,6 +204,7 @@ export default function Customers() {
                 )}
               </TableBody>
             </Table>
+            </div>
             <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>

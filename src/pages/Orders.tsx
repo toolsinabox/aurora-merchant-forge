@@ -307,6 +307,7 @@ export default function Orders() {
                 )}
               </TableBody>
             </Table>
+            </div>
             <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>
