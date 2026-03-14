@@ -80,13 +80,14 @@ export function NotificationBell() {
           const n = payload.new as any;
           const notif: Notification = {
             id: n.id, type: "order",
-            title: `New order ${n.order_number}`,
+            title: `🛒 New order ${n.order_number}`,
             detail: `$${Number(n.total).toFixed(2)}`,
             created_at: n.created_at, read: false,
             link: `/orders/${n.id}`,
           };
           setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
           setUnreadCount((c) => c + 1);
+          playOrderAlert();
         }
       )
       .on(
