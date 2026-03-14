@@ -506,7 +506,7 @@ function CategoryExportTab() {
 
   return (
     <Card className="max-w-md">
-      <CardHeader><CardTitle className="text-lg">Export Categories</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-base">Export Categories</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
           Export all categories with names, slugs, descriptions, hierarchy, and SEO fields.
