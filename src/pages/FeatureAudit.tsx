@@ -7958,7 +7958,7 @@ const securityComplianceFeatures: FeatureCategory[] = [
       { name: "API Key Scopes", description: "Granular permission scopes per API key", status: "done", notes: "scopes on api_keys" },
       { name: "Audit Trail / Activity Log", description: "Complete log of all admin actions", status: "done", notes: "activity_log table" },
       { name: "GDPR Data Export", description: "Export all customer data for GDPR compliance", status: "done", notes: "CustomerDetail page GDPR Export button downloads all customer data as JSON" },
-      { name: "GDPR Data Deletion", description: "Delete all customer data on request", status: "not_started" },
+      { name: "GDPR Data Deletion", description: "Delete all customer data on request", status: "done", notes: "CustomerDetail GDPR Delete button with AlertDialog confirmation, deletes orders, addresses, communications, files, credits, returns, abandoned carts, and customer record" },
       { name: "Cookie Consent Banner", description: "GDPR/CCPA cookie consent with category selection", status: "done", notes: "CookieConsentBanner component" },
       { name: "Privacy Policy Page", description: "Configurable privacy policy page", status: "done", notes: "Content pages" },
       { name: "Terms of Service Page", description: "Configurable TOS page", status: "done" },
