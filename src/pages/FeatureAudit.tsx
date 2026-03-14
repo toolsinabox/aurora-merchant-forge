@@ -7930,7 +7930,7 @@ const seoContentDeepFeatures: FeatureCategory[] = [
       { name: "JSON-LD Structured Data (Product)", description: "Product schema markup for Google rich results", status: "done" },
       { name: "JSON-LD Structured Data (Organization)", description: "Organization schema for brand SERP", status: "partial" },
       { name: "JSON-LD Structured Data (BreadcrumbList)", description: "Breadcrumb schema for search results", status: "partial" },
-      { name: "JSON-LD Structured Data (FAQ)", description: "FAQ schema for content pages", status: "not_started" },
+      { name: "JSON-LD Structured Data (FAQ)", description: "FAQ schema for content pages", status: "done", notes: "Auto-extracts FAQ pairs from H2/H3 headings ending with ? and injects FAQPage JSON-LD" },
       { name: "XML Sitemap Generation", description: "Auto-generate sitemap.xml for search engines", status: "done", notes: "sitemap edge function" },
       { name: "Robots.txt Management", description: "Configurable robots.txt file", status: "done", notes: "public/robots.txt" },
       { name: "301 Redirect Manager", description: "Manage URL redirects for moved/deleted content", status: "done", notes: "Redirects page" },
