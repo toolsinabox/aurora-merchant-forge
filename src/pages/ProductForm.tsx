@@ -626,6 +626,10 @@ export default function ProductForm() {
                         <FieldLabel label="Preorder Qty" field="preorder_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.preorder_quantity} onChange={(e) => update("preorder_quantity", e.target.value)} />
                       </div>
+                      <div className="space-y-1">
+                        <FieldLabel label="Min Order Qty" field="min_order_quantity" />
+                        <Input className="h-8 text-xs" type="number" min="1" value={form.min_order_quantity} onChange={(e) => update("min_order_quantity", e.target.value)} />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
