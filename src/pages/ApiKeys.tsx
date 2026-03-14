@@ -120,7 +120,7 @@ export default function ApiKeys() {
             <h1 className="text-lg font-semibold">API Keys</h1>
             <p className="text-xs text-muted-foreground">Manage API keys for programmatic access to your store</p>
           </div>
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setNewKey(null); setForm({ name: "", scopes: [] }); } }}>
+          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setNewKey(null); setForm({ name: "", scopes: [], ip_whitelist: "" }); } }}>
             <DialogTrigger asChild>
               <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Create API Key</Button>
             </DialogTrigger>
