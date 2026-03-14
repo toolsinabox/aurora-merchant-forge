@@ -8559,7 +8559,7 @@ const laybyFeatures: FeatureCategory[] = [
       { name: "Layby Plan Creation", description: "Create layby plans with deposit + installments", status: "done", notes: "layby_plans table" },
       { name: "Layby Payment Recording", description: "Record installment payments against plans", status: "done", notes: "layby_payments table" },
       { name: "Layby Auto-Reminder Emails", description: "Email reminders for upcoming installments", status: "done", notes: "Layby page Send Reminder button per active plan, sends email via send-email edge function with outstanding balance and installment details" },
-      { name: "Layby Cancellation with Refund", description: "Cancel layby with partial refund logic", status: "partial" },
+      { name: "Layby Cancellation with Refund", description: "Cancel layby with partial refund logic", status: "done", notes: "Layby page Cancel Layby button with confirmation, calculates refundable amount minus cancellation fee, updates order status" },
       { name: "Layby Completion Auto-Fulfill", description: "Auto-trigger fulfillment when fully paid", status: "done", notes: "Layby recordPayment mutation auto-updates order payment_status to 'paid' when layby fully paid" },
       { name: "Layby Admin Dashboard", description: "Overview of all layby plans and payments", status: "done", notes: "Layby page" },
       { name: "Layby Terms Configuration", description: "Configure deposit %, max duration, fees", status: "partial" },
