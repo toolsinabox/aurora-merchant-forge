@@ -4422,8 +4422,229 @@ const remainingFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 311–330: GRANULAR SYSTEMS ═══════
+const granularFeatures: FeatureCategory[] = [
+  {
+    category: "Product Image Management",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Image Upload", description: "Upload multiple images per product", status: "done", notes: "ProductImageUpload component with drag-and-drop" },
+      { name: "Image Reordering", description: "Drag to reorder images", status: "done", notes: "Sort order on product_images" },
+      { name: "Primary Image", description: "Set primary/hero image", status: "done", notes: "is_primary flag on images" },
+      { name: "Alt Text", description: "SEO alt text per image", status: "done", notes: "alt_text column" },
+      { name: "ZIP Bulk Upload", description: "Upload ZIP for batch extraction", status: "done", notes: "ZipImageUpload component" },
+      { name: "Image Thumbnails", description: "Auto-generated thumbnails", status: "done", notes: "Thumbnail generation on upload" },
+    ],
+  },
+  {
+    category: "Product Tags & Labels",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Product Tags", description: "Add tags to products", status: "done", notes: "tags array column on products" },
+      { name: "Tag Filtering", description: "Filter products by tags", status: "done", notes: "Tag filter on products page" },
+      { name: "BaseTag Component", description: "Reusable tag UI component", status: "done", notes: "BaseTag component with colors" },
+      { name: "Product Badges", description: "Visual badges (New, Sale, Hot)", status: "done", notes: "ProductBadges component on storefront" },
+      { name: "Custom Badge Labels", description: "Custom badge text", status: "done", notes: "badge_text column on products" },
+    ],
+  },
+  {
+    category: "Kit/Bundle Products",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Kit Creation", description: "Create product kits/bundles", status: "done", notes: "kit_components table linking products" },
+      { name: "Component Products", description: "Add products as components", status: "done", notes: "component_product_id FK" },
+      { name: "Component Quantity", description: "Set quantity per component", status: "done", notes: "quantity column on kit_components" },
+      { name: "Optional Components", description: "Mark components as optional", status: "done", notes: "is_optional boolean" },
+      { name: "Swappable Components", description: "Allow component swaps", status: "done", notes: "is_swappable with swap_group" },
+      { name: "Kit Components Tab", description: "Admin tab for managing kit items", status: "done", notes: "KitComponentsTab component" },
+    ],
+  },
+  {
+    category: "Product Addons",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Addon Groups", description: "Create addon option groups", status: "done", notes: "product_addon_groups table" },
+      { name: "Addon Options", description: "Options within each group", status: "done", notes: "product_addon_options with price_modifier" },
+      { name: "Required/Optional", description: "Mark groups as required", status: "done", notes: "is_required on addon groups" },
+      { name: "Price Modifier", description: "Add-on price adjustment", status: "done", notes: "price_modifier on options" },
+      { name: "Addons Tab", description: "Admin tab for managing addons", status: "done", notes: "ProductAddonsTab component" },
+    ],
+  },
+  {
+    category: "Order Channels",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Channel Tracking", description: "Track order source channel", status: "done", notes: "channel column on orders (web, pos, api, marketplace)" },
+      { name: "Channel Filtering", description: "Filter orders by channel", status: "done", notes: "Channel filter on orders page" },
+      { name: "Channel Analytics", description: "Revenue breakdown by channel", status: "done", notes: "Channel report in analytics" },
+      { name: "Marketplace Orders", description: "Orders from marketplace sync", status: "done", notes: "channel='marketplace' with source reference" },
+    ],
+  },
+  {
+    category: "Order Payments",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Payment Recording", description: "Record payments against orders", status: "done", notes: "order_payments table" },
+      { name: "Multiple Payments", description: "Multiple payments per order", status: "done", notes: "One-to-many order→payments" },
+      { name: "Payment Methods", description: "Cash, card, bank transfer, voucher", status: "done", notes: "payment_method column" },
+      { name: "Payment Status", description: "Pending/completed/failed/refunded", status: "done", notes: "status column on payments" },
+      { name: "Transaction Reference", description: "Gateway transaction reference", status: "done", notes: "transaction_id column" },
+    ],
+  },
+  {
+    category: "Order Shipments",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Shipment Creation", description: "Create shipments for orders", status: "done", notes: "order_shipments table" },
+      { name: "Tracking Number", description: "Add tracking number", status: "done", notes: "tracking_number column" },
+      { name: "Carrier Selection", description: "Select shipping carrier", status: "done", notes: "carrier column" },
+      { name: "Shipment Items", description: "Track which items shipped", status: "done", notes: "order_shipment_items table" },
+      { name: "Partial Shipments", description: "Ship orders in multiple shipments", status: "done", notes: "Multiple shipments per order" },
+      { name: "Shipment Email", description: "Email customer on dispatch", status: "done", notes: "shipment-email edge function" },
+    ],
+  },
+  {
+    category: "Delivery Estimates",
+    icon: <Clock className="h-5 w-5" />,
+    features: [
+      { name: "Estimated Delivery", description: "Show estimated delivery date", status: "done", notes: "DeliveryEstimate component" },
+      { name: "Cut-Off Time", description: "Order cut-off for same-day dispatch", status: "done", notes: "Cut-off time logic in estimate" },
+      { name: "Business Days", description: "Calculate excluding weekends", status: "done", notes: "Business day calculation" },
+      { name: "Zone-Based Estimates", description: "Different estimates by zone", status: "done", notes: "Delivery days per shipping zone" },
+    ],
+  },
+  {
+    category: "Storefront Layout & Navigation",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Header with Nav", description: "Storefront header with navigation", status: "done", notes: "StorefrontLayout header component" },
+      { name: "Sidebar Navigation", description: "Category sidebar on products", status: "done", notes: "StorefrontSidebar component" },
+      { name: "Footer", description: "Multi-column footer", status: "done", notes: "Footer in StorefrontLayout" },
+      { name: "Breadcrumbs", description: "Navigation breadcrumbs", status: "done", notes: "Breadcrumb component on pages" },
+      { name: "Mobile Menu", description: "Hamburger menu on mobile", status: "done", notes: "Mobile nav in StorefrontLayout" },
+      { name: "Add to Cart Popup", description: "Confirmation popup on add", status: "done", notes: "AddToCartPopup component" },
+    ],
+  },
+  {
+    category: "Storefront Product Grid",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Product Cards", description: "Product card with image, price, badge", status: "done", notes: "Product card component on StorefrontProducts" },
+      { name: "Grid/List Toggle", description: "Switch between grid and list view", status: "done", notes: "View toggle on products page" },
+      { name: "Quick View", description: "Quick product preview modal", status: "done", notes: "ProductQuickView component" },
+      { name: "Pagination", description: "Paginated product listing", status: "done", notes: "TablePagination component" },
+      { name: "Sort Options", description: "Sort by price, name, date, popularity", status: "done", notes: "Sort dropdown" },
+      { name: "Price Display", description: "Show price with sale/compare price", status: "done", notes: "Price with strikethrough for sale" },
+    ],
+  },
+  {
+    category: "Admin Sidebar Navigation",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Collapsible Sidebar", description: "Expandable/collapsible admin sidebar", status: "done", notes: "AppSidebar with SidebarProvider" },
+      { name: "Grouped Navigation", description: "Nav items grouped by category", status: "done", notes: "Sidebar groups: Sales, Catalog, Inventory, etc." },
+      { name: "Active State", description: "Highlight active nav item", status: "done", notes: "NavLink component with active styling" },
+      { name: "Icon + Label", description: "Icon and label per nav item", status: "done", notes: "Lucide icons on all nav items" },
+      { name: "Mobile Sheet", description: "Sidebar as sheet on mobile", status: "done", notes: "SidebarProvider mobile mode" },
+    ],
+  },
+  {
+    category: "Admin TopBar",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Global Search", description: "Search products, orders, customers", status: "done", notes: "Search input in TopBar" },
+      { name: "Store Switcher", description: "Switch between stores", status: "done", notes: "Store dropdown in TopBar" },
+      { name: "View Storefront Link", description: "Link to live storefront", status: "done", notes: "External link button to storefront" },
+      { name: "User Menu", description: "User profile dropdown", status: "done", notes: "User icon with settings/signout" },
+      { name: "Notification Bell", description: "Notification indicator", status: "done", notes: "NotificationBell component" },
+    ],
+  },
+  {
+    category: "Table & List Components",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "Data Tables", description: "Sortable, filterable data tables", status: "done", notes: "Table component used across all admin pages" },
+      { name: "Pagination", description: "Table pagination with page size", status: "done", notes: "TablePagination component" },
+      { name: "Status Badges", description: "Color-coded status indicators", status: "done", notes: "StatusBadge component" },
+      { name: "Bulk Selection", description: "Checkbox row selection", status: "done", notes: "Multi-select on products, orders" },
+      { name: "Empty States", description: "Empty state illustrations", status: "done", notes: "Empty state messages per table" },
+    ],
+  },
+  {
+    category: "Form Components",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Rich Text Editor", description: "WYSIWYG HTML editor", status: "done", notes: "RichTextEditor component" },
+      { name: "Image Upload", description: "Drag-and-drop image upload", status: "done", notes: "ProductImageUpload component" },
+      { name: "Select/Combobox", description: "Searchable select dropdowns", status: "done", notes: "Select and Command components" },
+      { name: "Date Picker", description: "Calendar date picker", status: "done", notes: "Calendar component" },
+      { name: "Switch Toggle", description: "Boolean toggle switches", status: "done", notes: "Switch component for flags" },
+      { name: "Form Validation", description: "Inline validation messages", status: "done", notes: "Form component with error display" },
+    ],
+  },
+  {
+    category: "Dialog & Modal System",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Dialog Component", description: "Modal dialogs for forms and confirmations", status: "done", notes: "Dialog component (shadcn)" },
+      { name: "Alert Dialog", description: "Confirmation dialogs for destructive actions", status: "done", notes: "AlertDialog component" },
+      { name: "Sheet (Drawer)", description: "Slide-out panels", status: "done", notes: "Sheet component for side panels" },
+      { name: "Storefront Modal", description: "Product/feature modals on storefront", status: "done", notes: "StorefrontModal component" },
+      { name: "Toast Notifications", description: "Success/error toast messages", status: "done", notes: "Toaster and toast system" },
+    ],
+  },
+  {
+    category: "Theme & Design System",
+    icon: <Palette className="h-5 w-5" />,
+    features: [
+      { name: "CSS Design Tokens", description: "HSL-based semantic color tokens", status: "done", notes: "index.css with --primary, --background, etc." },
+      { name: "Dark Mode Support", description: "Light/dark mode theming", status: "done", notes: "Dark mode CSS variables" },
+      { name: "Tailwind Config", description: "Extended Tailwind with design tokens", status: "done", notes: "tailwind.config.ts with semantic colors" },
+      { name: "shadcn/ui Components", description: "Full shadcn component library", status: "done", notes: "40+ shadcn components installed" },
+      { name: "Consistent Spacing", description: "Consistent spacing and sizing", status: "done", notes: "Tailwind spacing scale throughout" },
+    ],
+  },
+  {
+    category: "Authentication System",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Email/Password Auth", description: "Standard email/password login", status: "done", notes: "Login and Signup pages" },
+      { name: "Auth Context", description: "Global auth state management", status: "done", notes: "AuthContext with user, store, loading" },
+      { name: "Route Guards", description: "Protected routes for auth users", status: "done", notes: "RequireAuth component" },
+      { name: "Platform Admin Guard", description: "Guard for platform admin routes", status: "done", notes: "RequirePlatformAdmin component" },
+      { name: "Auto Store Assignment", description: "Auto-assign user to store on login", status: "done", notes: "Store lookup in AuthContext" },
+      { name: "Session Persistence", description: "Auth session survives refresh", status: "done", notes: "onAuthStateChange listener" },
+    ],
+  },
+  {
+    category: "Data Hooks & State",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "useData Hook", description: "Generic data fetching hook", status: "done", notes: "use-data.ts with Supabase queries" },
+      { name: "React Query Integration", description: "TanStack Query for caching", status: "done", notes: "@tanstack/react-query throughout" },
+      { name: "Cart Context", description: "Global cart state", status: "done", notes: "CartContext with persistence" },
+      { name: "Wishlist Context", description: "Global wishlist state", status: "done", notes: "WishlistContext with persistence" },
+      { name: "Compare Context", description: "Product comparison state", status: "done", notes: "CompareContext with max 4 items" },
+      { name: "Recently Viewed Hook", description: "Track recently viewed products", status: "done", notes: "useRecentlyViewed hook" },
+    ],
+  },
+  {
+    category: "SEO & Meta Tags",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "SEOHead Component", description: "Dynamic meta tags per page", status: "done", notes: "SEOHead with title, description, OG tags" },
+      { name: "Open Graph Tags", description: "Facebook/social sharing meta", status: "done", notes: "og:title, og:description, og:image" },
+      { name: "Twitter Cards", description: "Twitter card meta tags", status: "done", notes: "twitter:card, twitter:title" },
+      { name: "Canonical URLs", description: "Canonical link tags", status: "done", notes: "Canonical URL per page" },
+      { name: "Structured Data", description: "JSON-LD product schema", status: "done", notes: "Product schema markup" },
+      { name: "XML Sitemap", description: "Auto-generated sitemap", status: "done", notes: "sitemap edge function" },
+      { name: "Robots.txt", description: "Robots.txt configuration", status: "done", notes: "public/robots.txt" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
