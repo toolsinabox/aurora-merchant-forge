@@ -15,8 +15,28 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff } from "lucide-react";
+import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff, History, RotateCcw } from "lucide-react";
 import { format } from "date-fns";
+
+interface ContentVersion {
+  id: string;
+  pageId: string;
+  title: string;
+  content: string;
+  savedAt: string;
+  savedBy: string;
+}
+
+function getVersions(pageId: string): ContentVersion[] {
+  try { return JSON.parse(localStorage.getItem(`content_versions_${pageId}`) || "[]"); } catch { return []; }
+}
+
+function saveVersion(pageId: string, title: string, content: string) {
+  const versions = getVersions(pageId);
+  const version: ContentVersion = { id: crypto.randomUUID(), pageId, title, content, savedAt: new Date().toISOString(), savedBy: "Admin" };
+  const updated = [version, ...versions].slice(0, 20); // keep last 20
+  localStorage.setItem(`content_versions_${pageId}`, JSON.stringify(updated));
+}
 
 interface PageForm {
   title: string;
@@ -43,6 +63,8 @@ export default function ContentPages() {
   const [form, setForm] = useState<PageForm>(emptyForm);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [versionPageId, setVersionPageId] = useState<string | null>(null);
+  const [versions, setVersions] = useState<ContentVersion[]>([]);
 
   const { data: pages = [], isLoading } = useQuery({
     queryKey: ["content_pages", currentStore?.id],
@@ -76,6 +98,9 @@ export default function ContentPages() {
         published_at: form.is_published ? new Date().toISOString() : null,
       };
       if (editId) {
+        // Save current version before overwriting
+        const existing = pages.find((p: any) => p.id === editId);
+        if (existing) saveVersion(editId, existing.title, existing.content || "");
         const { error } = await supabase.from("content_pages").update(payload).eq("id", editId);
         if (error) throw error;
       } else {
@@ -251,6 +276,7 @@ export default function ContentPages() {
                     <TableCell className="py-2">
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(p)}><Pencil className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setVersionPageId(p.id); setVersions(getVersions(p.id)); }}><History className="h-3 w-3" /></Button>
                         <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
@@ -260,6 +286,46 @@ export default function ContentPages() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Version History Dialog */}
+        <Dialog open={!!versionPageId} onOpenChange={(v) => { if (!v) setVersionPageId(null); }}>
+          <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2"><History className="h-4 w-4" /> Version History</DialogTitle>
+            </DialogHeader>
+            {versions.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No previous versions saved yet. Versions are created each time you edit and save a page.</p>
+            ) : (
+              <div className="space-y-2">
+                {versions.map(v => (
+                  <div key={v.id} className="border rounded-md p-3 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">{v.title}</p>
+                        <p className="text-[10px] text-muted-foreground">{format(new Date(v.savedAt), "dd MMM yyyy HH:mm")} · {v.savedBy}</p>
+                      </div>
+                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={async () => {
+                        if (!versionPageId) return;
+                        // Save current as version first
+                        const current = pages.find((p: any) => p.id === versionPageId);
+                        if (current) saveVersion(versionPageId, current.title, current.content || "");
+                        // Restore
+                        const { error } = await supabase.from("content_pages").update({ title: v.title, content: v.content, updated_at: new Date().toISOString() }).eq("id", versionPageId);
+                        if (error) { toast.error(error.message); return; }
+                        queryClient.invalidateQueries({ queryKey: ["content_pages"] });
+                        setVersionPageId(null);
+                        toast.success("Version restored");
+                      }}>
+                        <RotateCcw className="h-3 w-3" /> Restore
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground max-h-20 overflow-hidden" dangerouslySetInnerHTML={{ __html: v.content.slice(0, 200) + (v.content.length > 200 ? "..." : "") }} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );

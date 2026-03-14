@@ -107,6 +107,8 @@ export default function Analytics() {
   const [repeatPurchaseRate, setRepeatPurchaseRate] = useState<{ rate: number; totalCustomers: number; repeatCustomers: number }>({ rate: 0, totalCustomers: 0, repeatCustomers: 0 });
   const [rfmData, setRfmData] = useState<{ segment: string; count: number; avgMonetary: number }[]>([]);
   const [salesByGroup, setSalesByGroup] = useState<{ group: string; orders: number; revenue: number }[]>([]);
+  const [salesByStaff, setSalesByStaff] = useState<{ staffName: string; orders: number; revenue: number }[]>([]);
+  const [discountUsage, setDiscountUsage] = useState<{ code: string; usedCount: number; revenue: number; discountTotal: number }[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -477,6 +479,41 @@ export default function Analytics() {
         groupSales[grp].revenue += Number(o.total || 0);
       });
       setSalesByGroup(Object.entries(groupSales).map(([group, d]) => ({ group, ...d })).sort((a, b) => b.revenue - a.revenue));
+
+      // ── Sales by Staff (via order_payments.recorded_by → profiles) ──
+      const { data: payments } = await supabase
+        .from("order_payments")
+        .select("amount, recorded_by, order_id")
+        .eq("store_id", currentStore.id);
+      if (payments && payments.length > 0) {
+        const staffIds = [...new Set(payments.map(p => p.recorded_by).filter(Boolean))];
+        const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", staffIds);
+        const profileMap: Record<string, string> = {};
+        (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p.display_name || "Unknown"; });
+        const staffMap: Record<string, { orders: Set<string>; revenue: number }> = {};
+        for (const p of payments) {
+          const name = profileMap[p.recorded_by] || p.recorded_by?.slice(0, 8) || "Unknown";
+          if (!staffMap[name]) staffMap[name] = { orders: new Set(), revenue: 0 };
+          staffMap[name].orders.add(p.order_id);
+          staffMap[name].revenue += Number(p.amount || 0);
+        }
+        setSalesByStaff(Object.entries(staffMap).map(([staffName, d]) => ({ staffName, orders: d.orders.size, revenue: d.revenue })).sort((a, b) => b.revenue - a.revenue));
+      }
+
+      // ── Discount / Coupon Usage Report ──
+      const { data: couponsData } = await supabase.from("coupons").select("id, code, used_count, discount_type, discount_value").eq("store_id", currentStore.id);
+      const { data: couponOrders } = await supabase.from("orders").select("coupon_id, total, discount").eq("store_id", currentStore.id).not("coupon_id", "is", null);
+      const couponRevMap: Record<string, { revenue: number; discountTotal: number; usedCount: number; code: string }> = {};
+      for (const c of (couponsData || [])) {
+        couponRevMap[c.id] = { code: c.code, usedCount: c.used_count || 0, revenue: 0, discountTotal: 0 };
+      }
+      for (const o of (couponOrders || [])) {
+        if (o.coupon_id && couponRevMap[o.coupon_id]) {
+          couponRevMap[o.coupon_id].revenue += Number(o.total || 0);
+          couponRevMap[o.coupon_id].discountTotal += Number(o.discount || 0);
+        }
+      }
+      setDiscountUsage(Object.values(couponRevMap).filter(c => c.usedCount > 0).sort((a, b) => b.usedCount - a.usedCount));
 
       setLoadingTopProducts(false);
     };
@@ -1348,6 +1385,66 @@ export default function Analytics() {
                 </Table>
               );
             })()}
+           </CardContent>
+        </Card>
+
+        {/* Sales by Staff Report */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Sales by Staff</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Staff Member</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {salesByStaff.length === 0 ? (
+                  <TableRow><TableCell colSpan={3} className="text-center text-xs text-muted-foreground py-6">No staff sales data</TableCell></TableRow>
+                ) : salesByStaff.map(s => (
+                  <TableRow key={s.staffName} className="text-xs">
+                    <TableCell className="py-1.5 font-medium">{s.staffName}</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.orders}</TableCell>
+                    <TableCell className="py-1.5 text-right">${s.revenue.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Discount Usage Report */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Discount / Coupon Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Coupon Code</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Times Used</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Revenue Generated</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Discount Given</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {discountUsage.length === 0 ? (
+                  <TableRow><TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">No coupon usage data</TableCell></TableRow>
+                ) : discountUsage.map(d => (
+                  <TableRow key={d.code} className="text-xs">
+                    <TableCell className="py-1.5 font-mono font-medium">{d.code}</TableCell>
+                    <TableCell className="py-1.5 text-right">{d.usedCount}</TableCell>
+                    <TableCell className="py-1.5 text-right">${d.revenue.toFixed(2)}</TableCell>
+                    <TableCell className="py-1.5 text-right text-destructive">${d.discountTotal.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
