@@ -108,6 +108,7 @@ import DigitalDownloads from "./pages/DigitalDownloads.tsx";
 import InventoryForecasting from "./pages/InventoryForecasting.tsx";
 import SavedCarts from "./pages/SavedCarts.tsx";
 import EmailAutomations from "./pages/EmailAutomations.tsx";
+import PriceRules from "./pages/PriceRules.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -232,6 +233,7 @@ const App = () => (
                    <Route path="/_cpanel/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/_cpanel/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/_cpanel/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/_cpanel/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -328,6 +330,7 @@ const App = () => (
                    <Route path="/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

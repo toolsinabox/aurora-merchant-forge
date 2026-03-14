@@ -2932,6 +2932,86 @@ export type Database = {
           },
         ]
       }
+      price_rules: {
+        Row: {
+          applies_to: string
+          buy_quantity: number | null
+          category_ids: string[] | null
+          created_at: string
+          customer_group_ids: string[] | null
+          discount_value: number
+          ends_at: string | null
+          get_quantity: number | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          min_order_amount: number | null
+          min_quantity: number | null
+          name: string
+          priority: number
+          product_ids: string[] | null
+          rule_type: string
+          starts_at: string | null
+          store_id: string
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          applies_to?: string
+          buy_quantity?: number | null
+          category_ids?: string[] | null
+          created_at?: string
+          customer_group_ids?: string[] | null
+          discount_value?: number
+          ends_at?: string | null
+          get_quantity?: number | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          min_order_amount?: number | null
+          min_quantity?: number | null
+          name: string
+          priority?: number
+          product_ids?: string[] | null
+          rule_type?: string
+          starts_at?: string | null
+          store_id: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          applies_to?: string
+          buy_quantity?: number | null
+          category_ids?: string[] | null
+          created_at?: string
+          customer_group_ids?: string[] | null
+          discount_value?: number
+          ends_at?: string | null
+          get_quantity?: number | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          min_order_amount?: number | null
+          min_quantity?: number | null
+          name?: string
+          priority?: number
+          product_ids?: string[] | null
+          rule_type?: string
+          starts_at?: string | null
+          store_id?: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_rules_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_addons: {
         Row: {
           created_at: string
