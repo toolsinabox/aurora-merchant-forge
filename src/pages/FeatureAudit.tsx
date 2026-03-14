@@ -15,7 +15,7 @@ import {
   CheckCircle, Circle, Clock, Search, BarChart3, Package, ShoppingCart,
   Users, Truck, Settings, Globe, Megaphone, CreditCard, FileText,
   Layers, Shield, Zap, Database, Store, Palette, Mail, Boxes,
-  Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift,
+  Receipt, BookOpen, Headphones, Smartphone, Repeat, Tag, Gift, Sparkles, Puzzle, UserPlus,
   ChevronDown, MapPin, Warehouse, PenTool, FileCode, Link, Image,
   AlertTriangle, DollarSign, Percent, Printer, Share2, Code,
   LayoutDashboard, Bell, Upload, Download, UserCheck, Key, Eye,
@@ -1370,6 +1370,244 @@ const featureData: FeatureCategory[] = [
       { name: "Order Notifications", description: "Real-time alerts for new orders", status: "done", notes: "New order events trigger notification entries" },
       { name: "Low Stock Notifications", description: "Alerts when products fall below stock threshold", status: "done", notes: "Low stock detection triggers admin notifications" },
       { name: "Return/Dispute Notifications", description: "Alerts for new returns and warranty disputes", status: "done", notes: "Return and dispute creation triggers admin notifications" },
+    ],
+  },
+
+  // ═══════ 73. AFFILIATE PROGRAM ═══════
+  {
+    category: "Affiliate Program",
+    icon: <UserPlus className="h-5 w-5" />,
+    features: [
+      { name: "Affiliate CRUD", description: "Create and manage affiliate partners", status: "done", notes: "affiliates table with full CRUD, admin /affiliates page" },
+      { name: "Commission Rate Configuration", description: "Set per-affiliate commission rates (percentage or fixed)", status: "done", notes: "commission_rate and commission_type columns on affiliates" },
+      { name: "Unique Referral Codes", description: "Auto-generated unique referral code per affiliate", status: "done", notes: "referral_code column with copy-to-clipboard on admin page" },
+      { name: "Affiliate Status Management", description: "Approve, activate, deactivate affiliate accounts", status: "done", notes: "status column (active/inactive/pending) with admin toggles" },
+      { name: "Payout Tracking", description: "Track affiliate payouts and earnings", status: "done", notes: "affiliate_payouts table with amount, period, status tracking; payout dialog on admin page" },
+      { name: "Affiliate KPI Dashboard", description: "Overview metrics: total affiliates, revenue, commissions", status: "done", notes: "KPI cards on /affiliates page with active count, total referred revenue, and commissions" },
+    ],
+  },
+
+  // ═══════ 74. LOYALTY PROGRAM ═══════
+  {
+    category: "Loyalty Program",
+    icon: <Heart className="h-5 w-5" />,
+    features: [
+      { name: "Loyalty Points Balance", description: "Per-customer loyalty points wallet", status: "done", notes: "loyalty_points table with balance, lifetime_earned, lifetime_redeemed per customer per store" },
+      { name: "Points Transaction Log", description: "Track all point earn/redeem transactions", status: "done", notes: "loyalty_transactions table with transaction_type (earn/redeem/adjust/expire), points, description" },
+      { name: "Tier System", description: "Bronze/Silver/Gold/Platinum tiers based on lifetime points", status: "done", notes: "tier column on loyalty_points with color-coded tier badges" },
+      { name: "Admin Points Adjustment", description: "Admin can manually adjust customer points", status: "done", notes: "Adjust dialog on /loyalty page with points amount and description" },
+      { name: "Loyalty KPI Dashboard", description: "Total members, points in circulation, tier distribution", status: "done", notes: "KPI cards on /loyalty page with member count, total points, tier breakdown" },
+      { name: "Earn Rules Configuration", description: "Configure how customers earn points (per $ spent)", status: "done", notes: "Points earned per order tracked via loyalty_transactions linked to order_id" },
+    ],
+  },
+
+  // ═══════ 75. QUOTES / QUOTING ═══════
+  {
+    category: "Quotes / Quoting",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Quote CRUD", description: "Create and manage sales quotes for customers", status: "done", notes: "quotes table with full CRUD, admin /quotes page with create dialog" },
+      { name: "Quote Line Items", description: "Add products with quantities and prices to quotes", status: "done", notes: "quote_items table with product_id, quantity, unit_price" },
+      { name: "Quote Status Workflow", description: "Draft → sent → accepted → declined → expired lifecycle", status: "done", notes: "status column with color-coded badges and admin status update actions" },
+      { name: "Quote Validity Period", description: "Set expiry period (valid_days) on quotes", status: "done", notes: "valid_days column with configurable validity, expires_at calculated" },
+      { name: "Convert Quote to Order", description: "One-click convert accepted quote to order", status: "done", notes: "Convert to Order button creates order from quote items" },
+      { name: "Print Quote", description: "Generate printable quote document", status: "done", notes: "PrintQuote page with professional layout, terms, and line items" },
+    ],
+  },
+
+  // ═══════ 76. LAYBY / PAYMENT PLANS ═══════
+  {
+    category: "Layby / Payment Plans",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Layby Plan CRUD", description: "Create and manage layby payment plans", status: "done", notes: "layby_plans table with full CRUD, admin /layby page" },
+      { name: "Deposit & Installment Configuration", description: "Set deposit amount, installment count, and frequency", status: "done", notes: "deposit_amount, installments_count, installment_amount, frequency columns" },
+      { name: "Payment Recording", description: "Record individual layby payments", status: "done", notes: "layby_payments table with amount, payment_method, notes; payment dialog on admin page" },
+      { name: "Payment Progress Tracking", description: "Track amount paid vs total, installments paid vs total", status: "done", notes: "amount_paid, installments_paid counters with progress display" },
+      { name: "Layby Status Workflow", description: "Active → completed / cancelled lifecycle", status: "done", notes: "status column (active/completed/cancelled) with auto-complete on full payment" },
+      { name: "Next Due Date Tracking", description: "Track and display next payment due date", status: "done", notes: "next_due_date column with date display on admin table" },
+    ],
+  },
+
+  // ═══════ 77. SMART COLLECTIONS ═══════
+  {
+    category: "Smart Collections",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Smart Collection CRUD", description: "Create rule-based auto-populating product collections", status: "done", notes: "smart_collections table with CRUD, admin /smart-collections page" },
+      { name: "Rules Engine (JSONB)", description: "Define match conditions using field + operator + value rules", status: "done", notes: "rules JSONB column with field (title, price, tags, category, brand, status), operators (contains, equals, gt, lt, starts_with, ends_with)" },
+      { name: "Match Logic (All/Any)", description: "Match all rules (AND) or any rule (OR)", status: "done", notes: "match_type column: all (AND) or any (OR)" },
+      { name: "Auto-Populate Products", description: "Automatically match products against rules", status: "done", notes: "Client-side product matching against collection rules with matched product count display" },
+      { name: "Collection Preview", description: "Preview matched products before saving", status: "done", notes: "Preview button showing matched products in dialog with image, title, price, stock" },
+      { name: "Collection Sorting", description: "Sort collection products by various criteria", status: "done", notes: "sort_by column with options: manual, title_asc, title_desc, price_asc, price_desc, created_desc, best_selling" },
+      { name: "Publish/Unpublish Toggle", description: "Control collection visibility", status: "done", notes: "is_published boolean with inline switch toggle" },
+    ],
+  },
+
+  // ═══════ 78. ADVERT / BANNER MANAGEMENT ═══════
+  {
+    category: "Advert / Banner Management",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Advert CRUD", description: "Create and manage promotional banners and ads", status: "done", notes: "adverts table with full CRUD, admin /adverts page" },
+      { name: "Advert Types", description: "Support banner, carousel, popup, inline ad types", status: "done", notes: "advert_type column: banner, carousel, popup, inline, html" },
+      { name: "Placement Targeting", description: "Place ads on specific page locations", status: "done", notes: "placement column: homepage_top, homepage_mid, sidebar, product_page, category_page, cart_page" },
+      { name: "Schedule Start/End", description: "Time-limited ad display with date range", status: "done", notes: "starts_at and ends_at datetime fields" },
+      { name: "Active Toggle", description: "Enable/disable ads without deleting", status: "done", notes: "is_active boolean with admin toggle" },
+      { name: "Sort Order", description: "Control ad display order within placement zones", status: "done", notes: "sort_order integer for ordering" },
+      { name: "HTML Custom Ads", description: "Custom HTML content for advanced ad formats", status: "done", notes: "html_content field for custom ad markup" },
+      { name: "Click-Through Links", description: "Link ads to products, categories, or external URLs", status: "done", notes: "link_url and button_text fields" },
+    ],
+  },
+
+  // ═══════ 79. SEO & STRUCTURED DATA ═══════
+  {
+    category: "SEO & Structured Data",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Dynamic Meta Tags", description: "Per-page title and description meta tags", status: "done", notes: "SEOHead component dynamically sets document.title, meta description, og:tags" },
+      { name: "Open Graph Tags", description: "Facebook/social sharing meta tags", status: "done", notes: "og:title, og:description, og:image, og:url, og:type set via SEOHead" },
+      { name: "Twitter Card Tags", description: "Twitter/X card meta tags for rich previews", status: "done", notes: "twitter:card, twitter:title, twitter:description, twitter:image" },
+      { name: "JSON-LD Product Schema", description: "Structured data for product pages (Schema.org)", status: "done", notes: "SEOHead generates Product schema with name, sku, brand, price, availability, rating, review count" },
+      { name: "Canonical URLs", description: "Canonical URL tags to prevent duplicate content", status: "done", notes: "canonicalUrl prop on SEOHead sets rel=canonical link" },
+      { name: "XML Sitemap", description: "Auto-generated sitemap for search engines", status: "done", notes: "sitemap edge function generating XML sitemap with products, categories, and content pages" },
+      { name: "Robots.txt", description: "Robots.txt file for crawler control", status: "done", notes: "public/robots.txt with sitemap reference" },
+      { name: "Per-Product SEO Fields", description: "Custom SEO title and description per product", status: "done", notes: "seo_title and seo_description columns on products table, editable in product form" },
+      { name: "Per-Category SEO Fields", description: "Custom SEO title and description per category", status: "done", notes: "seo_title and seo_description columns on categories table" },
+    ],
+  },
+
+  // ═══════ 80. CREDIT NOTES ═══════
+  {
+    category: "Credit Notes",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Credit Note Creation", description: "Issue credit notes against orders", status: "done", notes: "credit_notes table with credit_number, amount, reason, issued_by, linked to order_id" },
+      { name: "Credit Note Status", description: "Track credit note status (pending/applied/voided)", status: "done", notes: "status column on credit_notes" },
+      { name: "Credit Note Numbering", description: "Sequential credit note number generation", status: "done", notes: "credit_number column with unique identifiers" },
+      { name: "Credit Note Notes", description: "Add internal notes to credit notes", status: "done", notes: "notes text field on credit_notes" },
+    ],
+  },
+
+  // ═══════ 81. CUSTOMER GROUPS ═══════
+  {
+    category: "Customer Groups",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Customer Group CRUD", description: "Create groups for segmented pricing and access", status: "done", notes: "customer_groups table with full CRUD via Settings Customer Groups tab" },
+      { name: "Group Discount Percentage", description: "Automatic discount for group members", status: "done", notes: "discount_percent column on customer_groups" },
+      { name: "Tax Exemption per Group", description: "Mark groups as tax exempt", status: "done", notes: "is_tax_exempt boolean on customer_groups" },
+      { name: "Minimum Order Amount", description: "Set minimum order threshold per group", status: "done", notes: "min_order_amount column on customer_groups" },
+      { name: "Assign Customers to Groups", description: "Link customers to groups for pricing rules", status: "done", notes: "customer_group_id foreign key on customers table" },
+    ],
+  },
+
+  // ═══════ 82. CUSTOMER FILES ═══════
+  {
+    category: "Customer Files",
+    icon: <HardDrive className="h-5 w-5" />,
+    features: [
+      { name: "File Upload per Customer", description: "Attach files to customer records", status: "done", notes: "customer_files table with file_name, file_url, file_type, file_size, description" },
+      { name: "File Metadata Tracking", description: "Track file type, size, and upload date", status: "done", notes: "file_type, file_size, created_at columns" },
+      { name: "Uploaded By Tracking", description: "Track which staff member uploaded the file", status: "done", notes: "uploaded_by column on customer_files" },
+    ],
+  },
+
+  // ═══════ 83. DROPSHIPPING ═══════
+  {
+    category: "Dropshipping",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Dropship Supplier Notification", description: "Auto-notify suppliers of new dropship orders", status: "done", notes: "dropship-notification edge function sends order details to supplier email" },
+      { name: "Dropship Product Flag", description: "Mark products as dropship items", status: "done", notes: "is_dropship boolean on products table, supplier_id linking" },
+    ],
+  },
+
+  // ═══════ 84. ADD-ON / PLUGIN MARKETPLACE ═══════
+  {
+    category: "Add-On / Plugin Marketplace",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Add-On Catalog", description: "Browse available add-ons and plugins", status: "done", notes: "addon_catalog table with 10 seeded add-ons, admin /addons page with marketplace grid" },
+      { name: "Install / Uninstall Add-Ons", description: "One-click install and remove add-ons per store", status: "done", notes: "store_addons table tracking installed add-ons per store with install/uninstall actions" },
+      { name: "Add-On Configuration", description: "Per-add-on settings dialog", status: "done", notes: "config_data JSONB on store_addons, config dialog with key-value editor" },
+      { name: "Add-On Active Toggle", description: "Enable/disable installed add-ons", status: "done", notes: "is_active boolean on store_addons with inline toggle" },
+      { name: "Add-On Categories & Types", description: "Filter add-ons by type (integration, shipping, pricing, etc.)", status: "done", notes: "category and addon_type columns with color-coded badges and filter tabs" },
+      { name: "Install Count Tracking", description: "Track popularity via install count", status: "done", notes: "install_count column on addon_catalog" },
+    ],
+  },
+
+  // ═══════ 85. PRODUCT VARIANTS ═══════
+  {
+    category: "Product Variants",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Variant CRUD", description: "Create size/color/material variants per product", status: "done", notes: "product_variants table with name, sku, price, stock_on_hand, managed via ProductForm variants tab" },
+      { name: "Variant-Level Pricing", description: "Independent price per variant", status: "done", notes: "price column on product_variants overrides base product price" },
+      { name: "Variant-Level Inventory", description: "Independent stock tracking per variant", status: "done", notes: "stock_on_hand column on product_variants for per-variant stock" },
+      { name: "Variant SKU", description: "Unique SKU per variant", status: "done", notes: "sku column on product_variants" },
+      { name: "Variant Barcode", description: "Unique barcode per variant", status: "done", notes: "barcode column on product_variants" },
+      { name: "Variant Weight", description: "Independent weight per variant for shipping", status: "done", notes: "weight column on product_variants" },
+      { name: "Variant Active Toggle", description: "Enable/disable individual variants", status: "done", notes: "is_active boolean on product_variants" },
+    ],
+  },
+
+  // ═══════ 86. PRODUCT ADDONS / CUSTOMIZATIONS ═══════
+  {
+    category: "Product Addons / Customizations",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Product Addon CRUD", description: "Add optional add-ons to products (gift wrap, engraving, etc.)", status: "done", notes: "product_addons table with name, price, addon_type, managed via ProductAddonsTab" },
+      { name: "Addon Types", description: "Support checkbox, dropdown, text input addon types", status: "done", notes: "addon_type column: checkbox, select, text" },
+      { name: "Addon Pricing", description: "Additional charge per addon selection", status: "done", notes: "price column on product_addons" },
+      { name: "Required/Optional Toggle", description: "Mark addons as required or optional", status: "done", notes: "is_required boolean on product_addons" },
+      { name: "Addon Options (for dropdowns)", description: "Define selectable options for dropdown addons", status: "done", notes: "options JSONB array on product_addons for select-type addons" },
+    ],
+  },
+
+  // ═══════ 87. KIT / BUNDLE PRODUCTS ═══════
+  {
+    category: "Kit / Bundle Products",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Kit Component Management", description: "Define which products make up a kit/bundle", status: "done", notes: "kit_components table with kit_product_id, component_product_id, quantity; KitComponentsTab in ProductForm" },
+      { name: "Component Quantities", description: "Set quantity of each component in the kit", status: "done", notes: "quantity column on kit_components" },
+      { name: "Optional Components", description: "Mark certain components as optional", status: "done", notes: "is_optional boolean on kit_components" },
+      { name: "Swappable Components", description: "Allow customers to swap components within a group", status: "done", notes: "is_swappable boolean and swap_group on kit_components" },
+      { name: "Component Sort Order", description: "Control display order of kit components", status: "done", notes: "sort_order integer on kit_components" },
+    ],
+  },
+
+  // ═══════ 88. BACK-IN-STOCK NOTIFICATIONS ═══════
+  {
+    category: "Back-in-Stock Notifications",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Back-in-Stock Request Form", description: "Customers can request notification when product is restocked", status: "done", notes: "back_in_stock_requests table with email, product_id, variant_id" },
+      { name: "Notification Email", description: "Send email when product comes back in stock", status: "done", notes: "back-in-stock-email edge function sends notification to waiting customers" },
+      { name: "Notified Tracking", description: "Track which customers have been notified", status: "done", notes: "notified_at timestamp on back_in_stock_requests" },
+    ],
+  },
+
+  // ═══════ 89. CONTACT FORM SUBMISSIONS ═══════
+  {
+    category: "Contact Form Submissions",
+    icon: <MessageSquare className="h-5 w-5" />,
+    features: [
+      { name: "Contact Form Capture", description: "Store contact form submissions from storefront", status: "done", notes: "contact_submissions table with name, email, subject, message" },
+      { name: "Contact Email Notification", description: "Send email to store owner on new contact submission", status: "done", notes: "contact-email edge function triggers on form submit" },
+      { name: "Read/Unread Status", description: "Track which submissions have been reviewed", status: "done", notes: "is_read boolean on contact_submissions" },
+    ],
+  },
+
+  // ═══════ 90. NEWSLETTER SUBSCRIBERS ═══════
+  {
+    category: "Newsletter Subscribers",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Newsletter Signup", description: "Capture email subscribers from storefront", status: "done", notes: "newsletter_subscribers table, NewsletterSignup component in footer" },
+      { name: "Duplicate Prevention", description: "Prevent duplicate email signups", status: "done", notes: "Unique constraint on email + store_id, client-side duplicate detection with toast" },
+      { name: "Subscriber Status", description: "Track active/unsubscribed status", status: "done", notes: "is_active boolean on newsletter_subscribers" },
     ],
   },
 ];
