@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers, Copy, MapPin, BoxIcon, Plus, Trash2 } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
-type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves";
+type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves" | "zones" | "cartons";
 
 interface PickWave {
   id: string;
@@ -23,6 +23,23 @@ interface PickWave {
   orderIds: string[];
   createdAt: string;
   status: "open" | "in_progress" | "completed";
+}
+
+interface WarehouseZone {
+  id: string;
+  name: string;
+  description: string;
+  assignedPicker: string;
+  binPrefixes: string[];
+}
+
+interface CartonType {
+  id: string;
+  name: string;
+  lengthCm: number;
+  widthCm: number;
+  heightCm: number;
+  maxWeightKg: number;
 }
 
 export default function PickPack() {
