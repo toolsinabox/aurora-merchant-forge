@@ -657,6 +657,39 @@ export default function MaropostMigration() {
                 ))}
               </div>
 
+              {/* Pre-import validation summary */}
+              {entities.some(e => e.selected) && (
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardContent className="p-4 space-y-2">
+                    <h4 className="font-semibold text-sm flex items-center gap-2"><Shield className="h-4 w-4" />Pre-Import Summary</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">{entities.filter(e => e.selected).reduce((s, e) => s + e.count, 0).toLocaleString()}</p>
+                        <p className="text-muted-foreground">Total Records</p>
+                      </div>
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">{entities.filter(e => e.selected).length}</p>
+                        <p className="text-muted-foreground">Entity Types</p>
+                      </div>
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">{entities.filter(e => e.selected).reduce((s, e) => s + e.pages, 0)}</p>
+                        <p className="text-muted-foreground">API Pages</p>
+                      </div>
+                      <div className="p-2 rounded bg-background">
+                        <p className="font-bold text-foreground">~{Math.ceil(entities.filter(e => e.selected).reduce((s, e) => s + e.pages, 0) * 3 / 60)}m</p>
+                        <p className="text-muted-foreground">Est. Duration</p>
+                      </div>
+                    </div>
+                    <div className="text-xs text-muted-foreground space-y-1 pt-1">
+                      <p>• Categories → Products → Customers → Orders (auto-ordered for relationship linking)</p>
+                      <p>• Products will be linked to categories and relations (cross-sell/upsell) post-import</p>
+                      <p>• Orders will be linked to customers by email match</p>
+                      <p>• Newsletter subscribers auto-extracted from customer data</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
