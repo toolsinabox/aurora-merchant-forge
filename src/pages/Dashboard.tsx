@@ -433,7 +433,7 @@ export default function Dashboard() {
                         <p className="text-xs text-muted-foreground">New</p>
                       </div>
                       <div>
-                        <p className="text-2xl font-bold">{customers.filter((c: any) => c.segment === "returning").length}</p>
+                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "returning").length}</p>
                         <p className="text-xs text-muted-foreground">Returning</p>
                       </div>
                     </div>
