@@ -63,6 +63,8 @@ export default function ContentPages() {
   const [form, setForm] = useState<PageForm>(emptyForm);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [versionPageId, setVersionPageId] = useState<string | null>(null);
+  const [versions, setVersions] = useState<ContentVersion[]>([]);
 
   const { data: pages = [], isLoading } = useQuery({
     queryKey: ["content_pages", currentStore?.id],
