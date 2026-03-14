@@ -292,9 +292,9 @@ export default function Suppliers() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No suppliers found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">No suppliers found</TableCell></TableRow>
                 ) : filtered.map((s: any) => (
                   <TableRow key={s.id}>
                     <TableCell className="font-medium">{s.name}</TableCell>
