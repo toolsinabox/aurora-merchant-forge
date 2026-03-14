@@ -7690,7 +7690,7 @@ const b2bWholesaleDeepFeatures: FeatureCategory[] = [
       { name: "Net Payment Terms (Net-30/60/90)", description: "Allow wholesale customers to pay on terms", status: "done", notes: "payment_terms column on customers table with Net-30/60/90 options in CustomerDetail" },
       { name: "Credit Limit per Customer", description: "Set maximum outstanding credit per wholesale account", status: "done", notes: "credit_limit column on customers table, displayed in CustomerDetail" },
       { name: "Customer Statement Generation", description: "Generate and send account statements", status: "done", notes: "PrintCustomerStatement + email function" },
-      { name: "Purchase Order Number Field", description: "Allow customers to enter their PO number at checkout", status: "partial" },
+      { name: "Purchase Order Number Field", description: "Allow customers to enter their PO number at checkout", status: "done", notes: "StorefrontCheckout PO Number input field in B2B section, value stored in order notes as [PO#: value]" },
       { name: "Quick Order Pad", description: "Bulk order entry by SKU and quantity", status: "done", notes: "StorefrontQuickOrder page" },
       { name: "CSV Order Upload", description: "Upload CSV of SKU/quantity pairs to create order", status: "done", notes: "StorefrontQuickOrder CSV upload with auto-SKU lookup, supports comma/tab/semicolon delimiters" },
       { name: "Reorder from Previous Order", description: "One-click reorder of previous order items", status: "done", notes: "Reorder button on storefront order list (delivered/shipped orders) and order detail view, adds all order items to cart via addToCart" },
