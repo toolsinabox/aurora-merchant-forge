@@ -8024,7 +8024,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
       { name: "Order Archive / Purge", description: "Archive old orders, purge test orders", status: "not_started" },
       { name: "Draft Orders / Quotes Conversion", description: "Convert draft/quote to live order with one click", status: "done", notes: "Quotes page" },
       { name: "Order Fraud Scoring", description: "Risk score based on IP, email, address signals", status: "not_started" },
-      { name: "Order Batch Status Update", description: "Bulk change status of multiple orders", status: "partial" },
+      { name: "Order Batch Status Update", description: "Bulk change status of multiple orders", status: "done", notes: "Orders page bulk action bar" },
       { name: "Order Batch Invoice Generation", description: "Generate invoices for selected orders in bulk", status: "not_started" },
       { name: "Order Payment Retry", description: "Retry failed payment on existing order", status: "not_started" },
       { name: "Order Refund (Partial / Full)", description: "Process partial or full refunds from order detail", status: "done", notes: "credit_notes table" },
