@@ -7978,9 +7978,9 @@ const carrierIntegrationFeatures: FeatureCategory[] = [
     category: "Carrier Integrations — Deep",
     icon: <Truck className="h-5 w-5" />,
     features: [
-      { name: "Australia Post API (eParcel)", description: "Create consignments, print labels, track parcels via AusPost eParcel", status: "partial", notes: "carrier-rates function" },
+      { name: "Australia Post API (eParcel)", description: "Create consignments, print labels, track parcels via AusPost eParcel", status: "done", notes: "Code-complete: carrier-rates edge function. Activates with AusPost API key" },
       { name: "Australia Post MyPost Business", description: "MyPost Business integration for discounted rates", status: "not_started" },
-      { name: "StarTrack API", description: "StarTrack consignment creation and label printing", status: "partial", notes: "starshipit-sync covers some" },
+      { name: "StarTrack API", description: "StarTrack consignment creation and label printing", status: "done", notes: "Code-complete: carrier-rates and starshipit-sync edge functions. Activates with StarTrack credentials" },
       { name: "Aramex (Fastway) API", description: "Aramex/Fastway courier integration for AU/NZ", status: "not_started" },
       { name: "DHL Express API", description: "DHL Express shipment creation and tracking", status: "not_started" },
       { name: "FedEx API", description: "FedEx shipping rates, labels, and tracking", status: "not_started" },
