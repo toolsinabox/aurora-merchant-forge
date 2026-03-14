@@ -431,7 +431,7 @@ export default function StorefrontCheckout() {
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
           payment_status: payOnAccount ? "pending" : "pending",
-          notes: form.notes ? (payOnAccount ? `[Pay on Account - ${creditTerms}] ${form.notes}` : form.notes) : (payOnAccount ? `Pay on Account - ${creditTerms}` : null),
+          notes: [payOnAccount ? `Pay on Account - ${creditTerms}` : null, form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null, form.notes].filter(Boolean).join(" ") || null,
           shipping_address: shippingAddr,
           billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
