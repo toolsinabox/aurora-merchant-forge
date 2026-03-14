@@ -7664,7 +7664,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
       { name: "Multiple Payment Methods", description: "Split payment across multiple methods (e.g., card + gift card)", status: "not_started" },
       { name: "Saved Cards (Tokenization)", description: "Save customer card tokens for faster checkout", status: "not_started" },
       { name: "3D Secure / SCA Compliance", description: "Strong Customer Authentication for European payments", status: "not_started" },
-      { name: "PCI-DSS Compliance Scope", description: "Ensure payment flow meets PCI-DSS requirements", status: "partial", notes: "Using redirect/iframe flows" },
+      { name: "PCI-DSS Compliance Scope", description: "Ensure payment flow meets PCI-DSS requirements", status: "done", notes: "All payment processing via server-side edge functions, no card data touches client code, uses Stripe/PayPal redirect/iframe flows for SAQ-A compliance" },
       { name: "Refund via Gateway", description: "Issue refunds back through payment gateway automatically", status: "not_started" },
       { name: "Partial Refunds", description: "Refund partial amount of an order", status: "done", notes: "Refunds page create dialog with Full/Partial refund type selector, partial mode shows line item editor with product name, qty, unit price, and per-item refund amount; auto-calculates total; line items stored on refund record; table shows Full/Partial badge per refund" },
       { name: "Payment Retry Logic", description: "Retry failed payments (subscriptions/layby)", status: "not_started" },
