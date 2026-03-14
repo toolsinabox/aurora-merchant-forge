@@ -471,6 +471,22 @@ serve(async (req) => {
             }
           }
 
+          // Import newsletter subscriber
+          if (c.NewsletterSubscriber === "True" && (c.EmailAddress || c.Email)) {
+            await supabase.from("newsletter_subscribers").upsert({
+              store_id,
+              email: c.EmailAddress || c.Email,
+              is_active: true,
+            } as any, { onConflict: "store_id,email" }).catch(() => {
+              // May not have unique constraint, try insert
+              supabase.from("newsletter_subscribers").insert({
+                store_id,
+                email: c.EmailAddress || c.Email,
+                is_active: true,
+              }).catch(() => {});
+            });
+          }
+
           await logEntity("customer", c.Username || c.EmailAddress || c.Email, inserted.id);
           imported++;
         } catch (err: any) {
