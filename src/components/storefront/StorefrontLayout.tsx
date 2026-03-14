@@ -138,8 +138,31 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const parentCategories = categories.filter(c => !c.parent_id);
   const getChildren = (parentId: string) => categories.filter(c => c.parent_id === parentId);
 
+  // Maintenance mode
+  if (maintenanceMode) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-8">
+        <div className="text-center max-w-md">
+          <Store className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+          <h1 className="text-2xl font-bold mb-3">We'll Be Right Back</h1>
+          <p className="text-muted-foreground">
+            {storeName || "Our store"} is currently undergoing scheduled maintenance. 
+            We'll be back shortly — thank you for your patience.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background" style={{ fontSize: "16px" }}>
+      {/* Skip to Content (A11y) */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-primary focus:text-primary-foreground focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-medium"
+      >
+        Skip to content
+      </a>
       {/* Announcement Banner */}
       {bannerText && (
         <div className="bg-primary text-primary-foreground text-center text-xs py-2 px-4 font-medium">
