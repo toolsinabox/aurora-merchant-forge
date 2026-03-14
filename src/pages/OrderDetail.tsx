@@ -90,6 +90,25 @@ export default function OrderDetail() {
   const { user, currentStore } = useAuth();
   const queryClient = useQueryClient();
 
+  // Load team members for @mentions
+  useEffect(() => {
+    if (!currentStore) return;
+    supabase
+      .from("user_roles")
+      .select("user_id, profiles(display_name)")
+      .eq("store_id", currentStore.id)
+      .then(({ data }) => {
+        if (data) {
+          const members = data
+            .filter((d: any) => d.profiles?.display_name)
+            .map((d: any) => ({ display_name: d.profiles.display_name, user_id: d.user_id }));
+          // Deduplicate by user_id
+          const unique = Array.from(new Map(members.map((m: any) => [m.user_id, m])).values());
+          setTeamMembers(unique as any);
+        }
+      });
+  }, [currentStore]);
+
   const { data: payments = [] } = useOrderPayments(id);
   const createPayment = useCreateOrderPayment();
 

@@ -14,7 +14,7 @@ import {
   useShippingZones, useCreateShippingZone, useDeleteShippingZone, useTeamMembers,
   useCustomerGroups, useCreateCustomerGroup, useDeleteCustomerGroup,
 } from "@/hooks/use-data";
-import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell, CreditCard } from "lucide-react";
+import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell, CreditCard, Scissors } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
