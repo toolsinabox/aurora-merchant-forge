@@ -463,56 +463,13 @@ export default function StorefrontProducts() {
                   ))}
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-8 gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Show</span>
-                      <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
-                        <SelectTrigger className="w-20 h-8 text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {PAGE_SIZES.map(s => <SelectItem key={s} value={s.toString()} className="text-xs">{s}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                        let pageNum: number;
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (page <= 3) {
-                          pageNum = i + 1;
-                        } else if (page >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = page - 2 + i;
-                        }
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={page === pageNum ? "default" : "outline"}
-                            size="icon"
-                            className="h-8 w-8 text-xs"
-                            onClick={() => setPage(pageNum)}
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
-                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    <span className="text-xs text-muted-foreground hidden sm:block">
-                      Page {page} of {totalPages}
-                    </span>
-                  </div>
-                )}
+                {/* Infinite scroll sentinel */}
+                <div ref={sentinelRef} className="py-4 flex justify-center">
+                  {loadingMore && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
+                  {!hasMore && filtered.length > pageSize && (
+                    <p className="text-xs text-muted-foreground">Showing all {filtered.length} products</p>
+                  )}
+                </div>
               </>
             ) : (
               <div className="text-center py-16 text-muted-foreground">

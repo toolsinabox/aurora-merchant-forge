@@ -722,6 +722,50 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
+          {/* Worst Sellers Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Worst Sellers</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : (
+                (() => {
+                  const worstSellers = Object.values(
+                    (topSellingProducts.length > 0 ? topSellingProducts : []).reduce((acc: any, _: any) => acc, {})
+                  );
+                  // Build worst sellers from all products with sales, sorted ascending
+                  const allWithSales = Object.entries(
+                    (() => {
+                      const map: Record<string, { title: string; units: number; revenue: number }> = {};
+                      topSellingProducts.forEach((p: any) => { map[p.title] = p; });
+                      return map;
+                    })()
+                  ).map(([_, v]) => v).sort((a: any, b: any) => a.revenue - b.revenue).slice(0, 10);
+                  return allWithSales.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-8">No sales data yet</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="text-xs h-8">Product</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Units</TableHead>
+                          <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {allWithSales.map((p: any, i: number) => (
+                          <TableRow key={i} className="text-xs">
+                            <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{p.title}</TableCell>
+                            <TableCell className="py-1.5 text-right font-mono">{p.units}</TableCell>
+                            <TableCell className="py-1.5 text-right font-medium text-destructive">${p.revenue.toFixed(2)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  );
+                })()
+              )}
+            </CardContent>
+          </Card>
+
           {/* Stock Turnover Report */}
           <Card>
             <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Stock Turnover</CardTitle></CardHeader>
