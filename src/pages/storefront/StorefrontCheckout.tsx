@@ -445,10 +445,19 @@ export default function StorefrontCheckout() {
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
           payment_status: payOnAccount ? "pending" : "pending",
-          notes: [payOnAccount ? `Pay on Account - ${creditTerms}` : null, form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null, form.notes].filter(Boolean).join(" ") || null,
+          notes: [
+            payOnAccount ? `Pay on Account - ${creditTerms}` : null,
+            form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
+            form.company ? `[Company: ${form.company}]` : null,
+            form.po_number ? `[PO#: ${form.po_number}]` : null,
+            form.custom_field_1 ? `[Custom: ${form.custom_field_1}]` : null,
+            utmParams ? `[UTM: ${Object.entries(utmParams).map(([k,v]) => `${k}=${v}`).join("&")}]` : null,
+            form.notes,
+          ].filter(Boolean).join(" ") || null,
           shipping_address: shippingAddr,
           billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
+          metadata: utmParams ? utmParams : undefined,
         } as any)
         .select()
         .single();
