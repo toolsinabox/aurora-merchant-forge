@@ -689,7 +689,7 @@ export default function ProductForm() {
                 <Card>
                   <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-sm">Variants</CardTitle>
-                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1"><Plus className="h-3 w-3" /> Add Variant</Button>
+                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => { if (!isEdit) { toast.error("Save the product first"); return; } setVariantDialogOpen(true); }}><Plus className="h-3 w-3" /> Add Variant</Button>
                   </CardHeader>
                   <CardContent className="p-0">
                     {variants.length > 0 ? (
