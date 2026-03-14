@@ -233,6 +233,7 @@ export default function Products() {
               )}
             </div>
 
+            <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
