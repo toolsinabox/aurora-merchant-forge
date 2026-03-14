@@ -204,42 +204,45 @@ export default function Adverts() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Placement</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Schedule</TableHead>
-                  <TableHead className="w-20">Actions</TableHead>
+                  <TableHead className="text-xs h-8">Name</TableHead>
+                  <TableHead className="text-xs h-8">Type</TableHead>
+                  <TableHead className="text-xs h-8">Placement</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8">Schedule</TableHead>
+                  <TableHead className="text-xs h-8 w-20">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : adverts.length === 0 ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No adverts yet. Create your first promotional banner.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">
+                    <Image className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                    No adverts yet. Create your first promotional banner.
+                  </TableCell></TableRow>
                 ) : adverts.map((ad: any) => (
-                  <TableRow key={ad.id}>
-                    <TableCell>
+                  <TableRow key={ad.id} className="text-xs">
+                    <TableCell className="py-2">
                       <div className="flex items-center gap-2">
                         {ad.image_url ? (
-                          <img src={ad.image_url} alt="" className="h-8 w-12 object-cover rounded" />
+                          <img src={ad.image_url} alt="" className="h-7 w-10 object-cover rounded" />
                         ) : (
-                          <div className="h-8 w-12 bg-muted rounded flex items-center justify-center"><Image className="h-3 w-3 text-muted-foreground" /></div>
+                          <div className="h-7 w-10 bg-muted rounded flex items-center justify-center"><Image className="h-3 w-3 text-muted-foreground" /></div>
                         )}
-                        <span className="font-medium text-sm">{ad.name}</span>
+                        <span className="font-medium">{ad.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell><Badge variant="outline" className="text-xs capitalize">{ad.advert_type}</Badge></TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{PLACEMENTS.find(p => p.value === ad.placement)?.label || ad.placement}</TableCell>
-                    <TableCell><Badge variant={ad.is_active ? "default" : "secondary"} className="text-xs">{ad.is_active ? "Active" : "Inactive"}</Badge></TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
+                    <TableCell className="py-2"><Badge variant="outline" className="text-[10px] capitalize">{ad.advert_type}</Badge></TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{PLACEMENTS.find(p => p.value === ad.placement)?.label || ad.placement}</TableCell>
+                    <TableCell className="py-2"><Badge variant={ad.is_active ? "default" : "secondary"} className="text-[10px]">{ad.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                    <TableCell className="py-2 text-muted-foreground">
                       {ad.starts_at ? new Date(ad.starts_at).toLocaleDateString() : "—"}
                       {ad.ends_at ? ` → ${new Date(ad.ends_at).toLocaleDateString()}` : ""}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-2">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(ad)}><Pencil className="h-3 w-3" /></Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(ad.id)}><Trash2 className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(ad)}><Pencil className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleDelete(ad.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>

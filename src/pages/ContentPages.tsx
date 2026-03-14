@@ -221,34 +221,37 @@ export default function ContentPages() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Slug</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Updated</TableHead>
-                  <TableHead className="w-24"></TableHead>
+                  <TableHead className="text-xs h-8">Title</TableHead>
+                  <TableHead className="text-xs h-8">Slug</TableHead>
+                  <TableHead className="text-xs h-8">Type</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8">Updated</TableHead>
+                  <TableHead className="text-xs h-8 w-24"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">No pages found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">
+                    <FileText className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                    No pages found
+                  </TableCell></TableRow>
                 ) : filtered.map((p: any) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.title}</TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">/{p.slug}</TableCell>
-                    <TableCell><Badge variant="outline">{pageTypes.find(t => t.value === p.page_type)?.label || p.page_type}</Badge></TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={() => togglePublish.mutate({ id: p.id, pub: !p.is_published })}>
-                        {p.is_published ? <Badge variant="default">Published</Badge> : <Badge variant="secondary">Draft</Badge>}
+                  <TableRow key={p.id} className="text-xs">
+                    <TableCell className="py-2 font-medium">{p.title}</TableCell>
+                    <TableCell className="py-2 font-mono text-muted-foreground">/{p.slug}</TableCell>
+                    <TableCell className="py-2"><Badge variant="outline" className="text-[10px]">{pageTypes.find(t => t.value === p.page_type)?.label || p.page_type}</Badge></TableCell>
+                    <TableCell className="py-2">
+                      <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => togglePublish.mutate({ id: p.id, pub: !p.is_published })}>
+                        {p.is_published ? <Badge variant="default" className="text-[10px]">Published</Badge> : <Badge variant="secondary" className="text-[10px]">Draft</Badge>}
                       </Button>
                     </TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{format(new Date(p.updated_at), "dd MMM yyyy")}</TableCell>
-                    <TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{format(new Date(p.updated_at), "dd MMM yyyy")}</TableCell>
+                    <TableCell className="py-2">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(p)}><Pencil className="h-3.5 w-3.5" /></Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(p)}><Pencil className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
