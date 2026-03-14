@@ -7619,7 +7619,7 @@ const shippingDeepFeatures: FeatureCategory[] = [
       { name: "Flat Rate Shipping", description: "Fixed shipping cost per order/item", status: "done", notes: "Shipping zones with flat rates" },
       { name: "Weight-Based Rates", description: "Shipping cost calculated by total weight", status: "done" },
       { name: "Price-Based Rates", description: "Shipping tiers based on order subtotal", status: "done" },
-      { name: "Quantity-Based Rates", description: "Shipping cost based on number of items", status: "partial" },
+      { name: "Quantity-Based Rates", description: "Shipping cost based on number of items", status: "done", notes: "ShippingZones ZoneForm 'Per Item (quantity-based)' rate type option with per-item rate + base flat rate, cost formula: base + (rate × item count)" },
       { name: "Dimension-Based Rates", description: "Shipping calculated from product dimensions (cubic weight)", status: "done", notes: "ShippingZones ZoneForm 'Dimension / Cubic Weight' rate type option with rate per cubic meter, cubic weight formula L×W×H/5000, higher of actual vs cubic weight" },
       { name: "Free Shipping Threshold", description: "Free shipping when order exceeds minimum amount", status: "done" },
       { name: "Free Shipping Coupon", description: "Coupon code that grants free shipping", status: "done", notes: "free_shipping field on coupons" },
