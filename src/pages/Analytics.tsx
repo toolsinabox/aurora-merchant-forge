@@ -101,6 +101,9 @@ export default function Analytics() {
   const [funnelData, setFunnelData] = useState<{ visitors: number; carts: number; checkouts: number; purchases: number }>({ visitors: 0, carts: 0, checkouts: 0, purchases: 0 });
   const [salesByBrand, setSalesByBrand] = useState<any[]>([]);
   const [cohortData, setCohortData] = useState<{ months: string[]; cohorts: { label: string; counts: number[]; total: number }[] }>({ months: [], cohorts: [] });
+  const [salesByChannel, setSalesByChannel] = useState<{ channel: string; orders: number; revenue: number }[]>([]);
+  const [salesByRegion, setSalesByRegion] = useState<{ region: string; orders: number; revenue: number }[]>([]);
+  const [returnAnalytics, setReturnAnalytics] = useState<{ byReason: { reason: string; count: number; amount: number }[]; totalReturns: number; totalRefunded: number }>({ byReason: [], totalReturns: 0, totalRefunded: 0 });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
