@@ -9,12 +9,25 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/hooks/use-data";
 import { toast } from "sonner";
-import { Plus, ClipboardCheck, Search, CheckCircle, AlertTriangle, Package } from "lucide-react";
+import { Plus, ClipboardCheck, Search, CheckCircle, AlertTriangle, Package, Calendar, Clock, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+
+interface CycleCountSchedule {
+  id: string;
+  name: string;
+  frequency: "daily" | "weekly" | "biweekly" | "monthly" | "quarterly";
+  zone: string;
+  category: string;
+  nextRunDate: string;
+  lastRunDate: string | null;
+  isActive: boolean;
+}
 
 export default function Stocktake() {
   const { currentStore, user } = useAuth();
@@ -27,6 +40,58 @@ export default function Stocktake() {
   const [activeStocktake, setActiveStocktake] = useState<any>(null);
   const [items, setItems] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("stocktakes");
+
+  // Cycle Count Scheduling state
+  const [schedules, setSchedules] = useState<CycleCountSchedule[]>(() => {
+    try { return JSON.parse(localStorage.getItem("cycle_count_schedules") || "[]"); } catch { return []; }
+  });
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState({ name: "", frequency: "weekly" as CycleCountSchedule["frequency"], zone: "", category: "", nextRunDate: "" });
+
+  const saveSchedules = (updated: CycleCountSchedule[]) => {
+    setSchedules(updated);
+    localStorage.setItem("cycle_count_schedules", JSON.stringify(updated));
+  };
+
+  const createSchedule = () => {
+    if (!scheduleForm.name.trim()) { toast.error("Schedule name is required"); return; }
+    if (!scheduleForm.nextRunDate) { toast.error("Next run date is required"); return; }
+    const schedule: CycleCountSchedule = {
+      id: crypto.randomUUID(),
+      name: scheduleForm.name.trim(),
+      frequency: scheduleForm.frequency,
+      zone: scheduleForm.zone.trim(),
+      category: scheduleForm.category.trim(),
+      nextRunDate: scheduleForm.nextRunDate,
+      lastRunDate: null,
+      isActive: true,
+    };
+    saveSchedules([...schedules, schedule]);
+    setScheduleForm({ name: "", frequency: "weekly", zone: "", category: "", nextRunDate: "" });
+    setScheduleOpen(false);
+    toast.success(`Schedule "${schedule.name}" created`);
+  };
+
+  const toggleSchedule = (id: string) => {
+    saveSchedules(schedules.map(s => s.id === id ? { ...s, isActive: !s.isActive } : s));
+  };
+
+  const deleteSchedule = (id: string) => {
+    saveSchedules(schedules.filter(s => s.id !== id));
+    toast.success("Schedule deleted");
+  };
+
+  const runScheduleNow = (schedule: CycleCountSchedule) => {
+    // Create a stocktake from this schedule
+    setNewName(`${schedule.name} — ${format(new Date(), "MMM d, yyyy")}`);
+    setNewNotes(`Scheduled cycle count: ${schedule.frequency}, Zone: ${schedule.zone || "All"}, Category: ${schedule.category || "All"}`);
+    setCreateOpen(true);
+    // Update last run date
+    saveSchedules(schedules.map(s => s.id === schedule.id ? { ...s, lastRunDate: new Date().toISOString() } : s));
+  };
+
+  const frequencyLabel: Record<string, string> = { daily: "Daily", weekly: "Weekly", biweekly: "Bi-weekly", monthly: "Monthly", quarterly: "Quarterly" };
 
   const fetchStocktakes = async () => {
     if (!currentStore) return;
