@@ -452,6 +452,25 @@ serve(async (req) => {
             }
           }
 
+          // Import customer communication logs
+          if (c.CustomerLog) {
+            const logs = Array.isArray(c.CustomerLog) ? c.CustomerLog : [c.CustomerLog];
+            for (const log of logs) {
+              if (log && (log.Notes || log.Description || log.Subject)) {
+                await supabase.from("customer_communications").insert({
+                  customer_id: inserted.id,
+                  store_id,
+                  channel: log.Type || "note",
+                  direction: "inbound",
+                  subject: log.Subject || log.Type || "Log Entry",
+                  body: log.Notes || log.Description || "",
+                  status: "delivered",
+                  created_at: log.DateCreated || log.Date || new Date().toISOString(),
+                }).catch(() => {});
+              }
+            }
+          }
+
           await logEntity("customer", c.Username || c.EmailAddress || c.Email, inserted.id);
           imported++;
         } catch (err: any) {
