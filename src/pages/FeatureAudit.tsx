@@ -9318,7 +9318,7 @@ const onboardingFeatures: FeatureCategory[] = [
       { name: "Shipping Setup", description: "Configure basic shipping in onboarding", status: "partial" },
       { name: "Theme Selection", description: "Choose storefront theme during setup", status: "partial" },
       { name: "Domain Configuration", description: "Set up custom domain", status: "partial" },
-      { name: "Go-Live Checklist", description: "Pre-launch checklist of required steps", status: "not_started" },
+      { name: "Go-Live Checklist", description: "Pre-launch checklist of required steps", status: "done", notes: "GoLiveChecklist page" },
       { name: "Sample Data Import", description: "Import sample products for testing", status: "partial", notes: "mock-data.ts" },
       { name: "Video Tutorials / Help", description: "In-context help videos during setup", status: "not_started" },
     ],
