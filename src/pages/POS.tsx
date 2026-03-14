@@ -303,12 +303,31 @@ export default function POS() {
     setCart(prev => prev.filter(i => i.product_id !== productId));
   };
 
-  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const applyItemDiscount = (productId: string) => {
+    const val = Number(discountVal);
+    if (!val || val <= 0) { toast.error("Enter a valid discount"); return; }
+    setCart(prev => prev.map(i => {
+      if (i.product_id !== productId) return i;
+      return { ...i, discount_type: discountType, discount_value: val };
+    }));
+    setDiscountDialogItem(null);
+    setDiscountVal("");
+    toast.success("Discount applied");
+  };
+
+  const getItemTotal = (item: CartItem) => {
+    const base = item.price * item.quantity;
+    if (!item.discount_value) return base;
+    if (item.discount_type === "percent") return base * (1 - item.discount_value / 100);
+    return Math.max(0, base - item.discount_value);
+  };
+
+  const subtotal = cart.reduce((s, i) => s + getItemTotal(i), 0);
+  const totalDiscount = cart.reduce((s, i) => s + (i.price * i.quantity - getItemTotal(i)), 0);
   const tax = subtotal * 0.1;
   const voucherDiscount = appliedVoucher?.amountUsed ?? 0;
   const total = Math.max(0, subtotal + tax - voucherDiscount);
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
-
   // Gift voucher redemption
   const applyVoucher = async () => {
     if (!voucherCode.trim() || !storeId) return;
