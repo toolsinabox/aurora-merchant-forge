@@ -36,7 +36,7 @@ export default function EmailAutomations() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "",
+    name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "", step_number: "1",
   });
 
   const { data: automations = [] } = useQuery({
