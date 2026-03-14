@@ -459,6 +459,16 @@ export default function PickPack() {
                   if (match) {
                     setPackVerified(prev => ({ ...prev, [match.id]: true }));
                     toast.success(`Verified: ${match.title} (${barcode})`);
+                    // Auto-print packing slip for the matched order
+                    const order = processingOrders.find((o: any) => o.id === match.order_id);
+                    if (order) {
+                      const slipItems = orderItems.filter((i: any) => i.order_id === order.id);
+                      const pw = window.open("", "_blank");
+                      if (pw) {
+                        pw.document.write(`<html><head><title>Pack Slip — ${order.order_number}</title><style>body{font-family:Arial,sans-serif;padding:20px;font-size:12px}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid #ddd;padding:6px;text-align:left}th{background:#f5f5f5}h1{font-size:16px;margin:0}p{font-size:11px;color:#666;margin:4px 0}</style></head><body><h1>Packing Slip</h1><p>Order: ${order.order_number} | Date: ${new Date().toLocaleDateString()}</p><table><thead><tr><th>SKU</th><th>Product</th><th>Qty</th></tr></thead><tbody>${slipItems.map((i: any) => `<tr><td>${i.sku || "—"}</td><td>${i.title || "—"}</td><td>${i.quantity}</td></tr>`).join("")}</tbody></table><script>window.print();</script></body></html>`);
+                        pw.document.close();
+                      }
+                    }
                   } else {
                     toast.error(`No matching item in packing queue: ${barcode}`);
                   }

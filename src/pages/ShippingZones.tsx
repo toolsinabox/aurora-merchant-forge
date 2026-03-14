@@ -520,6 +520,7 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <SelectContent>
             <SelectItem value="flat" className="text-xs">Flat Rate</SelectItem>
             <SelectItem value="weight" className="text-xs">Weight-Based (per kg)</SelectItem>
+            <SelectItem value="cubic" className="text-xs">Dimension / Cubic Weight</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -528,6 +529,12 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <div>
             <Label className="text-xs">Rate per kg ($)</Label>
             <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
+          </div>
+        ) : form.rate_type === "cubic" ? (
+          <div>
+            <Label className="text-xs">Rate per cubic meter ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
+            <p className="text-[10px] text-muted-foreground mt-0.5">Cubic weight = L×W×H / 5000 (cm). Higher of actual vs cubic weight used.</p>
           </div>
         ) : (
           <div>
@@ -540,9 +547,9 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <Input type="number" step="0.01" min="0" placeholder="Optional" value={form.free_above} onChange={(e) => setForm({ ...form, free_above: e.target.value })} />
         </div>
       </div>
-      {form.rate_type === "weight" && (
+      {(form.rate_type === "weight" || form.rate_type === "cubic") && (
         <div>
-          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to weight cost)</span></Label>
+          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to {form.rate_type === "cubic" ? "cubic" : "weight"} cost)</span></Label>
           <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
         </div>
       )}
