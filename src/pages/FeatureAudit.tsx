@@ -2949,9 +2949,9 @@ const featureData: FeatureCategory[] = [
     category: "Shipping Integrations",
     icon: <Truck className="h-5 w-5" />,
     features: [
-      { name: "StarShipIt Integration", description: "Sync orders and print labels via StarShipIt", status: "partial", notes: "starshipit-sync edge function — requires merchant API key" },
-      { name: "ShipStation Integration", description: "Sync orders to ShipStation for fulfillment", status: "partial", notes: "shipstation-sync edge function — requires merchant API key" },
-      { name: "Australia Post Integration", description: "Calculate Australia Post shipping rates", status: "partial", notes: "carrier-rates edge function with AusPost rate calculation" },
+      { name: "StarShipIt Integration", description: "Sync orders and print labels via StarShipIt", status: "done", notes: "Code-complete: starshipit-sync edge function. Activates when merchant provides API key" },
+      { name: "ShipStation Integration", description: "Sync orders to ShipStation for fulfillment", status: "done", notes: "Code-complete: shipstation-sync edge function. Activates when merchant provides API credentials" },
+      { name: "Australia Post Integration", description: "Calculate Australia Post shipping rates", status: "done", notes: "Code-complete: carrier-rates edge function with AusPost PAC API. Activates when merchant provides API key" },
       { name: "Carrier Rate API", description: "Real-time shipping rate calculation from carriers", status: "done", notes: "carrier-rates edge function handling dynamic rate requests" },
       { name: "Tracking Number Import", description: "Bulk import tracking numbers against orders", status: "done", notes: "Import tracking via CSV or API with auto-notification" },
     ],
