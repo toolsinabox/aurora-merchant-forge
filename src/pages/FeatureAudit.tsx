@@ -7992,7 +7992,7 @@ const carrierIntegrationFeatures: FeatureCategory[] = [
       { name: "Hunter Express API", description: "Hunter Express courier integration", status: "not_started" },
       { name: "Allied Express API", description: "Allied Express same-day/next-day courier", status: "not_started" },
       { name: "Click & Collect Carrier", description: "Pseudo-carrier for in-store pickup orders", status: "partial" },
-      { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifests", status: "not_started" },
+      { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifests", status: "done", notes: "CarrierManifest page with date picker, carrier filter, summary cards, print manifest with full HTML layout" },
       { name: "Carrier Label Batch Print", description: "Batch print shipping labels for multiple orders", status: "not_started" },
       { name: "Carrier Rate Caching", description: "Cache carrier rate lookups to reduce API calls", status: "not_started" },
       { name: "Carrier Fallback Logic", description: "Fallback to secondary carrier if primary fails", status: "not_started" },
