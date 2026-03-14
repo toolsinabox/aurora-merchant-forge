@@ -36,7 +36,7 @@ export default function EmailAutomations() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
-    name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "",
+    name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "", step_number: "1",
   });
 
   const { data: automations = [] } = useQuery({
@@ -93,7 +93,7 @@ export default function EmailAutomations() {
   const closeForm = () => {
     setShowForm(false);
     setEditingId(null);
-    setForm({ name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "" });
+    setForm({ name: "", trigger_type: "welcome", delay_hours: "0", subject: "", html_body: "", step_number: "1" });
   };
 
   const editAutomation = (a: any) => {
@@ -103,6 +103,7 @@ export default function EmailAutomations() {
       delay_hours: String(a.delay_hours),
       subject: a.subject,
       html_body: a.html_body,
+      step_number: String(a.step_number || 1),
     });
     setEditingId(a.id);
     setShowForm(true);
@@ -166,7 +167,10 @@ export default function EmailAutomations() {
                   const trigger = TRIGGER_TYPES.find(t => t.value === a.trigger_type);
                   return (
                     <TableRow key={a.id}>
-                      <TableCell className="font-medium text-sm">{a.name}</TableCell>
+                      <TableCell className="font-medium text-sm">
+                        {a.name}
+                        {(a.step_number || 1) > 1 && <Badge variant="secondary" className="ml-1 text-[10px]">Step {a.step_number}</Badge>}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-xs">{trigger?.label || a.trigger_type}</Badge>
                       </TableCell>
@@ -227,9 +231,16 @@ export default function EmailAutomations() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label>Delay (hours after trigger)</Label>
-              <Input type="number" value={form.delay_hours} onChange={e => setForm(f => ({ ...f, delay_hours: e.target.value }))} min={0} />
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label>Delay (hours after trigger)</Label>
+                <Input type="number" value={form.delay_hours} onChange={e => setForm(f => ({ ...f, delay_hours: e.target.value }))} min={0} />
+              </div>
+              <div>
+                <Label>Step # (for multi-email series)</Label>
+                <Input type="number" value={form.step_number} onChange={e => setForm(f => ({ ...f, step_number: e.target.value }))} min={1} max={10} />
+                <p className="text-[10px] text-muted-foreground mt-0.5">Step 1 = first email, Step 2 = second, etc.</p>
+              </div>
             </div>
             <div>
               <Label>Email Subject</Label>
