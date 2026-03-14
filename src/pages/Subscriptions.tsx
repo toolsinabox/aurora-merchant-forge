@@ -372,6 +372,33 @@ export default function Subscriptions() {
             </Table>
           </CardContent>
         </Card>
+
+      {/* Cancellation Survey Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Cancel Subscription</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">We're sorry to see you go. Please tell us why you're cancelling so we can improve.</p>
+          <div className="space-y-2">
+            {CANCEL_REASONS.map(r => (
+              <label key={r} className="flex items-center gap-2 text-sm cursor-pointer p-2 rounded-md hover:bg-muted/50 transition-colors">
+                <input type="radio" name="cancel_reason" value={r} checked={cancelReason === r} onChange={() => setCancelReason(r)} className="accent-primary" />
+                {r}
+              </label>
+            ))}
+          </div>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setCancelDialogOpen(false)}>Keep Subscription</Button>
+            <Button variant="destructive" size="sm" disabled={!cancelReason} onClick={() => {
+              if (cancellingSubId) {
+                updateStatus.mutate({ id: cancellingSubId, status: "cancelled" });
+                toast.info(`Cancellation reason: ${cancelReason}`);
+              }
+              setCancelDialogOpen(false);
+              setCancellingSubId(null);
+            }}>Confirm Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </AdminLayout>
   );
