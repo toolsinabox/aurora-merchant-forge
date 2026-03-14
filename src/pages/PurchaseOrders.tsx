@@ -50,6 +50,8 @@ export default function PurchaseOrders() {
   const [receivePO, setReceivePO] = useState<any>(null);
   const [poItems, setPOItems] = useState<any[]>([]);
   const [receiveQtys, setReceiveQtys] = useState<Record<string, number>>({});
+  const [qcFlags, setQcFlags] = useState<Record<string, boolean>>({});
+  const [qcNotes, setQcNotes] = useState<Record<string, string>>({});
   const [loadingItems, setLoadingItems] = useState(false);
 
   const { data: pos = [], isLoading } = useQuery({
