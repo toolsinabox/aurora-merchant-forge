@@ -8043,7 +8043,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
       { name: "Customer Export to CSV", description: "Export customer list to CSV", status: "done", notes: "ExportWizard" },
       { name: "Customer Address Book (Multiple)", description: "Store multiple addresses per customer", status: "done", notes: "customer_addresses table with billing/shipping types, default flag, full address fields" },
       { name: "Customer Credit Balance", description: "Store credit / account balance per customer", status: "done", notes: "store_credit_transactions table + StoreCreditCard component" },
-      { name: "Customer Price Lists", description: "Assign custom price lists to customer groups", status: "partial", notes: "customer_groups discount" },
+      { name: "Customer Price Lists", description: "Assign custom price lists to customer groups", status: "done", notes: "customer_groups table with discount_percent per group, assigned to customers via customer_group_id, PriceLists page for full price list CRUD" },
       { name: "Customer Tax Exemption Certificate", description: "Upload and manage tax exemption documents", status: "done", notes: "CustomerDetail tax exemption cert upload with file upload to storage and URL field, view link in read mode" },
       { name: "Customer ABN / VAT Number", description: "Store ABN/VAT/GST registration numbers", status: "done", notes: "abn_vat_number column on customers table, editable in CustomerDetail form" },
       { name: "Customer Communication Log", description: "Log all emails/SMS sent to customer", status: "done", notes: "customer_communications table" },
