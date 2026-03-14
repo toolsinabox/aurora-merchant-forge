@@ -302,6 +302,10 @@ export default function CustomerDetail() {
       tags: (customer.tags || []).join(", "),
       customer_group_id: (customer as any).customer_group_id || "",
       logo_url: (customer as any).logo_url || "",
+      sales_rep: (customer as any).sales_rep || "",
+      referral_code: (customer as any).referral_code || "",
+      referred_by: (customer as any).referred_by || "",
+      tax_exempt_cert_url: (customer as any).tax_exempt_cert_url || "",
     });
     setEditing(true);
   };
