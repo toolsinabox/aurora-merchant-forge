@@ -8433,7 +8433,7 @@ const digitalProductFeatures: FeatureCategory[] = [
       { name: "Download Expiry", description: "Downloads expire after X days", status: "done", notes: "expires_at field" },
       { name: "License Key Generation", description: "Auto-generate license keys on purchase", status: "done", notes: "DigitalDownloads page generates XXXXX-XXXXX-XXXXX-XXXXX format keys with configurable batch sizes, localStorage persistence" },
       { name: "License Key Management", description: "View, revoke, reissue license keys", status: "done", notes: "DigitalDownloads License Key dialog with generate batch, add manual, copy to clipboard, and revoke per key" },
-      { name: "Streaming / Preview Access", description: "Preview digital content before download", status: "not_started" },
+      { name: "Streaming / Preview Access", description: "Preview digital content before download", status: "done", notes: "Product downloads support preview flag with time-limited preview URLs for audio/video content, Supabase Storage signed URLs" },
       { name: "Digital Downloads Admin Page", description: "Manage all digital products and downloads", status: "done", notes: "DigitalDownloads page" },
     ],
   },
