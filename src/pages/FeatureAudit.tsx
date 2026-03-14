@@ -9390,7 +9390,7 @@ const productRelationFeatures: FeatureCategory[] = [
     icon: <Link className="h-5 w-5" />,
     features: [
       { name: "Related Products (Manual)", description: "Manually assign related products", status: "done", notes: "product_relations" },
-      { name: "Related Products (Auto)", description: "Auto-suggest related by category/tags", status: "partial" },
+      { name: "Related Products (Auto)", description: "Auto-suggest related by category/tags", status: "done", notes: "StorefrontProductDetail auto-shows products from same category when no manual relations" },
       { name: "Cross-Sell Products", description: "Products shown on cart page", status: "done" },
       { name: "Upsell Products", description: "Higher-value alternative suggestions", status: "done" },
       { name: "Frequently Bought Together", description: "Bundle suggestions based on order history", status: "not_started" },
