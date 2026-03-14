@@ -123,6 +123,8 @@ import CustomerSegments from "./pages/CustomerSegments.tsx";
 import CustomFields from "./pages/CustomFields.tsx";
 import Refunds from "./pages/Refunds.tsx";
 import SalesChannels from "./pages/SalesChannels.tsx";
+import MaropostMigration from "./pages/MaropostMigration.tsx";
+import MaropostTransferAudit from "./pages/MaropostTransferAudit.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
