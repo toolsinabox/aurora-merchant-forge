@@ -8661,7 +8661,7 @@ const mobileAppFeatures: FeatureCategory[] = [
       { name: "Mobile Search (Full Screen)", description: "Full-screen search overlay on mobile", status: "done", notes: "StorefrontSearch expands to full-width overlay on mobile viewports" },
       { name: "Mobile Sidebar Navigation", description: "Slide-out navigation on mobile", status: "done", notes: "StorefrontSidebar" },
       { name: "Mobile POS Mode", description: "POS interface optimized for tablet", status: "done", notes: "POS page responsive grid layout adapts to tablet, large product tiles for touch" },
-      { name: "Push Notification Support", description: "Browser push notifications for orders", status: "not_started" },
+      { name: "Push Notification Support", description: "Browser push notifications for orders", status: "done", notes: "NotificationBell with browser Notification API, realtime Supabase subscription triggers push for new orders/returns/reviews" },
       { name: "Offline Cart Persistence", description: "Cart persists when device goes offline", status: "done", notes: "CartContext persists to localStorage, survives offline/refresh" },
     ],
   },
