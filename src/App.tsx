@@ -155,6 +155,7 @@ const App = () => (
                   <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/contact" element={<StorefrontContact />} />
+                  <Route path="/request-quote" element={<StorefrontRequestQuote />} />
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/wholesale" element={<StorefrontWholesale />} />
                   <Route path="/store-finder" element={<StorefrontStoreFinder />} />
