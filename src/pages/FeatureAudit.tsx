@@ -8047,7 +8047,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
       { name: "Customer Tax Exemption Certificate", description: "Upload and manage tax exemption documents", status: "done", notes: "CustomerDetail tax exemption cert upload with file upload to storage and URL field, view link in read mode" },
       { name: "Customer ABN / VAT Number", description: "Store ABN/VAT/GST registration numbers", status: "done", notes: "abn_vat_number column on customers table, editable in CustomerDetail form" },
       { name: "Customer Communication Log", description: "Log all emails/SMS sent to customer", status: "done", notes: "customer_communications table" },
-      { name: "Customer Lifetime Value (CLV)", description: "Calculate and display CLV per customer", status: "partial" },
+      { name: "Customer Lifetime Value (CLV)", description: "Calculate and display CLV per customer", status: "done", notes: "Predictive CLV model on CustomerDetail stats card: historic + predicted CLV using avg order value × purchase frequency × estimated lifespan" },
       { name: "Customer Purchase History", description: "Full order history on customer profile", status: "done" },
       { name: "Customer Wishlist (Backend)", description: "Server-side wishlist storage", status: "partial", notes: "Client-side context" },
       { name: "Customer Saved Carts", description: "Save cart for later retrieval", status: "done", notes: "SavedCarts page" },
