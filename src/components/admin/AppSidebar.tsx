@@ -132,6 +132,7 @@ const systemNav = [
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
+  { title: "Custom Fields", url: `${prefix}/custom-fields`, icon: FormInput },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Go-Live Checklist", url: `${prefix}/go-live`, icon: Sparkles },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
