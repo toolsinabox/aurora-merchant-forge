@@ -80,7 +80,7 @@ export default function ProductForm() {
     dangerous_goods: false, oversized_item: false, temperature_sensitive: false,
     auto_url_update: true,
     warranty: "", availability_description: "",
-    reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
+    reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0", min_order_quantity: "1",
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
     scheduled_publish_at: "", scheduled_unpublish_at: "",
     video_url: "",
