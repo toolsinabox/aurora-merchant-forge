@@ -224,8 +224,8 @@ export default function Suppliers() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Suppliers</h1>
-            <p className="text-sm text-muted-foreground">{suppliers.length} suppliers</p>
+            <h1 className="text-lg font-semibold">Suppliers</h1>
+            <p className="text-xs text-muted-foreground">{suppliers.length} suppliers</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(emptyForm); setEditId(null); } }}>
             <DialogTrigger asChild>
