@@ -36,6 +36,7 @@ const catalogNav = [
   { title: "Suppliers", url: `${prefix}/suppliers`, icon: Building },
   { title: "Purchase Orders", url: `${prefix}/purchase-orders`, icon: ClipboardCopy },
   { title: "Backorders", url: `${prefix}/backorders`, icon: PackageX },
+  { title: "Forecasting", url: `${prefix}/inventory-forecasting`, icon: TrendingUp },
 ];
 
 const salesNav = [
