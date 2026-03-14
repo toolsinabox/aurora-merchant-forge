@@ -88,12 +88,14 @@ export default function StorefrontCart() {
   if (items.length === 0) {
     return (
       <StorefrontLayout>
-        <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-          <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+        <div className="max-w-2xl mx-auto px-4 py-24 text-center animate-fade-in">
+          <div className="mx-auto h-16 w-16 rounded-2xl bg-muted flex items-center justify-center mb-5">
+            <ShoppingBag className="h-7 w-7 text-muted-foreground" />
+          </div>
           <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-6">Add some products to get started.</p>
+          <p className="text-muted-foreground text-sm mb-6">Browse our products and add something you love.</p>
           <Link to={`${basePath}/products`}>
-            <Button>Continue Shopping</Button>
+            <Button className="gap-2">Continue Shopping <ArrowRight className="h-4 w-4" /></Button>
           </Link>
         </div>
       </StorefrontLayout>
