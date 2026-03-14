@@ -101,8 +101,8 @@ export default function Sessions() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Value</TableHead>
+                    <TableHead className="text-xs h-8">Property</TableHead>
+                    <TableHead className="text-xs h-8">Value</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

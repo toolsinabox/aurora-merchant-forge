@@ -199,11 +199,11 @@ export default function Addons() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Add-On</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Version</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="text-xs h-8">Add-On</TableHead>
+                    <TableHead className="text-xs h-8">Type</TableHead>
+                    <TableHead className="text-xs h-8">Version</TableHead>
+                    <TableHead className="text-xs h-8">Status</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

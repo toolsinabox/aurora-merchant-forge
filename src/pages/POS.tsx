@@ -534,10 +534,10 @@ export default function POS() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Order</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead className="text-xs h-8">Order</TableHead>
+                    <TableHead className="text-xs h-8">Time</TableHead>
+                    <TableHead className="text-xs h-8">Status</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Total</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
