@@ -120,6 +120,9 @@ import CreditNotes from "./pages/CreditNotes.tsx";
 import BatchInvoicePrint from "./pages/BatchInvoicePrint.tsx";
 import OrderHolds from "./pages/OrderHolds.tsx";
 import CustomerSegments from "./pages/CustomerSegments.tsx";
+import CustomFields from "./pages/CustomFields.tsx";
+import Refunds from "./pages/Refunds.tsx";
+import SalesChannels from "./pages/SalesChannels.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
