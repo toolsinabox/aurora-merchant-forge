@@ -175,6 +175,11 @@ export default function Customers() {
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> <span className="btn-label">Export</span>
             </Button>
+            {selectedForMerge.length >= 2 && (
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => { setPrimaryId(selectedForMerge[0]); setShowMerge(true); }}>
+                <Merge className="h-3.5 w-3.5" /> Merge ({selectedForMerge.length})
+              </Button>
+            )}
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> <span className="btn-label">Add Customer</span></Button>
           </div>
         </div>
