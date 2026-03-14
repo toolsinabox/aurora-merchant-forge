@@ -261,9 +261,10 @@ export default function Orders() {
                       className="h-3.5 w-3.5"
                     />
                   </TableHead>
-                  <TableHead className="text-xs h-8">Order</TableHead>
+                   <TableHead className="text-xs h-8">Order</TableHead>
                   <TableHead className="text-xs h-8">Customer</TableHead>
                   <TableHead className="text-xs h-8">Items</TableHead>
+                  <TableHead className="text-xs h-8">Tags</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                   <TableHead className="text-xs h-8">Payment</TableHead>
                   <TableHead className="text-xs h-8">Fulfillment</TableHead>
