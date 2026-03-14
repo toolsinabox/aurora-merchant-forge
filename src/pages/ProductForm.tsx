@@ -91,7 +91,7 @@ export default function ProductForm() {
     shipping_weight: "0", shipping_cubic: "0",
     shipping_length: "0", shipping_width: "0", shipping_height: "0",
     actual_length: "0", actual_width: "0", actual_height: "0",
-    requires_packaging: false, shipping_category: "",
+    requires_packaging: false, free_shipping: false, shipping_category: "",
     flat_rate_charge: "", selling_unit: "", base_unit: "", base_unit_qty: "1", cartons: "0",
   });
 
