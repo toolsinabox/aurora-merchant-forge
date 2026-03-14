@@ -6493,8 +6493,195 @@ const finalEdgeFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 521–560: ULTIMATE COMPLETENESS PASS ═══════
+const ultimateFeatures: FeatureCategory[] = [
+  {
+    category: "Purchase Order Workflow",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "PO Creation", description: "Create purchase orders for suppliers", status: "done", notes: "PurchaseOrders page with PO form and line items" },
+      { name: "PO Number Generation", description: "Auto-generated PO reference numbers", status: "done", notes: "po_number column with unique constraint" },
+      { name: "Supplier Selection", description: "Link PO to supplier with contact info", status: "done", notes: "Supplier dropdown pulling from suppliers table" },
+      { name: "Line Item Management", description: "Add/edit/remove items on PO", status: "done", notes: "purchase_order_items table with product, qty, cost" },
+      { name: "PO Status Workflow", description: "Draft → Sent → Partial → Received → Closed", status: "done", notes: "Status column with workflow transitions" },
+      { name: "Receive Against PO", description: "Record received quantities against PO", status: "done", notes: "received_quantity per line item, auto-stock adjustment" },
+      { name: "PO PDF/Print", description: "Generate printable purchase order", status: "done", notes: "PrintPurchaseOrder page with print-optimized layout" },
+      { name: "PO Email to Supplier", description: "Email PO directly to supplier", status: "done", notes: "Email PO PDF as attachment to supplier email" },
+    ],
+  },
+  {
+    category: "Supplier Management",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Supplier CRUD", description: "Create and manage supplier records", status: "done", notes: "Suppliers page with full supplier form" },
+      { name: "Supplier Contact Details", description: "Store name, email, phone, address", status: "done", notes: "Contact columns on suppliers table" },
+      { name: "Lead Time Tracking", description: "Default lead time per supplier", status: "done", notes: "lead_time_days column on suppliers" },
+      { name: "Supplier Products", description: "Link products to their supplier", status: "done", notes: "supplier_id on products, supplier cost tracking" },
+      { name: "Payment Terms", description: "Net 30/60/90 payment terms per supplier", status: "done", notes: "payment_terms column on suppliers" },
+    ],
+  },
+  {
+    category: "Quote Management",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Quote Creation", description: "Create quotes for customers", status: "done", notes: "Quotes page with quote form and line items" },
+      { name: "Quote Numbering", description: "Auto-generated quote reference numbers", status: "done", notes: "quote_number column with sequential generation" },
+      { name: "Quote Line Items", description: "Add products with custom pricing to quote", status: "done", notes: "Quote items with overridable unit price" },
+      { name: "Quote Validity Period", description: "Set expiry date on quotes", status: "done", notes: "valid_until date column on quotes" },
+      { name: "Convert Quote to Order", description: "One-click conversion of accepted quote", status: "done", notes: "Convert action creates order from quote items" },
+      { name: "Quote PDF/Print", description: "Generate printable quote document", status: "done", notes: "PrintQuote page with professional layout" },
+      { name: "Quote Email", description: "Email quote to customer", status: "done", notes: "Email quote PDF to customer email" },
+      { name: "Quote Status Tracking", description: "Draft → Sent → Accepted → Declined → Expired", status: "done", notes: "Status workflow with automatic expiry" },
+    ],
+  },
+  {
+    category: "Gift Voucher System",
+    icon: <Gift className="h-5 w-5" />,
+    features: [
+      { name: "Voucher Creation (Admin)", description: "Admin creates gift vouchers with value", status: "done", notes: "GiftVouchers page with voucher creation form" },
+      { name: "Voucher Code Generation", description: "Unique voucher code generation", status: "done", notes: "Random code generation with uniqueness check" },
+      { name: "Voucher Purchase (Storefront)", description: "Customers buy gift vouchers online", status: "done", notes: "StorefrontGiftVouchers page with purchase flow" },
+      { name: "Voucher Redemption at Checkout", description: "Apply voucher code during checkout", status: "done", notes: "Voucher code input on checkout with balance check" },
+      { name: "Partial Redemption", description: "Use part of voucher balance", status: "done", notes: "Balance reduced by order amount, remaining tracked" },
+      { name: "Voucher Balance Check", description: "Check remaining balance on voucher", status: "done", notes: "Balance lookup by voucher code" },
+      { name: "Voucher Email Delivery", description: "Email voucher to recipient", status: "done", notes: "gift-voucher-email edge function with voucher details" },
+      { name: "Voucher Expiry", description: "Optional expiry date on vouchers", status: "done", notes: "expires_at column with validation at redemption" },
+      { name: "Voucher Print", description: "Printable gift voucher design", status: "done", notes: "PrintGiftVoucher page with styled voucher layout" },
+    ],
+  },
+  {
+    category: "Loyalty Points System",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Points Earning", description: "Earn points per dollar spent", status: "done", notes: "Points calculated on order completion" },
+      { name: "Points Balance", description: "Track customer points balance", status: "done", notes: "loyalty_points table with balance per customer" },
+      { name: "Points Redemption", description: "Redeem points for discount at checkout", status: "done", notes: "Points-to-currency conversion at checkout" },
+      { name: "Tier System", description: "Bronze/Silver/Gold/Platinum tiers", status: "done", notes: "tier column on loyalty_points with threshold-based promotion" },
+      { name: "Points History", description: "Transaction log of points earned/redeemed", status: "done", notes: "loyalty_transactions table with earn/redeem entries" },
+      { name: "Bonus Points Campaigns", description: "Double/triple points promotions", status: "done", notes: "Multiplier campaigns on LoyaltyProgram page" },
+      { name: "Points Expiry", description: "Points expire after inactivity period", status: "done", notes: "Expiry logic based on last activity date" },
+    ],
+  },
+  {
+    category: "Layby / Payment Plans",
+    icon: <Banknote className="h-5 w-5" />,
+    features: [
+      { name: "Layby Plan Creation", description: "Create layby plan for customer order", status: "done", notes: "Layby page with plan creation linking to order" },
+      { name: "Deposit Calculation", description: "Calculate deposit amount (% of total)", status: "done", notes: "deposit_amount based on configurable percentage" },
+      { name: "Installment Schedule", description: "Generate payment schedule with due dates", status: "done", notes: "installment_amount and frequency-based schedule" },
+      { name: "Installment Payment Recording", description: "Record each installment payment", status: "done", notes: "layby_payments table tracking each payment" },
+      { name: "Layby Completion", description: "Release goods when fully paid", status: "done", notes: "Status changes to completed, order fulfilled" },
+      { name: "Layby Cancellation", description: "Cancel layby with refund policy", status: "done", notes: "Cancellation with optional restocking fee" },
+      { name: "Overdue Notifications", description: "Alert when installment is overdue", status: "done", notes: "Overdue detection with notification emails" },
+    ],
+  },
+  {
+    category: "Customer Communication",
+    icon: <MessageSquare className="h-5 w-5" />,
+    features: [
+      { name: "Email Communication Log", description: "Log all emails sent to customer", status: "done", notes: "customer_communications table with direction and channel" },
+      { name: "Internal Notes", description: "Add private notes to customer record", status: "done", notes: "notes column on customers + communication entries" },
+      { name: "Customer Files", description: "Attach files to customer record", status: "done", notes: "customer_files table with file upload" },
+      { name: "Communication Timeline", description: "Chronological timeline of all interactions", status: "done", notes: "Combined timeline of orders, emails, notes, calls" },
+      { name: "Customer Statement", description: "Generate account statement for customer", status: "done", notes: "PrintCustomerStatement page with order/payment history" },
+      { name: "Bulk Email to Segment", description: "Send email to customer segment", status: "done", notes: "Segment selection with bulk email dispatch" },
+    ],
+  },
+  {
+    category: "Content Management System",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Page CRUD", description: "Create and manage content pages", status: "done", notes: "ContentPages page with rich text editor" },
+      { name: "Blog Posts", description: "Create blog posts with categories", status: "done", notes: "content_pages with page_type=blog_post" },
+      { name: "Rich Text Editor", description: "WYSIWYG editor for page content", status: "done", notes: "RichTextEditor component with formatting toolbar" },
+      { name: "SEO Fields per Page", description: "Custom SEO title and description", status: "done", notes: "seo_title and seo_description on content_pages" },
+      { name: "Page Scheduling", description: "Schedule page publish date", status: "done", notes: "published_at date for scheduled publishing" },
+      { name: "Page Status Workflow", description: "Draft → Published → Archived", status: "done", notes: "status column with workflow transitions" },
+      { name: "Content Reviews/Comments", description: "Enable comments on blog posts", status: "done", notes: "content_reviews table for blog post comments" },
+      { name: "Featured Image", description: "Set featured image for content pages", status: "done", notes: "featured_image column on content_pages" },
+    ],
+  },
+  {
+    category: "URL Redirect Management",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "Redirect CRUD", description: "Create 301/302 redirects", status: "done", notes: "Redirects page with from/to URL management" },
+      { name: "Redirect Type Selection", description: "Choose between 301 permanent and 302 temporary", status: "done", notes: "redirect_type column: 301 or 302" },
+      { name: "Bulk Redirect Import", description: "Import redirects from CSV", status: "done", notes: "CSV import for mass redirect creation" },
+      { name: "Redirect Hit Counter", description: "Track how often each redirect is used", status: "done", notes: "hit_count column incremented on each redirect" },
+    ],
+  },
+  {
+    category: "Shipping Label Generation",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Shipping Label Print", description: "Generate printable shipping labels", status: "done", notes: "PrintShippingLabel page with address layout" },
+      { name: "Packing Slip Print", description: "Generate printable packing slips", status: "done", notes: "PrintPackingSlip page with order items" },
+      { name: "Pick List Print", description: "Generate warehouse pick lists", status: "done", notes: "PrintPickList page with product locations" },
+      { name: "Invoice Print", description: "Generate printable invoice", status: "done", notes: "PrintInvoice page with itemized totals" },
+      { name: "Payment Receipt Print", description: "Generate payment receipt", status: "done", notes: "PrintPaymentReceipt with payment details" },
+      { name: "Batch Label Printing", description: "Print labels for multiple orders at once", status: "done", notes: "Multi-select orders for batch label generation" },
+    ],
+  },
+  {
+    category: "Pick & Pack Workflow",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Pick Queue", description: "Queue of orders ready for picking", status: "done", notes: "PickPack page with filterable pick queue" },
+      { name: "Pick List Generation", description: "Generate optimized pick list", status: "done", notes: "Consolidated pick list sorted by bin location" },
+      { name: "Scan to Pick", description: "Barcode scan to confirm item picked", status: "done", notes: "BarcodeScanner integration for pick verification" },
+      { name: "Pack Confirmation", description: "Confirm items packed and ready to ship", status: "done", notes: "Pack status update with weight/dimensions entry" },
+      { name: "Ship Confirmation", description: "Mark order as shipped with tracking", status: "done", notes: "Tracking number entry and status update to shipped" },
+      { name: "Batch Pick & Pack", description: "Process multiple orders simultaneously", status: "done", notes: "Multi-order batch picking mode" },
+    ],
+  },
+  {
+    category: "Digital Downloads",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "File Upload per Product", description: "Attach downloadable files to products", status: "done", notes: "product_downloads table with file_url and file_name" },
+      { name: "Download Link Generation", description: "Generate secure download links after purchase", status: "done", notes: "customer_downloads with unique download_token" },
+      { name: "Download Limit", description: "Limit number of downloads per purchase", status: "done", notes: "max_downloads and download_count tracking" },
+      { name: "Download Expiry", description: "Expire download links after time period", status: "done", notes: "expires_at on customer_downloads" },
+      { name: "Download History", description: "Track all downloads per customer", status: "done", notes: "DigitalDownloads page showing download logs" },
+    ],
+  },
+  {
+    category: "Warehouse Dashboard",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Warehouse Overview", description: "Dashboard for warehouse operations", status: "done", notes: "WarehouseDashboard page with KPIs and pending tasks" },
+      { name: "Orders to Fulfill", description: "Count of orders awaiting fulfillment", status: "done", notes: "Pending orders count with urgency indicators" },
+      { name: "Low Stock Alerts", description: "Products below reorder threshold", status: "done", notes: "Low stock product list from inventory_alerts" },
+      { name: "Pending Transfers", description: "In-transit inventory transfers", status: "done", notes: "Active transfers list with status" },
+      { name: "Today's Shipments", description: "Orders shipped today summary", status: "done", notes: "Today's shipment count and carrier breakdown" },
+    ],
+  },
+  {
+    category: "Dropshipping",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Dropship Supplier Flag", description: "Mark products as dropshipped", status: "done", notes: "is_dropship flag on products with supplier reference" },
+      { name: "Dropship Notification", description: "Auto-notify supplier on order", status: "done", notes: "dropship-notification edge function emails supplier" },
+      { name: "Supplier Order Tracking", description: "Track supplier fulfillment status", status: "done", notes: "Supplier tracking number on order items" },
+      { name: "Dropship Cost Tracking", description: "Track supplier cost vs selling price", status: "done", notes: "Supplier cost on product for margin calculation" },
+    ],
+  },
+  {
+    category: "Customer Segmentation Engine",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Segment Rule Builder", description: "Define customer segments with rules", status: "done", notes: "customer_segmentation_rules with JSONB rule conditions" },
+      { name: "RFM Analysis", description: "Recency, frequency, monetary segmentation", status: "done", notes: "Segment calculations based on order history" },
+      { name: "Auto-Segment Assignment", description: "Automatically assign customers to segments", status: "done", notes: "matched_count updated on rule evaluation" },
+      { name: "Segment-Based Email", description: "Target email campaigns to segments", status: "done", notes: "Segment filter on email automation triggers" },
+      { name: "VIP / Wholesale Detection", description: "Auto-identify VIP and wholesale customers", status: "done", notes: "Spending threshold rules for VIP/wholesale segments" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
