@@ -26,7 +26,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, store_id, source_data, migration_job_id }: ImportRequest = await req.json();
+    const { action, store_id, source_data, migration_job_id, dry_run = false }: ImportRequest = await req.json();
 
     if (!store_id) {
       return new Response(JSON.stringify({ error: "store_id is required" }), {
