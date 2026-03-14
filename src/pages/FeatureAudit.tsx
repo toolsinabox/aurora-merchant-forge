@@ -8674,7 +8674,7 @@ const dataPrivacyFeatures: FeatureCategory[] = [
     features: [
       { name: "GDPR Right to Access", description: "Export all data held about a customer", status: "not_started" },
       { name: "GDPR Right to Erasure", description: "Delete all customer PII on request", status: "not_started" },
-      { name: "GDPR Consent Management", description: "Track marketing consent per customer", status: "partial" },
+      { name: "GDPR Consent Management", description: "Track marketing consent per customer", status: "done", notes: "CookieConsentBanner with granular consent categories, Communication Preferences in StorefrontAccount" },
       { name: "CCPA Do Not Sell", description: "Honor CCPA opt-out of data sale", status: "not_started" },
       { name: "Data Retention Policies", description: "Auto-purge old data per retention schedule", status: "not_started" },
       { name: "PCI DSS Compliance", description: "No card data stored (delegated to gateway)", status: "done", notes: "Stripe handles card data" },
