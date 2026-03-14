@@ -8082,7 +8082,7 @@ const inventoryAdvancedFeatures: FeatureCategory[] = [
       { name: "Minimum / Maximum Stock Levels", description: "Set min/max stock per product per location", status: "done", notes: "low_stock_threshold column on inventory_stock with per-location min threshold, shown in Batch Traceability tab, inventory alerts trigger when quantity <= threshold" },
       { name: "Reorder Point Alerts", description: "Auto-alert when stock hits reorder point", status: "done", notes: "inventory_alerts + low-stock-alert" },
       { name: "Purchase Order Auto-Generation", description: "Auto-create PO when stock below threshold", status: "done", notes: "Inventory page Auto-Generate POs button creates draft POs for all low-stock products with cost-based totals" },
-      { name: "Supplier Lead Time per Product", description: "Track supplier-specific lead times for forecasting", status: "partial", notes: "lead_time_days on forecasts" },
+      { name: "Supplier Lead Time per Product", description: "Track supplier-specific lead times for forecasting", status: "done", notes: "lead_time_days on inventory_forecasts, suppliers lead_time_days field, used in reorder_date calculation" },
       { name: "Inventory Transfer Between Locations", description: "Transfer stock between warehouses with approval", status: "done", notes: "inventory_transfers table" },
       { name: "Goods Receipt Note (GRN)", description: "Record received goods against purchase orders", status: "partial" },
       { name: "Consignment Stock", description: "Track supplier-owned stock in your warehouse", status: "not_started" },
