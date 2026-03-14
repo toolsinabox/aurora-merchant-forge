@@ -321,6 +321,7 @@ export default function CustomerDetail() {
         logo_url: (editForm as any).logo_url || null,
         payment_terms: (editForm as any).payment_terms || null,
         credit_limit: (editForm as any).credit_limit ?? null,
+        abn_vat_number: (editForm as any).abn_vat_number || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
