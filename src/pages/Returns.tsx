@@ -350,16 +350,36 @@ export default function Returns() {
                 </div>
               )}
 
-              <div className="space-y-1.5">
-                <Label className="text-xs">Refund Amount ($)</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={refundAmount}
-                  onChange={(e) => setRefundAmount(e.target.value)}
-                  className="h-9"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Refund Amount ($)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={refundAmount}
+                    onChange={(e) => setRefundAmount(e.target.value)}
+                    className="h-9"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Restocking Fee ($)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={(selected as any)?._restockingFee || "0"}
+                    onChange={(e) => {
+                      const fee = Number(e.target.value) || 0;
+                      setSelected({ ...selected, _restockingFee: e.target.value });
+                      const origRefund = Number(selected.refund_amount || refundAmount || 0);
+                      setRefundAmount(String(Math.max(0, origRefund - fee)));
+                    }}
+                    className="h-9"
+                    placeholder="0.00"
+                  />
+                  <p className="text-[10px] text-muted-foreground">Deducted from refund amount</p>
+                </div>
               </div>
 
               <div className="space-y-1.5">
