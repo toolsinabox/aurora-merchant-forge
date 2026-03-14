@@ -64,6 +64,21 @@ function parseCSV(text: string): Record<string, string>[] {
 }
 
 export default function Products() {
+  const navigate = useNavigate();
+  const { data: products = [], isLoading } = useProducts();
+  const { data: categories = [] } = useCategories();
+  const deleteProducts = useDeleteProducts();
+  const updateProduct = useUpdateProduct();
+  const { currentStore } = useAuth();
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [importing, setImporting] = useState(false);
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+
   // Column visibility
   type ColKey = "sku" | "status" | "stock" | "price";
   const COLUMN_STORAGE_KEY = "products-visible-columns";
