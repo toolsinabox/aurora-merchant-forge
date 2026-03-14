@@ -8041,7 +8041,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
       { name: "Customer Merge (Deduplication)", description: "Merge duplicate customer records", status: "done", notes: "Customers page — select 2+ customers with checkboxes, click Merge, pick primary record, orders reassigned and duplicates deleted" },
       { name: "Customer Import from CSV", description: "Bulk import customers from CSV file", status: "done", notes: "ImportWizard" },
       { name: "Customer Export to CSV", description: "Export customer list to CSV", status: "done", notes: "ExportWizard" },
-      { name: "Customer Address Book (Multiple)", description: "Store multiple addresses per customer", status: "partial" },
+      { name: "Customer Address Book (Multiple)", description: "Store multiple addresses per customer", status: "done", notes: "customer_addresses table with billing/shipping types, default flag, full address fields" },
       { name: "Customer Credit Balance", description: "Store credit / account balance per customer", status: "done", notes: "store_credit_transactions table + StoreCreditCard component" },
       { name: "Customer Price Lists", description: "Assign custom price lists to customer groups", status: "partial", notes: "customer_groups discount" },
       { name: "Customer Tax Exemption Certificate", description: "Upload and manage tax exemption documents", status: "done", notes: "CustomerDetail tax exemption cert upload with file upload to storage and URL field, view link in read mode" },
