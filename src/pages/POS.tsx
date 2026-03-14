@@ -80,6 +80,21 @@ export default function POS() {
     toast.success("Order resumed");
   };
 
+  // Custom sale state
+  const [showCustomSale, setShowCustomSale] = useState(false);
+  const [customTitle, setCustomTitle] = useState("Custom Item");
+  const [customPrice, setCustomPrice] = useState("");
+
+  const addCustomSale = () => {
+    const price = parseFloat(customPrice);
+    if (!customTitle.trim() || isNaN(price) || price <= 0) { toast.error("Enter a valid title and price"); return; }
+    setCart(prev => [...prev, { product_id: `custom-${Date.now()}`, title: customTitle.trim(), sku: "CUSTOM", price, quantity: 1 }]);
+    setShowCustomSale(false);
+    setCustomTitle("Custom Item");
+    setCustomPrice("");
+    toast.success("Custom item added");
+  };
+
   const deleteParkedOrder = (parkedId: string) => {
     saveParked(parkedOrders.filter(p => p.id !== parkedId));
     toast.success("Parked order deleted");
