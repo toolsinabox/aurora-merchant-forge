@@ -42,6 +42,14 @@ export default function Subscriptions() {
     frequency: "monthly", interval_count: 1, unit_price: 0,
     discount_percent: 0, next_order_date: "", payment_method: "card", notes: "",
   });
+  const [skipDialogOpen, setSkipDialogOpen] = useState(false);
+  const [skippingSubId, setSkippingSubId] = useState<string | null>(null);
+  const [swapDialogOpen, setSwapDialogOpen] = useState(false);
+  const [swappingSub, setSwappingSub] = useState<any>(null);
+  const [swapProductId, setSwapProductId] = useState("");
+  const [qtyDialogOpen, setQtyDialogOpen] = useState(false);
+  const [qtyEditSub, setQtyEditSub] = useState<any>(null);
+  const [newQty, setNewQty] = useState(1);
 
   const { data: subs = [], isLoading } = useQuery({
     queryKey: ["subscription_plans", storeId],
