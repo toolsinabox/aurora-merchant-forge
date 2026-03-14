@@ -225,6 +225,9 @@ export default function Layby() {
                               <Button size="sm" variant="outline" className="h-6 text-[10px] px-2" onClick={() => { setPayDialog(plan); setPayAmount(String(plan.installment_amount)); }}>
                                 <DollarSign className="h-3 w-3 mr-0.5" /> Pay
                               </Button>
+                              <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2" title="Send Reminder" onClick={() => sendReminder.mutate(plan)} disabled={sendReminder.isPending}>
+                                <Mail className="h-3 w-3" />
+                              </Button>
                               <Button size="sm" variant="ghost" className="h-6 text-[10px] px-2 text-destructive" onClick={() => cancelPlan.mutate(plan.id)}>
                                 Cancel
                               </Button>
