@@ -7657,7 +7657,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
       { name: "Apple Pay", description: "Apple Pay at checkout via payment gateway", status: "not_started" },
       { name: "Google Pay", description: "Google Pay at checkout via payment gateway", status: "not_started" },
       { name: "Bank Transfer / Direct Deposit", description: "Offline payment with bank details shown", status: "partial" },
-      { name: "Cash on Delivery", description: "COD payment option", status: "not_started" },
+      { name: "Cash on Delivery", description: "COD payment option", status: "done", notes: "StorefrontCheckout payment method radio with card/COD options, COD note added to order" },
       { name: "Store Credit / Account Balance", description: "Allow customers to pay from store credit balance", status: "partial", notes: "Credit notes exist" },
       { name: "Gift Voucher as Payment", description: "Redeem gift voucher at checkout to reduce balance", status: "done", notes: "Gift vouchers system" },
       { name: "Loyalty Points as Payment", description: "Redeem loyalty points as partial/full payment", status: "partial", notes: "Loyalty system exists" },
