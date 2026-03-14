@@ -95,6 +95,7 @@ export default function MaropostMigration() {
   const [logs, setLogs] = useState<string[]>([]);
   const [themeImporting, setThemeImporting] = useState(false);
   const [themeStatus, setThemeStatus] = useState<Record<string, "pending" | "converting" | "done" | "error">>({});
+  const [dryRun, setDryRun] = useState(false);
 
   // Persist state to sessionStorage for resume
   const persistState = useCallback(() => {
