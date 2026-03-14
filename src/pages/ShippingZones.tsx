@@ -73,7 +73,7 @@ export default function ShippingZones() {
   const [rateOpen, setRateOpen] = useState(false);
   const [rateForm, setRateForm] = useState({ service_id: "", min_weight: "0", max_weight: "99999", min_order_total: "0", max_order_total: "99999", rate: "0", rate_type: "flat" });
 
-  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
+  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge" });
 
   const filtered = (zones as any[]).filter((z) =>
     z.name.toLowerCase().includes(search.toLowerCase()) ||
