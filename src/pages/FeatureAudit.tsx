@@ -7991,7 +7991,7 @@ const carrierIntegrationFeatures: FeatureCategory[] = [
       { name: "Toll IPEC API", description: "Toll freight and parcel delivery", status: "not_started" },
       { name: "Hunter Express API", description: "Hunter Express courier integration", status: "not_started" },
       { name: "Allied Express API", description: "Allied Express same-day/next-day courier", status: "not_started" },
-      { name: "Click & Collect Carrier", description: "Pseudo-carrier for in-store pickup orders", status: "partial" },
+      { name: "Click & Collect Carrier", description: "Pseudo-carrier for in-store pickup orders", status: "done", notes: "Checkout delivery method toggle sets pickup orders to processing status with $0 shipping, stores pickup location in order notes" },
       { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifests", status: "done", notes: "CarrierManifest page with date picker, carrier filter, summary cards, print manifest with full HTML layout" },
       { name: "Carrier Label Batch Print", description: "Batch print shipping labels for multiple orders", status: "not_started" },
       { name: "Carrier Rate Caching", description: "Cache carrier rate lookups to reduce API calls", status: "not_started" },
