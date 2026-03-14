@@ -231,7 +231,7 @@ export default function Refunds() {
                       <TableCell className="font-medium">{r.refund_number}</TableCell>
                       <TableCell className="text-primary cursor-pointer">{r.order_number}</TableCell>
                       <TableCell>{r.customer_name}</TableCell>
-                      <TableCell className="font-semibold">${r.amount.toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold">${r.amount.toFixed(2)} <Badge variant="outline" className="ml-1 text-[9px]">{r.refund_type === "partial" ? "Partial" : "Full"}</Badge></TableCell>
                       <TableCell><Badge variant="outline">{methodLabels[r.refund_method]}</Badge></TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.reason}</TableCell>
                       <TableCell><Badge variant={sc.variant} className="gap-1">{sc.icon}{sc.label}</Badge></TableCell>
