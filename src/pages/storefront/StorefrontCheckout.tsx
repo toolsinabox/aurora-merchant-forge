@@ -132,7 +132,10 @@ export default function StorefrontCheckout() {
       const { data: svcData } = await supabase.from("shipping_services").select("*").eq("is_active", true).order("sort_order");
       if (svcData) setShippingServices(svcData);
 
-      // Load default tax rate and tax mode
+      // Load pickup locations (stores/warehouses)
+      const { data: locData } = await supabase.from("inventory_locations").select("id, name, address, type").order("name");
+      if (locData) setPickupLocations(locData);
+
       const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default, is_compound, is_inclusive, priority, applies_to").order("priority", { ascending: false });
       if (taxRates && taxRates.length > 0) {
         setAllTaxRates(taxRates as any[]);

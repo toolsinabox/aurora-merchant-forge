@@ -46,6 +46,9 @@ export default function POS() {
   const [processing, setProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("sale");
   const [selectedRegister, setSelectedRegister] = useState<string>("");
+  const [discountDialogItem, setDiscountDialogItem] = useState<string | null>(null);
+  const [discountType, setDiscountType] = useState<"percent" | "fixed">("percent");
+  const [discountVal, setDiscountVal] = useState("");
 
   // Parked orders state
   const [parkedOrders, setParkedOrders] = useState<Array<{ id: string; items: CartItem[]; customer: any; parkedAt: string; note: string }>>(() => {
