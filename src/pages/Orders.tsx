@@ -15,6 +15,7 @@ import { CreateOrderDialog } from "@/components/orders/CreateOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { TablePagination } from "@/components/admin/TablePagination";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
