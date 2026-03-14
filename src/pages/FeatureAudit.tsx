@@ -7114,8 +7114,144 @@ const b2bDeepDiveFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 671–710: TEMPLATE ENGINE, STOREFRONT CHROME & FINAL SYSTEMS ═══════
+const templateAndChromeFeatures: FeatureCategory[] = [
+  {
+    category: "B@SE Template Engine",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "Template Rendering", description: "Parse and render B@SE template syntax", status: "done", notes: "base-template-engine.ts with variable interpolation" },
+      { name: "Conditional Blocks", description: "IF/ELSE logic in templates", status: "done", notes: "{% if condition %}...{% endif %} support" },
+      { name: "Loop Blocks", description: "FOR loops in templates for collections", status: "done", notes: "{% for item in collection %}...{% endfor %}" },
+      { name: "Variable Interpolation", description: "{{ variable }} replacement in templates", status: "done", notes: "Double-curly variable substitution with dot notation" },
+      { name: "Filter Functions", description: "{{ value | filter }} for formatting", status: "done", notes: "Filters: money, date, truncate, upcase, downcase" },
+      { name: "Template Inheritance", description: "Base/child template pattern", status: "done", notes: "Layout templates with content block insertion" },
+      { name: "RenderedTemplate Component", description: "React component that renders B@SE templates", status: "done", notes: "RenderedTemplate component with context data binding" },
+    ],
+  },
+  {
+    category: "Theme / Template Management",
+    icon: <Palette className="h-5 w-5" />,
+    features: [
+      { name: "Template CRUD", description: "Create and edit storefront templates", status: "done", notes: "Templates page with template editor" },
+      { name: "Template Types", description: "Header, footer, product, collection, page templates", status: "done", notes: "Template types for different storefront sections" },
+      { name: "Template Preview", description: "Preview template rendering before publish", status: "done", notes: "Live preview with sample data" },
+      { name: "Default Templates", description: "Fallback templates for each section", status: "done", notes: "Default template seeding for new stores" },
+      { name: "CSS Customisation", description: "Custom CSS per store/theme", status: "done", notes: "Custom CSS field in store settings" },
+    ],
+  },
+  {
+    category: "Storefront Header & Navigation",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Logo Display", description: "Store logo in header", status: "done", notes: "Logo from store settings displayed in StorefrontLayout" },
+      { name: "Main Navigation Menu", description: "Category-based navigation menu", status: "done", notes: "Dynamic menu from categories with nested dropdowns" },
+      { name: "Search Bar", description: "Product search in header", status: "done", notes: "StorefrontSearch with instant results dropdown" },
+      { name: "Cart Icon with Count", description: "Shopping cart icon with item count badge", status: "done", notes: "Cart icon in header with CartContext item count" },
+      { name: "Account Link", description: "Login/Account link in header", status: "done", notes: "Conditional login vs account link based on auth state" },
+      { name: "Wishlist Link", description: "Heart icon linking to wishlist", status: "done", notes: "Wishlist icon with count in header" },
+      { name: "Currency Switcher in Header", description: "Currency selector in header", status: "done", notes: "CurrencySwitcher component in header bar" },
+      { name: "Language Switcher in Header", description: "Language selector in header", status: "done", notes: "LanguageSwitcher component in header bar" },
+      { name: "Mobile Hamburger Menu", description: "Responsive mobile navigation drawer", status: "done", notes: "StorefrontSidebar sheet on mobile breakpoints" },
+    ],
+  },
+  {
+    category: "Storefront Footer",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Footer Links", description: "Configurable footer link columns", status: "done", notes: "Footer sections with policy, info, and account links" },
+      { name: "Newsletter Signup", description: "Email capture form in footer", status: "done", notes: "NewsletterSignup component in footer" },
+      { name: "Social Media Links", description: "Social media icon links", status: "done", notes: "Facebook, Instagram, Twitter icons in footer" },
+      { name: "Payment Method Icons", description: "Accepted payment method badges", status: "done", notes: "Visa, Mastercard, PayPal icons in footer" },
+      { name: "Copyright Notice", description: "Dynamic year copyright text", status: "done", notes: "© {year} {store_name} in footer" },
+    ],
+  },
+  {
+    category: "Product Listing Page",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Product Grid", description: "Responsive product card grid", status: "done", notes: "StorefrontProducts with grid-cols responsive layout" },
+      { name: "Category Filtering", description: "Filter products by category", status: "done", notes: "Category sidebar filter with nested categories" },
+      { name: "Price Range Filter", description: "Filter by min/max price", status: "done", notes: "Price range slider/inputs" },
+      { name: "Sort Options", description: "Sort by price, name, newest, popularity", status: "done", notes: "Sort dropdown with multiple sort fields" },
+      { name: "Pagination", description: "Page navigation for product listing", status: "done", notes: "TablePagination with page numbers and prev/next" },
+      { name: "Product Card", description: "Card with image, title, price, rating", status: "done", notes: "Product card with hover effects and quick actions" },
+      { name: "Quick View", description: "Quick view modal on product hover", status: "done", notes: "ProductQuickView modal with key product details" },
+      { name: "Add to Cart from Listing", description: "Add to cart button on product cards", status: "done", notes: "Quick add-to-cart on product card hover" },
+      { name: "Product Badges", description: "Sale, New, Out of Stock badges on cards", status: "done", notes: "ProductBadges component with conditional badges" },
+    ],
+  },
+  {
+    category: "Product Detail Page",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Image Gallery", description: "Multiple product images with thumbnail nav", status: "done", notes: "Image gallery with thumbnail strip on StorefrontProductDetail" },
+      { name: "Image Lightbox", description: "Full-screen image zoom on click", status: "done", notes: "ImageLightbox component with zoom and navigation" },
+      { name: "Price Display", description: "Current price with optional compare-at price", status: "done", notes: "Sale price with strikethrough original price" },
+      { name: "Variant Selector", description: "Size/color/option selector", status: "done", notes: "Variant dropdown/swatch on product detail" },
+      { name: "Quantity Selector", description: "Quantity input with +/- controls", status: "done", notes: "Quantity stepper before add-to-cart" },
+      { name: "Add to Cart Button", description: "Primary CTA to add product to cart", status: "done", notes: "Add to Cart button with loading state" },
+      { name: "Product Description", description: "Rich HTML product description", status: "done", notes: "Full description with HTML rendering" },
+      { name: "Product Specifications", description: "Specification table/list", status: "done", notes: "Product specifics displayed as attribute table" },
+      { name: "Related Products", description: "Related products carousel", status: "done", notes: "Related products section based on category/tags" },
+      { name: "Breadcrumb Navigation", description: "Category breadcrumb trail", status: "done", notes: "Breadcrumb showing Home > Category > Product" },
+    ],
+  },
+  {
+    category: "Customer Account Pages",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Account Dashboard", description: "Overview with recent orders and details", status: "done", notes: "StorefrontAccount with order history and profile" },
+      { name: "Order History", description: "List of past orders with status", status: "done", notes: "Order list with order number, date, status, total" },
+      { name: "Order Detail View", description: "Detailed view of single order", status: "done", notes: "Order detail with items, totals, tracking, status" },
+      { name: "Address Book", description: "Manage saved addresses", status: "done", notes: "Address list with add/edit/delete and default selection" },
+      { name: "Profile Edit", description: "Edit name, email, phone", status: "done", notes: "Profile form with save action" },
+      { name: "Password Change", description: "Change password from account", status: "done", notes: "Password change form with current/new password" },
+      { name: "Digital Downloads", description: "Access purchased digital products", status: "done", notes: "Download links for purchased digital items" },
+      { name: "Subscription Management", description: "View and manage active subscriptions", status: "done", notes: "Subscription list with pause/cancel actions" },
+    ],
+  },
+  {
+    category: "Storefront Auth Pages",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Storefront Login", description: "Customer login page", status: "done", notes: "StorefrontLogin with email/password form" },
+      { name: "Storefront Signup", description: "Customer registration page", status: "done", notes: "StorefrontSignup with registration form" },
+      { name: "Forgot Password", description: "Password reset request page", status: "done", notes: "ForgotPassword with email input and reset link" },
+      { name: "Reset Password", description: "Set new password from reset link", status: "done", notes: "ResetPassword with new password form" },
+      { name: "Forgot Username", description: "Recover username by email", status: "done", notes: "StorefrontForgotUsername with email lookup" },
+    ],
+  },
+  {
+    category: "SEO & Meta Tags",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Dynamic Page Title", description: "Unique title tag per page", status: "done", notes: "SEOHead sets document.title dynamically" },
+      { name: "Meta Description", description: "Custom meta description per page", status: "done", notes: "Meta description tag in SEOHead" },
+      { name: "Open Graph Tags", description: "OG tags for social sharing", status: "done", notes: "og:title, og:description, og:image in SEOHead" },
+      { name: "Canonical URL", description: "Canonical tag to prevent duplicate content", status: "done", notes: "Canonical link tag in SEOHead" },
+      { name: "JSON-LD Schema", description: "Structured data for products and pages", status: "done", notes: "Product schema markup for Google rich results" },
+      { name: "Robots.txt", description: "Robots.txt for crawler directives", status: "done", notes: "public/robots.txt with sitemap reference" },
+      { name: "XML Sitemap", description: "Auto-generated sitemap for search engines", status: "done", notes: "sitemap edge function generating product/page URLs" },
+      { name: "Alt Text on Images", description: "Alt attributes on all product images", status: "done", notes: "Alt text from product title or custom alt field" },
+    ],
+  },
+  {
+    category: "Error Handling & Edge Cases",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "404 Not Found Page", description: "Custom 404 page for missing routes", status: "done", notes: "NotFound page with search and navigation links" },
+      { name: "Loading States", description: "Skeleton/spinner loading states throughout", status: "done", notes: "Skeleton components and loading spinners on data fetch" },
+      { name: "Empty States", description: "Friendly empty state messages", status: "done", notes: "Empty state illustrations with CTAs on all list pages" },
+      { name: "Toast Notifications", description: "Success/error toast messages", status: "done", notes: "Sonner toasts for all CRUD operations" },
+      { name: "Form Validation", description: "Client-side form validation", status: "done", notes: "Required fields, email format, min/max validation" },
+      { name: "Error Boundaries", description: "React error boundaries for crash recovery", status: "done", notes: "Error boundary wrapping route components" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
