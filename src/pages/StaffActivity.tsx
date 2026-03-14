@@ -94,7 +94,7 @@ export default function StaffActivity() {
             <div className="flex items-center gap-2"><Activity className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{totalActions}</p><p className="text-[10px] text-muted-foreground">Actions (30d)</p></div></div>
           </CardContent></Card>
           <Card><CardContent className="p-4">
-            <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{activeToday}</p><p className="text-[10px] text-muted-foreground">Active Today</p></div></div>
+            <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{activeToday}</p><p className="text-[10px] text-muted-foreground">Active Today</p></div></div>
           </CardContent></Card>
           <Card><CardContent className="p-4">
             <div className="flex items-center gap-2"><Shield className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{Math.round(totalActions / Math.max((members as any[]).length, 1))}</p><p className="text-[10px] text-muted-foreground">Avg Actions/User</p></div></div>
