@@ -24,6 +24,15 @@ const DEFAULT_TEMPLATES = [
   { template_key: "low_stock_alert", name: "Low Stock Alert", subject: "[Alert] Low stock — {{product_name}}", html_body: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><h2>Low Stock Alert</h2><p>Product <strong>{{product_name}}</strong> is running low.</p><p><strong>Current stock:</strong> {{current_stock}}</p><p><strong>Threshold:</strong> {{threshold}}</p></div>' },
 ];
 
+const DEFAULT_SMS_TEMPLATES = [
+  { key: "order_confirmation", name: "Order Confirmation", body: "Hi {{customer_name}}, your order #{{order_number}} has been confirmed. Total: ${{order_total}}. Thank you! — {{store_name}}" },
+  { key: "order_shipped", name: "Order Shipped", body: "Hi {{customer_name}}, your order #{{order_number}} has shipped! Track: {{tracking_url}} — {{store_name}}" },
+  { key: "order_delivered", name: "Order Delivered", body: "Hi {{customer_name}}, your order #{{order_number}} has been delivered. Enjoy! — {{store_name}}" },
+  { key: "abandoned_cart", name: "Abandoned Cart", body: "Hi {{customer_name}}, you left items in your cart! Complete your purchase: {{cart_url}} — {{store_name}}" },
+  { key: "back_in_stock", name: "Back in Stock", body: "Good news {{customer_name}}! {{product_name}} is back in stock. Shop now: {{product_url}} — {{store_name}}" },
+  { key: "payment_reminder", name: "Payment Reminder", body: "Hi {{customer_name}}, a payment of ${{amount}} is due for order #{{order_number}}. — {{store_name}}" },
+];
+
 export default function EmailTemplates() {
   const { currentStore } = useAuth();
   const [templates, setTemplates] = useState<any[]>([]);
