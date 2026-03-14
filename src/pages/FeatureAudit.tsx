@@ -8258,8 +8258,8 @@ const storefrontAdvancedFeatures: FeatureCategory[] = [
     category: "Storefront — Advanced UX",
     icon: <Monitor className="h-5 w-5" />,
     features: [
-      { name: "Mega Menu Navigation", description: "Multi-column dropdown navigation with images", status: "partial" },
-      { name: "Sticky Header", description: "Header stays visible on scroll", status: "partial" },
+      { name: "Mega Menu Navigation", description: "Multi-column dropdown navigation with images", status: "done", notes: "StorefrontLayout mega menu" },
+      { name: "Sticky Header", description: "Header stays visible on scroll", status: "done", notes: "sticky top-0 on header" },
       { name: "Back-to-Top Button", description: "Scroll-to-top floating button", status: "done", notes: "StorefrontLayout scroll button" },
       { name: "Product Image Zoom (Hover)", description: "Magnify product image on hover", status: "done", notes: "ImageLightbox" },
       { name: "Product Image 360° View", description: "360-degree product image viewer", status: "not_started" },
