@@ -255,7 +255,7 @@ export default function Products() {
                     {products.length === 0 ? "No products yet. Add your first product." : "No products match your filters."}
                   </TableCell></TableRow>
                 ) : (
-                  filtered.map((product) => (
+                  filtered.slice((page - 1) * pageSize, page * pageSize).map((product) => (
                     <TableRow key={product.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/products/${product.id}`)}>
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
                         <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
