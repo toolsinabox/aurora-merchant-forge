@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap } from "lucide-react";
+import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap, ShoppingBag, UserPlus } from "lucide-react";
 import { format } from "date-fns";
 
 const RULE_TYPES = [
@@ -21,6 +21,8 @@ const RULE_TYPES = [
   { value: "fixed_amount", label: "Fixed Amount Off", icon: DollarSign },
   { value: "buy_x_get_y", label: "Buy X Get Y", icon: Gift },
   { value: "free_shipping", label: "Free Shipping", icon: Truck },
+  { value: "gift_with_purchase", label: "Gift With Purchase", icon: ShoppingBag },
+  { value: "first_order", label: "First Order Discount", icon: UserPlus },
 ];
 
 const APPLIES_TO = [
