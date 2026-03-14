@@ -561,6 +561,86 @@ function ReturnsPolicyTab() {
   );
 }
 
+function FulfillmentRulesTab() {
+  const { currentStore } = useAuth();
+  const [rules, setRules] = useState<Array<{ id: string; name: string; priority: number; criteria: string; action: string }>>([]);
+  const [form, setForm] = useState({ name: "", criteria: "express_shipping", action: "priority_high" });
+
+  useEffect(() => {
+    if (!currentStore) return;
+    try { setRules(JSON.parse(localStorage.getItem(`fulfillment_rules_${currentStore.id}`) || "[]")); } catch {}
+  }, [currentStore]);
+
+  const saveRules = (updated: typeof rules) => {
+    setRules(updated);
+    if (currentStore) localStorage.setItem(`fulfillment_rules_${currentStore.id}`, JSON.stringify(updated));
+  };
+
+  const addRule = () => {
+    if (!form.name.trim()) { toast.error("Rule name required"); return; }
+    saveRules([...rules, { id: crypto.randomUUID(), name: form.name, priority: rules.length + 1, criteria: form.criteria, action: form.action }]);
+    setForm({ name: "", criteria: "express_shipping", action: "priority_high" });
+    toast.success("Fulfillment rule added");
+  };
+
+  const criteriaLabels: Record<string, string> = { express_shipping: "Express shipping", vip_customer: "VIP customer", order_age_24h: "Order > 24h old", high_value: "High value order (>$500)", backorder: "Contains backorder items" };
+  const actionLabels: Record<string, string> = { priority_high: "High priority", priority_medium: "Medium priority", assign_warehouse_1: "Assign primary warehouse", hold_for_review: "Hold for review", split_shipment: "Auto-split shipment" };
+
+  return (
+    <div className="space-y-3">
+      <Card>
+        <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Fulfillment Priority Rules</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-muted-foreground">Define rules to prioritize or route orders automatically based on conditions.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <Input placeholder="Rule name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="h-8 text-sm" />
+            <Select value={form.criteria} onValueChange={v => setForm({ ...form, criteria: v })}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(criteriaLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={form.action} onValueChange={v => setForm({ ...form, action: v })}>
+              <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(actionLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <Button size="sm" className="text-xs h-7" onClick={addRule}><Plus className="h-3 w-3 mr-1" /> Add Rule</Button>
+
+          {rules.length > 0 && (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">#</TableHead>
+                  <TableHead className="text-xs h-8">Name</TableHead>
+                  <TableHead className="text-xs h-8">When</TableHead>
+                  <TableHead className="text-xs h-8">Then</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rules.map((r, i) => (
+                  <TableRow key={r.id} className="text-xs">
+                    <TableCell className="py-1.5">{i + 1}</TableCell>
+                    <TableCell className="py-1.5 font-medium">{r.name}</TableCell>
+                    <TableCell className="py-1.5"><Badge variant="outline" className="text-[10px]">{criteriaLabels[r.criteria] || r.criteria}</Badge></TableCell>
+                    <TableCell className="py-1.5"><Badge variant="secondary" className="text-[10px]">{actionLabels[r.action] || r.action}</Badge></TableCell>
+                    <TableCell className="py-1.5 text-right">
+                      <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => saveRules(rules.filter(x => x.id !== r.id))}><Trash2 className="h-3 w-3" /></Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function SettingsPage() {
   const { currentStore, user } = useAuth();
   const updateStore = useUpdateStore();
