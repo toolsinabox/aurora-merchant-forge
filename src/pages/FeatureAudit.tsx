@@ -8142,7 +8142,7 @@ const promotionFeatures: FeatureCategory[] = [
       { name: "Flash Sale Timer", description: "Countdown timer on promo products", status: "done", notes: "FlashSaleTimer component on StorefrontProductDetail shows live d/h/m/s countdown when product has active promo_end date" },
       { name: "Volume Discount Tiers", description: "Quantity-based price breaks", status: "done" },
       { name: "Loyalty Points Earn Rules", description: "Configure points earned per $ spent", status: "done", notes: "loyalty_points" },
-      { name: "Loyalty Points Redemption", description: "Redeem points as discount at checkout", status: "partial" },
+      { name: "Loyalty Points Redemption", description: "Redeem points as discount at checkout", status: "done", notes: "LoyaltyProgram page with points earn rules (per $ spent), redemption with conversion rate, StorefrontCheckout loyalty points checkbox with balance display and point deduction" },
       { name: "Gift With Purchase", description: "Auto-add free gift when conditions met", status: "done", notes: "PriceRules gift_with_purchase rule type with gift product SKU field" },
       { name: "First Order Discount", description: "Auto-discount for new customer's first order", status: "done", notes: "PriceRules first_order rule type for auto-discounting new customer orders" },
       { name: "Clearance Auto-Tag", description: "Auto-tag products below margin threshold", status: "done", notes: "PriceRules Auto-Tag Clearance button scans products with margin < 10% and adds 'clearance' tag" },
