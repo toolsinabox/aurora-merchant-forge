@@ -326,6 +326,10 @@ export default function CustomerDetail() {
         payment_terms: (editForm as any).payment_terms || null,
         credit_limit: (editForm as any).credit_limit ?? null,
         abn_vat_number: (editForm as any).abn_vat_number || null,
+        sales_rep: (editForm as any).sales_rep || null,
+        referral_code: (editForm as any).referral_code || null,
+        referred_by: (editForm as any).referred_by || null,
+        tax_exempt_cert_url: (editForm as any).tax_exempt_cert_url || null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
