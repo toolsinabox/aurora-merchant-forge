@@ -8111,7 +8111,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Customer RFM Segmentation", description: "Recency/Frequency/Monetary analysis", status: "done", notes: "Analytics page RFM Segmentation table with Champions/Loyal/Potential/At Risk/Lost segments" },
       { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel", status: "done", notes: "Analytics page Conversion Funnel with percentage visualization" },
       { name: "Cart Abandonment Rate Report", description: "Abandonment rate trends over time", status: "done", notes: "AbandonedCarts page" },
-      { name: "Average Order Value (AOV) Trend", description: "AOV trending over time", status: "partial" },
+      { name: "Average Order Value (AOV) Trend", description: "AOV trending over time", status: "done", notes: "Analytics page AOV Trend line chart using time series data" },
       { name: "Customer Acquisition Cost", description: "Track cost to acquire each customer", status: "not_started" },
       { name: "Repeat Purchase Rate", description: "Percentage of customers who reorder", status: "done", notes: "Analytics page Repeat Purchase Rate card showing rate %, total customers, and repeat buyers count" },
       { name: "Best Sellers Report", description: "Top products by revenue/units", status: "done", notes: "Analytics page Top Selling Products table" },
