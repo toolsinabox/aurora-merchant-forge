@@ -7998,8 +7998,8 @@ const carrierIntegrationFeatures: FeatureCategory[] = [
       { name: "Carrier Fallback Logic", description: "Fallback to secondary carrier if primary fails", status: "not_started" },
       { name: "Carrier Account Switching", description: "Use different carrier accounts per warehouse", status: "not_started" },
       { name: "Dangerous Goods Declaration", description: "DG flags and documentation for hazmat shipments", status: "not_started" },
-      { name: "Authority To Leave (ATL)", description: "ATL flag on shipments for unattended delivery", status: "not_started" },
-      { name: "Delivery Instructions Pass-Through", description: "Pass customer delivery notes to carrier API", status: "not_started" },
+      { name: "Authority To Leave (ATL)", description: "ATL flag on shipments for unattended delivery", status: "done", notes: "StorefrontCheckout ATL toggle in delivery instructions, passed through order notes" },
+      { name: "Delivery Instructions Pass-Through", description: "Pass customer delivery notes to carrier API", status: "done", notes: "StorefrontCheckout delivery instructions included in order notes for carrier processing" },
     ],
   },
 ];
