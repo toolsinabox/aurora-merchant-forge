@@ -404,15 +404,35 @@ export default function Products() {
                         )}
                       </TableCell>}
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-3.5 w-3.5" /></Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="text-xs" onClick={() => navigate(`/products/${product.id}`)}>Edit</DropdownMenuItem>
-                            <DropdownMenuItem className="text-xs text-destructive" onClick={() => deleteProducts.mutate([product.id])}>Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-0.5">
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={async () => {
+                            const idx = filtered.indexOf(product);
+                            if (idx <= 0) return;
+                            const prev = filtered[idx - 1];
+                            await Promise.all([
+                              updateProduct.mutateAsync({ id: product.id, sort_order: (prev as any).sort_order ?? idx - 1 } as any),
+                              updateProduct.mutateAsync({ id: prev.id, sort_order: (product as any).sort_order ?? idx } as any),
+                            ]);
+                          }}><ArrowUp className="h-3 w-3" /></Button>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={async () => {
+                            const idx = filtered.indexOf(product);
+                            if (idx >= filtered.length - 1) return;
+                            const next = filtered[idx + 1];
+                            await Promise.all([
+                              updateProduct.mutateAsync({ id: product.id, sort_order: (next as any).sort_order ?? idx + 1 } as any),
+                              updateProduct.mutateAsync({ id: next.id, sort_order: (product as any).sort_order ?? idx } as any),
+                            ]);
+                          }}><ArrowDown className="h-3 w-3" /></Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-3.5 w-3.5" /></Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem className="text-xs" onClick={() => navigate(`/products/${product.id}`)}>Edit</DropdownMenuItem>
+                              <DropdownMenuItem className="text-xs text-destructive" onClick={() => deleteProducts.mutate([product.id])}>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))
