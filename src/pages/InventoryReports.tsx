@@ -360,6 +360,91 @@ export default function InventoryReports() {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Inventory Snapshots */}
+          <TabsContent value="snapshots">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm">Inventory Snapshots</CardTitle>
+                  <Button
+                    size="sm"
+                    className="text-xs gap-1"
+                    onClick={() => {
+                      const snapshot = {
+                        id: crypto.randomUUID(),
+                        date: new Date().toISOString(),
+                        totalSKUs: products.length,
+                        totalUnits: products.reduce((s, p) => s + p.stock_quantity, 0),
+                        totalCostValue: products.reduce((s, p) => s + p.cost_price * p.stock_quantity, 0),
+                        totalRetailValue: products.reduce((s, p) => s + p.price * p.stock_quantity, 0),
+                        items: products.map(p => ({ id: p.id, sku: p.sku, title: p.title, qty: p.stock_quantity, cost: p.cost_price })),
+                      };
+                      const existing = JSON.parse(localStorage.getItem("inventory_snapshots") || "[]");
+                      existing.unshift(snapshot);
+                      localStorage.setItem("inventory_snapshots", JSON.stringify(existing.slice(0, 50)));
+                      toast.success(`Snapshot taken: ${snapshot.totalSKUs} SKUs, ${snapshot.totalUnits} units`);
+                    }}
+                  >
+                    <Camera className="h-3 w-3" /> Take Snapshot
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {(() => {
+                  const snapshots = JSON.parse(localStorage.getItem("inventory_snapshots") || "[]");
+                  if (snapshots.length === 0) {
+                    return <p className="text-xs text-muted-foreground text-center py-8">No snapshots yet. Click "Take Snapshot" to capture current inventory state.</p>;
+                  }
+                  return (
+                    <div className="space-y-3">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs h-8">Date</TableHead>
+                            <TableHead className="text-xs h-8 text-right">SKUs</TableHead>
+                            <TableHead className="text-xs h-8 text-right">Total Units</TableHead>
+                            <TableHead className="text-xs h-8 text-right">Cost Value</TableHead>
+                            <TableHead className="text-xs h-8 text-right">Retail Value</TableHead>
+                            <TableHead className="text-xs h-8 text-right">Δ Units</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {snapshots.slice(0, 20).map((snap: any, idx: number) => {
+                            const prev = snapshots[idx + 1];
+                            const unitsDelta = prev ? snap.totalUnits - prev.totalUnits : 0;
+                            return (
+                              <TableRow key={snap.id} className="text-xs">
+                                <TableCell className="py-1.5">
+                                  <div className="flex items-center gap-1.5">
+                                    <Clock className="h-3 w-3 text-muted-foreground" />
+                                    {new Date(snap.date).toLocaleString()}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="py-1.5 text-right">{snap.totalSKUs}</TableCell>
+                                <TableCell className="py-1.5 text-right font-medium">{snap.totalUnits.toLocaleString()}</TableCell>
+                                <TableCell className="py-1.5 text-right">${snap.totalCostValue.toFixed(2)}</TableCell>
+                                <TableCell className="py-1.5 text-right">${snap.totalRetailValue.toFixed(2)}</TableCell>
+                                <TableCell className="py-1.5 text-right">
+                                  {prev ? (
+                                    <Badge variant={unitsDelta > 0 ? "default" : unitsDelta < 0 ? "destructive" : "secondary"} className="text-[10px]">
+                                      {unitsDelta > 0 ? "+" : ""}{unitsDelta}
+                                    </Badge>
+                                  ) : (
+                                    <span className="text-muted-foreground">—</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  );
+                })()}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
