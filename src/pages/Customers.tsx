@@ -202,6 +202,57 @@ export default function Customers() {
             </Table>
           </CardContent>
         </Card>
+
+        <Dialog open={showCreate} onOpenChange={setShowCreate}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Customer</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div>
+                <Label className="text-xs">Name *</Label>
+                <Input value={newCustomer.name} onChange={(e) => setNewCustomer(p => ({ ...p, name: e.target.value }))} placeholder="Customer name" className="h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs">Email</Label>
+                <Input type="email" value={newCustomer.email} onChange={(e) => setNewCustomer(p => ({ ...p, email: e.target.value }))} placeholder="email@example.com" className="h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs">Phone</Label>
+                <Input value={newCustomer.phone} onChange={(e) => setNewCustomer(p => ({ ...p, phone: e.target.value }))} placeholder="+1 555-0100" className="h-8 text-xs" />
+              </div>
+              <div>
+                <Label className="text-xs">Segment</Label>
+                <Select value={newCustomer.segment} onValueChange={(v) => setNewCustomer(p => ({ ...p, segment: v }))}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="new" className="text-xs">New</SelectItem>
+                    <SelectItem value="returning" className="text-xs">Returning</SelectItem>
+                    <SelectItem value="vip" className="text-xs">VIP</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowCreate(false)}>Cancel</Button>
+              <Button size="sm" disabled={!newCustomer.name || createCustomer.isPending} onClick={() => {
+                createCustomer.mutate({
+                  name: newCustomer.name,
+                  email: newCustomer.email || undefined,
+                  phone: newCustomer.phone || undefined,
+                  segment: newCustomer.segment,
+                }, {
+                  onSuccess: () => {
+                    setShowCreate(false);
+                    setNewCustomer({ name: "", email: "", phone: "", segment: "new" });
+                  }
+                });
+              }}>
+                {createCustomer.isPending ? "Creating..." : "Create Customer"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
