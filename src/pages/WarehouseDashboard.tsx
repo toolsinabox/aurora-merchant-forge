@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrders } from "@/hooks/use-data";
-import { Package, Truck, CheckCircle, Clock, AlertTriangle, Box, Plus, Trash2, MapPin } from "lucide-react";
+import { Package, Truck, CheckCircle, Clock, AlertTriangle, Box, Plus, Trash2, MapPin, ChevronRight } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
