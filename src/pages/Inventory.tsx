@@ -694,7 +694,125 @@ export default function Inventory() {
               </CardContent>
             </Card>
           </TabsContent>
-        </Tabs>
+
+          {/* FEFO Picking Tab */}
+          <TabsContent value="fefo" className="space-y-3">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">First-Expiry-First-Out (FEFO) Pick List</CardTitle>
+                <p className="text-xs text-muted-foreground">Items sorted by expiry date — pick earliest first to minimize waste.</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8">SKU</TableHead>
+                      <TableHead className="text-xs h-8">Batch</TableHead>
+                      <TableHead className="text-xs h-8">Lot</TableHead>
+                      <TableHead className="text-xs h-8">Location</TableHead>
+                      <TableHead className="text-xs h-8">Expiry</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Qty</TableHead>
+                      <TableHead className="text-xs h-8">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(() => {
+                      const fefoItems = (inventoryStockData as any[])
+                        .filter((s: any) => s.expiry_date)
+                        .sort((a: any, b: any) => new Date(a.expiry_date).getTime() - new Date(b.expiry_date).getTime())
+                        .slice(0, 50);
+                      if (fefoItems.length === 0) return (
+                        <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">No items with expiry dates tracked.</TableCell></TableRow>
+                      );
+                      return fefoItems.map((item: any) => {
+                        const product = products.find(p => p.id === item.product_id);
+                        const location = locations.find(l => l.id === item.location_id);
+                        const expDate = new Date(item.expiry_date);
+                        const now = new Date();
+                        const daysUntil = Math.ceil((expDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                        const isExpired = daysUntil < 0;
+                        const isExpiringSoon = !isExpired && daysUntil <= 30;
+                        return (
+                          <TableRow key={item.id} className={`text-xs ${isExpired ? "bg-destructive/5" : isExpiringSoon ? "bg-amber-50 dark:bg-amber-950/20" : ""}`}>
+                            <TableCell className="py-2 font-medium">{product?.title || "—"}</TableCell>
+                            <TableCell className="py-2 font-mono text-muted-foreground">{product?.sku || "—"}</TableCell>
+                            <TableCell className="py-2 text-muted-foreground">{item.batch_number || "—"}</TableCell>
+                            <TableCell className="py-2 text-muted-foreground">{item.lot_number || "—"}</TableCell>
+                            <TableCell className="py-2 text-muted-foreground">{location?.name || "—"}</TableCell>
+                            <TableCell className="py-2">
+                              <span className={isExpired ? "text-destructive font-medium" : isExpiringSoon ? "text-amber-600 font-medium" : ""}>{format(expDate, "MMM d, yyyy")}</span>
+                              <span className="ml-1 text-muted-foreground text-[10px]">({isExpired ? `${Math.abs(daysUntil)}d ago` : `${daysUntil}d`})</span>
+                            </TableCell>
+                            <TableCell className="py-2 text-right font-medium">{item.quantity}</TableCell>
+                            <TableCell className="py-2">
+                              <Badge variant={isExpired ? "destructive" : isExpiringSoon ? "secondary" : "default"} className="text-[10px]">
+                                {isExpired ? "Expired" : isExpiringSoon ? "Expiring Soon" : "OK"}
+                              </Badge>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      });
+                    })()}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Batch Traceability Tab */}
+          <TabsContent value="batches" className="space-y-3">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Batch & Lot Traceability</CardTitle>
+                <p className="text-xs text-muted-foreground">Track batches and lots from receipt through to customer orders.</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Batch #</TableHead>
+                      <TableHead className="text-xs h-8">Lot #</TableHead>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8">SKU</TableHead>
+                      <TableHead className="text-xs h-8">Location</TableHead>
+                      <TableHead className="text-xs h-8">Bin</TableHead>
+                      <TableHead className="text-xs h-8">Expiry</TableHead>
+                      <TableHead className="text-xs h-8 text-right">On Hand</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Threshold</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(() => {
+                      const batchItems = (inventoryStockData as any[])
+                        .filter((s: any) => s.batch_number || s.lot_number)
+                        .sort((a: any, b: any) => (a.batch_number || "").localeCompare(b.batch_number || ""));
+                      if (batchItems.length === 0) return (
+                        <TableRow><TableCell colSpan={9} className="text-center text-xs text-muted-foreground py-8">No batch or lot numbers tracked. Add batch/lot data when receiving stock.</TableCell></TableRow>
+                      );
+                      return batchItems.map((item: any) => {
+                        const product = products.find(p => p.id === item.product_id);
+                        const location = locations.find(l => l.id === item.location_id);
+                        return (
+                          <TableRow key={item.id} className="text-xs">
+                            <TableCell className="py-2 font-mono font-medium">{item.batch_number || "—"}</TableCell>
+                            <TableCell className="py-2 font-mono">{item.lot_number || "—"}</TableCell>
+                            <TableCell className="py-2">{product?.title || "—"}</TableCell>
+                            <TableCell className="py-2 font-mono text-muted-foreground">{product?.sku || "—"}</TableCell>
+                            <TableCell className="py-2 text-muted-foreground">{location?.name || "—"}</TableCell>
+                            <TableCell className="py-2 text-muted-foreground">{item.bin_location || "—"}</TableCell>
+                            <TableCell className="py-2">{item.expiry_date ? format(new Date(item.expiry_date), "MMM d, yyyy") : "—"}</TableCell>
+                            <TableCell className="py-2 text-right font-medium">{item.quantity}</TableCell>
+                            <TableCell className="py-2 text-right text-muted-foreground">{item.low_stock_threshold}</TableCell>
+                          </TableRow>
+                        );
+                      });
+                    })()}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
         {/* Bulk Adjust Dialog */}
         <Dialog open={bulkAdjustOpen} onOpenChange={setBulkAdjustOpen}>
