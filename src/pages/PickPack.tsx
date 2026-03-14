@@ -362,47 +362,144 @@ export default function PickPack() {
           </Card>
         )}
 
-        {/* Pack Step */}
+        {/* Pack Step — Enhanced Packing Station */}
         {step === "pack" && (
-          <Card>
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-sm">Pack Orders ({processingOrders.length})</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs h-8">Order #</TableHead>
-                    <TableHead className="text-xs h-8">Items</TableHead>
-                    <TableHead className="text-xs h-8">Total</TableHead>
-                    <TableHead className="text-xs h-8 text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {processingOrders.length === 0 ? (
+          <div className="space-y-3">
+            {/* Packing Station KPIs */}
+            <div className="grid grid-cols-4 gap-3">
+              <Card className="p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">To Pack</p>
+                <p className="text-xl font-bold">{processingOrders.length}</p>
+              </Card>
+              <Card className="p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Total Items</p>
+                <p className="text-xl font-bold">{processingOrders.reduce((s: number, o: any) => s + (o.items_count || 0), 0)}</p>
+              </Card>
+              <Card className="p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Verified</p>
+                <p className="text-xl font-bold text-primary">{Object.values(packVerified).filter(Boolean).length}</p>
+              </Card>
+              <Card className="p-3">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Carton Selected</p>
+                <p className="text-xl font-bold">{packingCarton ? "✓" : "—"}</p>
+              </Card>
+            </div>
+
+            {/* Barcode Scanner for pack verification */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <BarcodeScanner
+                placeholder="Scan item barcode to verify..."
+                autoFocus={false}
+                onScan={(barcode) => {
+                  // Find matching order item by SKU in processing orders
+                  const match = orderItems.find((item: any) => {
+                    const isProcessing = processingOrders.some((o: any) => o.id === item.order_id);
+                    return isProcessing && (item.sku === barcode);
+                  });
+                  if (match) {
+                    setPackVerified(prev => ({ ...prev, [match.id]: true }));
+                    toast.success(`Verified: ${match.title} (${barcode})`);
+                  } else {
+                    toast.error(`No matching item in packing queue: ${barcode}`);
+                  }
+                }}
+              />
+              {cartons.length > 0 && (
+                <Select value={packingCarton} onValueChange={setPackingCarton}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Select carton type..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cartons.map(c => (
+                      <SelectItem key={c.id} value={c.id} className="text-xs">
+                        {c.name} ({c.lengthCm}×{c.widthCm}×{c.heightCm}cm, max {c.maxWeightKg}kg)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Weight Entry */}
+            <div className="flex items-center gap-2">
+              <Label className="text-xs whitespace-nowrap">Package Weight (kg):</Label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+                value={packWeight}
+                onChange={e => setPackWeight(e.target.value)}
+                className="h-8 w-32 text-xs"
+              />
+              {packWeight && packingCarton && (() => {
+                const carton = cartons.find(c => c.id === packingCarton);
+                if (carton && Number(packWeight) > carton.maxWeightKg) {
+                  return <Badge variant="destructive" className="text-[10px]">⚠ Exceeds max weight ({carton.maxWeightKg}kg)</Badge>;
+                }
+                return <Badge variant="default" className="text-[10px]">✓ Within limits</Badge>;
+              })()}
+            </div>
+
+            {/* Orders to pack */}
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center justify-between">
+                  <span>Packing Queue ({processingOrders.length} orders)</span>
+                  {Object.values(packVerified).filter(Boolean).length > 0 && (
+                    <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => setPackVerified({})}>
+                      Reset Verification
+                    </Button>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-8">
-                        No orders to pack
-                      </TableCell>
+                      <TableHead className="text-xs h-8">Order #</TableHead>
+                      <TableHead className="text-xs h-8">Items</TableHead>
+                      <TableHead className="text-xs h-8">Verified</TableHead>
+                      <TableHead className="text-xs h-8">Total</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Action</TableHead>
                     </TableRow>
-                  ) : (
-                    processingOrders.map((o: any) => (
-                      <TableRow key={o.id} className="text-xs">
-                        <TableCell className="py-1.5 font-mono">{o.order_number}</TableCell>
-                        <TableCell className="py-1.5">{o.items_count} items</TableCell>
-                        <TableCell className="py-1.5">${Number(o.total).toFixed(2)}</TableCell>
-                        <TableCell className="py-1.5 text-right">
-                          <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => markAsShipped(o.id)}>
-                            <Truck className="h-3 w-3 mr-1" /> Ship
-                          </Button>
+                  </TableHeader>
+                  <TableBody>
+                    {processingOrders.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                          No orders to pack — pick items first
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+                    ) : (
+                      processingOrders.map((o: any) => {
+                        const oItems = orderItems.filter((i: any) => i.order_id === o.id);
+                        const verifiedCount = oItems.filter((i: any) => packVerified[i.id]).length;
+                        const allVerified = oItems.length > 0 && verifiedCount === oItems.length;
+                        return (
+                          <TableRow key={o.id} className={`text-xs ${allVerified ? "bg-primary/5" : ""}`}>
+                            <TableCell className="py-1.5 font-mono">{o.order_number}</TableCell>
+                            <TableCell className="py-1.5">{o.items_count} items</TableCell>
+                            <TableCell className="py-1.5">
+                              <Badge variant={allVerified ? "default" : "secondary"} className="text-[10px]">
+                                {verifiedCount}/{oItems.length} {allVerified ? "✓" : ""}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="py-1.5">${Number(o.total).toFixed(2)}</TableCell>
+                            <TableCell className="py-1.5 text-right">
+                              <Button size="sm" variant={allVerified ? "default" : "outline"} className="text-xs h-6" onClick={() => markAsShipped(o.id)}>
+                                <Truck className="h-3 w-3 mr-1" /> Ship
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         {/* Ship Step */}
