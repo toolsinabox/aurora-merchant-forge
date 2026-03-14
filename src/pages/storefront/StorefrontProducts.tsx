@@ -62,11 +62,11 @@ function ProductCard({ p, basePath, store, onQuickView }: { p: any; basePath: st
       </Link>
 
       {/* Action buttons overlay */}
-      <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200">
         <Button
           variant="secondary"
           size="icon"
-          className="h-8 w-8 rounded-full shadow-sm"
+          className="h-8 w-8 rounded-full shadow-md backdrop-blur-sm bg-card/80"
           title="Quick View"
           onClick={(e) => {
             e.preventDefault();
