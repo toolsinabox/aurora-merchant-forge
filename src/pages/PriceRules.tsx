@@ -126,6 +126,7 @@ export default function PriceRules() {
       priority: String(r.priority || 0),
       max_uses: r.max_uses ? String(r.max_uses) : "",
       gift_product_sku: r.gift_product_sku || "",
+      is_stackable: r.is_stackable !== false,
     });
     setEditingId(r.id);
     setShowForm(true);
