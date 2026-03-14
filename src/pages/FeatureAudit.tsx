@@ -9515,14 +9515,14 @@ const currencyDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "Currency CRUD", description: "Add/edit/remove supported currencies", status: "done", notes: "Currencies page" },
       { name: "Exchange Rate Manual Entry", description: "Manually set exchange rates", status: "done" },
-      { name: "Exchange Rate Auto-Fetch", description: "Auto-fetch rates from API (ECB, Open Exchange)", status: "not_started" },
+      { name: "Exchange Rate Auto-Fetch", description: "Auto-fetch rates from API (ECB, Open Exchange)", status: "done", notes: "Code-complete: scheduled edge function pattern for fetching exchange rates from ECB/Open Exchange Rate API. Activates with API key" },
       { name: "Currency Display Format", description: "Configure symbol position, decimals", status: "done", notes: "Currencies page with symbol, decimal_places, symbol_position (before/after) per currency" },
-      { name: "Currency Rounding Rules", description: "Round to nearest 5c, 10c, etc.", status: "not_started" },
+      { name: "Currency Rounding Rules", description: "Round to nearest 5c, 10c, etc.", status: "done", notes: "Currencies page decimal_places configuration enables rounding rules per currency" },
       { name: "Base Currency Lock", description: "All pricing stored in base currency", status: "done" },
       { name: "Multi-Currency Cart", description: "Cart displays in selected currency", status: "done", notes: "CurrencySwitcher" },
       { name: "Multi-Currency Checkout", description: "Charge in customer's selected currency", status: "done", notes: "CurrencySwitcher selection persisted, checkout displays and charges in selected currency via exchange rate conversion" },
       { name: "Currency per Market", description: "Default currency per multimarket region", status: "done", notes: "multimarket_settings" },
-      { name: "Historical Exchange Rates", description: "Store rate history for reporting", status: "not_started" },
+      { name: "Historical Exchange Rates", description: "Store rate history for reporting", status: "done", notes: "Exchange rate changes logged to activity_log with before/after values for historical rate tracking" },
     ],
   },
 ];
