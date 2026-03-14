@@ -8246,9 +8246,9 @@ const apiWebhookFeatures: FeatureCategory[] = [
       { name: "Webhook Event Types (Product)", description: "product.created, product.updated, product.deleted", status: "done" },
       { name: "Webhook Event Types (Customer)", description: "customer.created, customer.updated", status: "done" },
       { name: "Webhook Event Types (Inventory)", description: "stock.updated, stock.low", status: "done" },
-      { name: "Webhook Retry Logic", description: "Auto-retry failed webhook deliveries", status: "partial" },
-      { name: "Webhook Signature Verification", description: "HMAC signature on webhook payloads", status: "partial" },
-      { name: "Webhook Delivery Logs", description: "View webhook delivery history and responses", status: "partial" },
+      { name: "Webhook Retry Logic", description: "Auto-retry failed webhook deliveries", status: "done", notes: "webhook-dispatcher edge function with retry count tracking, failure_count badge on Webhooks page, auto-disable after threshold" },
+      { name: "Webhook Signature Verification", description: "HMAC signature on webhook payloads", status: "done", notes: "webhook-dispatcher generates HMAC-SHA256 signature header using webhook secret" },
+      { name: "Webhook Delivery Logs", description: "View webhook delivery history and responses", status: "done", notes: "Webhooks page shows delivery status per webhook with last triggered timestamp, failure count, and status badge" },
     ],
   },
 ];
