@@ -275,7 +275,7 @@ export default function CustomerDetail() {
   const { data: customerGroups = [] } = useCustomerGroups();
 
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "", logo_url: "" });
+  const [editForm, setEditForm] = useState<Record<string, any>>({ name: "", email: "", phone: "", notes: "", segment: "", tags: "", customer_group_id: "", logo_url: "" });
   const [addrOpen, setAddrOpen] = useState(false);
   const [mergeOpen, setMergeOpen] = useState(false);
   const [mergeEmail, setMergeEmail] = useState("");
