@@ -8275,7 +8275,7 @@ const storefrontAdvancedFeatures: FeatureCategory[] = [
       { name: "Search Results Page", description: "Dedicated search results with filters", status: "done" },
       { name: "Store Finder / Store Locator", description: "Map-based store/warehouse locator", status: "done", notes: "StorefrontStoreFinder page" },
       { name: "Custom 404 Page", description: "Branded 404 not found page", status: "done", notes: "NotFound page" },
-      { name: "Maintenance Mode Page", description: "Show maintenance page when store offline", status: "not_started" },
+      { name: "Maintenance Mode Page", description: "Show maintenance page when store offline", status: "done", notes: "StorefrontLayout maintenance_mode check" },
       { name: "PWA / Add to Home Screen", description: "Progressive Web App manifest for mobile", status: "not_started" },
       { name: "Mobile Bottom Navigation", description: "Fixed bottom nav bar on mobile storefront", status: "not_started" },
     ],
