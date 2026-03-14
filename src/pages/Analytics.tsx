@@ -502,13 +502,13 @@ export default function Analytics() {
 
       // ── Discount / Coupon Usage Report ──
       const { data: couponsData } = await supabase.from("coupons").select("id, code, used_count, discount_type, discount_value").eq("store_id", currentStore.id);
-      const ordersWithCoupon = allOrders.filter((o: any) => o.coupon_id);
+      const { data: couponOrders } = await supabase.from("orders").select("coupon_id, total, discount").eq("store_id", currentStore.id).not("coupon_id", "is", null);
       const couponRevMap: Record<string, { revenue: number; discountTotal: number; usedCount: number; code: string }> = {};
       for (const c of (couponsData || [])) {
         couponRevMap[c.id] = { code: c.code, usedCount: c.used_count || 0, revenue: 0, discountTotal: 0 };
       }
-      for (const o of ordersWithCoupon) {
-        if (couponRevMap[o.coupon_id]) {
+      for (const o of (couponOrders || [])) {
+        if (o.coupon_id && couponRevMap[o.coupon_id]) {
           couponRevMap[o.coupon_id].revenue += Number(o.total || 0);
           couponRevMap[o.coupon_id].discountTotal += Number(o.discount || 0);
         }
