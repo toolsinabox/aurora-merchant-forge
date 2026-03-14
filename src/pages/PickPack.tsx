@@ -485,6 +485,113 @@ export default function PickPack() {
             )}
           </div>
         )}
+
+        {/* Zones Step */}
+        {step === "zones" && (
+          <div className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><MapPin className="h-4 w-4" /> Define Warehouse Zones</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <Input placeholder="Zone name *" value={zoneForm.name} onChange={e => setZoneForm({ ...zoneForm, name: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Description" value={zoneForm.description} onChange={e => setZoneForm({ ...zoneForm, description: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Assigned picker" value={zoneForm.assignedPicker} onChange={e => setZoneForm({ ...zoneForm, assignedPicker: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Bin prefixes (A,B,C)" value={zoneForm.binPrefixes} onChange={e => setZoneForm({ ...zoneForm, binPrefixes: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <Button size="sm" className="text-xs" onClick={addZone}><Plus className="h-3 w-3 mr-1" /> Add Zone</Button>
+              </CardContent>
+            </Card>
+            {zones.length > 0 && (
+              <Card>
+                <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Zones ({zones.length})</CardTitle></CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Zone</TableHead>
+                        <TableHead className="text-xs h-8">Description</TableHead>
+                        <TableHead className="text-xs h-8">Picker</TableHead>
+                        <TableHead className="text-xs h-8">Bin Prefixes</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {zones.map(z => (
+                        <TableRow key={z.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{z.name}</TableCell>
+                          <TableCell className="py-1.5 text-muted-foreground">{z.description || "—"}</TableCell>
+                          <TableCell className="py-1.5">{z.assignedPicker || "Unassigned"}</TableCell>
+                          <TableCell className="py-1.5">
+                            <div className="flex flex-wrap gap-1">
+                              {z.binPrefixes.length > 0 ? z.binPrefixes.map(p => <Badge key={p} variant="outline" className="text-[10px]">{p}</Badge>) : <span className="text-muted-foreground">—</span>}
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-1.5 text-right">
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteZone(z.id)}><Trash2 className="h-3 w-3" /></Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Cartons Step */}
+        {step === "cartons" && (
+          <div className="space-y-3">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-2"><BoxIcon className="h-4 w-4" /> Manage Carton Types</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+                  <Input placeholder="Carton name *" value={cartonForm.name} onChange={e => setCartonForm({ ...cartonForm, name: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Length (cm)" type="number" value={cartonForm.lengthCm} onChange={e => setCartonForm({ ...cartonForm, lengthCm: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Width (cm)" type="number" value={cartonForm.widthCm} onChange={e => setCartonForm({ ...cartonForm, widthCm: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Height (cm)" type="number" value={cartonForm.heightCm} onChange={e => setCartonForm({ ...cartonForm, heightCm: e.target.value })} className="h-8 text-sm" />
+                  <Input placeholder="Max weight (kg)" type="number" value={cartonForm.maxWeightKg} onChange={e => setCartonForm({ ...cartonForm, maxWeightKg: e.target.value })} className="h-8 text-sm" />
+                </div>
+                <Button size="sm" className="text-xs" onClick={addCarton}><Plus className="h-3 w-3 mr-1" /> Add Carton</Button>
+              </CardContent>
+            </Card>
+            {cartons.length > 0 && (
+              <Card>
+                <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Carton Types ({cartons.length})</CardTitle></CardHeader>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Name</TableHead>
+                        <TableHead className="text-xs h-8">L × W × H (cm)</TableHead>
+                        <TableHead className="text-xs h-8">Volume (cm³)</TableHead>
+                        <TableHead className="text-xs h-8">Max Weight</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {cartons.map(c => (
+                        <TableRow key={c.id} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{c.name}</TableCell>
+                          <TableCell className="py-1.5">{c.lengthCm} × {c.widthCm} × {c.heightCm}</TableCell>
+                          <TableCell className="py-1.5">{(c.lengthCm * c.widthCm * c.heightCm).toLocaleString()}</TableCell>
+                          <TableCell className="py-1.5">{c.maxWeightKg} kg</TableCell>
+                          <TableCell className="py-1.5 text-right">
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteCarton(c.id)}><Trash2 className="h-3 w-3" /></Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
