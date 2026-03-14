@@ -415,6 +415,57 @@ export default function Customers() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Bulk Tag Dialog */}
+        <Dialog open={showBulkTag} onOpenChange={setShowBulkTag}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Bulk Tag Assignment</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Add or remove a tag on {selectedForMerge.length} selected customers.</p>
+            <div className="space-y-3 my-2">
+              <div className="flex gap-2">
+                <Select value={bulkTagAction} onValueChange={(v) => setBulkTagAction(v as "add" | "remove")}>
+                  <SelectTrigger className="h-8 w-28 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="add" className="text-xs">Add tag</SelectItem>
+                    <SelectItem value="remove" className="text-xs">Remove tag</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input value={bulkTagInput} onChange={(e) => setBulkTagInput(e.target.value)} placeholder="Tag name" className="h-8 text-xs" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowBulkTag(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleBulkTagUpdate} disabled={!bulkTagInput.trim() || bulkProcessing}>
+                {bulkProcessing ? "Processing..." : `${bulkTagAction === "add" ? "Add" : "Remove"} Tag`}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Bulk Group Dialog */}
+        <Dialog open={showBulkGroup} onOpenChange={setShowBulkGroup}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Bulk Group Assignment</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Move {selectedForMerge.length} selected customers to a group.</p>
+            <div className="my-2">
+              <Select value={bulkGroupId} onValueChange={setBulkGroupId}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select group" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none" className="text-xs">No Group</SelectItem>
+                  {customerGroups.map(g => (
+                    <SelectItem key={g.id} value={g.id} className="text-xs">{g.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setShowBulkGroup(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleBulkGroupUpdate} disabled={!bulkGroupId || bulkProcessing}>
+                {bulkProcessing ? "Processing..." : "Update Group"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
