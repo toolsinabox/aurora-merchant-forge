@@ -72,6 +72,7 @@ import Redirects from "./pages/Redirects.tsx";
 import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
+import StorefrontRequestQuote from "./pages/storefront/StorefrontRequestQuote.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
 import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
 import StorefrontStoreFinder from "./pages/storefront/StorefrontStoreFinder.tsx";
