@@ -1150,10 +1150,11 @@ export default function StorefrontCheckout() {
                   <span>Total</span>
                   <span>${finalTotal.toFixed(2)}</span>
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={submitting || !ageVerified}>
+                <Button type="submit" className="w-full h-11" disabled={submitting || !ageVerified || !termsAccepted}>
                   {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Placing Order...</> : "Place Order"}
                 </Button>
                 {!ageVerified && <p className="text-[10px] text-muted-foreground text-center">Please confirm your age to proceed</p>}
+                {!termsAccepted && ageVerified && <p className="text-[10px] text-muted-foreground text-center">Please accept the Terms & Conditions</p>}
               </div>
             </div>
           </div>

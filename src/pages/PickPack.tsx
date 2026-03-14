@@ -272,11 +272,7 @@ export default function PickPack() {
                     </Button>
                   )}
                 </div>
-                {checkedCount > 0 && (
-                  <Button size="sm" className="text-xs" onClick={markAsPacked}>
-                    Mark {checkedCount} Picked → Pack
-                  </Button>
-                )}
+              </CardTitle>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
