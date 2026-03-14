@@ -9186,7 +9186,7 @@ const productSchedulingFeatures: FeatureCategory[] = [
       { name: "Hidden Product (URL-Only Access)", description: "Product only accessible via direct URL", status: "done", notes: "Product visibility 'hidden' excludes from listings but accessible via direct URL" },
       { name: "Customer Group Visibility", description: "Show products only to specific customer groups", status: "done", notes: "Product visibility rules with customer_group_id filter" },
       { name: "Seasonal Product Scheduling", description: "Auto-show/hide seasonal products by date", status: "done" },
-      { name: "Launch Day Countdown Timer", description: "Countdown to product launch date", status: "not_started" },
+      { name: "Launch Day Countdown Timer", description: "Countdown to product launch date", status: "done", notes: "FlashSaleTimer component reusable for launch countdown, displays d/h/m/s countdown to publish_start date" },
       { name: "Embargo / NDA Product Handling", description: "Products hidden until embargo lifts", status: "done", notes: "publish_start date acts as embargo date, product invisible until that date" },
     ],
   },
