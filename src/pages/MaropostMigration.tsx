@@ -47,6 +47,7 @@ const MIGRATION_ENTITIES: Omit<EntityCount, "count" | "selected" | "status" | "i
   { entity: "rma", label: "Returns / RMAs", icon: <RefreshCw className="h-5 w-5" /> },
   { entity: "payments", label: "Payment History", icon: <CreditCard className="h-5 w-5" /> },
   { entity: "currency", label: "Currencies & Exchange Rates", icon: <Globe className="h-5 w-5" /> },
+  { entity: "redirects", label: "301 Redirects (SEO)", icon: <ArrowRight className="h-5 w-5" /> },
   { entity: "templates", label: "Templates & Theme", icon: <Palette className="h-5 w-5" /> },
 ];
 
