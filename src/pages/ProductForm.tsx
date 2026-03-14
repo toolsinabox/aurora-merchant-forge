@@ -136,6 +136,7 @@ export default function ProductForm() {
         reorder_quantity: (existing as any).reorder_quantity?.toString() || "0",
         restock_quantity: (existing as any).restock_quantity?.toString() || "0",
         preorder_quantity: (existing as any).preorder_quantity?.toString() || "0",
+        min_order_quantity: (existing as any).min_order_quantity?.toString() || "1",
         misc1: (existing as any).misc1 || "", misc2: (existing as any).misc2 || "",
         misc3: (existing as any).misc3 || "", misc4: (existing as any).misc4 || "",
         misc5: (existing as any).misc5 || "",
