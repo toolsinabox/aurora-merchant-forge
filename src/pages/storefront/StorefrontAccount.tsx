@@ -522,6 +522,14 @@ export default function StorefrontAccount() {
                   <CreditCard className="h-4 w-4" /> Pay ${Number(selectedOrder.total).toFixed(2)}
                 </Button>
               )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-2 gap-2"
+                onClick={() => handleReorder(selectedOrder)}
+              >
+                <ShoppingCart className="h-4 w-4" /> Reorder All Items
+              </Button>
             </CardContent>
           </Card>
         </div>
