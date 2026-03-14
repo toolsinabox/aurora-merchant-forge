@@ -74,6 +74,7 @@ const systemNav = [
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
   { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
+  { title: "Multimarket", url: `${prefix}/multimarket`, icon: Globe },
   { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
   { title: "API Keys", url: `${prefix}/api-keys`, icon: Key },

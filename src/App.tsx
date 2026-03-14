@@ -311,6 +311,8 @@ const App = () => (
                    <Route path="/accounting" element={<RequireAuth><AccountingIntegration /></RequireAuth>} />
                    <Route path="/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
                    <Route path="/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
+                   <Route path="/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
+                   <Route path="/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
