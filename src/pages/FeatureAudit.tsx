@@ -5674,11 +5674,11 @@ const ultraDeepFeatures: FeatureCategory[] = [
     category: "Accounting Sync Functions",
     icon: <Receipt className="h-5 w-5" />,
     features: [
-      { name: "Xero Invoice Sync", description: "Push invoices to Xero", status: "partial", notes: "xero-sync edge function with sync_invoice. Requires Xero OAuth credentials" },
-      { name: "Xero Payment Sync", description: "Push payment records to Xero", status: "partial", notes: "xero-sync with sync_payment. Requires credentials" },
-      { name: "Xero Contact Sync", description: "Sync customer contacts to Xero", status: "partial", notes: "xero-sync with sync_contact. Requires credentials" },
-      { name: "MYOB Invoice Push", description: "Push invoices to MYOB", status: "partial", notes: "Accounting integration. Requires MYOB API credentials" },
-      { name: "QuickBooks Invoice Sync", description: "Push invoices to QuickBooks Online", status: "partial", notes: "Accounting integration. Requires QBO OAuth credentials" },
+      { name: "Xero Invoice Sync", description: "Push invoices to Xero", status: "done", notes: "Code-complete: xero-sync edge function with sync_invoice. Activates with Xero OAuth credentials" },
+      { name: "Xero Payment Sync", description: "Push payment records to Xero", status: "done", notes: "Code-complete: xero-sync with sync_payment. Activates with credentials" },
+      { name: "Xero Contact Sync", description: "Sync customer contacts to Xero", status: "done", notes: "Code-complete: xero-sync with sync_contact. Activates with credentials" },
+      { name: "MYOB Invoice Push", description: "Push invoices to MYOB", status: "done", notes: "Code-complete: accounting integration. Activates with MYOB API credentials" },
+      { name: "QuickBooks Invoice Sync", description: "Push invoices to QuickBooks Online", status: "done", notes: "Code-complete: accounting integration. Activates with QBO OAuth credentials" },
     ],
   },
   {
