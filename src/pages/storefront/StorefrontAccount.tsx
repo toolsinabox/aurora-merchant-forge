@@ -84,6 +84,7 @@ export default function StorefrontAccount() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { items: wishlistItems } = useWishlist();
+  const { addItem: addToCart } = useCart();
   const [customer, setCustomer] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [returns, setReturns] = useState<any[]>([]);
