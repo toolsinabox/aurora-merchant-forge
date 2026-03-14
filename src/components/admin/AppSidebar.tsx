@@ -90,6 +90,7 @@ const systemNav = [
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
   { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
+  { title: "Email Automations", url: `${prefix}/email-automations`, icon: Zap },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },
