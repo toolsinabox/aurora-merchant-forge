@@ -1463,6 +1463,62 @@ export default function Analytics() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Search Analytics — Top Queries */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Top Search Queries</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Query</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Searches</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Avg Results</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {topSearches.length === 0 ? (
+                  <TableRow><TableCell colSpan={3} className="text-center text-xs text-muted-foreground py-6">No search data yet</TableCell></TableRow>
+                ) : topSearches.map(s => (
+                  <TableRow key={s.query} className="text-xs">
+                    <TableCell className="py-1.5 font-medium">"{s.query}"</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.count}</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.avgResults}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Search Analytics — Zero Results */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Zero-Result Searches</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Query</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Times Searched</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {zeroResultSearches.length === 0 ? (
+                  <TableRow><TableCell colSpan={2} className="text-center text-xs text-muted-foreground py-6">No zero-result searches — great!</TableCell></TableRow>
+                ) : zeroResultSearches.map(s => (
+                  <TableRow key={s.query} className="text-xs">
+                    <TableCell className="py-1.5 font-medium text-destructive">"{s.query}"</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.count}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
