@@ -14,6 +14,8 @@ import { PromoPopup } from "./PromoPopup";
 import { CurrencySwitcher, useCurrency } from "./CurrencySwitcher";
 import { LanguageSwitcher, useLanguage, LanguageProvider } from "./LanguageSwitcher";
 import { supabase } from "@/integrations/supabase/client";
+import { SocialProofNotifications } from "./SocialProofNotifications";
+import { MobileBottomNav } from "./MobileBottomNav";
 
 interface StorefrontLayoutProps {
   children: ReactNode;
@@ -301,7 +303,7 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
         </div>
       </header>
 
-      <main id="main-content" className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1 pb-16 md:pb-0">{children}</main>
 
       {/* Footer */}
       <footer className="border-t bg-card/50">
@@ -365,12 +367,14 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
 
       <CookieConsentBanner />
       <PromoPopup basePath={basePath} storeName={storeName} />
+      {storeId && <SocialProofNotifications storeId={storeId} />}
+      <MobileBottomNav />
 
       {/* Back to Top Button */}
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 z-50 h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-all motion-reduce:transition-none"
+          className="fixed bottom-20 md:bottom-6 right-6 z-50 h-10 w-10 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-all motion-reduce:transition-none"
           aria-label="Back to top"
         >
           <ChevronUp className="h-5 w-5" />
