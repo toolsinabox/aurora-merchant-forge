@@ -416,6 +416,19 @@ export default function Analytics() {
         totalRefunded,
       });
 
+      // Repeat Purchase Rate
+      const customerOrderCounts: Record<string, number> = {};
+      (orders as any[]).forEach((o: any) => {
+        if (o.customer_id) customerOrderCounts[o.customer_id] = (customerOrderCounts[o.customer_id] || 0) + 1;
+      });
+      const totalWithOrders = Object.keys(customerOrderCounts).length;
+      const repeatBuyers = Object.values(customerOrderCounts).filter(c => c > 1).length;
+      setRepeatPurchaseRate({
+        rate: totalWithOrders > 0 ? (repeatBuyers / totalWithOrders) * 100 : 0,
+        totalCustomers: totalWithOrders,
+        repeatCustomers: repeatBuyers,
+      });
+
       setLoadingTopProducts(false);
     };
     fetchData();
