@@ -7,12 +7,13 @@ const corsHeaders = {
 };
 
 interface MaropostRequest {
-  action: string; // test_connection, get_products, get_categories, get_orders, get_customers, get_content, get_currency, get_shipping, get_suppliers, get_vouchers, get_rma, get_payments, get_warehouses
+  action: string;
   store_domain: string;
   api_key: string;
   filter?: Record<string, unknown>;
   page?: number;
   limit?: number;
+  scan_mode?: boolean; // Use minimal output selectors for fast counting
 }
 
 const ACTION_MAP: Record<string, string> = {
