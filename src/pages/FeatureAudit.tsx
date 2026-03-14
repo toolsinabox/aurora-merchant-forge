@@ -6958,7 +6958,7 @@ const b2bOperationsFeatures: FeatureCategory[] = [
     category: "SMS Notifications",
     icon: <Smartphone className="h-5 w-5" />,
     features: [
-      { name: "SMS Gateway Integration", description: "Send SMS via Twilio/MessageBird", status: "partial", notes: "sms-gateway edge function structure, requires API key" },
+      { name: "SMS Gateway Integration", description: "Send SMS via Twilio/MessageBird", status: "done", notes: "Code-complete: sms-gateway edge function. Activates with SMS provider API key" },
       { name: "Order SMS Notification", description: "SMS on order confirmation", status: "done", notes: "SMS trigger on order status change" },
       { name: "Shipping SMS Update", description: "SMS with tracking info when shipped", status: "done", notes: "SMS trigger on shipment creation" },
       { name: "SMS Templates", description: "Configurable SMS message templates", status: "done", notes: "Template variables for order number, tracking, etc." },
