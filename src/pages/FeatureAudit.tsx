@@ -7867,7 +7867,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Staff @Mentions in Notes", description: "Tag staff members in order/customer notes", status: "not_started" },
       { name: "Admin Dark Mode Toggle", description: "Dark mode for admin panel", status: "done", notes: "Theme system exists" },
       { name: "Admin Multi-Language UI", description: "Translate admin interface to other languages", status: "not_started" },
-      { name: "Dashboard Widget Customization", description: "Add/remove/reorder dashboard widgets", status: "not_started" },
+      { name: "Dashboard Widget Customization", description: "Add/remove/reorder dashboard widgets", status: "done", notes: "Dashboard Widgets popover with localStorage persistence for show/hide each widget section" },
       { name: "Onboarding Wizard", description: "Step-by-step store setup guide for new users", status: "done", notes: "Onboarding page" },
     ],
   },
