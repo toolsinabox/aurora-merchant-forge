@@ -237,9 +237,9 @@ export default function ShippingZones() {
                           <TableRow key={z.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => openEdit(z)}>
                             <TableCell className="py-2 font-medium">{z.name}</TableCell>
                             <TableCell className="py-2 max-w-[160px] truncate text-muted-foreground">{z.regions}</TableCell>
-                            <TableCell className="py-2 capitalize">{z.rate_type || "flat"}</TableCell>
+                            <TableCell className="py-2 capitalize">{z.rate_type === "per_item" ? "Per Item" : z.rate_type || "flat"}</TableCell>
                             <TableCell className="py-2 text-right font-medium">
-                              {(z.rate_type === "weight") ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : `$${Number(z.flat_rate).toFixed(2)}`}
+                              {z.rate_type === "weight" ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : z.rate_type === "per_item" ? `$${Number(z.per_kg_rate).toFixed(2)}/item` : `$${Number(z.flat_rate).toFixed(2)}`}
                             </TableCell>
                             <TableCell className="py-2 text-right">{z.free_above ? `$${Number(z.free_above).toFixed(2)}` : "—"}</TableCell>
                             <TableCell className="py-2">
