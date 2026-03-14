@@ -7830,7 +7830,7 @@ const posDeepFeatures: FeatureCategory[] = [
       { name: "POS Receipt Printer", description: "Print receipts to thermal receipt printer", status: "not_started" },
       { name: "POS Card Terminal Integration", description: "Connect to EFTPOS/card terminal for tap-to-pay", status: "not_started" },
       { name: "POS Offline Mode", description: "Continue selling when internet is down, sync later", status: "not_started" },
-      { name: "POS End-of-Day Report", description: "Cash up and reconciliation at end of shift", status: "not_started" },
+      { name: "POS End-of-Day Report", description: "Cash up and reconciliation at end of shift", status: "done", notes: "POS page End of Day dialog with cash reconciliation" },
       { name: "POS Multi-Register Support", description: "Multiple registers with separate cash drawers", status: "not_started" },
       { name: "POS Gift Card Sell/Redeem", description: "Sell and redeem gift cards at POS", status: "partial" },
       { name: "POS Layby Creation", description: "Create layby plans from POS interface", status: "partial", notes: "Layby system exists" },
