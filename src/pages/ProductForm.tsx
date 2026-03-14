@@ -32,7 +32,10 @@ export default function ProductForm() {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteVariant = useDeleteVariant();
+  const createVariant = useCreateVariant();
   const [productImages, setProductImages] = useState<string[]>([]);
+  const [variantDialogOpen, setVariantDialogOpen] = useState(false);
+  const [newVariant, setNewVariant] = useState({ name: "", sku: "", price: "0", stock: "0" });
 
   // Shipping
   const { data: shippingData } = useProductShipping(isEdit ? id : undefined);
