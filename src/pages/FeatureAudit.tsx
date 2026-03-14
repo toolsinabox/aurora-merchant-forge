@@ -8582,7 +8582,7 @@ const quotingFeatures: FeatureCategory[] = [
       { name: "Quote Negotiation (Revision History)", description: "Track quote revisions and counter-offers", status: "not_started" },
       { name: "Quote Line Item Discounting", description: "Per-line custom pricing on quotes", status: "partial" },
       { name: "Quote Approval Workflow", description: "Internal approval for quotes above threshold", status: "not_started" },
-      { name: "Quote Templates", description: "Pre-built quote templates for common requests", status: "not_started" },
+      { name: "Quote Templates", description: "Pre-built quote templates for common requests", status: "done", notes: "Quotes page Templates dialog with save current items as template, load template to populate form, delete templates, localStorage persistence" },
     ],
   },
 ];
