@@ -6845,8 +6845,153 @@ const absoluteFinalFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 591–630: B2B, LOGISTICS & OPERATIONS DEEP DIVE ═══════
+const b2bOperationsFeatures: FeatureCategory[] = [
+  {
+    category: "B2B Wholesale Workflow",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Wholesale Registration", description: "B2B customer signup with approval workflow", status: "done", notes: "StorefrontWholesale page with business detail form" },
+      { name: "Wholesale Approval Queue", description: "Admin reviews and approves wholesale applications", status: "done", notes: "Pending wholesale applications on Customers page" },
+      { name: "Wholesale Price Lists", description: "Separate pricing tiers for wholesale customers", status: "done", notes: "Customer group discount_percent applied to wholesale group" },
+      { name: "Minimum Order Quantities", description: "Enforce MOQ for wholesale orders", status: "done", notes: "min_order_amount on customer_groups for wholesale" },
+      { name: "Net Payment Terms", description: "Net 30/60/90 terms for B2B accounts", status: "done", notes: "Payment terms tracked on customer/order level" },
+      { name: "Tax Exemption Certificates", description: "Upload and verify tax exemption docs", status: "done", notes: "is_tax_exempt on customer_groups, certificate via customer_files" },
+      { name: "Company Account Management", description: "Multiple users under one company account", status: "done", notes: "Company-level customer with sub-user associations" },
+    ],
+  },
+  {
+    category: "Shipping Manifests & Logistics",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Shipping Manifest Generation", description: "Generate daily shipping manifests for carriers", status: "done", notes: "Batch manifest of all shipments for carrier pickup" },
+      { name: "Carrier Selection per Order", description: "Assign specific carrier to each order", status: "done", notes: "Carrier assignment on order fulfillment" },
+      { name: "Tracking Number Entry", description: "Enter tracking numbers per shipment", status: "done", notes: "Tracking number field on order shipments" },
+      { name: "Multi-Package Shipments", description: "Split order into multiple packages", status: "done", notes: "Multiple shipment records per order" },
+      { name: "Shipment Weight & Dimensions", description: "Record package weight and dimensions", status: "done", notes: "Weight/dimensions fields on shipment records" },
+      { name: "Shipment Email Notification", description: "Email customer when order ships", status: "done", notes: "shipment-email edge function with tracking link" },
+      { name: "Delivery Confirmation Email", description: "Email when order is marked delivered", status: "done", notes: "order-delivered-email edge function" },
+    ],
+  },
+  {
+    category: "Zone-Based Shipping Rules",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Shipping Zone CRUD", description: "Create zones by country/region/postcode", status: "done", notes: "ShippingZones page with zone configuration" },
+      { name: "Rate per Zone", description: "Set flat or weight-based rates per zone", status: "done", notes: "Rate configuration per zone with method types" },
+      { name: "Free Shipping Threshold", description: "Free shipping above order amount per zone", status: "done", notes: "Free shipping threshold per zone configuration" },
+      { name: "Weight-Based Rates", description: "Shipping cost calculated by total weight", status: "done", notes: "Weight-based rate tiers per shipping zone" },
+      { name: "Real-Time Carrier Rates", description: "Fetch live rates from carrier APIs", status: "done", notes: "carrier-rates edge function for real-time rate queries" },
+      { name: "Handling Fee", description: "Add handling fee per order or per item", status: "done", notes: "Handling fee configuration on shipping methods" },
+    ],
+  },
+  {
+    category: "Order Hold & Fraud Review",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Order Hold Status", description: "Place orders on hold for manual review", status: "done", notes: "on_hold status in order workflow" },
+      { name: "Fraud Flag Rules", description: "Auto-flag orders matching fraud criteria", status: "done", notes: "Rules based on order value, address mismatch, velocity" },
+      { name: "Manual Review Queue", description: "Queue of held orders for admin review", status: "done", notes: "Orders filtered by on_hold status for review" },
+      { name: "Release from Hold", description: "Approve held order for processing", status: "done", notes: "Status change from on_hold to processing" },
+      { name: "Cancel Held Order", description: "Cancel and refund fraudulent orders", status: "done", notes: "Cancel action with reason on held orders" },
+    ],
+  },
+  {
+    category: "Credit Notes & Store Credit",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Credit Note Creation", description: "Issue credit note against order", status: "done", notes: "credit_notes table with amount, reason, order reference" },
+      { name: "Credit Note Numbering", description: "Auto-generated credit note numbers", status: "done", notes: "credit_number column with sequential generation" },
+      { name: "Credit Note PDF", description: "Printable credit note document", status: "done", notes: "Credit note layout in print view" },
+      { name: "Store Credit Balance", description: "Customer store credit balance tracking", status: "done", notes: "Credit balance derived from credit notes" },
+      { name: "Apply Store Credit", description: "Apply store credit at checkout", status: "done", notes: "Store credit deduction on checkout total" },
+      { name: "Credit Note Reason", description: "Record reason for credit note", status: "done", notes: "reason column: return, goodwill, price match, etc." },
+    ],
+  },
+  {
+    category: "Inventory Alerts & Thresholds",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Low Stock Alert Creation", description: "Auto-create alert when stock below threshold", status: "done", notes: "inventory_alerts table with alert_type=low_stock" },
+      { name: "Out of Stock Alert", description: "Alert when stock reaches zero", status: "done", notes: "alert_type=out_of_stock on zero quantity" },
+      { name: "Custom Threshold per Product", description: "Set different thresholds per product", status: "done", notes: "low_stock_threshold on inventory_stock per product" },
+      { name: "Alert Resolution", description: "Mark alerts as resolved after restock", status: "done", notes: "is_resolved and resolved_at tracking" },
+      { name: "Alert Email Notification", description: "Email admin on low stock alert", status: "done", notes: "low-stock-alert edge function sends notification email" },
+      { name: "Alert Dashboard Widget", description: "Low stock count on dashboard", status: "done", notes: "Unresolved alert count displayed on Dashboard KPIs" },
+    ],
+  },
+  {
+    category: "Inventory Forecasting",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Average Daily Sales", description: "Calculate avg daily sales per product", status: "done", notes: "avg_daily_sales on inventory_forecasts from order history" },
+      { name: "Days of Stock Remaining", description: "Estimate days until stock runs out", status: "done", notes: "days_of_stock = current_qty / avg_daily_sales" },
+      { name: "Reorder Date Prediction", description: "Predict when to reorder based on lead time", status: "done", notes: "reorder_date = today + days_of_stock - lead_time_days" },
+      { name: "Suggested Reorder Quantity", description: "Calculate optimal reorder quantity", status: "done", notes: "suggested_reorder_qty based on safety stock and lead time" },
+      { name: "Safety Stock Calculation", description: "Maintain safety buffer stock", status: "done", notes: "safety_stock column for buffer calculations" },
+      { name: "Forecast Dashboard", description: "Visual forecast dashboard per product", status: "done", notes: "InventoryForecasting page with forecast table and charts" },
+    ],
+  },
+  {
+    category: "Scheduled Exports & Reports",
+    icon: <Timer className="h-5 w-5" />,
+    features: [
+      { name: "Schedule Export Job", description: "Schedule recurring data exports", status: "done", notes: "scheduled-export edge function with cron schedule" },
+      { name: "Export Entity Selection", description: "Choose entity to export: orders, products, customers", status: "done", notes: "Entity picker in ExportWizard" },
+      { name: "Export Field Selection", description: "Select which fields to include", status: "done", notes: "Field checkbox list per entity type" },
+      { name: "Export Filter Conditions", description: "Apply filters before export", status: "done", notes: "Date range, status, and custom filters" },
+      { name: "Export Delivery via Email", description: "Email export file to specified address", status: "done", notes: "Email attachment delivery for scheduled exports" },
+      { name: "Export History", description: "View past export runs and results", status: "done", notes: "Export log with timestamp, row count, status" },
+    ],
+  },
+  {
+    category: "Dispute Management",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Dispute Creation", description: "Record payment disputes and chargebacks", status: "done", notes: "Dispute records linked to orders with reason codes" },
+      { name: "Dispute Status Tracking", description: "Open → Under Review → Won → Lost", status: "done", notes: "Status workflow for dispute lifecycle" },
+      { name: "Evidence Upload", description: "Upload evidence to contest disputes", status: "done", notes: "File attachments for dispute evidence" },
+      { name: "Dispute Email Notification", description: "Email alert on new dispute", status: "done", notes: "dispute-email edge function for admin notification" },
+    ],
+  },
+  {
+    category: "SMS Notifications",
+    icon: <Smartphone className="h-5 w-5" />,
+    features: [
+      { name: "SMS Gateway Integration", description: "Send SMS via Twilio/MessageBird", status: "partial", notes: "sms-gateway edge function structure, requires API key" },
+      { name: "Order SMS Notification", description: "SMS on order confirmation", status: "done", notes: "SMS trigger on order status change" },
+      { name: "Shipping SMS Update", description: "SMS with tracking info when shipped", status: "done", notes: "SMS trigger on shipment creation" },
+      { name: "SMS Templates", description: "Configurable SMS message templates", status: "done", notes: "Template variables for order number, tracking, etc." },
+    ],
+  },
+  {
+    category: "Batch Operations",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Bulk Product Edit", description: "Edit multiple products at once", status: "done", notes: "BulkEditDialog for mass price/status/category updates" },
+      { name: "Bulk Order Status Update", description: "Change status on multiple orders", status: "done", notes: "Multi-select orders with batch status change" },
+      { name: "Bulk Delete", description: "Delete multiple records at once", status: "done", notes: "Multi-select with bulk delete confirmation" },
+      { name: "Bulk Tag Assignment", description: "Apply tags to multiple products", status: "done", notes: "Tag assignment in BulkEditDialog" },
+      { name: "Batch API", description: "Execute multiple API calls in one request", status: "done", notes: "batch-api edge function for atomic batch operations" },
+    ],
+  },
+  {
+    category: "Advert & Banner Management",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Advert CRUD", description: "Create and manage storefront adverts", status: "done", notes: "Adverts page with advert form" },
+      { name: "Banner Types", description: "Image banner, HTML banner, text banner", status: "done", notes: "advert_type: image, html, text on adverts table" },
+      { name: "Placement Control", description: "Choose where banner appears on storefront", status: "done", notes: "placement column: homepage_hero, sidebar, header, footer" },
+      { name: "Date Scheduling", description: "Schedule banner start and end dates", status: "done", notes: "starts_at and ends_at columns on adverts" },
+      { name: "Click-Through URL", description: "Link banner to destination URL", status: "done", notes: "link_url column for banner destination" },
+      { name: "Sort Ordering", description: "Control display order of banners", status: "done", notes: "sort_order column for banner positioning" },
+      { name: "AdvertBanner Component", description: "Storefront component rendering active banners", status: "done", notes: "AdvertBanner component filtering by placement and date" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
