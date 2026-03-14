@@ -75,6 +75,51 @@ export default function StorefrontQuickOrder() {
   const totalItems = lines.filter(l => l.found).reduce((s, l) => s + l.quantity, 0);
   const totalValue = lines.filter(l => l.found).reduce((s, l) => s + l.price * l.quantity, 0);
 
+  const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const text = evt.target?.result as string;
+      if (!text) return;
+      const rows = text.split("\n").map(r => r.trim()).filter(Boolean);
+      // Skip header if first row contains "sku" or "SKU"
+      const start = rows[0]?.toLowerCase().includes("sku") ? 1 : 0;
+      const newLines: OrderLine[] = [];
+      for (let i = start; i < rows.length; i++) {
+        const cols = rows[i].split(/[,\t;]/);
+        const sku = cols[0]?.trim();
+        const qty = parseInt(cols[1]?.trim()) || 1;
+        if (!sku) continue;
+        newLines.push({
+          id: `csv-${Date.now()}-${i}`,
+          sku, productId: "", title: "", price: 0, quantity: qty, found: false,
+        });
+      }
+      if (newLines.length === 0) { toast.error("No valid rows found in CSV"); return; }
+      setLines(newLines);
+      toast.success(`Loaded ${newLines.length} lines from CSV. Looking up products...`);
+      // Auto-lookup all SKUs
+      for (const line of newLines) {
+        const { data } = await supabase
+          .from("products")
+          .select("id, title, price, sku")
+          .or(`sku.eq.${line.sku},barcode.eq.${line.sku}`)
+          .eq("status", "active")
+          .limit(1)
+          .maybeSingle();
+        if (data) {
+          setLines(prev => prev.map(l => l.id === line.id ? {
+            ...l, productId: data.id, title: data.title, price: Number(data.price), found: true,
+          } : l));
+        }
+      }
+      toast.success("CSV lookup complete");
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   const handleAddAllToCart = () => {
     const validLines = lines.filter(l => l.found && l.quantity > 0);
     if (validLines.length === 0) {
