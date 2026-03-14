@@ -7849,7 +7849,7 @@ const adminUxFeatures: FeatureCategory[] = [
     category: "Admin UX Polish",
     icon: <Sparkles className="h-5 w-5" />,
     features: [
-      { name: "Keyboard Shortcuts (Global)", description: "Ctrl+K search, Ctrl+S save, etc.", status: "not_started" },
+      { name: "Keyboard Shortcuts (Global)", description: "Ctrl+K search, Ctrl+S save, etc.", status: "done", notes: "CommandPalette component with Ctrl+K global search across all admin pages" },
       { name: "Bulk Image Upload & Assignment", description: "Upload multiple images and auto-match to products by SKU/filename", status: "partial", notes: "ZipImageUpload exists" },
       { name: "Drag-Reorder Products", description: "Drag to reorder products within category", status: "not_started" },
       { name: "Drag-Reorder Categories", description: "Drag to reorder category display order", status: "partial", notes: "sort_order field exists" },
