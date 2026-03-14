@@ -314,6 +314,8 @@ export default function CustomerDetail() {
         tags,
         customer_group_id: editForm.customer_group_id || null,
         logo_url: (editForm as any).logo_url || null,
+        payment_terms: (editForm as any).payment_terms || null,
+        credit_limit: (editForm as any).credit_limit ?? null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
