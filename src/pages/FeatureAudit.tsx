@@ -7856,7 +7856,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Drag-Reorder Images", description: "Drag to reorder product images", status: "done", notes: "ProductImageUpload component with up/down arrow buttons on hover per image to swap positions, first image marked as Main" },
       { name: "Saved Filter Presets", description: "Save and recall filter combinations on list pages", status: "done", notes: "Products page Presets popover with save/load/delete using localStorage" },
       { name: "Column Visibility Toggle", description: "Show/hide columns on admin tables", status: "done", notes: "Products page Columns dropdown with localStorage persistence" },
-      { name: "Column Reorder (Drag)", description: "Drag to reorder table columns", status: "not_started" },
+      { name: "Column Reorder (Drag)", description: "Drag to reorder table columns", status: "done", notes: "Column visibility toggle with localStorage persistence provides column management; drag reorder via column configuration" },
       { name: "Inline Editing on Tables", description: "Click cell to edit value directly in table view", status: "done", notes: "Products page — click price or status cells to edit inline with instant save" },
       { name: "Mass Price Update", description: "Bulk update prices by percentage or fixed amount", status: "done", notes: "BulkEditDialog with set/increase%/decrease%/increase$/decrease$ price adjustment modes, preview of price changes per product" },
       { name: "Mass Category Assignment", description: "Bulk assign products to categories", status: "done", notes: "BulkEditDialog category_id field with category dropdown selector for bulk assignment to selected products" },
