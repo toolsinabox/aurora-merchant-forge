@@ -106,6 +106,16 @@ export default function StorefrontCheckout() {
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [signatureRequired, setSignatureRequired] = useState(false);
   const [authorityToLeave, setAuthorityToLeave] = useState(false);
+
+  // Same-day delivery
+  const [sameDayAvailable, setSameDayAvailable] = useState(false);
+  const [sameDaySelected, setSameDaySelected] = useState(false);
+  const SAME_DAY_CUTOFF_HOUR = 14; // 2 PM local time
+  const SAME_DAY_FEE = 14.95;
+
+  // Shipping insurance
+  const [shippingInsurance, setShippingInsurance] = useState(false);
+  const INSURANCE_RATE = 0.03; // 3% of subtotal
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
@@ -226,12 +236,21 @@ export default function StorefrontCheckout() {
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
-  const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost;
+  const insurancePremium = Math.max(2.95, Math.round(subtotalAfterDiscount * INSURANCE_RATE * 100) / 100);
+  const sameDayFee = sameDaySelected ? SAME_DAY_FEE : 0;
+  const insuranceFee = shippingInsurance ? insurancePremium : 0;
+  const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost + sameDayFee;
+
+  // Check same-day availability based on cutoff hour
+  useEffect(() => {
+    const now = new Date();
+    setSameDayAvailable(now.getHours() < SAME_DAY_CUTOFF_HOUR && deliveryMethod === "shipping");
+    if (now.getHours() >= SAME_DAY_CUTOFF_HOUR) setSameDaySelected(false);
+  }, [deliveryMethod]);
 
   // Compound tax calculation: apply taxes in priority order, compound taxes use accumulated base
   const taxAmount = (() => {
     if (isTaxExempt) return 0;
-    // If we have detailed rates matched for current address
     const matchedRates = allTaxRates.filter((r: any) => {
       if (r.region && form.country) {
         return (r.region && form.city && form.city.toLowerCase().includes(r.region.toLowerCase())) ||
@@ -242,7 +261,6 @@ export default function StorefrontCheckout() {
     const ratesToApply = matchedRates.length > 0 ? matchedRates : allTaxRates.filter((r: any) => r.is_default);
     if (ratesToApply.length === 0) return Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
 
-    // Sort by priority descending (higher priority applied first)
     const sorted = [...ratesToApply].sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0));
     let totalTax = 0;
     let runningBase = subtotalAfterDiscount;
@@ -260,7 +278,7 @@ export default function StorefrontCheckout() {
     return Math.round(totalTax * 100) / 100;
   })();
 
-  const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
+  const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + insuranceFee + taxAmount;
   const voucherAmount = appliedVoucher?.amountUsed ?? 0;
   const storeCreditAmount = useStoreCredit ? Math.min(storeCreditBalance, totalBeforeVoucher - voucherAmount) : 0;
   const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount - storeCreditAmount);
@@ -993,7 +1011,42 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Upsell Products */}
+              {/* Same-Day Delivery Option */}
+              {sameDayAvailable && deliveryMethod === "shipping" && (
+                <div className="border rounded-lg p-4 space-y-3">
+                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${sameDaySelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <div className="flex items-center gap-3">
+                      <Checkbox checked={sameDaySelected} onCheckedChange={(v) => setSameDaySelected(!!v)} />
+                      <div>
+                        <p className="text-sm font-medium flex items-center gap-1.5">
+                          <Truck className="h-3.5 w-3.5 text-primary" /> Same-Day Delivery
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Order before {SAME_DAY_CUTOFF_HOUR > 12 ? SAME_DAY_CUTOFF_HOUR - 12 : SAME_DAY_CUTOFF_HOUR}:00 {SAME_DAY_CUTOFF_HOUR >= 12 ? "PM" : "AM"} for delivery today
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">+${SAME_DAY_FEE.toFixed(2)}</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Shipping Insurance Option */}
+              {deliveryMethod === "shipping" && (
+                <div className="border rounded-lg p-4 space-y-3">
+                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${shippingInsurance ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <div className="flex items-center gap-3">
+                      <Checkbox checked={shippingInsurance} onCheckedChange={(v) => setShippingInsurance(!!v)} />
+                      <div>
+                        <p className="text-sm font-medium">Shipping Insurance</p>
+                        <p className="text-xs text-muted-foreground">Protect your order against loss, theft, or damage during shipping</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">+${insurancePremium.toFixed(2)}</span>
+                  </label>
+                </div>
+              )}
+
               {upsellProducts.length > 0 && (
                 <div className="border rounded-lg p-5 space-y-3">
                   <h2 className="font-semibold flex items-center gap-2">
