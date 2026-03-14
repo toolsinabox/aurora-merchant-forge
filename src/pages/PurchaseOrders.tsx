@@ -208,11 +208,11 @@ export default function PurchaseOrders() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Purchase Orders</h1>
-            <p className="text-sm text-muted-foreground">{pos.length} purchase orders</p>
+            <h1 className="text-lg font-semibold">Purchase Orders</h1>
+            <p className="text-xs text-muted-foreground">{pos.length} purchase orders</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setForm({ ...emptyForm, po_number: genPO() }); }}>
             <DialogTrigger asChild>
@@ -248,9 +248,9 @@ export default function PurchaseOrders() {
           </Dialog>
         </div>
 
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search POs..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+        <div className="relative max-w-xs">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input placeholder="Search POs..." value={search} onChange={e => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
         </div>
 
         <Card>
@@ -258,50 +258,53 @@ export default function PurchaseOrders() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>PO Number</TableHead>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Expected</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Created</TableHead>
-                  <TableHead className="w-28"></TableHead>
+                  <TableHead className="text-xs h-8">PO Number</TableHead>
+                  <TableHead className="text-xs h-8">Supplier</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8">Expected</TableHead>
+                  <TableHead className="text-xs h-8">Total</TableHead>
+                  <TableHead className="text-xs h-8">Created</TableHead>
+                  <TableHead className="text-xs h-8 w-28"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No purchase orders found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
+                    <ClipboardList className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                    No purchase orders found
+                  </TableCell></TableRow>
                 ) : filtered.map((p: any) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-mono font-medium text-sm">{p.po_number}</TableCell>
-                    <TableCell className="text-sm">{p.suppliers?.name || "—"}</TableCell>
-                    <TableCell>
+                  <TableRow key={p.id} className="text-xs">
+                    <TableCell className="py-2 font-mono font-medium">{p.po_number}</TableCell>
+                    <TableCell className="py-2">{p.suppliers?.name || "—"}</TableCell>
+                    <TableCell className="py-2">
                       <Select value={p.status} onValueChange={status => updateStatus.mutate({ id: p.id, status })}>
-                        <SelectTrigger className="h-7 w-28 text-xs">
-                          <Badge variant={statusColors[p.status] || "outline"} className="text-xs">{p.status}</Badge>
+                        <SelectTrigger className="h-6 w-28 text-[10px]">
+                          <Badge variant={statusColors[p.status] || "outline"} className="text-[10px]">{p.status}</Badge>
                         </SelectTrigger>
                         <SelectContent>
                           {["draft", "sent", "partial", "received", "closed", "cancelled"].map(s => (
-                            <SelectItem key={s} value={s}>{s}</SelectItem>
+                            <SelectItem key={s} value={s} className="text-xs">{s}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{p.expected_date ? format(new Date(p.expected_date), "dd MMM yyyy") : "—"}</TableCell>
-                    <TableCell className="font-medium">${Number(p.total).toFixed(2)}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
-                    <TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{p.expected_date ? format(new Date(p.expected_date), "dd MMM yyyy") : "—"}</TableCell>
+                    <TableCell className="py-2 font-medium">${Number(p.total).toFixed(2)}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
+                    <TableCell className="py-2">
                       <div className="flex gap-1">
                         {["sent", "partial"].includes(p.status) && (
-                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Receive Items" onClick={() => openReceiveDialog(p)}>
-                            <PackageCheck className="h-3.5 w-3.5" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6" title="Receive Items" onClick={() => openReceiveDialog(p)}>
+                            <PackageCheck className="h-3 w-3" />
                           </Button>
                         )}
                         <Link to={`/purchase-orders/${p.id}/print`}>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" title="Print PO"><Printer className="h-3.5 w-3.5" /></Button>
+                          <Button variant="ghost" size="icon" className="h-6 w-6" title="Print PO"><Printer className="h-3 w-3" /></Button>
                         </Link>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>
