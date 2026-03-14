@@ -221,7 +221,7 @@ export default function Suppliers() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Suppliers</h1>
