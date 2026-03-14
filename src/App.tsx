@@ -116,6 +116,8 @@ import CarrierManifest from "./pages/CarrierManifest.tsx";
 import PriceLists from "./pages/PriceLists.tsx";
 import StoreLocator from "./pages/StoreLocator.tsx";
 import Notifications from "./pages/Notifications.tsx";
+import CreditNotes from "./pages/CreditNotes.tsx";
+import BatchInvoicePrint from "./pages/BatchInvoicePrint.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -249,6 +251,8 @@ const App = () => (
                    <Route path="/_cpanel/price-lists" element={<RequireAuth><PriceLists /></RequireAuth>} />
                    <Route path="/_cpanel/store-locator" element={<RequireAuth><StoreLocator /></RequireAuth>} />
                    <Route path="/_cpanel/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
+                   <Route path="/_cpanel/credit-notes" element={<RequireAuth><CreditNotes /></RequireAuth>} />
+                   <Route path="/_cpanel/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -351,6 +355,8 @@ const App = () => (
                    <Route path="/price-lists" element={<RequireAuth><PriceLists /></RequireAuth>} />
                    <Route path="/store-locator" element={<RequireAuth><StoreLocator /></RequireAuth>} />
                    <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
+                   <Route path="/credit-notes" element={<RequireAuth><CreditNotes /></RequireAuth>} />
+                   <Route path="/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

@@ -4,7 +4,7 @@ import {
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
-  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation,
+  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -54,10 +54,12 @@ const salesNav = [
   { title: "Orders", url: `${prefix}/orders`, icon: Package },
   { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
+  { title: "Credit Notes", url: `${prefix}/credit-notes`, icon: FileText },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
   { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
+  { title: "Batch Invoices", url: `${prefix}/batch-invoices`, icon: Printer },
 ];
 
 // ── Customers ──
