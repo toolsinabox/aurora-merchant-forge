@@ -24,6 +24,13 @@ export default function DigitalDownloads() {
   const [pageSize, setPageSize] = useState(25);
   const [selectedProduct, setSelectedProduct] = useState("");
   const [form, setForm] = useState({ file_name: "", file_url: "", download_limit: "", expiry_days: "30" });
+  const [licenseKeys, setLicenseKeys] = useState<Record<string, string[]>>(() => {
+    try { return JSON.parse(localStorage.getItem("license_keys_store") || "{}"); } catch { return {}; }
+  });
+  const [showLicenseDialog, setShowLicenseDialog] = useState(false);
+  const [licenseProduct, setLicenseProduct] = useState<any>(null);
+  const [newLicenseKey, setNewLicenseKey] = useState("");
+  const [licenseCount, setLicenseCount] = useState(5);
 
   const { data: downloads = [] } = useQuery({
     queryKey: ["product-downloads", storeId],

@@ -437,6 +437,9 @@ export default function Subscriptions() {
                               <Button variant="ghost" size="icon" className="h-7 w-7" title="Change Quantity" onClick={() => { setQtyEditSub(s); setNewQty(s.quantity); setQtyDialogOpen(true); }}>
                                 <Hash className="h-3.5 w-3.5" />
                               </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Send Renewal Reminder" onClick={() => sendRenewalReminder.mutate(s)} disabled={sendRenewalReminder.isPending}>
+                                <Mail className="h-3.5 w-3.5" />
+                              </Button>
                             </>
                           )}
                           {s.status === "paused" && (
