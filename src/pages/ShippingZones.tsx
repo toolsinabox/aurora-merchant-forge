@@ -183,6 +183,7 @@ export default function ShippingZones() {
             <TabsTrigger value="zones" className="text-xs h-7">Zones ({(zones as any[]).length})</TabsTrigger>
             <TabsTrigger value="services" className="text-xs h-7">Services ({(services as any[]).length})</TabsTrigger>
             <TabsTrigger value="rates" className="text-xs h-7">Rate Matrix ({(rates as any[]).length})</TabsTrigger>
+            <TabsTrigger value="exclusions" className="text-xs h-7">Exclusions</TabsTrigger>
           </TabsList>
 
           {/* ── Zones Tab ── */}
