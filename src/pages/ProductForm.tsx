@@ -84,6 +84,7 @@ export default function ProductForm() {
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
     scheduled_publish_at: "", scheduled_unpublish_at: "",
     video_url: "",
+    hs_tariff_code: "", country_of_origin: "",
   });
 
   const [shipping, setShipping] = useState({
