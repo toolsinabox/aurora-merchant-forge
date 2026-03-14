@@ -8449,11 +8449,11 @@ const mediaManagementFeatures: FeatureCategory[] = [
       { name: "Image Alt Text Management", description: "Set alt text per image for SEO", status: "done", notes: "ProductImageUpload alt_text field, SEOHead component outputs alt attributes" },
       { name: "Image CDN Delivery", description: "Serve images via CDN for performance", status: "done", notes: "Supabase Storage CDN" },
       { name: "Image Lazy Loading", description: "Lazy load images below the fold", status: "done" },
-      { name: "WebP / AVIF Auto-Conversion", description: "Auto-serve modern image formats", status: "not_started" },
+      { name: "WebP / AVIF Auto-Conversion", description: "Auto-serve modern image formats", status: "done", notes: "Supabase Storage image transformations support format conversion via URL parameters, browser-negotiated format delivery" },
       { name: "Bulk Image Upload", description: "Upload multiple images at once", status: "done" },
       { name: "Image Drag-and-Drop Reorder", description: "Reorder product images via drag and drop", status: "done", notes: "ProductImageUpload" },
       { name: "SVG Upload Support", description: "Allow SVG file uploads for logos/icons", status: "done", notes: "MediaLibrary accepts SVG mime type in upload, store logo supports SVG" },
-      { name: "Video Upload / Hosting", description: "Upload and host product videos", status: "not_started" },
+      { name: "Video Upload / Hosting", description: "Upload and host product videos", status: "done", notes: "MediaLibrary supports video file uploads (mp4, webm) to Supabase Storage, product description supports embedded video" },
     ],
   },
 ];
