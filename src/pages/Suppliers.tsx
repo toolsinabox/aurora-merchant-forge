@@ -221,15 +221,15 @@ export default function Suppliers() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Suppliers</h1>
-            <p className="text-sm text-muted-foreground">{suppliers.length} suppliers</p>
+            <h1 className="text-lg font-semibold">Suppliers</h1>
+            <p className="text-xs text-muted-foreground">{suppliers.length} suppliers</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(emptyForm); setEditId(null); } }}>
             <DialogTrigger asChild>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" />Add Supplier</Button>
+              <Button size="sm" className="h-8 text-xs gap-1"><Plus className="h-3.5 w-3.5" /> Add Supplier</Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
               <DialogHeader>
@@ -264,16 +264,16 @@ export default function Suppliers() {
         </div>
 
         <Tabs defaultValue="list">
-          <TabsList>
-            <TabsTrigger value="list">Suppliers</TabsTrigger>
-            <TabsTrigger value="products">Product Assignments</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsList className="h-8">
+            <TabsTrigger value="list" className="text-xs h-7">Suppliers</TabsTrigger>
+            <TabsTrigger value="products" className="text-xs h-7">Product Assignments</TabsTrigger>
+            <TabsTrigger value="performance" className="text-xs h-7">Performance</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list">
         <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search suppliers..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Input placeholder="Search suppliers..." value={search} onChange={e => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
         </div>
 
         <Card className="mt-4">
@@ -281,32 +281,32 @@ export default function Suppliers() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Lead Time</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-20"></TableHead>
+                  <TableHead className="text-xs h-8">Supplier</TableHead>
+                  <TableHead className="text-xs h-8">Contact</TableHead>
+                  <TableHead className="text-xs h-8">Email</TableHead>
+                  <TableHead className="text-xs h-8">Lead Time</TableHead>
+                  <TableHead className="text-xs h-8">Type</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8 w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">Loading...</TableCell></TableRow>
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No suppliers found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">No suppliers found</TableCell></TableRow>
                 ) : filtered.map((s: any) => (
-                  <TableRow key={s.id}>
-                    <TableCell className="font-medium">{s.name}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{s.contact_name || "—"}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{s.email || "—"}</TableCell>
-                    <TableCell className="text-sm">{s.lead_time_days ? `${s.lead_time_days} days` : "—"}</TableCell>
-                    <TableCell>{s.is_dropship ? <Badge variant="secondary"><Truck className="h-3 w-3 mr-1" />Dropship</Badge> : <Badge variant="outline">Standard</Badge>}</TableCell>
-                    <TableCell><Badge variant={s.is_active ? "default" : "outline"}>{s.is_active ? "Active" : "Inactive"}</Badge></TableCell>
-                    <TableCell>
+                  <TableRow key={s.id} className="text-xs">
+                    <TableCell className="py-2 font-medium">{s.name}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{s.contact_name || "—"}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{s.email || "—"}</TableCell>
+                    <TableCell className="py-2">{s.lead_time_days ? `${s.lead_time_days} days` : "—"}</TableCell>
+                    <TableCell className="py-2">{s.is_dropship ? <Badge variant="secondary" className="text-[10px]"><Truck className="h-2.5 w-2.5 mr-1" />Dropship</Badge> : <Badge variant="outline" className="text-[10px]">Standard</Badge>}</TableCell>
+                    <TableCell className="py-2"><Badge variant={s.is_active ? "default" : "outline"} className="text-[10px]">{s.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                    <TableCell className="py-2">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openEdit(s)}><Pencil className="h-3.5 w-3.5" /></Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => deleteMutation.mutate(s.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(s)}><Pencil className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => deleteMutation.mutate(s.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
                   </TableRow>

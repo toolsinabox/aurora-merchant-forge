@@ -138,6 +138,10 @@ export default function Coupons() {
     (c.description || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const activeCount = (coupons as any[]).filter(c => c.is_active).length;
+  const expiredCount = (coupons as any[]).filter(c => c.expires_at && new Date(c.expires_at) < new Date()).length;
+  const totalUsed = (coupons as any[]).reduce((s, c) => s + (c.used_count || 0), 0);
+
   return (
     <AdminLayout>
       <div className="space-y-4">
@@ -208,6 +212,53 @@ export default function Coupons() {
               </form>
             </DialogContent>
           </Dialog>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger-children">
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Ticket className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Total</p>
+                <p className="text-lg font-bold">{coupons.length}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-success/10 flex items-center justify-center">
+                <Ticket className="h-4 w-4 text-success" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Active</p>
+                <p className="text-lg font-bold">{activeCount}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-warning/10 flex items-center justify-center">
+                <Ticket className="h-4 w-4 text-warning" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Expired</p>
+                <p className="text-lg font-bold">{expiredCount}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-info/10 flex items-center justify-center">
+                <Copy className="h-4 w-4 text-info" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Total Uses</p>
+                <p className="text-lg font-bold">{totalUsed}</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         <Card>
