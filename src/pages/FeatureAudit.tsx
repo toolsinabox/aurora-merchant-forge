@@ -2346,6 +2346,391 @@ const featureData: FeatureCategory[] = [
       { name: "Bulk Image Upload (ZIP)", description: "Upload product images via ZIP file with SKU matching", status: "done", notes: "ZipImageUpload component matches image filenames to product SKUs" },
     ],
   },
+
+  // ═══════ 144. DELIVERY ESTIMATES ═══════
+  {
+    category: "Delivery Estimates",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Estimated Delivery Display", description: "Show estimated delivery dates on product and cart pages", status: "done", notes: "DeliveryEstimate component calculates estimated delivery from shipping method estimated_days_min/max" },
+      { name: "Cut-Off Time Logic", description: "Orders before cut-off ship same day, after ship next day", status: "done", notes: "Configurable cut-off time per shipping method for same-day dispatch" },
+      { name: "Weekend/Holiday Exclusion", description: "Skip weekends and holidays in delivery date calculation", status: "done", notes: "Business day calculation excluding weekends" },
+      { name: "Per-Product Lead Time", description: "Add product-specific lead time to delivery estimate", status: "done", notes: "lead_time_days on product_shipping adds to zone delivery estimate" },
+    ],
+  },
+
+  // ═══════ 145. ORDER HOLDS & FRAUD REVIEW ═══════
+  {
+    category: "Order Holds & Fraud Review",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Order Hold CRUD", description: "Place orders on hold for review before processing", status: "done", notes: "order_holds table with hold_reason, hold_type, placed_by, released_by" },
+      { name: "Hold Types", description: "Fraud review, payment verification, stock check, manual holds", status: "done", notes: "hold_type column: fraud_review, payment_verify, stock_check, manual" },
+      { name: "Auto-Hold Rules", description: "Automatically hold orders matching fraud criteria", status: "done", notes: "High-value orders, address mismatch, first-time customers auto-flagged" },
+      { name: "Release Workflow", description: "Admin releases hold after review, order resumes processing", status: "done", notes: "released_by and released_at columns, status transitions from held to processing" },
+      { name: "Hold Notes", description: "Add review notes explaining hold/release decisions", status: "done", notes: "notes text field on order_holds for audit trail" },
+    ],
+  },
+
+  // ═══════ 146. SHIPPING MANIFESTS ═══════
+  {
+    category: "Shipping Manifests",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Manifest CRUD", description: "Create shipping manifests grouping multiple shipments", status: "done", notes: "shipping_manifests table with manifest_number, carrier, status, manifest_date" },
+      { name: "Manifest Items", description: "Add shipments/orders to a manifest for batch handoff", status: "done", notes: "shipping_manifest_items table linking manifests to order shipments" },
+      { name: "Manifest Status Workflow", description: "Open → closed → dispatched lifecycle", status: "done", notes: "status column with full manifest lifecycle" },
+      { name: "Carrier Assignment", description: "Assign manifest to specific carrier for pickup", status: "done", notes: "carrier column on shipping_manifests" },
+      { name: "Manifest Print/Export", description: "Print or export manifest for carrier handover", status: "done", notes: "Printable manifest page with shipment details, tracking numbers, and totals" },
+    ],
+  },
+
+  // ═══════ 147. CUSTOMER SEGMENTATION RULES ═══════
+  {
+    category: "Customer Segmentation Rules",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Segmentation Rule CRUD", description: "Create automated customer segmentation rules", status: "done", notes: "customer_segmentation_rules table with name, segment, rules JSONB, match_type" },
+      { name: "Rule Conditions", description: "Segment by total spent, order count, last order date, location, tags", status: "done", notes: "rules JSONB with field, operator, value structure supporting multiple conditions" },
+      { name: "Match Type (All/Any)", description: "Require all or any conditions to match", status: "done", notes: "match_type column: all (AND) or any (OR) logic" },
+      { name: "Auto-Segment Assignment", description: "Automatically assign customers to segments when rules match", status: "done", notes: "Matched customers auto-tagged with segment value" },
+      { name: "Segment Analytics", description: "Track matched customer count per segmentation rule", status: "done", notes: "matched_count and last_run_at columns for rule performance tracking" },
+    ],
+  },
+
+  // ═══════ 148. PRODUCT FEEDS & CHANNELS ═══════
+  {
+    category: "Product Feeds & Channels",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Product Feed CRUD", description: "Create and manage product data feeds for external channels", status: "done", notes: "product_feeds table with feed_name, feed_type, feed_url, format, last_generated_at" },
+      { name: "Feed Formats", description: "Support XML, CSV, JSON, and RSS feed formats", status: "done", notes: "format column: xml, csv, json, rss" },
+      { name: "Feed Types", description: "Google Shopping, Facebook Catalog, Bing Shopping, Custom feeds", status: "done", notes: "feed_type column for channel-specific formatting" },
+      { name: "Feed Scheduling", description: "Auto-regenerate feeds on schedule", status: "done", notes: "schedule column for cron-based feed regeneration" },
+      { name: "Feed Field Mapping", description: "Map product fields to channel-specific feed fields", status: "done", notes: "field_mappings JSONB for custom field mapping per feed" },
+      { name: "Feed Filters", description: "Include/exclude products by status, category, stock level", status: "done", notes: "filters JSONB for product selection criteria" },
+    ],
+  },
+
+  // ═══════ 149. RETURN POLICIES ═══════
+  {
+    category: "Return Policies",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Return Policy CRUD", description: "Create and manage return policies per product or category", status: "done", notes: "return_policies table with name, days_to_return, conditions, restocking_fee_percent" },
+      { name: "Return Window", description: "Configurable days for return eligibility", status: "done", notes: "days_to_return column defining return period" },
+      { name: "Restocking Fee", description: "Apply percentage restocking fee on returns", status: "done", notes: "restocking_fee_percent column for fee calculation" },
+      { name: "Non-Returnable Flag", description: "Mark specific products as non-returnable", status: "done", notes: "is_final_sale boolean prevents return requests for specific items" },
+      { name: "Policy Conditions", description: "Define conditions for return eligibility (unused, original packaging, etc.)", status: "done", notes: "conditions text field describing return requirements" },
+    ],
+  },
+
+  // ═══════ 150. PRICE LISTS / CONTRACT PRICING ═══════
+  {
+    category: "Price Lists / Contract Pricing",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Price List CRUD", description: "Create named price lists for B2B contract pricing", status: "done", notes: "price_lists table with name, description, currency, is_active, valid_from/until" },
+      { name: "Price List Items", description: "Set custom prices per product within a price list", status: "done", notes: "price_list_items table with product_id, custom_price, min_quantity" },
+      { name: "Customer Group Assignment", description: "Assign price lists to specific customer groups", status: "done", notes: "customer_group_id on price_lists for group-based pricing" },
+      { name: "Validity Period", description: "Set start and end dates for price list validity", status: "done", notes: "valid_from and valid_until date columns" },
+      { name: "Currency Support", description: "Price lists can be in different currencies", status: "done", notes: "currency column on price_lists" },
+      { name: "Volume-Based Pricing", description: "Different prices based on minimum order quantity", status: "done", notes: "min_quantity column on price_list_items" },
+    ],
+  },
+
+  // ═══════ 151. INVENTORY TRANSFERS ═══════
+  {
+    category: "Inventory Transfers",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Transfer Request CRUD", description: "Create stock transfer requests between warehouses", status: "done", notes: "inventory_transfers table with transfer_number, source/destination location, status" },
+      { name: "Transfer Status Workflow", description: "Pending → approved → shipped → received lifecycle", status: "done", notes: "status column: pending, approved, shipped, received, cancelled" },
+      { name: "Transfer Items", description: "Track products and quantities per transfer", status: "done", notes: "inventory_transfer_items table with quantity_requested, quantity_shipped, quantity_received" },
+      { name: "Source & Destination", description: "Select source and destination warehouse locations", status: "done", notes: "source_location_id and destination_location_id foreign keys to inventory_locations" },
+      { name: "Approval Workflow", description: "Require approval before shipping transfers", status: "done", notes: "approved_by column for transfer authorization tracking" },
+      { name: "Ship & Receive Tracking", description: "Track shipped and received dates per transfer", status: "done", notes: "shipped_at and received_at timestamps" },
+    ],
+  },
+
+  // ═══════ 152. POS SYSTEM ═══════
+  {
+    category: "Point of Sale (POS)",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "POS Terminal Interface", description: "Full point-of-sale interface for in-store transactions", status: "done", notes: "Admin /pos page with product search, barcode scan, cart management, and payment processing" },
+      { name: "Product Search & Barcode Scan", description: "Find products by name, SKU, or barcode scan", status: "done", notes: "Search input with barcode scanner integration for quick product lookup" },
+      { name: "Cart Management", description: "Add/remove items, adjust quantities, apply discounts", status: "done", notes: "POS cart with inline quantity editing, remove items, and subtotal calculation" },
+      { name: "Multiple Payment Methods", description: "Accept cash, card, voucher, and mixed payments", status: "done", notes: "Payment method selection with split payment support" },
+      { name: "Receipt Printing", description: "Generate printable POS receipts", status: "done", notes: "Print receipt action generates PrintPaymentReceipt page" },
+      { name: "Customer Lookup", description: "Find and assign customers to POS transactions", status: "done", notes: "Customer search by name/email with recent customers list" },
+      { name: "Held Orders", description: "Hold/park orders for later completion", status: "done", notes: "Hold action saves POS cart state, retrievable from held orders list" },
+      { name: "Cash Drawer Management", description: "Open/close register with float tracking", status: "done", notes: "pos_register_sessions with opening_float, cash reconciliation on close" },
+    ],
+  },
+
+  // ═══════ 153. PRODUCT BULK OPERATIONS (EXTENDED) ═══════
+  {
+    category: "Product Bulk Operations (Extended)",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Bulk Supplier Assignment", description: "Assign supplier to multiple products at once", status: "done", notes: "Bulk supplier_id update in BulkEditDialog" },
+      { name: "Bulk Brand Update", description: "Update brand for multiple products", status: "done", notes: "Bulk brand update action in BulkEditDialog" },
+      { name: "Bulk Weight/Dimension Update", description: "Update shipping dimensions for multiple products", status: "done", notes: "Bulk weight and dimensions update in BulkEditDialog" },
+      { name: "Bulk Visibility Group Assignment", description: "Restrict/unrestrict multiple products to customer groups", status: "done", notes: "Bulk visibility_groups update in BulkEditDialog" },
+      { name: "Bulk Export Selected", description: "Export only selected products to CSV", status: "done", notes: "Export selected action on products list toolbar" },
+    ],
+  },
+
+  // ═══════ 154. ORDER COMMUNICATIONS ═══════
+  {
+    category: "Order Communications",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Order Confirmation Email", description: "Auto-send confirmation when order is placed", status: "done", notes: "order-email-trigger edge function sends confirmation with order details" },
+      { name: "Shipment Notification Email", description: "Auto-notify customer when order ships", status: "done", notes: "shipment-email edge function with tracking info and carrier details" },
+      { name: "Delivery Confirmation Email", description: "Notify customer when order is delivered", status: "done", notes: "order-delivered-email edge function" },
+      { name: "Payment Confirmation Email", description: "Send receipt when payment is recorded", status: "done", notes: "payment-email edge function with payment details" },
+      { name: "Order Follow-Up Email", description: "Post-purchase follow-up for reviews/feedback", status: "done", notes: "order-follow-up edge function with configurable delay" },
+      { name: "Back-in-Stock Notification", description: "Notify customers when wishlisted/requested items are restocked", status: "done", notes: "back-in-stock-email edge function processes back_in_stock_requests" },
+      { name: "Low Stock Alert Email", description: "Notify admin when products fall below threshold", status: "done", notes: "low-stock-alert edge function for inventory monitoring" },
+    ],
+  },
+
+  // ═══════ 155. DROPSHIP MANAGEMENT ═══════
+  {
+    category: "Dropship Management",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Dropship Supplier Setup", description: "Configure suppliers as dropship vendors", status: "done", notes: "Suppliers with type 'dropship' flagged for auto-forwarding" },
+      { name: "Dropship Order Notification", description: "Auto-notify supplier when dropship order placed", status: "done", notes: "dropship-notification edge function sends order details to supplier email" },
+      { name: "Supplier PO Auto-Generation", description: "Auto-create purchase order to supplier for dropship items", status: "done", notes: "PO created with dropship flag linking to customer order" },
+      { name: "Dropship Tracking Integration", description: "Supplier updates tracking which flows to customer", status: "done", notes: "Tracking updates on supplier PO auto-update customer order shipment" },
+      { name: "Branded Packing Slips", description: "Packing slips with merchant branding for supplier to include", status: "done", notes: "PrintPackingSlip uses store name/logo, not supplier, for branded unboxing" },
+    ],
+  },
+
+  // ═══════ 156. INVENTORY FORECASTING ═══════
+  {
+    category: "Inventory Forecasting",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Average Daily Sales", description: "Calculate avg daily sales velocity per product", status: "done", notes: "avg_daily_sales column on inventory_forecasts calculated from order history" },
+      { name: "Days of Stock Remaining", description: "Estimate days until stockout based on sales velocity", status: "done", notes: "days_of_stock calculated from current stock / avg_daily_sales" },
+      { name: "Reorder Date Prediction", description: "Predict when to reorder based on lead time and velocity", status: "done", notes: "reorder_date calculated from days_of_stock minus lead_time_days" },
+      { name: "Safety Stock Calculation", description: "Recommended safety stock buffer based on variability", status: "done", notes: "safety_stock column on inventory_forecasts" },
+      { name: "Suggested Reorder Quantity", description: "Recommended order quantity based on demand and lead time", status: "done", notes: "suggested_reorder_qty on inventory_forecasts" },
+      { name: "Lead Time Tracking", description: "Track supplier lead time per product", status: "done", notes: "lead_time_days column on inventory_forecasts" },
+      { name: "Forecasting Dashboard", description: "Visual dashboard of stock forecasts with risk indicators", status: "done", notes: "Admin /inventory-forecasting page with KPI cards and color-coded risk table" },
+    ],
+  },
+
+  // ═══════ 157. PRODUCT REVIEWS & RATINGS ═══════
+  {
+    category: "Product Reviews & Ratings",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Customer Reviews", description: "Customers submit reviews with star rating and text", status: "done", notes: "product_reviews table with rating, title, body, author_name, is_verified_purchase" },
+      { name: "Review Moderation", description: "Admin approves or rejects reviews before display", status: "done", notes: "is_approved boolean, admin Reviews page with moderation queue" },
+      { name: "Verified Purchase Badge", description: "Mark reviews from verified purchasers", status: "done", notes: "is_verified_purchase boolean checked against order_items" },
+      { name: "Helpful Votes", description: "Customers can mark reviews as helpful", status: "done", notes: "helpful_count column on product_reviews" },
+      { name: "Review Reply (Admin)", description: "Admin can reply to customer reviews", status: "done", notes: "admin_reply and admin_reply_at columns for public merchant responses" },
+      { name: "Aggregate Rating Display", description: "Show average rating and distribution on product page", status: "done", notes: "ProductReviews component with star distribution bar chart and average rating" },
+      { name: "Review Sorting & Filtering", description: "Sort by newest, highest, lowest, most helpful", status: "done", notes: "Sort controls on ProductReviews storefront component" },
+    ],
+  },
+
+  // ═══════ 158. AFFILIATE / REFERRAL PROGRAM ═══════
+  {
+    category: "Affiliate / Referral Program",
+    icon: <UserPlus className="h-5 w-5" />,
+    features: [
+      { name: "Affiliate Registration", description: "Users apply to become affiliates", status: "done", notes: "affiliates table with user_id, referral_code, commission_rate, status" },
+      { name: "Unique Referral Codes", description: "Each affiliate gets a unique tracking code", status: "done", notes: "referral_code column with unique constraint" },
+      { name: "Commission Tracking", description: "Track commissions earned per referral sale", status: "done", notes: "affiliate_commissions table with order_id, amount, status (pending/approved/paid)" },
+      { name: "Commission Rates", description: "Configurable commission percentage per affiliate", status: "done", notes: "commission_rate column on affiliates table" },
+      { name: "Payout Management", description: "Track and manage affiliate payouts", status: "done", notes: "total_earned, total_paid, pending_balance columns on affiliates" },
+      { name: "Affiliate Dashboard", description: "Admin view of all affiliates with performance metrics", status: "done", notes: "Admin /affiliates page with KPI cards, affiliate list, commission history" },
+      { name: "Referral Link Tracking", description: "Track clicks and conversions from referral links", status: "done", notes: "Click and conversion tracking via referral_code parameter on storefront URLs" },
+    ],
+  },
+
+  // ═══════ 159. LOYALTY PROGRAM ═══════
+  {
+    category: "Loyalty Program",
+    icon: <Heart className="h-5 w-5" />,
+    features: [
+      { name: "Points Earning", description: "Earn points per dollar spent", status: "done", notes: "loyalty_points table with balance, lifetime_earned per customer" },
+      { name: "Points Redemption", description: "Redeem points for discounts at checkout", status: "done", notes: "Points redemption at checkout with configurable points-to-dollar ratio" },
+      { name: "Tier System", description: "Bronze, Silver, Gold, Platinum loyalty tiers", status: "done", notes: "tier column on loyalty_points with tier-based multipliers" },
+      { name: "Transaction History", description: "Track all point earn/redeem transactions", status: "done", notes: "loyalty_transactions table with type (earn/redeem), points, description" },
+      { name: "Bonus Point Events", description: "Award bonus points for actions (signup, review, birthday)", status: "done", notes: "Manual bonus point actions with description tracking" },
+      { name: "Points Expiry", description: "Set expiry period for earned points", status: "done", notes: "expires_at column on loyalty_transactions for time-limited points" },
+      { name: "Loyalty Dashboard", description: "Admin overview of program metrics and member tiers", status: "done", notes: "Admin /loyalty page with KPI cards, tier breakdown, and member list" },
+    ],
+  },
+
+  // ═══════ 160. COUPONS & DISCOUNT CODES ═══════
+  {
+    category: "Coupons & Discount Codes",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Coupon CRUD", description: "Create and manage discount coupon codes", status: "done", notes: "coupons table with code, discount_type, discount_value, is_active" },
+      { name: "Percentage Discount", description: "Coupon for percentage off order", status: "done", notes: "discount_type: percentage" },
+      { name: "Fixed Amount Discount", description: "Coupon for fixed dollar amount off", status: "done", notes: "discount_type: fixed_amount" },
+      { name: "Free Shipping Coupon", description: "Coupon that grants free shipping", status: "done", notes: "free_shipping boolean on coupons" },
+      { name: "Minimum Order Requirement", description: "Require minimum cart value to use coupon", status: "done", notes: "min_order_amount column on coupons" },
+      { name: "Usage Limits", description: "Set max total uses and per-customer limits", status: "done", notes: "max_uses and per_customer_limit columns" },
+      { name: "Coupon Scheduling", description: "Set valid date range for coupons", status: "done", notes: "starts_at and expires_at columns" },
+      { name: "Product/Category Scope", description: "Apply coupon to specific products or categories only", status: "done", notes: "applies_to, product_ids, and category_ids columns for targeting" },
+      { name: "Used Count Tracking", description: "Track how many times each coupon has been used", status: "done", notes: "used_count column auto-incremented on redemption" },
+    ],
+  },
+
+  // ═══════ 161. CONTACT SUBMISSIONS ═══════
+  {
+    category: "Contact Submissions",
+    icon: <MessageSquare className="h-5 w-5" />,
+    features: [
+      { name: "Contact Form Submissions", description: "Store and manage contact form submissions", status: "done", notes: "contact_submissions table with name, email, subject, message, is_read" },
+      { name: "Read/Unread Status", description: "Track which submissions have been reviewed", status: "done", notes: "is_read boolean toggle on contact_submissions" },
+      { name: "Email Notification", description: "Notify admin of new contact submissions", status: "done", notes: "contact-email edge function sends admin notification" },
+      { name: "Reply from Admin", description: "Reply to contact submissions from admin panel", status: "done", notes: "Reply action opens email compose with customer email pre-filled" },
+    ],
+  },
+
+  // ═══════ 162. NEWSLETTER SUBSCRIBERS ═══════
+  {
+    category: "Newsletter Subscribers",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Newsletter Signup", description: "Capture email signups from storefront", status: "done", notes: "newsletter_subscribers table with email, subscribed_at, is_active" },
+      { name: "Duplicate Prevention", description: "Prevent duplicate email subscriptions", status: "done", notes: "Unique constraint on email + store_id" },
+      { name: "Unsubscribe Support", description: "Allow subscribers to opt out", status: "done", notes: "is_active toggle for soft unsubscribe" },
+      { name: "Subscriber Export", description: "Export subscriber list for email marketing platforms", status: "done", notes: "CSV export of subscriber emails from admin" },
+      { name: "Klaviyo/Mailchimp Sync", description: "Sync subscribers to email marketing platforms", status: "partial", notes: "klaviyo-sync and mailchimp-sync edge functions — require merchant API keys" },
+    ],
+  },
+
+  // ═══════ 163. STORE SETTINGS & CONFIGURATION ═══════
+  {
+    category: "Store Settings & Configuration",
+    icon: <Settings className="h-5 w-5" />,
+    features: [
+      { name: "General Store Settings", description: "Store name, contact email, phone, timezone", status: "done", notes: "stores table with name, contact_email, phone, timezone" },
+      { name: "SMTP Email Configuration", description: "Configure custom SMTP for outbound emails", status: "done", notes: "smtp_config JSONB on stores with host, port, username, password, from_email" },
+      { name: "Tax Configuration", description: "Tax-inclusive/exclusive, default tax rate", status: "done", notes: "tax_mode, default_tax_rate columns on stores" },
+      { name: "Currency Configuration", description: "Default currency and decimal precision", status: "done", notes: "default_currency, currency_decimal_places, currency_symbol_position on stores" },
+      { name: "Order Number Format", description: "Customize order number prefix and format", status: "done", notes: "order_number_prefix column on stores" },
+      { name: "Checkout Settings", description: "Guest checkout toggle, account required toggle", status: "done", notes: "allow_guest_checkout and require_account_for_checkout booleans on stores" },
+      { name: "Inventory Settings", description: "Low stock threshold, track inventory toggle", status: "done", notes: "default_low_stock_threshold on stores" },
+      { name: "Social Media Links", description: "Store social media profile URLs", status: "done", notes: "social_links JSONB on stores for facebook, instagram, twitter, etc." },
+      { name: "Store Logo & Branding", description: "Upload store logo and favicon", status: "done", notes: "logo_url and favicon_url columns on stores" },
+    ],
+  },
+
+  // ═══════ 164. ROLE-BASED ACCESS CONTROL ═══════
+  {
+    category: "Role-Based Access Control",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "User Roles (Owner/Admin/Staff)", description: "Assign roles to users per store", status: "done", notes: "user_roles table with user_id, store_id, role (owner/admin/manager/staff)" },
+      { name: "Role Permissions", description: "Configure granular permissions per role", status: "done", notes: "Admin /role-permissions page with permission matrix" },
+      { name: "Multi-Store Roles", description: "Users can have different roles across stores", status: "done", notes: "user_roles is per store_id, allowing different access per store" },
+      { name: "Platform Admin Role", description: "Super-admin role for multi-tenant platform management", status: "done", notes: "platform_roles table with platform_admin role, RequirePlatformAdmin guard" },
+      { name: "Auto-First-Admin Promotion", description: "First user automatically becomes platform admin", status: "done", notes: "auto_promote_first_admin() trigger on profiles table" },
+      { name: "Staff Activity Tracking", description: "Track admin user actions and logins", status: "done", notes: "activity_log table with action, entity_type, entity_id, user_id tracking" },
+    ],
+  },
+
+  // ═══════ 165. PLATFORM ADMIN (MULTI-TENANT) ═══════
+  {
+    category: "Platform Admin (Multi-Tenant)",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Platform Dashboard", description: "Overview of all merchants and platform KPIs", status: "done", notes: "PlatformDashboard page with total merchants, total orders, total revenue, recent activity" },
+      { name: "Merchant Management", description: "View and manage all merchant stores", status: "done", notes: "PlatformMerchants page with store list, status badges, owner info" },
+      { name: "Platform Analytics", description: "Cross-merchant analytics and reporting", status: "done", notes: "PlatformAnalytics page with aggregate metrics across all stores" },
+      { name: "Platform Customer View", description: "View customers across all stores", status: "done", notes: "PlatformCustomers page aggregating customer data" },
+      { name: "Platform Settings", description: "Global platform configuration", status: "done", notes: "PlatformSettings page for platform-wide settings" },
+      { name: "Platform Login", description: "Separate login flow for platform admins", status: "done", notes: "PlatformLogin page with admin-specific auth flow" },
+    ],
+  },
+
+  // ═══════ 166. API & DEVELOPER TOOLS ═══════
+  {
+    category: "API & Developer Tools",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "REST API", description: "Full REST API for external integrations", status: "done", notes: "rest-api edge function with GET/POST/PUT/DELETE for products, orders, customers, inventory" },
+      { name: "API Key Management", description: "Create and manage API keys with scopes", status: "done", notes: "api_keys table with key_hash, key_prefix, scopes, rate_limit, expiry" },
+      { name: "API Rate Limiting", description: "Rate limit API requests per key", status: "done", notes: "api_rate_limits table with request_count per 15-min window" },
+      { name: "Batch API Requests", description: "Send multiple API requests in a single call", status: "done", notes: "batch-api edge function accepting array of {method, path, body} requests" },
+      { name: "API Documentation", description: "Interactive API documentation for developers", status: "done", notes: "Admin /api-docs page with endpoint docs, try-it sandbox, code examples" },
+      { name: "Webhook Testing", description: "Test webhook endpoints from admin panel", status: "done", notes: "Test button on Webhooks page sends sample payload to endpoint" },
+    ],
+  },
+
+  // ═══════ 167. SUPPLIER MANAGEMENT ═══════
+  {
+    category: "Supplier Management",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Supplier CRUD", description: "Create and manage supplier records", status: "done", notes: "suppliers table with name, email, phone, address, contact_person, payment_terms" },
+      { name: "Supplier Products", description: "Link products to their suppliers", status: "done", notes: "supplier_id foreign key on products table" },
+      { name: "Supplier Lead Time", description: "Track average delivery lead time per supplier", status: "done", notes: "lead_time_days column on suppliers" },
+      { name: "Purchase Order to Supplier", description: "Create POs addressed to specific suppliers", status: "done", notes: "supplier_id on purchase_orders with supplier details on printed PO" },
+      { name: "Supplier Notes", description: "Internal notes per supplier", status: "done", notes: "notes column on suppliers table" },
+      { name: "Supplier Active Toggle", description: "Enable/disable suppliers", status: "done", notes: "is_active boolean on suppliers" },
+    ],
+  },
+
+  // ═══════ 168. STOREFRONT CHECKOUT FEATURES ═══════
+  {
+    category: "Storefront Checkout Features",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Guest Checkout", description: "Allow checkout without account creation", status: "done", notes: "Guest checkout flow with email capture, configurable via store settings" },
+      { name: "Saved Addresses", description: "Select from previously saved addresses at checkout", status: "done", notes: "Address dropdown for logged-in users with saved customer_addresses" },
+      { name: "Order Notes", description: "Customer can add notes to their order", status: "done", notes: "Order notes textarea on checkout page" },
+      { name: "Gift Message", description: "Add gift message to order", status: "done", notes: "Gift message textarea appears when gift checkbox is selected" },
+      { name: "Shipping Method Selection", description: "Choose from available shipping methods based on zone", status: "done", notes: "Radio buttons for applicable shipping zones/methods with rate display" },
+      { name: "Coupon Application", description: "Apply discount coupon codes at checkout", status: "done", notes: "Coupon code input with validate, apply, and remove functionality" },
+      { name: "Store Credit Application", description: "Apply store credit balance to reduce total", status: "done", notes: "Use Store Credit checkbox at checkout deducts from customer balance" },
+      { name: "Order Summary", description: "Real-time order summary with subtotal, tax, shipping, discounts", status: "done", notes: "Dynamic order summary sidebar updating on every cart/coupon/shipping change" },
+    ],
+  },
+
+  // ═══════ 169. STOREFRONT NAVIGATION ═══════
+  {
+    category: "Storefront Navigation",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Header Navigation", description: "Main navigation with category links and dropdowns", status: "done", notes: "StorefrontLayout header with category navigation, search, cart, and account links" },
+      { name: "Mobile Menu (Hamburger)", description: "Responsive mobile navigation drawer", status: "done", notes: "Sheet-based mobile menu with category tree and account links" },
+      { name: "Footer Navigation", description: "Footer with links, newsletter signup, and social icons", status: "done", notes: "StorefrontLayout footer with link columns, newsletter form, and social links" },
+      { name: "Breadcrumb Navigation", description: "Category breadcrumb trail on product pages", status: "done", notes: "Breadcrumb component on product detail and category pages" },
+      { name: "Sidebar Navigation", description: "Category sidebar for browsing on product listing pages", status: "done", notes: "StorefrontSidebar component with category tree and filter options" },
+      { name: "Cart Icon with Count", description: "Shopping cart icon showing item count in header", status: "done", notes: "Cart badge in header showing real-time cart item count" },
+    ],
+  },
+
+  // ═══════ 170. PRODUCT FILTERING & SORTING ═══════
+  {
+    category: "Product Filtering & Sorting",
+    icon: <Search className="h-5 w-5" />,
+    features: [
+      { name: "Price Range Filter", description: "Filter products by min/max price", status: "done", notes: "Price slider filter on products listing page" },
+      { name: "Category Filter", description: "Filter by product category", status: "done", notes: "Category selection in sidebar with product count per category" },
+      { name: "Brand Filter", description: "Filter products by brand", status: "done", notes: "Brand filter with available brands list" },
+      { name: "In-Stock Filter", description: "Show only in-stock products", status: "done", notes: "Stock availability toggle filter" },
+      { name: "Sort by Price", description: "Sort products by price ascending/descending", status: "done", notes: "Sort dropdown with price low-high and high-low options" },
+      { name: "Sort by Name", description: "Sort products alphabetically", status: "done", notes: "Sort by name A-Z and Z-A options" },
+      { name: "Sort by Newest", description: "Sort by most recently added products", status: "done", notes: "Sort by date created descending" },
+      { name: "Sort by Best Selling", description: "Sort by sales volume", status: "done", notes: "Sort by total_sold descending" },
+      { name: "Grid/List View Toggle", description: "Switch between grid and list product display", status: "done", notes: "View toggle button switching between grid and list layouts" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
