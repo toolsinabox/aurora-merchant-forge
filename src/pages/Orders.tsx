@@ -171,7 +171,7 @@ export default function Orders() {
       <div className="space-y-3">
         <div className="page-header">
           <div>
-            <h1 className="text-lg font-bold tracking-tight">Orders</h1>
+            <h1 className="text-lg font-semibold">Orders</h1>
             <p className="text-xs text-muted-foreground">{orders.length} total orders</p>
           </div>
           <div className="page-header-actions">
