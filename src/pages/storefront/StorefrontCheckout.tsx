@@ -236,12 +236,21 @@ export default function StorefrontCheckout() {
 
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
-  const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost;
+  const insurancePremium = Math.max(2.95, Math.round(subtotalAfterDiscount * INSURANCE_RATE * 100) / 100);
+  const sameDayFee = sameDaySelected ? SAME_DAY_FEE : 0;
+  const insuranceFee = shippingInsurance ? insurancePremium : 0;
+  const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost + sameDayFee;
+
+  // Check same-day availability based on cutoff hour
+  useEffect(() => {
+    const now = new Date();
+    setSameDayAvailable(now.getHours() < SAME_DAY_CUTOFF_HOUR && deliveryMethod === "shipping");
+    if (now.getHours() >= SAME_DAY_CUTOFF_HOUR) setSameDaySelected(false);
+  }, [deliveryMethod]);
 
   // Compound tax calculation: apply taxes in priority order, compound taxes use accumulated base
   const taxAmount = (() => {
     if (isTaxExempt) return 0;
-    // If we have detailed rates matched for current address
     const matchedRates = allTaxRates.filter((r: any) => {
       if (r.region && form.country) {
         return (r.region && form.city && form.city.toLowerCase().includes(r.region.toLowerCase())) ||
@@ -252,7 +261,6 @@ export default function StorefrontCheckout() {
     const ratesToApply = matchedRates.length > 0 ? matchedRates : allTaxRates.filter((r: any) => r.is_default);
     if (ratesToApply.length === 0) return Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
 
-    // Sort by priority descending (higher priority applied first)
     const sorted = [...ratesToApply].sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0));
     let totalTax = 0;
     let runningBase = subtotalAfterDiscount;
@@ -270,7 +278,7 @@ export default function StorefrontCheckout() {
     return Math.round(totalTax * 100) / 100;
   })();
 
-  const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
+  const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + insuranceFee + taxAmount;
   const voucherAmount = appliedVoucher?.amountUsed ?? 0;
   const storeCreditAmount = useStoreCredit ? Math.min(storeCreditBalance, totalBeforeVoucher - voucherAmount) : 0;
   const finalTotal = Math.max(0, totalBeforeVoucher - voucherAmount - storeCreditAmount);
