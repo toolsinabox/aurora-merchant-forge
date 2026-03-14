@@ -98,7 +98,7 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
   test_connection: ["ID", "Name", "Model"],
 };
 
-// Max page sizes per entity (Maropost has response size limits with large OutputSelectors)
+// Max page sizes per entity — scan_mode can use larger pages since fields are minimal
 const MAX_PAGE_SIZE: Record<string, number> = {
   get_products: 20,    // Products have 60+ fields, must keep small
   get_categories: 200,
@@ -112,6 +112,21 @@ const MAX_PAGE_SIZE: Record<string, number> = {
   get_warehouses: 100,
   get_shipping: 100,
   get_currency: 100,
+};
+
+const SCAN_MAX_PAGE_SIZE: Record<string, number> = {
+  get_products: 200,
+  get_categories: 500,
+  get_customers: 500,
+  get_orders: 200,
+  get_content: 500,
+  get_vouchers: 500,
+  get_suppliers: 500,
+  get_rma: 500,
+  get_payments: 500,
+  get_warehouses: 500,
+  get_shipping: 500,
+  get_currency: 500,
 };
 
 serve(async (req) => {
