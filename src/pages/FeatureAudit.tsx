@@ -8135,7 +8135,7 @@ const promotionFeatures: FeatureCategory[] = [
       { name: "Spend $X Get $Y Off", description: "Threshold-based cart discount", status: "done" },
       { name: "Spend $X Get Free Shipping", description: "Free shipping above cart value", status: "done" },
       { name: "Category-Wide Discount", description: "Apply discount to entire category", status: "done" },
-      { name: "Brand-Wide Discount", description: "Apply discount to all products of a brand", status: "partial" },
+      { name: "Brand-Wide Discount", description: "Apply discount to all products of a brand", status: "done", notes: "PriceRules applies_to dropdown includes 'Specific Brands' option with comma-separated brand names input field for targeting discounts to specific brands" },
       { name: "Customer Group Discount", description: "Auto-apply discount for customer group members", status: "done" },
       { name: "Stackable vs Non-Stackable Promos", description: "Control whether discounts stack", status: "done", notes: "PriceRules is_stackable toggle per rule with Switch control and description" },
       { name: "Coupon + Auto Promo Interaction", description: "Rules for coupon + automatic promo stacking", status: "done", notes: "PriceRules is_stackable field controls whether promos combine with other active rules" },
