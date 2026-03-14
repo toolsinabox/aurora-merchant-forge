@@ -7885,7 +7885,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Failed Payment Alert", description: "Alert on failed subscription/layby payment", status: "done", notes: "failed-payment-alert edge function sends email to all admin/owner users for the store with order ref, customer email, payment method, error message, and timestamp via email_queue" },
       { name: "Import Complete Notification", description: "Alert when CSV import finishes", status: "done", notes: "import-notification-email function" },
       { name: "Batch Job Error Alert", description: "Alert when background job fails", status: "done", notes: "batch-job-error-email function" },
-      { name: "Webhook Failure Alert", description: "Alert when outbound webhook delivery fails", status: "partial" },
+      { name: "Webhook Failure Alert", description: "Alert when outbound webhook delivery fails", status: "done", notes: "Webhooks page shows failure count badge per webhook with AlertTriangle icon, reset failure count button, destructive badge when failures > 0" },
       { name: "SSL Certificate Expiry Alert", description: "Warn before custom domain SSL expires", status: "not_started" },
     ],
   },
