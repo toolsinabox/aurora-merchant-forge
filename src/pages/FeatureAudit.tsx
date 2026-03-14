@@ -9520,7 +9520,7 @@ const currencyDeepFeatures: FeatureCategory[] = [
       { name: "Currency Rounding Rules", description: "Round to nearest 5c, 10c, etc.", status: "not_started" },
       { name: "Base Currency Lock", description: "All pricing stored in base currency", status: "done" },
       { name: "Multi-Currency Cart", description: "Cart displays in selected currency", status: "done", notes: "CurrencySwitcher" },
-      { name: "Multi-Currency Checkout", description: "Charge in customer's selected currency", status: "partial" },
+      { name: "Multi-Currency Checkout", description: "Charge in customer's selected currency", status: "done", notes: "CurrencySwitcher selection persisted, checkout displays and charges in selected currency via exchange rate conversion" },
       { name: "Currency per Market", description: "Default currency per multimarket region", status: "done", notes: "multimarket_settings" },
       { name: "Historical Exchange Rates", description: "Store rate history for reporting", status: "not_started" },
     ],
