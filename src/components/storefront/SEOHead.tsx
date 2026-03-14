@@ -1,5 +1,27 @@
 import { useEffect } from "react";
 
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
+interface OrganizationData {
+  name: string;
+  url?: string;
+  logo?: string;
+  description?: string;
+  email?: string;
+  phone?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
+  };
+  socialLinks?: string[];
+}
+
 interface SEOHeadProps {
   title?: string;
   description?: string;
@@ -22,6 +44,8 @@ interface SEOHeadProps {
     reviewCount?: number;
     url?: string;
   };
+  organization?: OrganizationData;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 export function SEOHead({ title, description, image, url, type = "website", price, currency = "USD", canonicalUrl, product }: SEOHeadProps) {
