@@ -109,6 +109,8 @@ export default function ShippingZones() {
       name: z.name, regions: z.regions, flat_rate: String(z.flat_rate),
       free_above: z.free_above ? String(z.free_above) : "",
       rate_type: z.rate_type || "flat", per_kg_rate: String(z.per_kg_rate || 0),
+      surcharge_postcodes: z.surcharge_postcodes || "", surcharge_amount: String(z.surcharge_amount || 0),
+      surcharge_label: z.surcharge_label || "Remote area surcharge",
     });
     setEditZone(z);
   };
