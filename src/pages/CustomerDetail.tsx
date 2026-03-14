@@ -502,6 +502,22 @@ export default function CustomerDetail() {
                         <img src={(customer as any).logo_url} alt="Customer logo" className="h-12 mt-1 rounded border object-contain" />
                       </div>
                     )}
+                    {((customer as any).payment_terms || (customer as any).credit_limit != null) && (
+                      <div className="mt-2 space-y-1 border-t pt-2">
+                        {(customer as any).payment_terms && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Payment Terms:</span>
+                            <Badge variant="outline" className="text-[10px]">{(customer as any).payment_terms}</Badge>
+                          </div>
+                        )}
+                        {(customer as any).credit_limit != null && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Credit Limit:</span>
+                            <span className="font-medium">${Number((customer as any).credit_limit).toLocaleString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </>
                 )}
               </CardContent>
