@@ -9559,7 +9559,7 @@ const shippingTrackingFeatures: FeatureCategory[] = [
       { name: "Tracking Email with Link", description: "Email tracking number and link to customer", status: "done", notes: "shipment-email function" },
       { name: "Tracking Status Auto-Update", description: "Auto-poll carrier API for status updates", status: "not_started" },
       { name: "Delivery Confirmation Trigger", description: "Auto-mark delivered based on carrier status", status: "not_started" },
-      { name: "Multi-Parcel Tracking", description: "Multiple tracking numbers per order", status: "partial" },
+      { name: "Multi-Parcel Tracking", description: "Multiple tracking numbers per order", status: "done", notes: "Multiple shipment records per order, each with own tracking number and carrier" },
       { name: "Tracking Widget (Storefront)", description: "Embedded tracking widget on storefront", status: "done" },
       { name: "Proof of Delivery (POD)", description: "Store/display proof of delivery from carrier", status: "not_started" },
       { name: "Delivery Exception Alerts", description: "Alert admin of delivery exceptions", status: "not_started" },
