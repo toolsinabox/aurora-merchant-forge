@@ -163,6 +163,34 @@ export default function WarehouseDashboard() {
           </Card>
         </div>
 
+        {/* Fulfillment SLA */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Avg Fulfillment Time</p>
+              {isFullLoading ? <Skeleton className="h-5 w-20" /> : (
+                <p className="text-lg font-bold">{orderStats.avgSlaHours > 0 ? `${orderStats.avgSlaHours.toFixed(1)}h` : "—"}</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">SLA Target</p>
+              <p className="text-lg font-bold">{orderStats.slaTarget}h</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Within SLA</p>
+              {isFullLoading ? <Skeleton className="h-5 w-20" /> : (
+                <p className={`text-lg font-bold ${orderStats.slaPercent >= 90 ? "text-green-600" : orderStats.slaPercent >= 70 ? "text-yellow-600" : "text-red-600"}`}>
+                  {orderStats.slaPercent > 0 ? `${orderStats.slaPercent.toFixed(0)}%` : "—"}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Recent Shipments */}
           <Card>
