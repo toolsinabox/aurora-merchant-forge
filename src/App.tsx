@@ -333,6 +333,7 @@ const App = () => (
                    <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
                    <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
+                   <Route path="/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
