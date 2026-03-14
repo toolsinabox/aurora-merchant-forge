@@ -20,22 +20,22 @@ function KPICard({ title, value, change, icon: Icon, prefix = "", suffix = "", l
 }) {
   const isPositive = (change ?? 0) >= 0;
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className="card-hover transition-all duration-300 border-border/60 hover:border-primary/20">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">{title}</p>
+            <p className="text-xs text-muted-foreground font-medium">{title}</p>
             {loading ? <Skeleton className="h-6 w-20" /> : (
-              <p className="text-xl font-bold">{prefix}{typeof value === "number" ? value.toLocaleString() : value}{suffix}</p>
+              <p className="text-xl font-bold tracking-tight">{prefix}{typeof value === "number" ? value.toLocaleString() : value}{suffix}</p>
             )}
             {change !== undefined && !loading && (
-              <div className={`flex items-center gap-1 text-2xs ${isPositive ? "text-success" : "text-destructive"}`}>
+              <div className={`flex items-center gap-1 text-[11px] font-medium ${isPositive ? "text-success" : "text-destructive"}`}>
                 {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                 <span>{isPositive ? "+" : ""}{change.toFixed(1)}% vs last period</span>
               </div>
             )}
           </div>
-          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+          <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Icon className="h-5 w-5 text-primary" />
           </div>
         </div>
