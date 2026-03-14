@@ -257,7 +257,7 @@ function CustomerCommunicationsCard({ customerId, storeId }: { customerId: strin
   );
 }
 
-
+export default function CustomerDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { currentStore } = useAuth();
