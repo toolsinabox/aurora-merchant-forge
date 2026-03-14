@@ -1543,6 +1543,79 @@ export default function SettingsPage() {
               );
             })()}
           </TabsContent>
+
+          {/* Config Export/Import */}
+          <TabsContent value="config">
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Configuration Export / Import</CardTitle>
+                <p className="text-xs text-muted-foreground">Export your store settings as JSON for backup or clone to another store.</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">Export Configuration</Label>
+                    <p className="text-[10px] text-muted-foreground">Downloads store settings, branding, scripts, and local preferences as a JSON file.</p>
+                    <Button size="sm" className="gap-1.5 w-full" onClick={() => {
+                      const config = {
+                        exportedAt: new Date().toISOString(),
+                        storeName: currentStore?.name,
+                        settings: {
+                          customHeadScripts: localStorage.getItem("custom_head_scripts") || "",
+                          customBodyScripts: localStorage.getItem("custom_body_scripts") || "",
+                          quoteTemplates: JSON.parse(localStorage.getItem("quote_templates") || "[]"),
+                          scheduledPriceChanges: JSON.parse(localStorage.getItem("scheduled_price_changes") || "[]"),
+                          cycleCountSchedules: JSON.parse(localStorage.getItem("cycle_count_schedules") || "[]"),
+                          inventorySnapshots: JSON.parse(localStorage.getItem("inventory_snapshots") || "[]"),
+                        },
+                      };
+                      const blob = new Blob([JSON.stringify(config, null, 2)], { type: "application/json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a"); a.href = url; a.download = `store-config-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+                      URL.revokeObjectURL(url);
+                      toast.success("Configuration exported");
+                    }}>
+                      <Save className="h-3.5 w-3.5" /> Export JSON
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium">Import Configuration</Label>
+                    <p className="text-[10px] text-muted-foreground">Upload a previously exported JSON config file to restore settings.</p>
+                    <Button size="sm" variant="outline" className="gap-1.5 w-full" onClick={() => {
+                      const input = document.createElement("input");
+                      input.type = "file";
+                      input.accept = ".json";
+                      input.onchange = (e: any) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                          try {
+                            const config = JSON.parse(ev.target?.result as string);
+                            if (!config.settings) throw new Error("Invalid config");
+                            const s = config.settings;
+                            if (s.customHeadScripts) localStorage.setItem("custom_head_scripts", s.customHeadScripts);
+                            if (s.customBodyScripts) localStorage.setItem("custom_body_scripts", s.customBodyScripts);
+                            if (s.quoteTemplates) localStorage.setItem("quote_templates", JSON.stringify(s.quoteTemplates));
+                            if (s.scheduledPriceChanges) localStorage.setItem("scheduled_price_changes", JSON.stringify(s.scheduledPriceChanges));
+                            if (s.cycleCountSchedules) localStorage.setItem("cycle_count_schedules", JSON.stringify(s.cycleCountSchedules));
+                            if (s.inventorySnapshots) localStorage.setItem("inventory_snapshots", JSON.stringify(s.inventorySnapshots));
+                            toast.success(`Configuration imported from ${config.exportedAt ? new Date(config.exportedAt).toLocaleDateString() : 'backup'}`);
+                          } catch {
+                            toast.error("Invalid configuration file");
+                          }
+                        };
+                        reader.readAsText(file);
+                      };
+                      input.click();
+                    }}>
+                      <Plus className="h-3.5 w-3.5" /> Import JSON
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
