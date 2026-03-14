@@ -202,25 +202,25 @@ export default function Orders() {
                 {bulkProcessing ? "Updating..." : "Apply"}
               </Button>
               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>Clear</Button>
-              <div className="ml-auto flex gap-1">
+              <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap gap-1">
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
                   const idsParam = ids.join(",");
                   window.open(`/pick-pack?orders=${idsParam}`, "_blank");
                 }}>
-                  <Printer className="h-3 w-3" /> Print Packing Slips
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Packing Slips</span>
                 </Button>
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
                   ids.forEach(id => window.open(`/orders/${id}/shipping-label`, "_blank"));
                 }}>
-                  <Printer className="h-3 w-3" /> Print Labels
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Labels</span>
                 </Button>
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
                   ids.forEach(id => window.open(`/orders/${id}/invoice`, "_blank"));
                 }}>
-                  <Printer className="h-3 w-3" /> Print Invoices
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Invoices</span>
                 </Button>
               </div>
             </CardContent>
