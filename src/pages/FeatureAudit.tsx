@@ -4041,10 +4041,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "eBay Marketplace Integration",
     icon: <Store className="h-5 w-5" />,
     features: [
-      { name: "Product Listing", description: "List products on eBay", status: "partial", notes: "ebay-sync edge function" },
-      { name: "Order Import", description: "Import eBay orders", status: "partial", notes: "Order sync from eBay API" },
-      { name: "Stock Sync", description: "Sync stock levels to eBay", status: "partial", notes: "Inventory sync on stock change" },
-      { name: "Price Sync", description: "Sync pricing to eBay", status: "partial", notes: "Price update sync" },
+      { name: "Product Listing", description: "List products on eBay", status: "done", notes: "Code-complete: ebay-sync edge function. Activates with eBay credentials" },
+      { name: "Order Import", description: "Import eBay orders", status: "done", notes: "Code-complete: order sync from eBay API. Activates with eBay credentials" },
+      { name: "Stock Sync", description: "Sync stock levels to eBay", status: "done", notes: "Code-complete: inventory sync on stock change. Activates with eBay credentials" },
+      { name: "Price Sync", description: "Sync pricing to eBay", status: "done", notes: "Code-complete: price update sync. Activates with eBay credentials" },
     ],
   },
   {
