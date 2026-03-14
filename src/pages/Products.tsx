@@ -238,6 +238,45 @@ export default function Products() {
                   <SelectItem value="archived" className="text-xs">Archived</SelectItem>
                 </SelectContent>
               </Select>
+              {/* Column visibility toggle */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 text-xs gap-1"><Columns3 className="h-3.5 w-3.5" /> Columns</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel className="text-xs">Visible Columns</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {(["sku", "status", "stock", "price"] as ColKey[]).map(col => (
+                    <DropdownMenuCheckboxItem key={col} className="text-xs capitalize" checked={visibleCols[col]} onCheckedChange={() => toggleCol(col)}>
+                      {col}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {/* Saved filter presets */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 text-xs gap-1"><BookmarkCheck className="h-3.5 w-3.5" /> Presets</Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56 p-2" align="end">
+                  <div className="space-y-1">
+                    <Button variant="ghost" size="sm" className="w-full justify-start text-xs gap-1" onClick={saveFilterPreset}>
+                      <Save className="h-3 w-3" /> Save Current Filters
+                    </Button>
+                    {filterPresets.length > 0 && <div className="border-t border-border my-1" />}
+                    {filterPresets.map(preset => (
+                      <div key={preset.name} className="flex items-center justify-between">
+                        <Button variant="ghost" size="sm" className="flex-1 justify-start text-xs truncate" onClick={() => loadFilterPreset(preset)}>
+                          {preset.name}
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive" onClick={() => deleteFilterPreset(preset.name)}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
               {selected.length > 0 && (
                 <div className="flex items-center gap-2 ml-2">
                   <span className="text-xs text-muted-foreground">{selected.length} selected</span>
