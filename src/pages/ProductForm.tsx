@@ -146,6 +146,32 @@ export default function ProductForm() {
     }
   }, [existing]);
 
+  // Autosave draft to localStorage for new products
+  const draftKey = `product-draft-${currentStore?.id || "default"}`;
+  useEffect(() => {
+    if (!isEdit && !existing) {
+      const saved = localStorage.getItem(draftKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed.title || parsed.sku || parsed.description) {
+            setForm((prev) => ({ ...prev, ...parsed }));
+            toast.info("Draft restored from autosave");
+          }
+        } catch {}
+      }
+    }
+  }, [isEdit, existing, draftKey]);
+
+  useEffect(() => {
+    if (!isEdit && (form.title || form.sku || form.description)) {
+      const timer = setTimeout(() => {
+        localStorage.setItem(draftKey, JSON.stringify(form));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [form, isEdit, draftKey]);
+
   useEffect(() => {
     if (shippingData) {
       const sd = shippingData as any;

@@ -596,7 +596,7 @@ export default function CustomerDetail() {
                         <img src={(customer as any).logo_url} alt="Customer logo" className="h-12 mt-1 rounded border object-contain" />
                       </div>
                     )}
-                    {((customer as any).payment_terms || (customer as any).credit_limit != null) && (
+                    {((customer as any).payment_terms || (customer as any).credit_limit != null || (customer as any).sales_rep || (customer as any).referral_code || (customer as any).tax_exempt_cert_url) && (
                       <div className="mt-2 space-y-1 border-t pt-2">
                         {(customer as any).payment_terms && (
                           <div className="flex items-center gap-2 text-xs">
@@ -608,6 +608,30 @@ export default function CustomerDetail() {
                           <div className="flex items-center gap-2 text-xs">
                             <span className="text-muted-foreground">Credit Limit:</span>
                             <span className="font-medium">${Number((customer as any).credit_limit).toLocaleString()}</span>
+                          </div>
+                        )}
+                        {(customer as any).sales_rep && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Sales Rep:</span>
+                            <span className="font-medium">{(customer as any).sales_rep}</span>
+                          </div>
+                        )}
+                        {(customer as any).referral_code && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Referral Code:</span>
+                            <Badge variant="secondary" className="text-[10px]">{(customer as any).referral_code}</Badge>
+                          </div>
+                        )}
+                        {(customer as any).referred_by && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Referred By:</span>
+                            <span className="font-medium">{(customer as any).referred_by}</span>
+                          </div>
+                        )}
+                        {(customer as any).tax_exempt_cert_url && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Tax Exempt Cert:</span>
+                            <a href={(customer as any).tax_exempt_cert_url} target="_blank" rel="noopener noreferrer" className="text-primary underline">View</a>
                           </div>
                         )}
                       </div>
