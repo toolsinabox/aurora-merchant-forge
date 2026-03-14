@@ -10,7 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
-  Users, Plus, ExternalLink, ArrowRight, Settings2,
+  Users, Plus, ExternalLink, ArrowRight, Settings2, Smartphone, Truck, 
+  ClipboardList, Tag, FileText, RotateCcw, Layers,
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -111,9 +112,10 @@ export default function Dashboard() {
   const { currentStore } = useAuth();
 
   // Widget visibility
-  const WIDGET_KEYS = ["kpis", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts"] as const;
+  const WIDGET_KEYS = ["quickActions", "kpis", "fulfillment", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts"] as const;
   const WIDGET_LABELS: Record<string, string> = {
-    kpis: "KPI Cards", revenue: "Revenue Chart", dailyOrders: "Daily Orders", recentOrders: "Recent Orders",
+    quickActions: "Quick Actions", kpis: "KPI Cards", fulfillment: "Fulfillment Pipeline",
+    revenue: "Revenue Chart", dailyOrders: "Daily Orders", recentOrders: "Recent Orders",
     topProducts: "Top Products", customerGrowth: "Customer Growth", orderStatus: "Order Status",
     customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts",
   };
@@ -251,12 +253,70 @@ export default function Dashboard() {
           <EmptyDashboard navigate={navigate} />
         ) : (
           <>
+            {/* Quick Actions */}
+            {w("quickActions") && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+                {[
+                  { label: "New Order", icon: ShoppingCart, path: "/orders", color: "text-primary" },
+                  { label: "Add Product", icon: Plus, path: "/products/new", color: "text-success" },
+                  { label: "POS Sale", icon: Smartphone, path: "/pos", color: "text-warning" },
+                  { label: "Customers", icon: Users, path: "/customers", color: "text-primary" },
+                  { label: "Pick & Pack", icon: ClipboardList, path: "/pick-pack", color: "text-success" },
+                  { label: "Returns", icon: RotateCcw, path: "/returns", color: "text-destructive" },
+                  { label: "Discounts", icon: Tag, path: "/coupons", color: "text-warning" },
+                  { label: "Categories", icon: Layers, path: "/categories", color: "text-primary" },
+                ].map((action) => (
+                  <Card key={action.label} className="cursor-pointer hover:border-primary/30 transition-all" onClick={() => navigate(action.path)}>
+                    <CardContent className="p-3 flex flex-col items-center gap-1.5 text-center">
+                      <action.icon className={`h-5 w-5 ${action.color}`} />
+                      <span className="text-2xs font-medium">{action.label}</span>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
             {w("kpis") && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <KPICard title="Total Revenue" value={totalRevenue.toFixed(2)} icon={DollarSign} prefix="$" loading={loadingOrders} change={revenueChange} />
               <KPICard title="Total Orders" value={orders.length} icon={ShoppingCart} loading={loadingOrders} />
               <KPICard title="Avg Order Value" value={avgOrderValue.toFixed(2)} icon={TrendingUp} prefix="$" loading={loadingOrders} />
               <KPICard title="Active Products" value={activeProducts} icon={Package} loading={loadingProducts} suffix={lowStockProducts > 0 ? ` (${lowStockProducts} low stock)` : ""} />
             </div>}
+
+            {/* Fulfillment Pipeline */}
+            {w("fulfillment") && (() => {
+              const pending = orders.filter((o: any) => o.status === "pending").length;
+              const processing = orders.filter((o: any) => o.status === "processing").length;
+              const shipped = orders.filter((o: any) => o.status === "shipped").length;
+              const delivered = orders.filter((o: any) => o.status === "delivered" || o.status === "completed").length;
+              const cancelled = orders.filter((o: any) => o.status === "cancelled").length;
+              const steps = [
+                { label: "Pending", count: pending, color: "bg-warning/20 text-warning border-warning/30" },
+                { label: "Processing", count: processing, color: "bg-primary/20 text-primary border-primary/30" },
+                { label: "Shipped", count: shipped, color: "bg-blue-500/20 text-blue-600 border-blue-500/30" },
+                { label: "Delivered", count: delivered, color: "bg-success/20 text-success border-success/30" },
+                { label: "Cancelled", count: cancelled, color: "bg-destructive/20 text-destructive border-destructive/30" },
+              ];
+              return (
+                <Card>
+                  <CardHeader className="p-3 pb-1">
+                    <CardTitle className="text-xs font-medium flex items-center gap-2">
+                      <Truck className="h-4 w-4 text-muted-foreground" /> Fulfillment Pipeline
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-3 pt-1">
+                    <div className="grid grid-cols-5 gap-2">
+                      {steps.map((step) => (
+                        <div key={step.label} className={`rounded-lg border p-3 text-center ${step.color}`}>
+                          <p className="text-xl font-bold">{step.count}</p>
+                          <p className="text-2xs font-medium mt-0.5">{step.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               {w("revenue") && <Card className="lg:col-span-2">

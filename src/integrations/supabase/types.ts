@@ -5067,6 +5067,60 @@ export type Database = {
           },
         ]
       }
+      shipping_rates: {
+        Row: {
+          created_at: string
+          id: string
+          max_order_total: number | null
+          max_weight: number | null
+          min_order_total: number | null
+          min_weight: number | null
+          rate: number
+          rate_type: string
+          service_id: string
+          store_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          max_order_total?: number | null
+          max_weight?: number | null
+          min_order_total?: number | null
+          min_weight?: number | null
+          rate?: number
+          rate_type?: string
+          service_id: string
+          store_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          max_order_total?: number | null
+          max_weight?: number | null
+          min_order_total?: number | null
+          min_weight?: number | null
+          rate?: number
+          rate_type?: string
+          service_id?: string
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_rates_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "shipping_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipping_rates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shipping_rules: {
         Row: {
           condition_operator: string
@@ -5120,6 +5174,63 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shipping_services: {
+        Row: {
+          carrier: string | null
+          created_at: string
+          estimated_days_max: number | null
+          estimated_days_min: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          sort_order: number | null
+          store_id: string
+          updated_at: string
+          zone_id: string
+        }
+        Insert: {
+          carrier?: string | null
+          created_at?: string
+          estimated_days_max?: number | null
+          estimated_days_min?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          sort_order?: number | null
+          store_id: string
+          updated_at?: string
+          zone_id: string
+        }
+        Update: {
+          carrier?: string | null
+          created_at?: string
+          estimated_days_max?: number | null
+          estimated_days_min?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          sort_order?: number | null
+          store_id?: string
+          updated_at?: string
+          zone_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shipping_services_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shipping_services_zone_id_fkey"
+            columns: ["zone_id"]
+            isOneToOne: false
+            referencedRelation: "shipping_zones"
             referencedColumns: ["id"]
           },
         ]
