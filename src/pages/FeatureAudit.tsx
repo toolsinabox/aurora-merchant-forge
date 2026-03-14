@@ -2731,9 +2731,293 @@ const featureData: FeatureCategory[] = [
       { name: "Grid/List View Toggle", description: "Switch between grid and list product display", status: "done", notes: "View toggle button switching between grid and list layouts" },
     ],
   },
-];
 
-// ─── STATUS RENDERING HELPERS ───
+  // ═══════ 171. ORDER CHANNEL TRACKING ═══════
+  {
+    category: "Order Channel Tracking",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Order Source Channel", description: "Track where each order originated (web, POS, API, marketplace)", status: "done", notes: "order_channel column on orders: web, pos, api, ebay, amazon, phone, manual" },
+      { name: "Channel-Based Reporting", description: "Filter and report on orders by sales channel", status: "done", notes: "Channel filter on orders list, channel breakdown in analytics" },
+      { name: "Marketplace Order Tagging", description: "Auto-tag orders from marketplace integrations", status: "done", notes: "marketplace_order_id and marketplace_name columns on orders" },
+      { name: "POS Order Identification", description: "Identify POS transactions vs online orders", status: "done", notes: "order_channel='pos' with register_id linking for POS orders" },
+    ],
+  },
+
+  // ═══════ 172. PRODUCT WEIGHT TIERS ═══════
+  {
+    category: "Product Weight & Packaging",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Actual Weight vs Shipping Weight", description: "Separate actual and shipping weights", status: "done", notes: "weight on products vs shipping_weight on product_shipping" },
+      { name: "Volumetric Weight Calculation", description: "Calculate volumetric weight from dimensions", status: "done", notes: "Cubic volume from L×W×H on product_shipping used for volumetric weight" },
+      { name: "Packaging Type", description: "Define packaging requirements per product", status: "done", notes: "shipping_category on product_shipping (standard, fragile, oversized, hazmat)" },
+      { name: "Multi-Carton Products", description: "Products that ship in multiple cartons", status: "done", notes: "cartons column on product_shipping for multi-package shipments" },
+    ],
+  },
+
+  // ═══════ 173. CUSTOMER ADDRESSES ═══════
+  {
+    category: "Customer Addresses",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Multiple Addresses per Customer", description: "Store multiple shipping/billing addresses", status: "done", notes: "customer_addresses table with address_type, is_default, full address fields" },
+      { name: "Default Address Selection", description: "Set default shipping and billing addresses", status: "done", notes: "is_default boolean per address type" },
+      { name: "Address Label", description: "Name/label for each saved address (Home, Office, etc.)", status: "done", notes: "label column on customer_addresses" },
+      { name: "Address at Checkout", description: "Select from saved addresses during checkout", status: "done", notes: "Dropdown selection of saved addresses on checkout page" },
+      { name: "Address Validation", description: "Validate required fields (city, state, zip, country)", status: "done", notes: "Client-side validation for required address fields" },
+    ],
+  },
+
+  // ═══════ 174. ORDER PAYMENTS ═══════
+  {
+    category: "Order Payments",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Payment Recording", description: "Record payments against orders with method and amount", status: "done", notes: "order_payments table with amount, payment_method, transaction_id" },
+      { name: "Partial Payments", description: "Accept partial payments against an order balance", status: "done", notes: "Multiple payment records per order, status auto-updates to partial_paid" },
+      { name: "Payment Methods", description: "Support card, cash, bank transfer, voucher, store credit", status: "done", notes: "payment_method column with multiple supported methods" },
+      { name: "Transaction Reference", description: "Store payment gateway transaction IDs", status: "done", notes: "transaction_id column for gateway reference tracking" },
+      { name: "Refund Processing", description: "Issue full or partial refunds against payments", status: "done", notes: "Refund dialog on order detail with amount and reason" },
+      { name: "Payment History", description: "View all payments for an order in chronological order", status: "done", notes: "Payment history card on order detail page" },
+    ],
+  },
+
+  // ═══════ 175. ORDER SHIPMENTS ═══════
+  {
+    category: "Order Shipments",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Shipment per Order", description: "Ship an order in multiple packages/shipments", status: "done", notes: "order_shipments table with multiple records per order_id" },
+      { name: "Shipment Items", description: "Track which items are in each shipment", status: "done", notes: "order_shipment_items table linking shipment to order items with quantity" },
+      { name: "Carrier & Tracking", description: "Record carrier name and tracking number per shipment", status: "done", notes: "carrier and tracking_number columns on order_shipments" },
+      { name: "Tracking URL", description: "Auto-generate or manual tracking URL for customer", status: "done", notes: "tracking_url column on order_shipments" },
+      { name: "Shipment Status", description: "Track shipment status (pending, shipped, in_transit, delivered)", status: "done", notes: "status column on order_shipments with full lifecycle" },
+      { name: "Shipment Email Notification", description: "Auto-email customer with tracking details", status: "done", notes: "shipment-email edge function triggered on shipment creation" },
+      { name: "Partial Fulfillment", description: "Ship some items while others remain unfulfilled", status: "done", notes: "Order fulfillment_status updates to partial when some items shipped" },
+    ],
+  },
+
+  // ═══════ 176. PRODUCT IMAGES & GALLERY ═══════
+  {
+    category: "Product Images & Gallery",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Multiple Product Images", description: "Upload multiple images per product", status: "done", notes: "product_images table with product_id, url, sort_order, alt_text" },
+      { name: "Image Reordering", description: "Drag or sort-order images for display priority", status: "done", notes: "sort_order column on product_images for custom ordering" },
+      { name: "Alt Text per Image", description: "SEO-friendly alt text on each product image", status: "done", notes: "alt_text column on product_images" },
+      { name: "Primary Image Selection", description: "Set primary/featured image for product", status: "done", notes: "is_primary boolean or first by sort_order" },
+      { name: "Image Zoom on Hover", description: "Zoom into product images on storefront", status: "done", notes: "ImageLightbox component with zoom support" },
+      { name: "Gallery Lightbox", description: "Full-screen image gallery with keyboard navigation", status: "done", notes: "ImageLightbox with arrow keys, swipe, and close on ESC" },
+      { name: "Bulk ZIP Upload", description: "Upload images in ZIP matched by SKU filename", status: "done", notes: "ZipImageUpload component for batch image upload" },
+    ],
+  },
+
+  // ═══════ 177. PURCHASE ORDERS ═══════
+  {
+    category: "Purchase Orders",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "PO CRUD", description: "Create, edit, and manage purchase orders", status: "done", notes: "purchase_orders table with po_number, supplier, status, totals" },
+      { name: "PO Status Workflow", description: "Draft → sent → partial → received → closed lifecycle", status: "done", notes: "status column with full PO lifecycle management" },
+      { name: "PO Line Items", description: "Add products with quantities and unit costs to POs", status: "done", notes: "purchase_order_items table with product_id, quantity, unit_cost" },
+      { name: "Supplier Assignment", description: "Assign PO to a specific supplier", status: "done", notes: "supplier_id on purchase_orders" },
+      { name: "Expected Delivery Date", description: "Set expected delivery date on POs", status: "done", notes: "expected_date column on purchase_orders" },
+      { name: "Receiving Against PO", description: "Receive stock item-by-item against PO", status: "done", notes: "Receiving dialog with per-item quantity input, auto-updates inventory" },
+      { name: "PO Print/PDF", description: "Generate printable purchase order document", status: "done", notes: "PrintPurchaseOrder page with supplier details and line items" },
+      { name: "PO Notes", description: "Internal notes and supplier instructions on POs", status: "done", notes: "notes column on purchase_orders" },
+    ],
+  },
+
+  // ═══════ 178. ADDON / APP MARKETPLACE ═══════
+  {
+    category: "Addon / App Marketplace",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Addon Catalog", description: "Browse available addons/apps for the store", status: "done", notes: "addon_catalog table with name, description, category, version, price" },
+      { name: "Addon Categories", description: "Organize addons by category (shipping, marketing, payments, etc.)", status: "done", notes: "category column on addon_catalog" },
+      { name: "Addon Install/Uninstall", description: "Install or remove addons from a store", status: "done", notes: "store_addons table linking stores to installed addons with config JSONB" },
+      { name: "Addon Configuration", description: "Per-store addon configuration and settings", status: "done", notes: "config JSONB on store_addons for addon-specific settings" },
+      { name: "Active Toggle", description: "Enable/disable installed addons", status: "done", notes: "is_active boolean on store_addons" },
+      { name: "Install Count Tracking", description: "Track popularity via install counts", status: "done", notes: "install_count on addon_catalog" },
+      { name: "Free vs Paid Addons", description: "Support both free and paid addon pricing", status: "done", notes: "is_free and price columns on addon_catalog" },
+    ],
+  },
+
+  // ═══════ 179. NOTIFICATION SYSTEM ═══════
+  {
+    category: "Notification System",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "In-App Notifications", description: "Real-time notification bell for admin users", status: "done", notes: "NotificationBell component in TopBar with unread count badge" },
+      { name: "Notification Types", description: "Order, stock, payment, and system notification categories", status: "done", notes: "Multiple notification categories with icons and priority levels" },
+      { name: "Mark as Read", description: "Mark individual or all notifications as read", status: "done", notes: "Mark read action on notification items" },
+      { name: "Email Notifications", description: "Email alerts for critical events", status: "done", notes: "Edge functions trigger email notifications for orders, stock alerts, disputes" },
+      { name: "SMS Notifications", description: "SMS alerts for order updates", status: "done", notes: "sms-gateway edge function for SMS delivery" },
+    ],
+  },
+
+  // ═══════ 180. DATA VALIDATION & INTEGRITY ═══════
+  {
+    category: "Data Validation & Integrity",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    features: [
+      { name: "Required Field Validation", description: "Enforce required fields on all forms", status: "done", notes: "Client-side validation with react-hook-form and zod schemas" },
+      { name: "Email Format Validation", description: "Validate email addresses on all forms", status: "done", notes: "Email regex validation on signup, checkout, customer forms" },
+      { name: "Phone Format Validation", description: "Validate phone number formats", status: "done", notes: "Phone input validation with format hints" },
+      { name: "SKU Uniqueness", description: "Prevent duplicate SKUs within a store", status: "done", notes: "Unique constraint on (sku, store_id) in products table" },
+      { name: "Slug Uniqueness", description: "Prevent duplicate URL slugs", status: "done", notes: "Unique constraint on slugs per store" },
+      { name: "Cascade Deletes", description: "Properly cascade deletions to related records", status: "done", notes: "ON DELETE CASCADE foreign keys on all child tables" },
+      { name: "Updated-At Auto-Timestamps", description: "Auto-update updated_at on record changes", status: "done", notes: "update_updated_at_column() trigger function on all tables with updated_at" },
+    ],
+  },
+
+  // ═══════ 181. STOREFRONT ACCOUNT FEATURES ═══════
+  {
+    category: "Storefront Account Features",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Account Dashboard", description: "Customer account overview with recent orders", status: "done", notes: "StorefrontAccount page with tabs for orders, addresses, downloads, profile" },
+      { name: "Profile Editing", description: "Update name, email, phone from account", status: "done", notes: "Profile edit form on account page" },
+      { name: "Password Change", description: "Change password from account settings", status: "done", notes: "Password change form with current/new password fields" },
+      { name: "Order History with Reorder", description: "View past orders and reorder with one click", status: "done", notes: "Reorder button on order history adds all items back to cart" },
+      { name: "Download History", description: "Access purchased digital downloads", status: "done", notes: "Downloads tab showing purchased files with download links" },
+      { name: "Subscription Management", description: "View, pause, or cancel subscriptions", status: "done", notes: "Subscription management section on account page" },
+      { name: "Loyalty Points View", description: "View loyalty points balance and transaction history", status: "done", notes: "Loyalty section showing balance, tier, and recent transactions" },
+    ],
+  },
+
+  // ═══════ 182. TEMPLATE ENGINE (B@SE) ═══════
+  {
+    category: "Template Engine (B@SE)",
+    icon: <FileCode className="h-5 w-5" />,
+    features: [
+      { name: "Variable Interpolation", description: "Replace [@variable@] placeholders with data", status: "done", notes: "B@SE template engine processes [@field@] syntax with product/category/store context" },
+      { name: "Conditional Blocks", description: "[%if condition%]...[%/if%] conditional rendering", status: "done", notes: "If/else conditional blocks in template engine" },
+      { name: "Iterator Blocks", description: "[%thumblist%]...[%/thumblist%] loop rendering for product lists", status: "done", notes: "Thumblist iterator renders product grids from filtered data" },
+      { name: "Include Partials", description: "[!include file!] for reusable template fragments", status: "done", notes: "Recursive include system loading sub-templates by slug" },
+      { name: "AJAX Partial Rendering", description: "Load template sections dynamically via AJAX", status: "done", notes: "Partial rendering endpoint for dynamic page segment updates" },
+      { name: "Context Binding", description: "Templates bound to product, category, cart, or page context", status: "done", notes: "context_type column determines data injection" },
+      { name: "Custom CSS per Template", description: "Scoped CSS per template for isolated styling", status: "done", notes: "custom_css column on store_templates with dedicated CSS editor" },
+    ],
+  },
+
+  // ═══════ 183. IMPORT TEMPLATES ═══════
+  {
+    category: "Import Templates",
+    icon: <Upload className="h-5 w-5" />,
+    features: [
+      { name: "Template CRUD", description: "Create and save import field mapping templates", status: "done", notes: "import_templates table with name, entity_type, field_mappings JSONB" },
+      { name: "Field Mapping", description: "Map CSV columns to database fields", status: "done", notes: "field_mappings JSONB storing source→target column mappings" },
+      { name: "Static Values", description: "Set static default values for unmapped fields", status: "done", notes: "static_values JSONB on import_templates" },
+      { name: "Transformations", description: "Apply transformations during import (uppercase, trim, etc.)", status: "done", notes: "transformations JSONB for per-field data transformations" },
+      { name: "Custom Delimiter", description: "Support custom CSV delimiters (comma, tab, pipe)", status: "done", notes: "delimiter column on import_templates" },
+      { name: "Entity Types", description: "Import products, customers, orders, inventory", status: "done", notes: "entity_type column: products, customers, orders, inventory" },
+    ],
+  },
+
+  // ═══════ 184. EXPORT CONFIGURATION ═══════
+  {
+    category: "Export Configuration",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Entity Export", description: "Export products, orders, customers to CSV", status: "done", notes: "ExportWizard page with entity type selection" },
+      { name: "Field Selection", description: "Choose which fields to include in export", status: "done", notes: "Field picker with checkboxes for selective export" },
+      { name: "Date Range Filter", description: "Filter exported data by date range", status: "done", notes: "Date range selector on export wizard" },
+      { name: "Status Filter", description: "Filter exports by record status", status: "done", notes: "Status dropdown filter on export wizard" },
+      { name: "Scheduled Exports", description: "Configure automatic recurring exports", status: "done", notes: "scheduled-export edge function with cron support" },
+      { name: "Export Formats", description: "Support CSV and XML export formats", status: "done", notes: "Format selector on export wizard" },
+    ],
+  },
+
+  // ═══════ 185. MULTI-LANGUAGE SUPPORT ═══════
+  {
+    category: "Multi-Language Support",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Language Configuration", description: "Configure supported languages for the store", status: "done", notes: "store_languages table with code, name, is_default, is_active" },
+      { name: "Language Switcher", description: "Customer-facing language selector on storefront", status: "done", notes: "LanguageSwitcher component in storefront header" },
+      { name: "Translation Keys", description: "Store translated strings for UI elements", status: "done", notes: "LanguageProvider context with translation key lookup" },
+      { name: "Default Language", description: "Set fallback language for untranslated content", status: "done", notes: "is_default boolean on store_languages" },
+      { name: "RTL Support", description: "Right-to-left layout for Arabic/Hebrew languages", status: "done", notes: "Direction-aware CSS for RTL languages" },
+    ],
+  },
+
+  // ═══════ 186. SHIPPING INTEGRATIONS ═══════
+  {
+    category: "Shipping Integrations",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "StarShipIt Integration", description: "Sync orders and print labels via StarShipIt", status: "partial", notes: "starshipit-sync edge function — requires merchant API key" },
+      { name: "ShipStation Integration", description: "Sync orders to ShipStation for fulfillment", status: "partial", notes: "shipstation-sync edge function — requires merchant API key" },
+      { name: "Australia Post Integration", description: "Calculate Australia Post shipping rates", status: "partial", notes: "carrier-rates edge function with AusPost rate calculation" },
+      { name: "Carrier Rate API", description: "Real-time shipping rate calculation from carriers", status: "done", notes: "carrier-rates edge function handling dynamic rate requests" },
+      { name: "Tracking Number Import", description: "Bulk import tracking numbers against orders", status: "done", notes: "Import tracking via CSV or API with auto-notification" },
+    ],
+  },
+
+  // ═══════ 187. MARKETING CAMPAIGNS ═══════
+  {
+    category: "Marketing Campaigns",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Campaign Dashboard", description: "Overview of active marketing campaigns", status: "done", notes: "Admin /marketing page with KPI cards and campaign list" },
+      { name: "Email Campaign Triggers", description: "Trigger-based email campaigns (welcome, win-back, etc.)", status: "done", notes: "email_automations table with 7 trigger types and configurable delays" },
+      { name: "Abandoned Cart Recovery", description: "Multi-step cart recovery email sequences", status: "done", notes: "abandoned-cart-email edge function with multi-step recovery and coupon incentive" },
+      { name: "Product Recommendation Emails", description: "Send personalized product recommendations", status: "done", notes: "order-follow-up edge function with cross-sell recommendations" },
+      { name: "Promotional Banners", description: "Create and schedule promotional banners", status: "done", notes: "adverts table with scheduling, placement targeting, and active toggle" },
+      { name: "Social Media Sharing", description: "Share products to social platforms from storefront", status: "done", notes: "SocialShare component with Facebook, Twitter, Pinterest, Email, Copy Link" },
+    ],
+  },
+
+  // ═══════ 188. SEO MANAGEMENT ═══════
+  {
+    category: "SEO Management",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Page-Level Meta Tags", description: "Custom title, description, keywords per page", status: "done", notes: "SEOHead component sets meta tags dynamically per page type" },
+      { name: "Robots.txt", description: "Configurable robots.txt for search engine crawling", status: "done", notes: "public/robots.txt with standard directives" },
+      { name: "XML Sitemap", description: "Auto-generated sitemap for search engines", status: "done", notes: "sitemap edge function generating XML sitemap" },
+      { name: "Structured Data (JSON-LD)", description: "Schema.org markup for products, organizations", status: "done", notes: "SEOHead injects JSON-LD for product pages with price, availability, rating" },
+      { name: "Open Graph Tags", description: "OG tags for social media sharing previews", status: "done", notes: "OG title, description, image meta tags on product and content pages" },
+      { name: "Canonical URLs", description: "Prevent duplicate content with canonical tags", status: "done", notes: "Canonical link tag on all pages" },
+      { name: "URL Redirect Manager", description: "Manage 301/302 redirects for URL changes", status: "done", notes: "Redirects page with source/target, type, hit counter" },
+    ],
+  },
+
+  // ═══════ 189. PRODUCT BADGES & LABELS ═══════
+  {
+    category: "Product Badges & Labels",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Sale Badge", description: "Automatic sale badge when promo price is set", status: "done", notes: "ProductBadges component shows Sale badge on promo-priced items" },
+      { name: "New Badge", description: "Badge for recently added products", status: "done", notes: "New badge for products created within configurable days" },
+      { name: "Low Stock Badge", description: "Badge when stock is below threshold", status: "done", notes: "Low Stock badge when quantity below threshold" },
+      { name: "Out of Stock Badge", description: "Badge when product has zero stock", status: "done", notes: "Out of Stock overlay on product cards" },
+      { name: "Pre-Order Badge", description: "Badge for pre-orderable products", status: "done", notes: "Pre-Order badge when preorder_quantity > 0 and stock = 0" },
+      { name: "Custom Label Badge", description: "Merchant-defined custom label badge", status: "done", notes: "custom_label field on products displayed as badge" },
+      { name: "Free Shipping Badge", description: "Badge for products with free shipping", status: "done", notes: "Free Shipping badge when free_shipping flag is true" },
+    ],
+  },
+
+  // ═══════ 190. STOREFRONT PRODUCT DETAIL ═══════
+  {
+    category: "Storefront Product Detail",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Image Gallery", description: "Product image gallery with thumbnails and zoom", status: "done", notes: "Image gallery with thumbnail strip, click to enlarge, lightbox zoom" },
+      { name: "Variant Selector", description: "Select product variants (size, color, etc.)", status: "done", notes: "Variant dropdown/buttons updating price and stock display" },
+      { name: "Quantity Selector", description: "Adjust quantity before adding to cart", status: "done", notes: "Quantity input with +/- buttons, min 1, max stock" },
+      { name: "Add to Cart", description: "Add product to shopping cart", status: "done", notes: "Add to Cart button with AddToCartPopup confirmation" },
+      { name: "Add to Wishlist", description: "Save product to wishlist", status: "done", notes: "Heart icon toggle using WishlistContext" },
+      { name: "Product Tabs", description: "Description, specifications, reviews in tabbed layout", status: "done", notes: "Tabs component with description, specs, features, warranty, reviews" },
+      { name: "Related Products", description: "Show related/cross-sell products below main content", status: "done", notes: "Related products grid from product_relations" },
+      { name: "Social Share Buttons", description: "Share product on social media", status: "done", notes: "SocialShare component with multiple platforms" },
+      { name: "Delivery Estimate", description: "Estimated delivery date based on shipping zone", status: "done", notes: "DeliveryEstimate component showing estimated delivery range" },
+      { name: "Stock Availability", description: "Show in-stock/out-of-stock status", status: "done", notes: "Stock status badge with quantity display when low" },
+    ],
+  },
+];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
