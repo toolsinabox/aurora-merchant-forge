@@ -8452,7 +8452,7 @@ const mediaManagementFeatures: FeatureCategory[] = [
       { name: "WebP / AVIF Auto-Conversion", description: "Auto-serve modern image formats", status: "not_started" },
       { name: "Bulk Image Upload", description: "Upload multiple images at once", status: "done" },
       { name: "Image Drag-and-Drop Reorder", description: "Reorder product images via drag and drop", status: "done", notes: "ProductImageUpload" },
-      { name: "SVG Upload Support", description: "Allow SVG file uploads for logos/icons", status: "partial" },
+      { name: "SVG Upload Support", description: "Allow SVG file uploads for logos/icons", status: "done", notes: "MediaLibrary accepts SVG mime type in upload, store logo supports SVG" },
       { name: "Video Upload / Hosting", description: "Upload and host product videos", status: "not_started" },
     ],
   },
