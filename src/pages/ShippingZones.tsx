@@ -648,6 +648,12 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
             <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
             <p className="text-[10px] text-muted-foreground mt-0.5">Cubic weight = L×W×H / 5000 (cm). Higher of actual vs cubic weight used.</p>
           </div>
+        ) : form.rate_type === "per_item" ? (
+          <div>
+            <Label className="text-xs">Rate per item ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
+            <p className="text-[10px] text-muted-foreground mt-0.5">Shipping cost = base flat rate + (rate × item count)</p>
+          </div>
         ) : (
           <div>
             <Label className="text-xs">Flat Rate ($)</Label>
