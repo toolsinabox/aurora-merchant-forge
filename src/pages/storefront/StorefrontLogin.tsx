@@ -28,6 +28,14 @@ export default function StorefrontLogin() {
     navigate(`${basePath}/account`);
   };
 
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + `${basePath}/account` },
+    });
+    if (error) toast.error(error.message);
+  };
+
   return (
     <StorefrontLayout>
       <div className="max-w-md mx-auto px-4 py-16 animate-fade-in">
