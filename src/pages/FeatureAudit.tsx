@@ -21,6 +21,7 @@ import {
   LayoutDashboard, Bell, Upload, Download, UserCheck, Key, Eye,
   MessageSquare, Star, Heart, RefreshCw, Scissors, ShieldCheck,
   HardDrive, Monitor, Workflow, Building, ArrowLeftRight,
+  Banknote, Scale, FileSearch, ListChecks, Milestone, Timer, ToggleLeft, Fingerprint, Grip, Cable, Tv,
 } from "lucide-react";
 
 type Status = "done" | "partial" | "not_started";
