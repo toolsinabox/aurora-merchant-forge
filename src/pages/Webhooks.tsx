@@ -165,10 +165,10 @@ export default function Webhooks() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 3 }).map((_, i) => <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : (webhooks as any[]).length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-8">
+                    <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">
                       <Webhook className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
                       No webhooks configured. Add one to receive real-time event notifications.
                     </TableCell>
