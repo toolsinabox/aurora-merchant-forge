@@ -19,6 +19,19 @@ import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
 type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves" | "zones" | "cartons";
 
+interface PackageCarton {
+  id: string;
+  cartonTypeId: string;
+  itemIds: string[];
+  weight: string;
+}
+
+// Multi-carton state per order
+interface OrderPackaging {
+  orderId: string;
+  cartons: PackageCarton[];
+}
+
 interface PickWave {
   id: string;
   name: string;
@@ -54,6 +67,48 @@ export default function PickPack() {
   const [packVerified, setPackVerified] = useState<Record<string, boolean>>({});
   const [packingCarton, setPackingCarton] = useState("");
   const [packWeight, setPackWeight] = useState("");
+
+  // Multi-carton shipment state
+  const [orderPackaging, setOrderPackaging] = useState<Record<string, PackageCarton[]>>({});
+  const [multiCartonOrderId, setMultiCartonOrderId] = useState<string | null>(null);
+
+  const addCartonToOrder = (orderId: string) => {
+    setOrderPackaging(prev => ({
+      ...prev,
+      [orderId]: [...(prev[orderId] || []), { id: crypto.randomUUID(), cartonTypeId: "", itemIds: [], weight: "" }]
+    }));
+  };
+
+  const removeCartonFromOrder = (orderId: string, cartonId: string) => {
+    setOrderPackaging(prev => ({
+      ...prev,
+      [orderId]: (prev[orderId] || []).filter(c => c.id !== cartonId)
+    }));
+  };
+
+  const updateOrderCarton = (orderId: string, cartonId: string, updates: Partial<PackageCarton>) => {
+    setOrderPackaging(prev => ({
+      ...prev,
+      [orderId]: (prev[orderId] || []).map(c => c.id === cartonId ? { ...c, ...updates } : c)
+    }));
+  };
+
+  const toggleItemInCarton = (orderId: string, cartonId: string, itemId: string) => {
+    setOrderPackaging(prev => {
+      const orderCartons = prev[orderId] || [];
+      return {
+        ...prev,
+        [orderId]: orderCartons.map(c => {
+          if (c.id !== cartonId) {
+            // Remove from other cartons
+            return { ...c, itemIds: c.itemIds.filter(id => id !== itemId) };
+          }
+          // Toggle in this carton
+          return { ...c, itemIds: c.itemIds.includes(itemId) ? c.itemIds.filter(id => id !== itemId) : [...c.itemIds, itemId] };
+        })
+      };
+    });
+  };
 
   // Wave picking state
   const [waves, setWaves] = useState<PickWave[]>(() => {
@@ -481,6 +536,7 @@ export default function PickPack() {
                         const oItems = orderItems.filter((i: any) => i.order_id === o.id);
                         const verifiedCount = oItems.filter((i: any) => packVerified[i.id]).length;
                         const allVerified = oItems.length > 0 && verifiedCount === oItems.length;
+                        const orderCartons = orderPackaging[o.id] || [];
                         return (
                           <TableRow key={o.id} className={`text-xs ${allVerified ? "bg-primary/5" : ""}`}>
                             <TableCell className="py-1.5 font-mono">{o.order_number}</TableCell>
@@ -491,7 +547,13 @@ export default function PickPack() {
                               </Badge>
                             </TableCell>
                             <TableCell className="py-1.5">${Number(o.total).toFixed(2)}</TableCell>
-                            <TableCell className="py-1.5 text-right">
+                            <TableCell className="py-1.5 text-right space-x-1">
+                              <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => {
+                                if (!orderPackaging[o.id] || orderPackaging[o.id].length === 0) addCartonToOrder(o.id);
+                                setMultiCartonOrderId(multiCartonOrderId === o.id ? null : o.id);
+                              }}>
+                                <BoxIcon className="h-3 w-3 mr-1" /> {orderCartons.length || 0} Cartons
+                              </Button>
                               <Button size="sm" variant={allVerified ? "default" : "outline"} className="text-xs h-6" onClick={() => markAsShipped(o.id)}>
                                 <Truck className="h-3 w-3 mr-1" /> Ship
                               </Button>
@@ -504,6 +566,72 @@ export default function PickPack() {
                 </Table>
               </CardContent>
             </Card>
+
+            {/* Multi-Carton Detail for selected order */}
+            {multiCartonOrderId && (() => {
+              const order = processingOrders.find((o: any) => o.id === multiCartonOrderId);
+              if (!order) return null;
+              const oItems = orderItems.filter((i: any) => i.order_id === multiCartonOrderId);
+              const orderCartons = orderPackaging[multiCartonOrderId] || [];
+              return (
+                <Card>
+                  <CardHeader className="p-4 pb-2">
+                    <CardTitle className="text-sm flex items-center justify-between">
+                      <span>Multi-Carton: {(order as any).order_number} ({oItems.length} items → {orderCartons.length} carton(s))</span>
+                      <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => addCartonToOrder(multiCartonOrderId)}>
+                        <Plus className="h-3 w-3 mr-1" /> Add Carton
+                      </Button>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {orderCartons.map((pc, idx) => {
+                      const cartonType = cartons.find(c => c.id === pc.cartonTypeId);
+                      return (
+                        <div key={pc.id} className="border rounded-md p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium">Carton {idx + 1}</span>
+                            <div className="flex items-center gap-2">
+                              <Select value={pc.cartonTypeId} onValueChange={v => updateOrderCarton(multiCartonOrderId, pc.id, { cartonTypeId: v })}>
+                                <SelectTrigger className="h-7 w-40 text-[11px]"><SelectValue placeholder="Carton type..." /></SelectTrigger>
+                                <SelectContent>
+                                  {cartons.map(c => (
+                                    <SelectItem key={c.id} value={c.id} className="text-xs">{c.name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Input
+                                type="number" step="0.01" min="0" placeholder="Weight (kg)"
+                                value={pc.weight} onChange={e => updateOrderCarton(multiCartonOrderId, pc.id, { weight: e.target.value })}
+                                className="h-7 w-24 text-[11px]"
+                              />
+                              {cartonType && pc.weight && Number(pc.weight) > cartonType.maxWeightKg && (
+                                <Badge variant="destructive" className="text-[10px]">Over max</Badge>
+                              )}
+                              <Button size="sm" variant="ghost" className="h-6 text-destructive" onClick={() => removeCartonFromOrder(multiCartonOrderId, pc.id)}>
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {oItems.map((item: any) => (
+                              <Badge
+                                key={item.id}
+                                variant={pc.itemIds.includes(item.id) ? "default" : "outline"}
+                                className="text-[10px] cursor-pointer"
+                                onClick={() => toggleItemInCarton(multiCartonOrderId, pc.id, item.id)}
+                              >
+                                {item.sku || item.title?.slice(0, 15)} ×{item.quantity}
+                              </Badge>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-muted-foreground">{pc.itemIds.length} item(s) in this carton</p>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              );
+            })()}
           </div>
         )}
 

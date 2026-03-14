@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useReturns, useUpdateReturn } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle, RefreshCw, ShieldAlert, Plus } from "lucide-react";
+import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle, RefreshCw, ShieldAlert, Plus, ScanLine, CheckCircle, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
 const RETURN_TYPES = ["return", "warranty_claim"];
@@ -152,6 +153,7 @@ export default function Returns() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="list">Returns List</TabsTrigger>
+            <TabsTrigger value="receiving">Receiving</TabsTrigger>
             <TabsTrigger value="warranty">Warranty Claims</TabsTrigger>
             <TabsTrigger value="disputes">Warranty Disputes</TabsTrigger>
             <TabsTrigger value="report">RMA Report</TabsTrigger>
@@ -227,6 +229,10 @@ export default function Returns() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="receiving">
+            <ReturnsReceivingTab />
           </TabsContent>
 
           <TabsContent value="warranty">
@@ -406,6 +412,197 @@ export default function Returns() {
         </DialogContent>
       </Dialog>
     </AdminLayout>
+  );
+}
+
+function ReturnsReceivingTab() {
+  const { currentStore } = useAuth();
+  const { data: returns = [] } = useReturns();
+  const updateReturn = useUpdateReturn();
+  const [scanInput, setScanInput] = useState("");
+  const [receivedItems, setReceivedItems] = useState<Record<string, { condition: string; notes: string; receivedAt: string }>>({});
+
+  // Filter returns that are approved (ready to receive back)
+  const approvedReturns = useMemo(() => 
+    (returns as any[]).filter(r => r.status === "approved"), 
+    [returns]
+  );
+
+  const handleScan = (barcode: string) => {
+    // Find a matching approved return by order number
+    const match = approvedReturns.find(r => 
+      r.orders?.order_number?.toLowerCase() === barcode.toLowerCase()
+    );
+    if (match && !receivedItems[match.id]) {
+      setReceivedItems(prev => ({
+        ...prev,
+        [match.id]: { condition: "good", notes: "", receivedAt: new Date().toISOString() }
+      }));
+      toast.success(`Return received: Order ${match.orders?.order_number}`);
+    } else if (match && receivedItems[match.id]) {
+      toast.info("Already scanned this return");
+    } else {
+      toast.error(`No approved return found for: ${barcode}`);
+    }
+    setScanInput("");
+  };
+
+  const updateCondition = (returnId: string, condition: string) => {
+    setReceivedItems(prev => ({
+      ...prev,
+      [returnId]: { ...prev[returnId], condition }
+    }));
+  };
+
+  const updateNotes = (returnId: string, notes: string) => {
+    setReceivedItems(prev => ({
+      ...prev,
+      [returnId]: { ...prev[returnId], notes }
+    }));
+  };
+
+  const processReceived = (returnId: string) => {
+    const item = receivedItems[returnId];
+    if (!item) return;
+    const adminNotes = `Received: ${item.condition} condition${item.notes ? `. Notes: ${item.notes}` : ""}. Received at ${format(new Date(item.receivedAt), "MMM d, yyyy HH:mm")}`;
+    updateReturn.mutate({
+      id: returnId,
+      status: "refunded",
+      admin_notes: adminNotes,
+    });
+    setReceivedItems(prev => {
+      const copy = { ...prev };
+      delete copy[returnId];
+      return copy;
+    });
+    toast.success("Return processed and marked for refund");
+  };
+
+  const receivedCount = Object.keys(receivedItems).length;
+
+  return (
+    <div className="space-y-3">
+      {/* Scanning */}
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm flex items-center gap-2">
+            <ScanLine className="h-4 w-4" /> Scan Returned Items
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Scan or type order number..."
+              value={scanInput}
+              onChange={e => setScanInput(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter" && scanInput.trim()) handleScan(scanInput.trim()); }}
+              className="h-9 text-sm max-w-md"
+              autoFocus
+            />
+            <Button size="sm" onClick={() => { if (scanInput.trim()) handleScan(scanInput.trim()); }}>Scan</Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {approvedReturns.length} approved return(s) awaiting receipt • {receivedCount} scanned in this session
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Scanned items ready to process */}
+      {receivedCount > 0 && (
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Scanned Returns ({receivedCount})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Order</TableHead>
+                  <TableHead className="text-xs h-8">Customer</TableHead>
+                  <TableHead className="text-xs h-8">Reason</TableHead>
+                  <TableHead className="text-xs h-8">Condition</TableHead>
+                  <TableHead className="text-xs h-8">Notes</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {approvedReturns.filter(r => receivedItems[r.id]).map((r: any) => (
+                  <TableRow key={r.id} className="text-xs">
+                    <TableCell className="py-2 font-mono font-medium">{r.orders?.order_number || "—"}</TableCell>
+                    <TableCell className="py-2">{r.customers?.name || "—"}</TableCell>
+                    <TableCell className="py-2 max-w-[120px] truncate">{r.reason}</TableCell>
+                    <TableCell className="py-2">
+                      <Select value={receivedItems[r.id]?.condition || "good"} onValueChange={v => updateCondition(r.id, v)}>
+                        <SelectTrigger className="h-7 w-28 text-[11px]"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="good" className="text-xs">Good</SelectItem>
+                          <SelectItem value="damaged" className="text-xs">Damaged</SelectItem>
+                          <SelectItem value="defective" className="text-xs">Defective</SelectItem>
+                          <SelectItem value="opened" className="text-xs">Opened</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Input
+                        value={receivedItems[r.id]?.notes || ""}
+                        onChange={e => updateNotes(r.id, e.target.value)}
+                        placeholder="Notes..."
+                        className="h-7 text-[11px] w-32"
+                      />
+                    </TableCell>
+                    <TableCell className="py-2 text-right">
+                      <Button size="sm" className="text-xs h-6" onClick={() => processReceived(r.id)}>
+                        <CheckCircle className="h-3 w-3 mr-1" /> Process
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Approved returns awaiting receipt */}
+      <Card>
+        <CardHeader className="p-4 pb-2">
+          <CardTitle className="text-sm">Awaiting Receipt ({approvedReturns.filter(r => !receivedItems[r.id]).length})</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-xs h-8">Order</TableHead>
+                <TableHead className="text-xs h-8">Customer</TableHead>
+                <TableHead className="text-xs h-8">Reason</TableHead>
+                <TableHead className="text-xs h-8">Refund</TableHead>
+                <TableHead className="text-xs h-8">Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {approvedReturns.filter(r => !receivedItems[r.id]).length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                    <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                    No approved returns awaiting receipt. Scan order numbers above to receive.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                approvedReturns.filter(r => !receivedItems[r.id]).map((r: any) => (
+                  <TableRow key={r.id} className="text-xs">
+                    <TableCell className="py-2 font-mono font-medium">{r.orders?.order_number || "—"}</TableCell>
+                    <TableCell className="py-2">{r.customers?.name || "—"}</TableCell>
+                    <TableCell className="py-2 max-w-[200px] truncate">{r.reason}</TableCell>
+                    <TableCell className="py-2 font-medium">${Number(r.refund_amount).toFixed(2)}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 
