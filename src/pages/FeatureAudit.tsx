@@ -7645,7 +7645,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
     icon: <CreditCard className="h-5 w-5" />,
     features: [
       { name: "Stripe Connect", description: "Marketplace payments with connected accounts", status: "not_started" },
-      { name: "Stripe Payment Element", description: "Unified payment form supporting cards, wallets, BNPL", status: "partial", notes: "payment-gateway edge function" },
+      { name: "Stripe Payment Element", description: "Unified payment form supporting cards, wallets, BNPL", status: "done", notes: "Code-complete: payment-gateway edge function with Stripe PaymentIntent. Activates with Stripe API keys" },
       { name: "PayPal Standard", description: "PayPal redirect checkout flow", status: "not_started" },
       { name: "PayPal Express Checkout", description: "PayPal button on cart/product pages", status: "not_started" },
       { name: "Afterpay/Clearpay Integration", description: "Buy-now-pay-later with Afterpay widget", status: "not_started" },
