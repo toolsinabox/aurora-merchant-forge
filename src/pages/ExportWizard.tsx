@@ -285,7 +285,7 @@ function ProductExportTab() {
       </div>
       <div className="space-y-4">
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-lg">Options</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Options</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <label className="flex items-center gap-3 cursor-pointer">
               <Checkbox checked={useMaropostHeaders} onCheckedChange={(v) => setUseMaropostHeaders(!!v)} />
