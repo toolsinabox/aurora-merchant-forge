@@ -886,6 +886,38 @@ export default function StorefrontCheckout() {
                       );
                     })}
                   </div>
+
+                  {/* Shipping Services for selected zone */}
+                  {selectedZone && shippingServices.filter((s: any) => s.zone_id === selectedZone).length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <Label className="text-xs font-medium">Shipping Method</Label>
+                      {shippingServices.filter((s: any) => s.zone_id === selectedZone).map((svc: any) => (
+                        <label
+                          key={svc.id}
+                          className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                            selectedServiceId === svc.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <input
+                              type="radio"
+                              name="shipping_service"
+                              value={svc.id}
+                              checked={selectedServiceId === svc.id}
+                              onChange={() => handleServiceChange(svc.id)}
+                              className="accent-primary"
+                            />
+                            <div>
+                              <p className="text-sm font-medium">{svc.name}</p>
+                              <p className="text-2xs text-muted-foreground">
+                                {svc.carrier ? `${svc.carrier} · ` : ""}{svc.estimated_days_min}–{svc.estimated_days_max} business days
+                              </p>
+                            </div>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
