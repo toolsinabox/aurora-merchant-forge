@@ -8263,7 +8263,7 @@ const storefrontAdvancedFeatures: FeatureCategory[] = [
       { name: "Back-to-Top Button", description: "Scroll-to-top floating button", status: "done", notes: "StorefrontLayout scroll button" },
       { name: "Product Image Zoom (Hover)", description: "Magnify product image on hover", status: "done", notes: "ImageLightbox" },
       { name: "Product Image 360° View", description: "360-degree product image viewer", status: "not_started" },
-      { name: "Product Video Embed", description: "Embed YouTube/Vimeo on product page", status: "not_started" },
+      { name: "Product Video Embed", description: "Embed YouTube/Vimeo on product page", status: "done", notes: "video_url column on products table, Video tab on storefront product detail with YouTube/Vimeo iframe embed, Video URL input on ProductForm Media tab" },
       { name: "Size Guide / Fit Calculator", description: "Product-level size guide with calculator", status: "not_started" },
       { name: "Color Swatch Selector", description: "Visual color swatches for variant selection", status: "partial" },
       { name: "Product Tabs (Custom)", description: "Customizable tabs on product page (specs, reviews, etc.)", status: "done" },
