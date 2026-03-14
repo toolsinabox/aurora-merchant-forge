@@ -7876,9 +7876,9 @@ const adminUxFeatures: FeatureCategory[] = [
     icon: <Bell className="h-5 w-5" />,
     features: [
       { name: "In-App Notification Bell", description: "Real-time notification bell with dropdown", status: "done", notes: "NotificationBell component" },
-      { name: "New Order Alert", description: "Push/sound notification on new order", status: "partial" },
-      { name: "Low Stock Alert", description: "Alert when product hits low stock threshold", status: "done", notes: "low-stock-alert function" },
-      { name: "Out of Stock Alert", description: "Alert when product reaches zero stock", status: "partial" },
+      { name: "New Order Alert", description: "Push/sound notification on new order", status: "done", notes: "NotificationBell plays audio beep (880Hz sine wave) on new order via realtime listener, shows 🛒 emoji in notification title" },
+      { name: "Low Stock Alert", description: "Alert when product hits low stock threshold", status: "done", notes: "low-stock-alert function + NotificationBell realtime listener on inventory_stock UPDATE events shows 📦 low stock warning when quantity <= threshold" },
+      { name: "Out of Stock Alert", description: "Alert when product reaches zero stock", status: "done", notes: "NotificationBell realtime listener on inventory_stock UPDATE events shows ⚠️ out-of-stock alert when quantity reaches 0, links to inventory page" },
       { name: "New Customer Signup Alert", description: "Notification when new customer registers", status: "done", notes: "NotificationBell realtime listener on customers table INSERT events, shows in-app notification with customer name" },
       { name: "New Review Alert", description: "Alert when new product review is submitted", status: "done", notes: "NotificationBell realtime listener on product_reviews table INSERT events, shows rating and title" },
       { name: "Dispute/Chargeback Alert", description: "Urgent alert on payment dispute", status: "done", notes: "dispute-email function" },
