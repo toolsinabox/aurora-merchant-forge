@@ -1157,10 +1157,14 @@ export type Database = {
           notes: string | null
           payment_terms: string | null
           phone: string | null
+          referral_code: string | null
+          referred_by: string | null
           requires_approval: boolean | null
+          sales_rep: string | null
           segment: string
           store_id: string
           tags: string[] | null
+          tax_exempt_cert_url: string | null
           total_orders: number
           total_spent: number
           updated_at: string
@@ -1180,10 +1184,14 @@ export type Database = {
           notes?: string | null
           payment_terms?: string | null
           phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           requires_approval?: boolean | null
+          sales_rep?: string | null
           segment?: string
           store_id: string
           tags?: string[] | null
+          tax_exempt_cert_url?: string | null
           total_orders?: number
           total_spent?: number
           updated_at?: string
@@ -1203,10 +1211,14 @@ export type Database = {
           notes?: string | null
           payment_terms?: string | null
           phone?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           requires_approval?: boolean | null
+          sales_rep?: string | null
           segment?: string
           store_id?: string
           tags?: string[] | null
+          tax_exempt_cert_url?: string | null
           total_orders?: number
           total_spent?: number
           updated_at?: string
