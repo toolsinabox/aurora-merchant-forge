@@ -866,6 +866,116 @@ export type Database = {
           },
         ]
       }
+      custom_field_values: {
+        Row: {
+          created_at: string | null
+          custom_field_id: string
+          entity_id: string
+          id: string
+          store_id: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          custom_field_id: string
+          entity_id: string
+          id?: string
+          store_id: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          custom_field_id?: string
+          entity_id?: string
+          id?: string
+          store_id?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_values_custom_field_id_fkey"
+            columns: ["custom_field_id"]
+            isOneToOne: false
+            referencedRelation: "custom_fields"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "custom_field_values_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_fields: {
+        Row: {
+          created_at: string | null
+          default_value: string | null
+          entity_type: string
+          field_key: string
+          field_name: string
+          field_type: string
+          id: string
+          is_filterable: boolean | null
+          is_required: boolean | null
+          is_searchable: boolean | null
+          options: Json | null
+          placeholder: string | null
+          show_on_storefront: boolean | null
+          sort_order: number | null
+          store_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_value?: string | null
+          entity_type?: string
+          field_key: string
+          field_name: string
+          field_type?: string
+          id?: string
+          is_filterable?: boolean | null
+          is_required?: boolean | null
+          is_searchable?: boolean | null
+          options?: Json | null
+          placeholder?: string | null
+          show_on_storefront?: boolean | null
+          sort_order?: number | null
+          store_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_value?: string | null
+          entity_type?: string
+          field_key?: string
+          field_name?: string
+          field_type?: string
+          id?: string
+          is_filterable?: boolean | null
+          is_required?: boolean | null
+          is_searchable?: boolean | null
+          options?: Json | null
+          placeholder?: string | null
+          show_on_storefront?: boolean | null
+          sort_order?: number | null
+          store_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_fields_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_communications: {
         Row: {
           body: string | null
@@ -4548,6 +4658,72 @@ export type Database = {
           },
         ]
       }
+      refunds: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          id: string
+          line_items: Json | null
+          notes: string | null
+          order_id: string
+          processed_at: string | null
+          processed_by: string | null
+          reason: string | null
+          refund_method: string | null
+          refund_number: string
+          status: string | null
+          store_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          id?: string
+          line_items?: Json | null
+          notes?: string | null
+          order_id: string
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          refund_method?: string | null
+          refund_number: string
+          status?: string | null
+          store_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          id?: string
+          line_items?: Json | null
+          notes?: string | null
+          order_id?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          reason?: string | null
+          refund_method?: string | null
+          refund_number?: string
+          status?: string | null
+          store_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       return_policies: {
         Row: {
           applies_to_sale_items: boolean | null
@@ -4708,6 +4884,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "role_permissions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales_channels: {
+        Row: {
+          channel_type: string
+          created_at: string | null
+          description: string | null
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          product_count: number | null
+          revenue: number | null
+          settings: Json | null
+          store_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          channel_type?: string
+          created_at?: string | null
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          product_count?: number | null
+          revenue?: number | null
+          settings?: Json | null
+          store_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          channel_type?: string
+          created_at?: string | null
+          description?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          product_count?: number | null
+          revenue?: number | null
+          settings?: Json | null
+          store_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_channels_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
