@@ -8795,7 +8795,7 @@ const taxDeepFeatures: FeatureCategory[] = [
       { name: "Tax by Origin", description: "Apply tax based on seller location", status: "not_started" },
       { name: "Tax Exemption per Customer", description: "Mark customers as tax exempt", status: "done", notes: "customer_groups is_tax_exempt" },
       { name: "Tax Exemption Certificate Upload", description: "Store tax exemption documents", status: "not_started" },
-      { name: "GST / VAT Registration Display", description: "Show GST/VAT number on invoices", status: "partial" },
+      { name: "GST / VAT Registration Display", description: "Show GST/VAT number on invoices", status: "done", notes: "Store ABN/VAT field in Settings, displayed on PrintInvoice header" },
       { name: "Tax Summary on Invoice", description: "Itemized tax breakdown on invoices", status: "done" },
       { name: "US State Tax Nexus Rules", description: "Configure tax nexus for US states", status: "not_started" },
       { name: "EU VAT MOSS Compliance", description: "VAT based on customer location for EU digital", status: "not_started" },
