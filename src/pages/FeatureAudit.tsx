@@ -8171,7 +8171,7 @@ const notificationFeatures: FeatureCategory[] = [
       { name: "Review Submitted Alert", description: "Notify admin of new product reviews", status: "not_started" },
       { name: "Back-In-Stock Customer Notification", description: "Auto-notify customers when product restocked", status: "done", notes: "back-in-stock-email function" },
       { name: "Wishlist Price Drop Notification", description: "Notify customers when wishlisted item drops in price", status: "partial", notes: "wishlist-reminder function" },
-      { name: "Subscription Renewal Reminder", description: "Remind customers of upcoming subscription renewal", status: "not_started" },
+      { name: "Subscription Renewal Reminder", description: "Remind customers of upcoming subscription renewal", status: "done", notes: "Subscriptions page renewal reminder email button" },
       { name: "Delivery Confirmation to Customer", description: "Email customer when order marked delivered", status: "done", notes: "order-delivered-email function" },
     ],
   },
