@@ -727,6 +727,18 @@ export default function ProductForm() {
                       images={productImages}
                       onImagesChange={setProductImages}
                     />
+                    {productImages.length > 0 && !form.title && (
+                      <div className="flex items-center gap-2 mt-2 p-2 rounded-md bg-amber-500/10 border border-amber-500/30">
+                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                        <p className="text-2xs text-amber-600 dark:text-amber-400">Images are missing descriptive alt text. Add a product title to auto-generate alt text for SEO.</p>
+                      </div>
+                    )}
+                    {productImages.length > 0 && form.seo_title === "" && form.title && (
+                      <div className="flex items-center gap-2 mt-2 p-2 rounded-md bg-amber-500/10 border border-amber-500/30">
+                        <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                        <p className="text-2xs text-amber-600 dark:text-amber-400">Consider adding an SEO title to improve image alt text quality for search engines.</p>
+                      </div>
+                    )}
                     <div className="mt-3 space-y-1">
                       <FieldLabel label="Video URL" field="video_url" />
                       <Input className="h-8 text-xs" value={form.video_url} onChange={(e) => update("video_url", e.target.value)} placeholder="YouTube or Vimeo URL (e.g. https://youtube.com/watch?v=...)" />

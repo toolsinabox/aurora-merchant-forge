@@ -146,14 +146,76 @@ export function SEOHead({ title, description, image, url, type = "website", pric
       script.textContent = JSON.stringify(jsonLd);
     }
 
+    // JSON-LD Organization schema
+    if (organization) {
+      const orgJsonLd: Record<string, any> = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: organization.name,
+        ...(organization.url && { url: organization.url }),
+        ...(organization.logo && { logo: organization.logo }),
+        ...(organization.description && { description: organization.description }),
+        ...(organization.email && { email: organization.email }),
+        ...(organization.phone && { telephone: organization.phone }),
+        ...(organization.socialLinks?.length && { sameAs: organization.socialLinks }),
+      };
+
+      if (organization.address) {
+        orgJsonLd.address = {
+          "@type": "PostalAddress",
+          ...(organization.address.street && { streetAddress: organization.address.street }),
+          ...(organization.address.city && { addressLocality: organization.address.city }),
+          ...(organization.address.state && { addressRegion: organization.address.state }),
+          ...(organization.address.postalCode && { postalCode: organization.address.postalCode }),
+          ...(organization.address.country && { addressCountry: organization.address.country }),
+        };
+      }
+
+      let orgScript = document.querySelector('script[data-seo="org-jsonld"]') as HTMLScriptElement;
+      if (!orgScript) {
+        orgScript = document.createElement("script");
+        orgScript.type = "application/ld+json";
+        orgScript.setAttribute("data-seo", "org-jsonld");
+        document.head.appendChild(orgScript);
+      }
+      orgScript.textContent = JSON.stringify(orgJsonLd);
+    }
+
+    // JSON-LD BreadcrumbList schema
+    if (breadcrumbs && breadcrumbs.length > 0) {
+      const breadcrumbJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbs.map((item, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: item.name,
+          item: item.url,
+        })),
+      };
+
+      let bcScript = document.querySelector('script[data-seo="breadcrumb-jsonld"]') as HTMLScriptElement;
+      if (!bcScript) {
+        bcScript = document.createElement("script");
+        bcScript.type = "application/ld+json";
+        bcScript.setAttribute("data-seo", "breadcrumb-jsonld");
+        document.head.appendChild(bcScript);
+      }
+      bcScript.textContent = JSON.stringify(breadcrumbJsonLd);
+    }
+
     return () => {
       document.title = "Store";
       const canonicalLink = document.querySelector('link[rel="canonical"]');
       if (canonicalLink) canonicalLink.remove();
       const jsonLdScript = document.querySelector('script[data-seo="product-jsonld"]');
       if (jsonLdScript) jsonLdScript.remove();
+      const orgScript = document.querySelector('script[data-seo="org-jsonld"]');
+      if (orgScript) orgScript.remove();
+      const bcScript = document.querySelector('script[data-seo="breadcrumb-jsonld"]');
+      if (bcScript) bcScript.remove();
     };
-  }, [title, description, image, url, type, price, currency, canonicalUrl, product]);
+  }, [title, description, image, url, type, price, currency, canonicalUrl, product, organization, breadcrumbs]);
 
   return null;
 }
