@@ -628,7 +628,7 @@ export default function StorefrontCheckout() {
                   <Label>Address</Label>
                   <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
                   {form.address.length > 0 && form.address.length < 10 && (
-                    <p className="text-[10px] text-amber-600 flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
+                    <p className="text-[10px] text-destructive flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
                   )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
