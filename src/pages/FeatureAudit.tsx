@@ -8163,7 +8163,7 @@ const notificationFeatures: FeatureCategory[] = [
       { name: "Abandoned Cart Alert", description: "Notify admin of new abandoned carts", status: "done" },
       { name: "Return Request Alert", description: "Notify admin of new return requests", status: "partial" },
       { name: "New Customer Registration Alert", description: "Notify admin of new signups", status: "done", notes: "auto-registration-email" },
-      { name: "Payment Failed Alert", description: "Notify admin of failed payment attempts", status: "not_started" },
+      { name: "Payment Failed Alert", description: "Notify admin of failed payment attempts", status: "done", notes: "failed-payment-alert edge function notifies all admin/owner users via email_queue" },
       { name: "Dispute/Chargeback Alert", description: "Notify admin of payment disputes", status: "done", notes: "dispute-email function" },
       { name: "Import Complete Notification", description: "Notify when CSV import finishes", status: "done", notes: "import-notification-email" },
       { name: "Scheduled Export Ready", description: "Notify when scheduled export is ready", status: "done", notes: "scheduled-export function" },
