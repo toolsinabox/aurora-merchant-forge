@@ -8365,7 +8365,7 @@ const paymentGatewayDeepFeatures: FeatureCategory[] = [
       { name: "eWAY Payment Gateway", description: "eWAY credit card processing (AU)", status: "not_started" },
       { name: "Braintree Payment Gateway", description: "Braintree (PayPal) card processing", status: "not_started" },
       { name: "Square Payment Gateway", description: "Square online payments", status: "not_started" },
-      { name: "Manual / Bank Transfer Payment", description: "Offline payment method (bank deposit, cheque)", status: "partial" },
+      { name: "Manual / Bank Transfer Payment", description: "Offline payment method (bank deposit, cheque)", status: "done", notes: "StorefrontCheckout bank transfer payment option with instructions display, order created as pending payment" },
       { name: "Cash on Delivery (COD)", description: "COD payment option", status: "done", notes: "StorefrontCheckout payment method radio with card/COD options" },
       { name: "Store Credit Payment", description: "Pay using store credit balance", status: "done", notes: "StorefrontCheckout store credit checkbox with balance display" },
       { name: "Gift Voucher Payment", description: "Redeem gift voucher at checkout", status: "partial", notes: "gift_vouchers table" },
