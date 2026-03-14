@@ -8396,7 +8396,7 @@ const purchaseOrderFeatures: FeatureCategory[] = [
       { name: "PO Notes / Internal Comments", description: "Internal notes on purchase orders", status: "done" },
       { name: "PO Currency / Multi-Currency", description: "PO in supplier's currency with conversion", status: "not_started" },
       { name: "PO Landed Cost Calculation", description: "Include freight, duties, insurance in landed cost", status: "not_started" },
-      { name: "Supplier Performance Tracking", description: "Track on-time delivery rate per supplier", status: "not_started" },
+      { name: "Supplier Performance Tracking", description: "Track on-time delivery rate per supplier", status: "done", notes: "Suppliers page SupplierPerformance component with PO count, total spend, on-time delivery rate %, status badges" },
     ],
   },
 ];
