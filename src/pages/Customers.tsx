@@ -245,6 +245,16 @@ export default function Customers() {
                 <Merge className="h-3.5 w-3.5" /> Merge ({selectedForMerge.length})
               </Button>
             )}
+            {selectedForMerge.length >= 1 && (
+              <>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => setShowBulkTag(true)}>
+                  <Tag className="h-3.5 w-3.5" /> Tags ({selectedForMerge.length})
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => setShowBulkGroup(true)}>
+                  <UserCog className="h-3.5 w-3.5" /> Group ({selectedForMerge.length})
+                </Button>
+              </>
+            )}
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> <span className="btn-label">Add Customer</span></Button>
           </div>
         </div>
