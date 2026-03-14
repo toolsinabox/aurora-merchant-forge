@@ -305,7 +305,7 @@ export default function AccountingIntegration() {
                 <Button size="sm" className="text-xs gap-1" onClick={async () => {
                   if (!currentStore) return;
                   const { error } = await supabase.from("store_addons").upsert({
-                    store_id: currentStore.id, addon_key: "accounting_sync_settings", config: syncSettings as any, is_enabled: true
+                    store_id: currentStore.id, addon_key: "accounting_sync_settings", name: "Accounting Sync Settings", config: syncSettings as any, is_enabled: true, is_active: true, is_installed: true
                   }, { onConflict: "store_id,addon_key" });
                   if (error) toast.error(error.message);
                   else toast.success("Sync settings saved");
