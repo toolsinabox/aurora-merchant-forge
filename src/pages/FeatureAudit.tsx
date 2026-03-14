@@ -7810,7 +7810,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
       { name: "Return Window Configuration", description: "Set days allowed for returns per category/product", status: "done", notes: "Settings Returns tab with return window days, restocking fee %, require reason, allow exchanges, auto-approve, non-returnable categories" },
       { name: "Non-Returnable Flag", description: "Mark specific products as non-returnable", status: "done", notes: "Non-returnable categories list in Settings Returns tab" },
       { name: "Return Analytics", description: "Report on return rates by product/category/reason", status: "done", notes: "Analytics page Return Analytics table with reason breakdown, counts, refund amounts" },
-      { name: "Warranty Claim Processing", description: "Separate workflow for warranty claims vs returns", status: "not_started" },
+      { name: "Warranty Claim Processing", description: "Separate workflow for warranty claims vs returns", status: "done", notes: "Returns page Warranty Claims tab with dedicated create dialog, claim type (repair/replace), purchase date, warranty expiry, reason codes, and description fields" },
       { name: "Credit Note Generation", description: "Auto-generate credit note on approved return", status: "done", notes: "credit_notes table" },
       { name: "Return Portal (Self-Service)", description: "Customer self-service portal for initiating returns", status: "done", notes: "StorefrontAccount Returns tab with return request dialog, order selection, reason codes, notes field, and return tracking progress bar" },
     ],
