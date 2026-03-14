@@ -70,6 +70,7 @@ const contentNav = [
 const systemNav = [
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
+  { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
   { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
   { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
