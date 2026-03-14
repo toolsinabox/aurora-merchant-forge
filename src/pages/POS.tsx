@@ -489,6 +489,7 @@ export default function POS() {
               <TabsTrigger value="sale">New Sale</TabsTrigger>
               <TabsTrigger value="parked">Parked ({parkedOrders.length})</TabsTrigger>
               <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
+              <TabsTrigger value="returns">Returns</TabsTrigger>
             </TabsList>
             {registers.length > 0 && (
               <Select value={selectedRegister} onValueChange={setSelectedRegister}>
