@@ -466,6 +466,52 @@ export default function Subscriptions() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Skip Delivery Dialog */}
+      <Dialog open={skipDialogOpen} onOpenChange={setSkipDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Skip Next Delivery</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">This will push the next order date forward by one billing cycle. The subscription will remain active.</p>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setSkipDialogOpen(false)}>Cancel</Button>
+            <Button size="sm" disabled={skipDelivery.isPending} onClick={() => { if (skippingSubId) skipDelivery.mutate(skippingSubId); }}>Skip Delivery</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Swap Product Dialog */}
+      <Dialog open={swapDialogOpen} onOpenChange={setSwapDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Swap Subscription Product</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">Change the product for this subscription. The price will update to the new product's price.</p>
+          <div>
+            <Label className="text-xs">New Product</Label>
+            <Select value={swapProductId} onValueChange={setSwapProductId}>
+              <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
+              <SelectContent>{products.map((p: any) => <SelectItem key={p.id} value={p.id}>{p.title} — ${p.price}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setSwapDialogOpen(false)}>Cancel</Button>
+            <Button size="sm" disabled={!swapProductId || swapProduct.isPending} onClick={() => { if (swappingSub) swapProduct.mutate({ id: swappingSub.id, productId: swapProductId }); }}>Swap Product</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Change Quantity Dialog */}
+      <Dialog open={qtyDialogOpen} onOpenChange={setQtyDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Change Subscription Quantity</DialogTitle></DialogHeader>
+          <div>
+            <Label className="text-xs">New Quantity</Label>
+            <Input type="number" min={1} value={newQty} onChange={e => setNewQty(Number(e.target.value))} className="h-8 text-xs" />
+          </div>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setQtyDialogOpen(false)}>Cancel</Button>
+            <Button size="sm" disabled={newQty < 1 || changeQty.isPending} onClick={() => { if (qtyEditSub) changeQty.mutate({ id: qtyEditSub.id, quantity: newQty }); }}>Update Quantity</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </AdminLayout>
   );
