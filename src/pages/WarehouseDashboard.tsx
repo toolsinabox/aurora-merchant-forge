@@ -292,10 +292,126 @@ export default function WarehouseDashboard() {
           </Card>
         </div>
 
+        {/* Cross-Docking Queue */}
+        <CrossDockingCard />
+
         {/* Putaway Rules */}
         <PutawayRulesCard />
       </div>
     </AdminLayout>
+  );
+}
+
+function CrossDockingCard() {
+  const { currentStore } = useAuth();
+  const [items, setItems] = useState<Array<{ id: string; po_number: string; product: string; sku: string; qty: number; destination_order: string; status: string; created_at: string }>>([]);
+  const [form, setForm] = useState({ po_number: "", product: "", sku: "", qty: "1", destination_order: "" });
+
+  useEffect(() => {
+    if (!currentStore) return;
+    try { setItems(JSON.parse(localStorage.getItem(`crossdock_${currentStore.id}`) || "[]")); } catch {}
+  }, [currentStore]);
+
+  const save = (updated: typeof items) => {
+    setItems(updated);
+    if (currentStore) localStorage.setItem(`crossdock_${currentStore.id}`, JSON.stringify(updated));
+  };
+
+  const addItem = () => {
+    if (!form.product.trim() || !form.destination_order.trim()) { toast.error("Product and destination order required"); return; }
+    save([...items, {
+      id: crypto.randomUUID(),
+      po_number: form.po_number,
+      product: form.product,
+      sku: form.sku,
+      qty: Number(form.qty) || 1,
+      destination_order: form.destination_order,
+      status: "pending",
+      created_at: new Date().toISOString(),
+    }]);
+    setForm({ po_number: "", product: "", sku: "", qty: "1", destination_order: "" });
+    toast.success("Cross-dock item queued");
+  };
+
+  const markDispatched = (id: string) => {
+    save(items.map(i => i.id === id ? { ...i, status: "dispatched" } : i));
+    toast.success("Item marked as dispatched");
+  };
+
+  const pending = items.filter(i => i.status === "pending");
+  const dispatched = items.filter(i => i.status === "dispatched");
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2">
+        <CardTitle className="text-sm flex items-center gap-2">
+          <ChevronRight className="h-4 w-4" /> Cross-Docking Queue
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">Route incoming goods directly to outbound orders without shelving. Items bypass putaway and go straight to dispatch.</p>
+
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <Input placeholder="PO Number" value={form.po_number} onChange={e => setForm({ ...form, po_number: e.target.value })} className="h-8 text-xs" />
+          <Input placeholder="Product name *" value={form.product} onChange={e => setForm({ ...form, product: e.target.value })} className="h-8 text-xs" />
+          <Input placeholder="SKU" value={form.sku} onChange={e => setForm({ ...form, sku: e.target.value })} className="h-8 text-xs" />
+          <Input type="number" min="1" placeholder="Qty" value={form.qty} onChange={e => setForm({ ...form, qty: e.target.value })} className="h-8 text-xs" />
+          <Input placeholder="Dest. Order # *" value={form.destination_order} onChange={e => setForm({ ...form, destination_order: e.target.value })} className="h-8 text-xs" />
+        </div>
+        <Button size="sm" className="text-xs h-7" onClick={addItem}><Plus className="h-3 w-3 mr-1" /> Queue Cross-Dock</Button>
+
+        {pending.length > 0 && (
+          <>
+            <p className="text-xs font-medium mt-2">Pending ({pending.length})</p>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">PO</TableHead>
+                  <TableHead className="text-xs h-8">Product</TableHead>
+                  <TableHead className="text-xs h-8">SKU</TableHead>
+                  <TableHead className="text-xs h-8">Qty</TableHead>
+                  <TableHead className="text-xs h-8">Dest. Order</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pending.map(i => (
+                  <TableRow key={i.id} className="text-xs">
+                    <TableCell className="py-1.5 font-mono">{i.po_number || "—"}</TableCell>
+                    <TableCell className="py-1.5 font-medium">{i.product}</TableCell>
+                    <TableCell className="py-1.5 font-mono text-muted-foreground">{i.sku || "—"}</TableCell>
+                    <TableCell className="py-1.5">{i.qty}</TableCell>
+                    <TableCell className="py-1.5 font-mono">{i.destination_order}</TableCell>
+                    <TableCell className="py-1.5 text-right space-x-1">
+                      <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => markDispatched(i.id)}>
+                        <Truck className="h-3 w-3 mr-1" /> Dispatch
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => save(items.filter(x => x.id !== i.id))}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </>
+        )}
+
+        {dispatched.length > 0 && (
+          <>
+            <p className="text-xs font-medium mt-2 text-muted-foreground">Recently Dispatched ({dispatched.length})</p>
+            <div className="space-y-1">
+              {dispatched.slice(0, 5).map(i => (
+                <div key={i.id} className="flex items-center justify-between text-xs text-muted-foreground bg-muted/30 rounded px-2 py-1">
+                  <span>{i.product} × {i.qty} → Order {i.destination_order}</span>
+                  <Badge variant="outline" className="text-[10px]">dispatched</Badge>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
