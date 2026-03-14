@@ -355,7 +355,7 @@ export default function POS() {
         store_id: storeId,
         order_number: orderNumber,
         customer_id: selectedCustomer?.id || null,
-        subtotal, tax, total, discount: voucherDiscount, shipping: 0,
+        subtotal, tax, total, discount: voucherDiscount + totalDiscount, shipping: 0,
         items_count: itemCount,
         status: "completed",
         payment_status: "paid",
