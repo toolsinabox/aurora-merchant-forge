@@ -14,7 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Webhook, Zap, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Webhook, Zap, ExternalLink, AlertTriangle, RefreshCw } from "lucide-react";
 import { format } from "date-fns";
 
 const WEBHOOK_EVENTS = [
