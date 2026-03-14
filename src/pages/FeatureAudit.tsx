@@ -8113,7 +8113,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Cart Abandonment Rate Report", description: "Abandonment rate trends over time", status: "done", notes: "AbandonedCarts page" },
       { name: "Average Order Value (AOV) Trend", description: "AOV trending over time", status: "partial" },
       { name: "Customer Acquisition Cost", description: "Track cost to acquire each customer", status: "not_started" },
-      { name: "Repeat Purchase Rate", description: "Percentage of customers who reorder", status: "not_started" },
+      { name: "Repeat Purchase Rate", description: "Percentage of customers who reorder", status: "done", notes: "Analytics page Repeat Purchase Rate card showing rate %, total customers, and repeat buyers count" },
       { name: "Best Sellers Report", description: "Top products by revenue/units", status: "done", notes: "Analytics page Top Selling Products table" },
       { name: "Worst Sellers Report", description: "Bottom products by revenue/units", status: "done", notes: "Analytics page Worst Sellers table showing bottom 10 products by revenue" },
       { name: "Forecast vs Actual Sales", description: "Compare forecasted to actual sales", status: "not_started" },
