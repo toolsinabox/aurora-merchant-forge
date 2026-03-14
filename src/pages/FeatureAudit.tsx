@@ -8159,7 +8159,7 @@ const notificationFeatures: FeatureCategory[] = [
       { name: "Low Stock Alert (In-App)", description: "Dashboard notification for low stock", status: "done", notes: "NotificationBell" },
       { name: "New Order Alert (Email)", description: "Email notification on new order", status: "done", notes: "order-email-trigger" },
       { name: "New Order Alert (Browser Push)", description: "Browser push notification for new orders", status: "not_started" },
-      { name: "New Order Alert (SMS)", description: "SMS notification on new order", status: "partial", notes: "sms-gateway function" },
+      { name: "New Order Alert (SMS)", description: "SMS notification on new order", status: "done", notes: "Code-complete: sms-gateway edge function with order notification. Activates when merchant provides SMS provider credentials" },
       { name: "Abandoned Cart Alert", description: "Notify admin of new abandoned carts", status: "done" },
       { name: "Return Request Alert", description: "Notify admin of new return requests", status: "partial" },
       { name: "New Customer Registration Alert", description: "Notify admin of new signups", status: "done", notes: "auto-registration-email" },
