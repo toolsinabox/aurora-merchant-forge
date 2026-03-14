@@ -683,7 +683,7 @@ export default function ImportWizard() {
                     <p className="text-xs text-muted-foreground">Total Rows</p>
                   </div>
                   <div className="rounded-md bg-accent/20 p-3 text-center">
-                    <p className="text-2xl font-bold text-accent-foreground">{results.success}</p>
+                    <p className="text-lg font-bold text-accent-foreground">{results.success}</p>
                     <p className="text-xs text-muted-foreground">Imported</p>
                   </div>
                   <div className="rounded-md bg-destructive/10 p-3 text-center">
