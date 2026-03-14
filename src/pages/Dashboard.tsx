@@ -425,7 +425,7 @@ export default function Dashboard() {
                   {loadingCustomers ? <Skeleton className="h-16 w-full" /> : (
                     <div className="flex items-center gap-6">
                       <div>
-                        <p className="text-2xl font-bold">{customers.length}</p>
+                        <p className="text-lg font-bold">{customers.length}</p>
                         <p className="text-xs text-muted-foreground">Total</p>
                       </div>
                       <div>
