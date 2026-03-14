@@ -68,6 +68,48 @@ export default function PickPack() {
   const [packingCarton, setPackingCarton] = useState("");
   const [packWeight, setPackWeight] = useState("");
 
+  // Multi-carton shipment state
+  const [orderPackaging, setOrderPackaging] = useState<Record<string, PackageCarton[]>>({});
+  const [multiCartonOrderId, setMultiCartonOrderId] = useState<string | null>(null);
+
+  const addCartonToOrder = (orderId: string) => {
+    setOrderPackaging(prev => ({
+      ...prev,
+      [orderId]: [...(prev[orderId] || []), { id: crypto.randomUUID(), cartonTypeId: "", itemIds: [], weight: "" }]
+    }));
+  };
+
+  const removeCartonFromOrder = (orderId: string, cartonId: string) => {
+    setOrderPackaging(prev => ({
+      ...prev,
+      [orderId]: (prev[orderId] || []).filter(c => c.id !== cartonId)
+    }));
+  };
+
+  const updateOrderCarton = (orderId: string, cartonId: string, updates: Partial<PackageCarton>) => {
+    setOrderPackaging(prev => ({
+      ...prev,
+      [orderId]: (prev[orderId] || []).map(c => c.id === cartonId ? { ...c, ...updates } : c)
+    }));
+  };
+
+  const toggleItemInCarton = (orderId: string, cartonId: string, itemId: string) => {
+    setOrderPackaging(prev => {
+      const orderCartons = prev[orderId] || [];
+      return {
+        ...prev,
+        [orderId]: orderCartons.map(c => {
+          if (c.id !== cartonId) {
+            // Remove from other cartons
+            return { ...c, itemIds: c.itemIds.filter(id => id !== itemId) };
+          }
+          // Toggle in this carton
+          return { ...c, itemIds: c.itemIds.includes(itemId) ? c.itemIds.filter(id => id !== itemId) : [...c.itemIds, itemId] };
+        })
+      };
+    });
+  };
+
   // Wave picking state
   const [waves, setWaves] = useState<PickWave[]>(() => {
     try { return JSON.parse(localStorage.getItem("pick_waves") || "[]"); } catch { return []; }
