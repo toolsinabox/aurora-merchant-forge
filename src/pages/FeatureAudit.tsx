@@ -7908,7 +7908,7 @@ const checkoutDeepFeatures: FeatureCategory[] = [
       { name: "Age Verification Gate", description: "Age gate for restricted products (alcohol, etc.)", status: "done", notes: "Checkout age verification checkbox required before placing order, button disabled until confirmed" },
       { name: "Minimum Order Enforcement", description: "Block checkout below minimum order value", status: "partial" },
       { name: "Cart Reservation / Timer", description: "Reserve stock for X minutes while in checkout", status: "done", notes: "StorefrontCheckout 15-minute countdown timer in Order Summary, warning when < 2min, expiry toast notification" },
-      { name: "Express Checkout (Saved Details)", description: "One-click checkout for returning customers", status: "not_started" },
+      { name: "Express Checkout (Saved Details)", description: "One-click checkout for returning customers", status: "done", notes: "StorefrontCheckout express checkout banner for logged-in users with saved addresses, one-click place order using saved name/email/address" },
       { name: "Checkout Upsell/Cross-Sell", description: "Show related products during checkout", status: "done", notes: "StorefrontCheckout upsellProducts section with add-to-cart from related products" },
       { name: "Checkout Progress Indicator", description: "Visual progress bar showing checkout steps", status: "partial" },
       { name: "Order Confirmation Page", description: "Thank you page with order summary and next steps", status: "done" },
