@@ -965,10 +965,12 @@ export default function MaropostMigration() {
                 </div>
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
                 <Button onClick={() => window.location.href = "/_cpanel/dashboard"}>Go to Dashboard</Button>
                 <Button variant="outline" onClick={() => window.location.href = "/_cpanel/maropost-transfer-audit"}>View Transfer Audit</Button>
                 <Button variant="outline" onClick={() => window.location.href = "/_cpanel/products"}>View Products</Button>
+                <Button variant="outline" onClick={exportMigrationCSV}><Download className="h-4 w-4 mr-2" />Export Report</Button>
+                <Button variant="destructive" onClick={rollbackMigration}><RefreshCw className="h-4 w-4 mr-2" />Rollback Migration</Button>
               </div>
             </CardContent>
           </Card>
