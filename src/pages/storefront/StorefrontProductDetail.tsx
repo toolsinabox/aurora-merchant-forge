@@ -313,6 +313,7 @@ export default function StorefrontProductDetail() {
           <div className="space-y-5">
             <div>
               {product.brand && <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide mb-1">{product.brand}</p>}
+              <ProductBadges product={product} className="mb-1" />
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{product.title}</h1>
               {product.subtitle && <p className="text-muted-foreground mt-1">{product.subtitle}</p>}
               
