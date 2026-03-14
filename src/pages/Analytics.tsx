@@ -1159,6 +1159,30 @@ export default function Analytics() {
             )}
           </CardContent>
         </Card>
+        {/* Repeat Purchase Rate */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Repeat Purchase Rate</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[80px]" /> : (
+              <div className="flex items-center gap-8">
+                <div>
+                  <p className="text-2xl font-bold">{repeatPurchaseRate.rate.toFixed(1)}%</p>
+                  <p className="text-xs text-muted-foreground">of customers have reordered</p>
+                </div>
+                <div className="flex gap-6">
+                  <div>
+                    <p className="text-lg font-semibold">{repeatPurchaseRate.totalCustomers}</p>
+                    <p className="text-xs text-muted-foreground">Total customers with orders</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{repeatPurchaseRate.repeatCustomers}</p>
+                    <p className="text-xs text-muted-foreground">Repeat buyers (2+ orders)</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
