@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { Plus, FileText, ArrowRight, Printer } from "lucide-react";
+import { Plus, FileText, ArrowRight, Printer, Copy, BookTemplate } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
