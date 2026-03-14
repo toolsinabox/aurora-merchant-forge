@@ -637,9 +637,102 @@ function FulfillmentRulesTab() {
           )}
         </CardContent>
       </Card>
+      {/* Split Shipment Rules */}
+      <SplitShipmentRulesCard />
       {/* Auto-Assign Warehouse Rules */}
       <AutoAssignWarehouseCard />
     </div>
+  );
+}
+
+function SplitShipmentRulesCard() {
+  const { currentStore } = useAuth();
+  const [rules, setRules] = useState<Array<{ id: string; name: string; condition: string; action: string; is_active: boolean }>>([]);
+  const [form, setForm] = useState({ name: "", condition: "different_warehouses", action: "auto_split" });
+
+  useEffect(() => {
+    if (!currentStore) return;
+    try { setRules(JSON.parse(localStorage.getItem(`split_shipment_rules_${currentStore.id}`) || "[]")); } catch {}
+  }, [currentStore]);
+
+  const save = (updated: typeof rules) => {
+    setRules(updated);
+    if (currentStore) localStorage.setItem(`split_shipment_rules_${currentStore.id}`, JSON.stringify(updated));
+  };
+
+  const addRule = () => {
+    if (!form.name.trim()) { toast.error("Rule name required"); return; }
+    save([...rules, { id: crypto.randomUUID(), name: form.name, condition: form.condition, action: form.action, is_active: true }]);
+    setForm({ name: "", condition: "different_warehouses", action: "auto_split" });
+    toast.success("Split shipment rule added");
+  };
+
+  const conditionLabels: Record<string, string> = {
+    different_warehouses: "Items in different warehouses",
+    mixed_shipping_speed: "Mixed standard & express items",
+    oversized_items: "Contains oversized items",
+    hazmat_separation: "Hazardous goods require separate shipment",
+    weight_exceeds: "Total weight exceeds carrier max",
+    preorder_mix: "Mix of in-stock and preorder items",
+  };
+  const actionLabels: Record<string, string> = {
+    auto_split: "Auto-split into separate shipments",
+    notify_warehouse: "Notify warehouse for manual split",
+    hold_for_review: "Hold order for review",
+  };
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2"><CardTitle className="text-sm flex items-center gap-2"><Scissors className="h-4 w-4" /> Split Shipment Rules</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-xs text-muted-foreground">Auto-split orders into multiple shipments when items are in different locations or require separate handling.</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+          <Input placeholder="Rule name" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="h-8 text-sm" />
+          <Select value={form.condition} onValueChange={v => setForm({ ...form, condition: v })}>
+            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {Object.entries(conditionLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={form.action} onValueChange={v => setForm({ ...form, action: v })}>
+            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {Object.entries(actionLabels).map(([k, v]) => <SelectItem key={k} value={k} className="text-xs">{v}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+        <Button size="sm" className="text-xs h-7" onClick={addRule}><Plus className="h-3 w-3 mr-1" /> Add Rule</Button>
+
+        {rules.length > 0 && (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="text-xs h-8">Name</TableHead>
+                <TableHead className="text-xs h-8">When</TableHead>
+                <TableHead className="text-xs h-8">Then</TableHead>
+                <TableHead className="text-xs h-8">Active</TableHead>
+                <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rules.map(r => (
+                <TableRow key={r.id} className="text-xs">
+                  <TableCell className="py-1.5 font-medium">{r.name}</TableCell>
+                  <TableCell className="py-1.5"><Badge variant="outline" className="text-[10px]">{conditionLabels[r.condition] || r.condition}</Badge></TableCell>
+                  <TableCell className="py-1.5"><Badge variant="secondary" className="text-[10px]">{actionLabels[r.action] || r.action}</Badge></TableCell>
+                  <TableCell className="py-1.5">
+                    <Switch checked={r.is_active} onCheckedChange={v => save(rules.map(x => x.id === r.id ? { ...x, is_active: v } : x))} />
+                  </TableCell>
+                  <TableCell className="py-1.5 text-right">
+                    <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => save(rules.filter(x => x.id !== r.id))}><Trash2 className="h-3 w-3" /></Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
