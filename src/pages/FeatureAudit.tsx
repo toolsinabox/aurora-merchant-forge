@@ -7596,7 +7596,7 @@ const shippingDeepFeatures: FeatureCategory[] = [
     features: [
       { name: "Australia Post API (eParcel)", description: "Live rates, label generation, tracking for AusPost domestic", status: "done", notes: "Code-complete: carrier-rates edge function with AusPost PAC API. Activates with Australia Post API key" },
       { name: "Australia Post International", description: "International shipping via AusPost with customs declarations", status: "not_started" },
-      { name: "StarTrack Integration", description: "StarTrack carrier rates and label generation", status: "partial", notes: "starshipit-sync function" },
+      { name: "StarTrack Integration", description: "StarTrack carrier rates and label generation", status: "done", notes: "Code-complete: carrier-rates and starshipit-sync edge functions support StarTrack. Activates with credentials" },
       { name: "Aramex (Fastway) Integration", description: "Aramex/Fastway courier rates and consignment creation", status: "not_started" },
       { name: "DHL Express Integration", description: "DHL Express international shipping with duties/taxes", status: "not_started" },
       { name: "FedEx Integration", description: "FedEx domestic and international rates and labels", status: "not_started" },
