@@ -110,6 +110,29 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { currentStore } = useAuth();
 
+  // Widget visibility
+  const WIDGET_KEYS = ["kpis", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts"] as const;
+  const WIDGET_LABELS: Record<string, string> = {
+    kpis: "KPI Cards", revenue: "Revenue Chart", dailyOrders: "Daily Orders", recentOrders: "Recent Orders",
+    topProducts: "Top Products", customerGrowth: "Customer Growth", orderStatus: "Order Status",
+    customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts",
+  };
+  const [visibleWidgets, setVisibleWidgets] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem("dashboard_widgets");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return Object.fromEntries(WIDGET_KEYS.map(k => [k, true]));
+  });
+  const toggleWidget = (key: string) => {
+    setVisibleWidgets(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      localStorage.setItem("dashboard_widgets", JSON.stringify(next));
+      return next;
+    });
+  };
+  const w = (key: string) => visibleWidgets[key] !== false;
+
   const totalRevenue = orders.reduce((s: number, o: any) => s + Number(o.total), 0);
   const activeProducts = products.filter((p) => p.status === "active").length;
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
