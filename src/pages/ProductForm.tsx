@@ -11,8 +11,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDeleteVariant, useProductShipping, useUpsertProductShipping, useProductSpecifics, useCreateProductSpecific, useDeleteProductSpecific, useProductPricingTiers, useCreatePricingTier, useDeletePricingTier, useProductRelations, useCreateProductRelation, useDeleteProductRelation, useProducts } from "@/hooks/use-data";
+import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDeleteVariant, useCreateVariant, useProductShipping, useUpsertProductShipping, useProductSpecifics, useCreateProductSpecific, useDeleteProductSpecific, useProductPricingTiers, useCreatePricingTier, useDeletePricingTier, useProductRelations, useCreateProductRelation, useDeleteProductRelation, useProducts } from "@/hooks/use-data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
@@ -31,7 +33,10 @@ export default function ProductForm() {
   const createProduct = useCreateProduct();
   const updateProduct = useUpdateProduct();
   const deleteVariant = useDeleteVariant();
+  const createVariant = useCreateVariant();
   const [productImages, setProductImages] = useState<string[]>([]);
+  const [variantDialogOpen, setVariantDialogOpen] = useState(false);
+  const [newVariant, setNewVariant] = useState({ name: "", sku: "", price: "0", stock: "0" });
 
   // Shipping
   const { data: shippingData } = useProductShipping(isEdit ? id : undefined);
@@ -685,7 +690,7 @@ export default function ProductForm() {
                 <Card>
                   <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                     <CardTitle className="text-sm">Variants</CardTitle>
-                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1"><Plus className="h-3 w-3" /> Add Variant</Button>
+                    <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => { if (!isEdit) { toast.error("Save the product first"); return; } setVariantDialogOpen(true); }}><Plus className="h-3 w-3" /> Add Variant</Button>
                   </CardHeader>
                   <CardContent className="p-0">
                     {variants.length > 0 ? (
@@ -720,6 +725,28 @@ export default function ProductForm() {
                     )}
                   </CardContent>
                 </Card>
+
+                <Dialog open={variantDialogOpen} onOpenChange={setVariantDialogOpen}>
+                  <DialogContent className="max-w-sm">
+                    <DialogHeader><DialogTitle className="text-sm">Add Variant</DialogTitle></DialogHeader>
+                    <div className="space-y-3">
+                      <div><Label className="text-xs">Name *</Label><Input className="h-8 text-xs" value={newVariant.name} onChange={e => setNewVariant(v => ({ ...v, name: e.target.value }))} placeholder="e.g. Large / Red" /></div>
+                      <div><Label className="text-xs">SKU</Label><Input className="h-8 text-xs" value={newVariant.sku} onChange={e => setNewVariant(v => ({ ...v, sku: e.target.value }))} placeholder="SKU-001" /></div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><Label className="text-xs">Price</Label><Input className="h-8 text-xs" type="number" step="0.01" value={newVariant.price} onChange={e => setNewVariant(v => ({ ...v, price: e.target.value }))} /></div>
+                        <div><Label className="text-xs">Stock</Label><Input className="h-8 text-xs" type="number" value={newVariant.stock} onChange={e => setNewVariant(v => ({ ...v, stock: e.target.value }))} /></div>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" size="sm" onClick={() => setVariantDialogOpen(false)}>Cancel</Button>
+                      <Button size="sm" disabled={!newVariant.name || createVariant.isPending} onClick={() => {
+                        createVariant.mutate({ product_id: id!, name: newVariant.name, sku: newVariant.sku || undefined, price: parseFloat(newVariant.price) || 0, stock: parseInt(newVariant.stock) || 0 }, {
+                          onSuccess: () => { setVariantDialogOpen(false); setNewVariant({ name: "", sku: "", price: "0", stock: "0" }); }
+                        });
+                      }}>{createVariant.isPending ? "Creating..." : "Create Variant"}</Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </TabsContent>
 
               {/* SPECIFICS TAB */}
