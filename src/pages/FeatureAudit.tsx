@@ -7799,7 +7799,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
     icon: <RefreshCw className="h-5 w-5" />,
     features: [
       { name: "Return Request Form (Customer)", description: "Customer-facing return request submission", status: "partial", notes: "Returns page exists" },
-      { name: "Return Reason Codes", description: "Configurable return reason dropdown", status: "partial" },
+      { name: "Return Reason Codes", description: "Configurable return reason dropdown", status: "done", notes: "DEFAULT_RETURN_REASONS constant with 10 configurable reason codes (wrong item, damaged, not as described, changed mind, wrong size/colour, better price, arrived late, missing parts, quality, other) plus separate DISPUTE_REASONS for warranty claims" },
       { name: "Return Authorization Workflow", description: "Staff approve/reject return requests with notes", status: "partial" },
       { name: "Return Shipping Label Generation", description: "Auto-generate prepaid return shipping label", status: "done", notes: "PrintReturnLabel page" },
       { name: "Return Tracking", description: "Track return shipment status", status: "done", notes: "StorefrontAccount Returns tab shows return progress bar (requested → approved → processing → refunded) with visual step indicator" },
