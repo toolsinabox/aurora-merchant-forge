@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, Plus, Trash2, FileDown, Link, Eye, Package } from "lucide-react";
+import { Download, Plus, Trash2, FileDown, Link, Eye, Package, Key, Copy, RefreshCw } from "lucide-react";
 import { TablePagination } from "@/components/admin/TablePagination";
 
 export default function DigitalDownloads() {
