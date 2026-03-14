@@ -236,6 +236,44 @@ export default function Analytics() {
         returning: totalReturning,
         byMonth: Object.entries(custByMonth).map(([month, d]) => ({ month, new: d.newC, returning: d.returning })),
       });
+
+      // Customer Cohort Analysis — signup month vs order months
+      const { data: allOrders } = await supabase
+        .from("orders")
+        .select("customer_id, created_at")
+        .eq("store_id", currentStore.id);
+      const customerSignupMonth: Record<string, string> = {};
+      (customers as any[]).forEach((c: any) => {
+        const m = new Date(c.created_at).toISOString().slice(0, 7); // YYYY-MM
+        if (c.id) customerSignupMonth[c.id] = m;
+      });
+      const orderMonths = new Set<string>();
+      const cohortOrderMap: Record<string, Set<string>> = {}; // signup_month -> set of order months
+      (allOrders || []).forEach((o: any) => {
+        if (!o.customer_id) return;
+        const signupMonth = customerSignupMonth[o.customer_id];
+        if (!signupMonth) return;
+        const orderMonth = new Date(o.created_at).toISOString().slice(0, 7);
+        orderMonths.add(orderMonth);
+        if (!cohortOrderMap[signupMonth]) cohortOrderMap[signupMonth] = new Set();
+        cohortOrderMap[signupMonth].add(`${o.customer_id}_${orderMonth}`);
+      });
+      const sortedMonths = Array.from(orderMonths).sort().slice(-6);
+      const cohortLabels = Object.keys(customerSignupMonth).reduce((acc: Record<string, number>, cid) => {
+        const m = customerSignupMonth[cid];
+        acc[m] = (acc[m] || 0) + 1;
+        return acc;
+      }, {});
+      const sortedCohorts = Object.keys(cohortLabels).sort().slice(-6);
+      const cohorts = sortedCohorts.map(cohortMonth => {
+        const counts = sortedMonths.map(orderMonth => {
+          if (!cohortOrderMap[cohortMonth]) return 0;
+          return Array.from(cohortOrderMap[cohortMonth]).filter(k => k.endsWith(`_${orderMonth}`)).length;
+        });
+        return { label: cohortMonth, counts, total: cohortLabels[cohortMonth] };
+      });
+      setCohortData({ months: sortedMonths, cohorts });
+
       // Slow-moving stock: products with stock but few/no sales in last 90 days
       const ninetyDaysAgo = new Date();
       ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
