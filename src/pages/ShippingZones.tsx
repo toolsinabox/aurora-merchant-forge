@@ -609,7 +609,7 @@ function ShippingExclusionsTab({ storeId }: { storeId?: string }) {
 }
 
 function ZoneForm({ form, setForm, onSubmit, loading, label }: {
-  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string; surcharge_postcodes: string; surcharge_amount: string; surcharge_label: string };
+  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string; surcharge_postcodes: string; surcharge_amount: string; surcharge_label: string; blocked_postcodes: string; blocked_message: string };
   setForm: (f: any) => void;
   onSubmit: () => void;
   loading: boolean;
