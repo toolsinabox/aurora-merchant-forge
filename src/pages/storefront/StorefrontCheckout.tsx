@@ -1011,7 +1011,42 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Upsell Products */}
+              {/* Same-Day Delivery Option */}
+              {sameDayAvailable && deliveryMethod === "shipping" && (
+                <div className="border rounded-lg p-4 space-y-3">
+                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${sameDaySelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <div className="flex items-center gap-3">
+                      <Checkbox checked={sameDaySelected} onCheckedChange={(v) => setSameDaySelected(!!v)} />
+                      <div>
+                        <p className="text-sm font-medium flex items-center gap-1.5">
+                          <Truck className="h-3.5 w-3.5 text-primary" /> Same-Day Delivery
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Order before {SAME_DAY_CUTOFF_HOUR > 12 ? SAME_DAY_CUTOFF_HOUR - 12 : SAME_DAY_CUTOFF_HOUR}:00 {SAME_DAY_CUTOFF_HOUR >= 12 ? "PM" : "AM"} for delivery today
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">+${SAME_DAY_FEE.toFixed(2)}</span>
+                  </label>
+                </div>
+              )}
+
+              {/* Shipping Insurance Option */}
+              {deliveryMethod === "shipping" && (
+                <div className="border rounded-lg p-4 space-y-3">
+                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${shippingInsurance ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                    <div className="flex items-center gap-3">
+                      <Checkbox checked={shippingInsurance} onCheckedChange={(v) => setShippingInsurance(!!v)} />
+                      <div>
+                        <p className="text-sm font-medium">Shipping Insurance</p>
+                        <p className="text-xs text-muted-foreground">Protect your order against loss, theft, or damage during shipping</p>
+                      </div>
+                    </div>
+                    <span className="text-sm font-semibold text-primary">+${insurancePremium.toFixed(2)}</span>
+                  </label>
+                </div>
+              )}
+
               {upsellProducts.length > 0 && (
                 <div className="border rounded-lg p-5 space-y-3">
                   <h2 className="font-semibold flex items-center gap-2">
