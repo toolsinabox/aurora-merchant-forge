@@ -12,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine } from "lucide-react";
+import { Package, CheckCircle, Truck, Search, ArrowRight, ScanLine, Layers } from "lucide-react";
 import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
 type WorkflowStep = "pick" | "pack" | "ship" | "waves";
