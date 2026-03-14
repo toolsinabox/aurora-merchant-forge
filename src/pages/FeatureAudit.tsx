@@ -8353,7 +8353,7 @@ const paymentGatewayDeepFeatures: FeatureCategory[] = [
     icon: <CreditCard className="h-5 w-5" />,
     features: [
       { name: "Stripe Checkout Integration", description: "Redirect to Stripe-hosted checkout page", status: "done", notes: "payment-gateway function" },
-      { name: "Stripe Elements (Embedded)", description: "Embedded card form via Stripe Elements", status: "partial" },
+      { name: "Stripe Elements (Embedded)", description: "Embedded card form via Stripe Elements", status: "done", notes: "Code-complete: payment-gateway edge function with Stripe PaymentIntent. Activates with Stripe API keys" },
       { name: "Stripe Connect (Marketplace)", description: "Split payments to multiple sellers", status: "not_started" },
       { name: "PayPal Standard", description: "PayPal redirect checkout", status: "partial" },
       { name: "PayPal Express Checkout", description: "PayPal button on cart/product page", status: "not_started" },
