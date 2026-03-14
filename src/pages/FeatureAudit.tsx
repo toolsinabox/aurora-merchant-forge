@@ -8708,7 +8708,7 @@ const configSettingsFeatures: FeatureCategory[] = [
       { name: "Google Analytics ID", description: "Set GA4 measurement ID", status: "partial" },
       { name: "Custom CSS Injection", description: "Add custom CSS to storefront", status: "partial" },
       { name: "Custom JavaScript Injection", description: "Add custom JS to storefront head/body", status: "not_started" },
-      { name: "Maintenance Mode Toggle", description: "Enable/disable maintenance mode", status: "not_started" },
+      { name: "Maintenance Mode Toggle", description: "Enable/disable maintenance mode", status: "done", notes: "maintenance_mode field + StorefrontLayout" },
     ],
   },
 ];
