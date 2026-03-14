@@ -8308,7 +8308,7 @@ const marketingAutomationFeatures: FeatureCategory[] = [
     features: [
       { name: "Klaviyo Integration", description: "Sync customers and events to Klaviyo", status: "done", notes: "klaviyo-sync function" },
       { name: "Mailchimp Integration", description: "Sync email lists to Mailchimp", status: "done", notes: "mailchimp-sync function" },
-      { name: "Google Analytics 4 Integration", description: "GA4 event tracking (purchase, add_to_cart)", status: "partial" },
+      { name: "Google Analytics 4 Integration", description: "GA4 event tracking (purchase, add_to_cart)", status: "done", notes: "GA4 tracking ID in store settings, gtag.js dynamically injected in storefront with purchase and add_to_cart events" },
       { name: "Google Ads Conversion Tracking", description: "Track purchases as Google Ads conversions", status: "not_started" },
       { name: "Facebook Pixel Integration", description: "Facebook/Meta pixel for retargeting", status: "not_started" },
       { name: "TikTok Pixel Integration", description: "TikTok event tracking for ads", status: "not_started" },
