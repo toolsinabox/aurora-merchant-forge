@@ -322,6 +322,9 @@ const App = () => (
                    <Route path="/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
                    <Route path="/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
                    <Route path="/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
+                   <Route path="/digital-downloads" element={<RequireAuth><DigitalDownloads /></RequireAuth>} />
+                   <Route path="/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
+                   <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
