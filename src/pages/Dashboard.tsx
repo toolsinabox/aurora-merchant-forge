@@ -306,7 +306,7 @@ export default function Dashboard() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               {/* Recent Orders */}
-              <Card className="lg:col-span-2">
+              {w("recentOrders") && <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                   <CardTitle className="text-sm font-medium">Recent Orders</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/orders")}>
