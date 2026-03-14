@@ -19,6 +19,19 @@ import { BarcodeScanner } from "@/components/admin/BarcodeScanner";
 
 type WorkflowStep = "pick" | "batch" | "pack" | "ship" | "waves" | "zones" | "cartons";
 
+interface PackageCarton {
+  id: string;
+  cartonTypeId: string;
+  itemIds: string[];
+  weight: string;
+}
+
+// Multi-carton state per order
+interface OrderPackaging {
+  orderId: string;
+  cartons: PackageCarton[];
+}
+
 interface PickWave {
   id: string;
   name: string;

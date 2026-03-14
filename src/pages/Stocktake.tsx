@@ -332,62 +332,138 @@ export default function Stocktake() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Stock Count</h1>
-            <p className="text-xs text-muted-foreground">Physical inventory reconciliation</p>
+            <p className="text-xs text-muted-foreground">Physical inventory reconciliation & cycle count scheduling</p>
           </div>
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <Plus className="h-3.5 w-3.5 mr-1.5" /> New Stocktake
           </Button>
         </div>
 
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs h-8">Name</TableHead>
-                  <TableHead className="text-xs h-8">Date</TableHead>
-                  <TableHead className="text-xs h-8">Status</TableHead>
-                  <TableHead className="text-xs h-8 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <TableRow key={i}><TableCell colSpan={4}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
-                  ))
-                ) : stocktakes.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-8">
-                      <ClipboardCheck className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
-                      No stocktakes yet. Start one to count your physical inventory.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  stocktakes.map((st: any) => (
-                    <TableRow key={st.id} className="text-xs">
-                      <TableCell className="py-2 font-medium">{st.name}</TableCell>
-                      <TableCell className="py-2 text-muted-foreground">
-                        {format(new Date(st.created_at), "MMM d, yyyy")}
-                      </TableCell>
-                      <TableCell className="py-2">
-                        <Badge variant={st.status === "completed" ? "default" : "secondary"} className="text-[10px]">
-                          {st.status === "completed" ? "Completed" : "In Progress"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-2 text-right">
-                        <Button variant="ghost" size="sm" onClick={() => openStocktake(st)} className="h-7 text-xs">
-                          {st.status === "completed" ? "View" : "Continue"}
-                        </Button>
-                      </TableCell>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
+            <TabsTrigger value="stocktakes">Stocktakes</TabsTrigger>
+            <TabsTrigger value="schedules">
+              <Calendar className="h-3 w-3 mr-1" /> Cycle Count Schedules
+              {schedules.filter(s => s.isActive).length > 0 && (
+                <Badge variant="secondary" className="ml-1.5 text-[10px]">{schedules.filter(s => s.isActive).length}</Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="stocktakes">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Name</TableHead>
+                      <TableHead className="text-xs h-8">Date</TableHead>
+                      <TableHead className="text-xs h-8">Status</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Actions</TableHead>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      Array.from({ length: 3 }).map((_, i) => (
+                        <TableRow key={i}><TableCell colSpan={4}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+                      ))
+                    ) : stocktakes.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-8">
+                          <ClipboardCheck className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                          No stocktakes yet. Start one to count your physical inventory.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      stocktakes.map((st: any) => (
+                        <TableRow key={st.id} className="text-xs">
+                          <TableCell className="py-2 font-medium">{st.name}</TableCell>
+                          <TableCell className="py-2 text-muted-foreground">
+                            {format(new Date(st.created_at), "MMM d, yyyy")}
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Badge variant={st.status === "completed" ? "default" : "secondary"} className="text-[10px]">
+                              {st.status === "completed" ? "Completed" : "In Progress"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2 text-right">
+                            <Button variant="ghost" size="sm" onClick={() => openStocktake(st)} className="h-7 text-xs">
+                              {st.status === "completed" ? "View" : "Continue"}
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="schedules" className="space-y-3">
+            <div className="flex justify-end">
+              <Button size="sm" onClick={() => setScheduleOpen(true)}>
+                <Plus className="h-3.5 w-3.5 mr-1.5" /> New Schedule
+              </Button>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Name</TableHead>
+                      <TableHead className="text-xs h-8">Frequency</TableHead>
+                      <TableHead className="text-xs h-8">Zone</TableHead>
+                      <TableHead className="text-xs h-8">Category</TableHead>
+                      <TableHead className="text-xs h-8">Next Run</TableHead>
+                      <TableHead className="text-xs h-8">Last Run</TableHead>
+                      <TableHead className="text-xs h-8">Status</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {schedules.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-8">
+                          <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                          No cycle count schedules. Create one to automate regular stock counts.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      schedules.map((s) => (
+                        <TableRow key={s.id} className="text-xs">
+                          <TableCell className="py-2 font-medium">{s.name}</TableCell>
+                          <TableCell className="py-2">
+                            <Badge variant="outline" className="text-[10px]">{frequencyLabel[s.frequency]}</Badge>
+                          </TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{s.zone || "All zones"}</TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{s.category || "All categories"}</TableCell>
+                          <TableCell className="py-2">{format(new Date(s.nextRunDate), "MMM d, yyyy")}</TableCell>
+                          <TableCell className="py-2 text-muted-foreground">{s.lastRunDate ? format(new Date(s.lastRunDate), "MMM d, yyyy") : "Never"}</TableCell>
+                          <TableCell className="py-2">
+                            <Badge variant={s.isActive ? "default" : "secondary"} className="text-[10px] cursor-pointer" onClick={() => toggleSchedule(s.id)}>
+                              {s.isActive ? "Active" : "Paused"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2 text-right space-x-1">
+                            <Button size="sm" variant="outline" className="text-xs h-6" onClick={() => runScheduleNow(s)}>Run Now</Button>
+                            <Button size="sm" variant="ghost" className="text-xs h-6 text-destructive" onClick={() => deleteSchedule(s.id)}>
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
+      {/* Create Stocktake Dialog */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader><DialogTitle>New Stocktake</DialogTitle></DialogHeader>
@@ -408,6 +484,50 @@ export default function Stocktake() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
             <Button onClick={createStocktake}>Create Stocktake</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Schedule Dialog */}
+      <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader><DialogTitle>New Cycle Count Schedule</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Schedule Name *</Label>
+              <Input value={scheduleForm.name} onChange={e => setScheduleForm({ ...scheduleForm, name: e.target.value })} placeholder="e.g., Weekly Zone A Count" className="h-8 text-sm" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Frequency *</Label>
+              <Select value={scheduleForm.frequency} onValueChange={(v: any) => setScheduleForm({ ...scheduleForm, frequency: v })}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily" className="text-xs">Daily</SelectItem>
+                  <SelectItem value="weekly" className="text-xs">Weekly</SelectItem>
+                  <SelectItem value="biweekly" className="text-xs">Bi-weekly</SelectItem>
+                  <SelectItem value="monthly" className="text-xs">Monthly</SelectItem>
+                  <SelectItem value="quarterly" className="text-xs">Quarterly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1.5">
+                <Label className="text-xs">Zone (optional)</Label>
+                <Input value={scheduleForm.zone} onChange={e => setScheduleForm({ ...scheduleForm, zone: e.target.value })} placeholder="e.g., Zone A" className="h-8 text-sm" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs">Category (optional)</Label>
+                <Input value={scheduleForm.category} onChange={e => setScheduleForm({ ...scheduleForm, category: e.target.value })} placeholder="e.g., Electronics" className="h-8 text-sm" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Next Run Date *</Label>
+              <Input type="date" value={scheduleForm.nextRunDate} onChange={e => setScheduleForm({ ...scheduleForm, nextRunDate: e.target.value })} className="h-8 text-sm" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setScheduleOpen(false)}>Cancel</Button>
+            <Button onClick={createSchedule}>Create Schedule</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
