@@ -14,7 +14,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Search, ClipboardList, Printer, PackageCheck, CheckCircle, XCircle } from "lucide-react";
+import { Plus, Trash2, Search, ClipboardList, Printer, PackageCheck, CheckCircle, XCircle, ShieldCheck } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { format } from "date-fns";
 
 interface POForm {
@@ -49,6 +50,8 @@ export default function PurchaseOrders() {
   const [receivePO, setReceivePO] = useState<any>(null);
   const [poItems, setPOItems] = useState<any[]>([]);
   const [receiveQtys, setReceiveQtys] = useState<Record<string, number>>({});
+  const [qcFlags, setQcFlags] = useState<Record<string, boolean>>({});
+  const [qcNotes, setQcNotes] = useState<Record<string, string>>({});
   const [loadingItems, setLoadingItems] = useState(false);
 
   const { data: pos = [], isLoading } = useQuery({
@@ -144,10 +147,16 @@ export default function PurchaseOrders() {
     const items = data || [];
     setPOItems(items);
     const qtys: Record<string, number> = {};
+    const flags: Record<string, boolean> = {};
+    const notes: Record<string, string> = {};
     items.forEach((item: any) => {
       qtys[item.id] = 0;
+      flags[item.id] = false;
+      notes[item.id] = "";
     });
     setReceiveQtys(qtys);
+    setQcFlags(flags);
+    setQcNotes(notes);
     setLoadingItems(false);
   };
 
@@ -347,16 +356,29 @@ export default function PurchaseOrders() {
                       <TableHead className="text-xs w-20">Ordered</TableHead>
                       <TableHead className="text-xs w-20">Received</TableHead>
                       <TableHead className="text-xs w-24">Receive Now</TableHead>
+                      <TableHead className="text-xs w-16 text-center">
+                        <span className="flex items-center gap-0.5 justify-center"><ShieldCheck className="h-3 w-3" /> QC</span>
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {poItems.map((item: any) => {
                       const remaining = item.quantity_ordered - item.quantity_received;
                       return (
-                        <TableRow key={item.id}>
+                        <TableRow key={item.id} className={qcFlags[item.id] ? "bg-warning/5" : ""}>
                           <TableCell className="text-sm">
                             <div>{item.title}</div>
                             {item.sku && <span className="text-xs text-muted-foreground font-mono">{item.sku}</span>}
+                            {qcFlags[item.id] && (
+                              <div className="mt-1">
+                                <Input
+                                  placeholder="QC notes (reason for inspection)..."
+                                  className="h-6 text-[10px]"
+                                  value={qcNotes[item.id] || ""}
+                                  onChange={e => setQcNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                />
+                              </div>
+                            )}
                           </TableCell>
                           <TableCell className="text-sm">{item.quantity_ordered}</TableCell>
                           <TableCell className="text-sm">{item.quantity_received}</TableCell>
@@ -370,11 +392,24 @@ export default function PurchaseOrders() {
                               onChange={(e) => setReceiveQtys(prev => ({ ...prev, [item.id]: Math.min(Number(e.target.value), remaining) }))}
                             />
                           </TableCell>
+                          <TableCell className="text-center">
+                            <Switch
+                              checked={qcFlags[item.id] || false}
+                              onCheckedChange={(v) => setQcFlags(prev => ({ ...prev, [item.id]: v }))}
+                              className="scale-75"
+                            />
+                          </TableCell>
                         </TableRow>
                       );
                     })}
                   </TableBody>
                 </Table>
+                {Object.values(qcFlags).some(Boolean) && (
+                  <div className="flex items-center gap-2 text-xs text-warning bg-warning/10 rounded p-2">
+                    <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+                    <span>{Object.values(qcFlags).filter(Boolean).length} item(s) flagged for quality inspection — will be held for QC review before shelving.</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <Button variant="outline" size="sm" className="text-xs" onClick={() => {
                     const all: Record<string, number> = {};
