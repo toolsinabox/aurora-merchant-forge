@@ -1296,7 +1296,7 @@ export default function Analytics() {
 
         {/* AOV Trend */}
         <Card>
-          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Average Order Value Trend ({period === "30d" ? "30 Days" : period === "90d" ? "90 Days" : "12 Months"})</CardTitle></CardHeader>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Average Order Value Trend</CardTitle></CardHeader>
           <CardContent className="p-4 pt-0">
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={timeSeries}>
