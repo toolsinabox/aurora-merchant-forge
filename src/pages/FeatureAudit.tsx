@@ -7785,7 +7785,7 @@ const emailAutomationDeepFeatures: FeatureCategory[] = [
       { name: "Email Engagement Tracking", description: "Track opens, clicks, and conversions per email", status: "not_started" },
       { name: "Unsubscribe Management", description: "Global and per-type email unsubscribe preferences", status: "done", notes: "StorefrontAccount Preferences tab with 8 toggleable email/SMS categories (order updates, shipping, reviews, back-in-stock, promos, newsletter, price drops, SMS) saved to customer record" },
       { name: "SMS Automation", description: "SMS notifications for order updates and marketing", status: "done", notes: "sms-gateway edge function" },
-      { name: "SMS Templates", description: "Configurable SMS message templates", status: "partial" },
+      { name: "SMS Templates", description: "Configurable SMS message templates", status: "done", notes: "SMS Templates tab on Email Templates page with 6 default templates (order confirmation, shipped, delivered, abandoned cart, back in stock, payment reminder), CRUD management, variable substitution support, character count, active/inactive toggle" },
       { name: "Mailchimp Deep Sync", description: "Bi-directional customer and order sync with Mailchimp", status: "done", notes: "mailchimp-sync function" },
       { name: "Klaviyo Deep Sync", description: "Event and profile sync with Klaviyo", status: "done", notes: "klaviyo-sync function" },
       { name: "Transactional Email Logs", description: "Log all sent transactional emails with status", status: "done", notes: "email_queue table" },
