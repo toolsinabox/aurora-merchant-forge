@@ -208,6 +208,53 @@ export default function EmailTemplates() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="sms">
+            <Card>
+              <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                <CardTitle className="text-sm flex items-center gap-2"><MessageSquare className="h-4 w-4" /> SMS Templates</CardTitle>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="text-xs" onClick={seedSmsDefaults}><Plus className="h-3 w-3 mr-1" /> Seed Defaults</Button>
+                  <Button size="sm" className="text-xs" onClick={() => { setEditSms({ key: "", name: "", body: "", is_active: true }); setEditSmsOpen(true); }}><Plus className="h-3 w-3 mr-1" /> New</Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Key</TableHead>
+                      <TableHead className="text-xs h-8">Name</TableHead>
+                      <TableHead className="text-xs h-8">Message</TableHead>
+                      <TableHead className="text-xs h-8">Active</TableHead>
+                      <TableHead className="text-xs h-8 w-20">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {smsTemplates.length === 0 ? (
+                      <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                        <MessageSquare className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                        No SMS templates — click "Seed Defaults" to create standard templates
+                      </TableCell></TableRow>
+                    ) : smsTemplates.map((t: any) => (
+                      <TableRow key={t.id} className="text-xs">
+                        <TableCell className="py-2 font-mono">{t.key}</TableCell>
+                        <TableCell className="py-2 font-medium">{t.name}</TableCell>
+                        <TableCell className="py-2 text-muted-foreground truncate max-w-[250px]">{t.body}</TableCell>
+                        <TableCell className="py-2"><Badge variant={t.is_active ? "default" : "outline"} className="text-[10px]">{t.is_active ? "Active" : "Off"}</Badge></TableCell>
+                        <TableCell className="py-2">
+                          <div className="flex gap-1">
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setEditSms(t); setEditSmsOpen(true); }}><Pencil className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteSmsTemplate(t.id)}><Trash2 className="h-3 w-3" /></Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+            <p className="text-xs text-muted-foreground mt-2">Variables: {"{{customer_name}}"}, {"{{order_number}}"}, {"{{store_name}}"}, {"{{tracking_url}}"}, {"{{product_name}}"}, {"{{amount}}"}</p>
+          </TabsContent>
+
           <TabsContent value="queue">
             <Card>
               <CardContent className="p-0">
