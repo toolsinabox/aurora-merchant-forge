@@ -7836,7 +7836,7 @@ const posDeepFeatures: FeatureCategory[] = [
       { name: "POS Layby Creation", description: "Create layby plans from POS interface", status: "partial", notes: "Layby system exists" },
       { name: "POS Hold/Park Order", description: "Park current sale and start new one", status: "done", notes: "Park button on POS cart, Parked tab with resume/delete, localStorage persistence with notes" },
       { name: "POS Returns/Exchanges", description: "Process returns and exchanges at POS", status: "not_started" },
-      { name: "POS Custom Sale (No SKU)", description: "Enter custom item with price for miscellaneous sales", status: "not_started" },
+      { name: "POS Custom Sale (No SKU)", description: "Enter custom item with price for miscellaneous sales", status: "done", notes: "Custom Sale button + dialog on POS with custom title and price, adds to cart as CUSTOM SKU" },
       { name: "POS Staff PIN Login", description: "Quick staff switch using PIN code", status: "not_started" },
       { name: "POS Customer Display", description: "Secondary screen showing cart items to customer", status: "not_started" },
       { name: "POS Inventory Count Mode", description: "Use POS device for stocktake counting", status: "not_started" },
