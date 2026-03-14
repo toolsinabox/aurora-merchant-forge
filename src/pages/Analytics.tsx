@@ -100,6 +100,7 @@ export default function Analytics() {
   const [channelData, setChannelData] = useState<any[]>([]);
   const [funnelData, setFunnelData] = useState<{ visitors: number; carts: number; checkouts: number; purchases: number }>({ visitors: 0, carts: 0, checkouts: 0, purchases: 0 });
   const [salesByBrand, setSalesByBrand] = useState<any[]>([]);
+  const [cohortData, setCohortData] = useState<{ months: string[]; cohorts: { label: string; counts: number[]; total: number }[] }>({ months: [], cohorts: [] });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -235,6 +236,44 @@ export default function Analytics() {
         returning: totalReturning,
         byMonth: Object.entries(custByMonth).map(([month, d]) => ({ month, new: d.newC, returning: d.returning })),
       });
+
+      // Customer Cohort Analysis — signup month vs order months
+      const { data: allOrders } = await supabase
+        .from("orders")
+        .select("customer_id, created_at")
+        .eq("store_id", currentStore.id);
+      const customerSignupMonth: Record<string, string> = {};
+      (customers as any[]).forEach((c: any) => {
+        const m = new Date(c.created_at).toISOString().slice(0, 7); // YYYY-MM
+        if (c.id) customerSignupMonth[c.id] = m;
+      });
+      const orderMonths = new Set<string>();
+      const cohortOrderMap: Record<string, Set<string>> = {}; // signup_month -> set of order months
+      (allOrders || []).forEach((o: any) => {
+        if (!o.customer_id) return;
+        const signupMonth = customerSignupMonth[o.customer_id];
+        if (!signupMonth) return;
+        const orderMonth = new Date(o.created_at).toISOString().slice(0, 7);
+        orderMonths.add(orderMonth);
+        if (!cohortOrderMap[signupMonth]) cohortOrderMap[signupMonth] = new Set();
+        cohortOrderMap[signupMonth].add(`${o.customer_id}_${orderMonth}`);
+      });
+      const sortedMonths = Array.from(orderMonths).sort().slice(-6);
+      const cohortLabels = Object.keys(customerSignupMonth).reduce((acc: Record<string, number>, cid) => {
+        const m = customerSignupMonth[cid];
+        acc[m] = (acc[m] || 0) + 1;
+        return acc;
+      }, {});
+      const sortedCohorts = Object.keys(cohortLabels).sort().slice(-6);
+      const cohorts = sortedCohorts.map(cohortMonth => {
+        const counts = sortedMonths.map(orderMonth => {
+          if (!cohortOrderMap[cohortMonth]) return 0;
+          return Array.from(cohortOrderMap[cohortMonth]).filter(k => k.endsWith(`_${orderMonth}`)).length;
+        });
+        return { label: cohortMonth, counts, total: cohortLabels[cohortMonth] };
+      });
+      setCohortData({ months: sortedMonths, cohorts });
+
       // Slow-moving stock: products with stock but few/no sales in last 90 days
       const ninetyDaysAgo = new Date();
       ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
@@ -941,6 +980,49 @@ export default function Analytics() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Customer Cohort Analysis */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Customer Cohort Analysis</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[200px]" /> : cohortData.cohorts.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">Not enough data for cohort analysis</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8 whitespace-nowrap">Signup Month</TableHead>
+                      <TableHead className="text-xs h-8 text-right whitespace-nowrap">Customers</TableHead>
+                      {cohortData.months.map(m => (
+                        <TableHead key={m} className="text-xs h-8 text-center whitespace-nowrap">{m}</TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {cohortData.cohorts.map((cohort) => (
+                      <TableRow key={cohort.label} className="text-xs">
+                        <TableCell className="py-1.5 font-medium whitespace-nowrap">{cohort.label}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{cohort.total}</TableCell>
+                        {cohort.counts.map((count, i) => {
+                          const pct = cohort.total > 0 ? (count / cohort.total) * 100 : 0;
+                          const intensity = Math.min(pct / 50, 1);
+                          return (
+                            <TableCell key={i} className="py-1.5 text-center font-mono" style={{
+                              backgroundColor: count > 0 ? `hsl(142, 71%, ${90 - intensity * 45}%)` : undefined,
+                            }}>
+                              {count > 0 ? `${count} (${pct.toFixed(0)}%)` : "—"}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
