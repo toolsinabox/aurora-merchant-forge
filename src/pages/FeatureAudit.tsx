@@ -8414,7 +8414,7 @@ const subscriptionDeepFeatures: FeatureCategory[] = [
       { name: "Subscription Swap Product", description: "Change product in active subscription", status: "done", notes: "Subscriptions page Swap Product dialog with product selector, auto-updates unit_price to new product price" },
       { name: "Subscription Quantity Change", description: "Adjust quantity on active subscription", status: "done", notes: "Subscriptions page Change Quantity dialog with numeric input and instant save" },
       { name: "Subscription Payment Retry", description: "Auto-retry failed subscription payments", status: "not_started" },
-      { name: "Subscription Dunning Emails", description: "Email sequence for failed payments", status: "not_started" },
+      { name: "Subscription Dunning Emails", description: "Email sequence for failed payments", status: "partial", notes: "Renewal reminder email implemented via send-email edge function; full dunning sequence not automated yet" },
       { name: "Subscription Analytics", description: "MRR, churn rate, LTV for subscriptions", status: "done", notes: "Subscriptions page KPI cards with MRR, ARR, Active count, Churn Rate %, Total subscriptions" },
       { name: "Subscription Cancellation Survey", description: "Ask reason when customer cancels", status: "done", notes: "Subscriptions page cancellation dialog with 6 predefined reasons (too expensive, don't need it, switching, quality, delivery, other)" },
       { name: "Subscription Admin Dashboard", description: "Overview of active/churned/paused subscriptions", status: "done", notes: "Subscriptions page" },
