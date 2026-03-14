@@ -21,6 +21,7 @@ import {
   LayoutDashboard, Bell, Upload, Download, UserCheck, Key, Eye,
   MessageSquare, Star, Heart, RefreshCw, Scissors, ShieldCheck,
   HardDrive, Monitor, Workflow, Building, ArrowLeftRight,
+  Banknote, Scale, FileSearch, ListChecks, Milestone, Timer, ToggleLeft, Fingerprint, Grip, Cable, Tv,
 } from "lucide-react";
 
 type Status = "done" | "partial" | "not_started";
@@ -6284,8 +6285,216 @@ const microFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 491–520: FINAL EDGE-TO-EDGE FEATURES ═══════
+const finalEdgeFeatures: FeatureCategory[] = [
+  {
+    category: "Payment Processing",
+    icon: <Banknote className="h-5 w-5" />,
+    features: [
+      { name: "Stripe Checkout Integration", description: "Redirect to Stripe Checkout for payment", status: "done", notes: "payment-gateway edge function with Stripe session creation" },
+      { name: "PayPal Standard", description: "PayPal payment button on checkout", status: "done", notes: "PayPal redirect flow in payment-gateway function" },
+      { name: "Manual / Bank Transfer", description: "Allow offline payment methods", status: "done", notes: "Manual payment option with pending status until confirmed" },
+      { name: "Cash on Delivery", description: "COD payment method for local delivery", status: "done", notes: "COD option in payment methods, order created as unpaid" },
+      { name: "Payment Status Tracking", description: "Track paid/unpaid/partial/refunded status", status: "done", notes: "payment_status column on orders: paid, unpaid, partial, refunded" },
+      { name: "Partial Payment", description: "Accept partial payment with balance due", status: "done", notes: "Amount paid tracked against order total" },
+      { name: "Payment Receipt Email", description: "Email receipt after successful payment", status: "done", notes: "payment-email edge function triggered on payment" },
+      { name: "Refund Processing", description: "Issue full or partial refunds", status: "done", notes: "Refund action on order detail with amount input" },
+    ],
+  },
+  {
+    category: "Tax Calculation Engine",
+    icon: <Scale className="h-5 w-5" />,
+    features: [
+      { name: "Tax Rate CRUD", description: "Create and manage tax rates", status: "done", notes: "TaxRates page with rate management" },
+      { name: "Tax Zone Assignment", description: "Assign tax rates to geographic zones", status: "done", notes: "Tax zones linked to shipping zones/countries" },
+      { name: "Tax Inclusive/Exclusive", description: "Toggle between tax-inclusive and tax-exclusive pricing", status: "done", notes: "tax_inclusive boolean on store settings" },
+      { name: "Tax Exemption", description: "Mark customers or groups as tax-exempt", status: "done", notes: "is_tax_exempt on customer_groups" },
+      { name: "Tax on Shipping", description: "Apply tax to shipping charges", status: "done", notes: "tax_on_shipping setting in store config" },
+      { name: "Multi-Rate Support", description: "Different tax rates for different product types", status: "done", notes: "Tax class assignment per product" },
+    ],
+  },
+  {
+    category: "Saved Carts & Draft Orders",
+    icon: <FileSearch className="h-5 w-5" />,
+    features: [
+      { name: "Save Cart for Later", description: "Customer saves current cart to account", status: "done", notes: "SavedCarts page with saved cart list" },
+      { name: "Restore Saved Cart", description: "Reload saved cart items to active cart", status: "done", notes: "Restore button replaces current cart with saved items" },
+      { name: "Admin Draft Orders", description: "Admin creates draft order for customer", status: "done", notes: "CreateOrderDialog with draft status option" },
+      { name: "Convert Draft to Order", description: "Finalize draft order into active order", status: "done", notes: "Status change from draft to pending on confirmation" },
+      { name: "Send Draft Invoice", description: "Email draft order to customer for payment", status: "done", notes: "Invoice email with payment link for draft orders" },
+    ],
+  },
+  {
+    category: "Subscription Commerce",
+    icon: <Repeat className="h-5 w-5" />,
+    features: [
+      { name: "Subscription Plan CRUD", description: "Create recurring subscription products", status: "done", notes: "Subscriptions page with plan creation" },
+      { name: "Frequency Options", description: "Weekly, monthly, quarterly, annual billing", status: "done", notes: "Frequency selector: weekly, biweekly, monthly, quarterly, annual" },
+      { name: "Auto-Renewal", description: "Automatic order creation on renewal date", status: "done", notes: "Subscription renewal creates new order automatically" },
+      { name: "Subscription Pause", description: "Customer can pause subscription temporarily", status: "done", notes: "Pause/resume actions on subscription management" },
+      { name: "Subscription Cancel", description: "Customer can cancel with optional reason", status: "done", notes: "Cancel with reason capture and end-of-period option" },
+      { name: "Renewal Reminder Email", description: "Email reminder before renewal charge", status: "done", notes: "Reminder email sent N days before renewal" },
+      { name: "Failed Payment Retry", description: "Retry failed subscription payments", status: "done", notes: "Retry logic with dunning emails on failure" },
+    ],
+  },
+  {
+    category: "Affiliate Program",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Affiliate Registration", description: "Users apply to become affiliates", status: "done", notes: "Affiliate signup form with approval workflow" },
+      { name: "Referral Link Generation", description: "Unique referral links per affiliate", status: "done", notes: "Referral code/link generation with tracking" },
+      { name: "Commission Tracking", description: "Track commissions per referred sale", status: "done", notes: "Commission rate and earned amount per referral order" },
+      { name: "Payout Management", description: "Manage affiliate payouts and thresholds", status: "done", notes: "Payout requests, minimum threshold, approval workflow" },
+      { name: "Affiliate Dashboard", description: "Affiliate sees their stats and earnings", status: "done", notes: "Referrals, clicks, conversions, earnings summary" },
+    ],
+  },
+  {
+    category: "Smart Collections",
+    icon: <ListChecks className="h-5 w-5" />,
+    features: [
+      { name: "Rule-Based Collections", description: "Auto-populate collections based on product rules", status: "done", notes: "SmartCollections page with rule builder" },
+      { name: "Condition Builder", description: "AND/OR conditions on tags, price, vendor, type", status: "done", notes: "Visual condition builder with field, operator, value" },
+      { name: "Auto-Update", description: "Collection updates when products change", status: "done", notes: "Products matching rules automatically included" },
+      { name: "Manual Override", description: "Pin or exclude specific products", status: "done", notes: "Manual include/exclude list alongside auto-rules" },
+      { name: "Collection SEO", description: "Custom SEO title/description per collection", status: "done", notes: "seo_title and seo_description on categories" },
+    ],
+  },
+  {
+    category: "Price Rules Engine",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Quantity Break Pricing", description: "Tiered pricing based on quantity ordered", status: "done", notes: "PriceRules page with quantity-based tier pricing" },
+      { name: "Customer Group Pricing", description: "Special pricing for customer groups", status: "done", notes: "discount_percent on customer_groups applied at checkout" },
+      { name: "Date-Based Pricing", description: "Schedule price changes with start/end dates", status: "done", notes: "Sale price with starts_at/expires_at on price rules" },
+      { name: "Buy X Get Y", description: "Buy X get Y free/discounted promotions", status: "done", notes: "BXGY rule type in price rules engine" },
+      { name: "Minimum Order Discount", description: "Discount when order exceeds minimum amount", status: "done", notes: "min_order_amount condition on coupons/price rules" },
+    ],
+  },
+  {
+    category: "Marketplace Listings",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "eBay Product Sync", description: "Push products to eBay listings", status: "done", notes: "ebay-sync edge function with product push" },
+      { name: "eBay Order Import", description: "Import eBay orders into system", status: "done", notes: "eBay order pull and local order creation" },
+      { name: "Amazon Listing Sync", description: "Sync products to Amazon marketplace", status: "done", notes: "marketplace-sync edge function for Amazon" },
+      { name: "Marketplace Order Routing", description: "Route marketplace orders to fulfillment", status: "done", notes: "Channel-aware order processing" },
+      { name: "Inventory Sync Across Channels", description: "Keep stock levels consistent across marketplaces", status: "done", notes: "Stock update propagates to connected marketplaces" },
+    ],
+  },
+  {
+    category: "Report Builder",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Custom Report Creation", description: "Build custom reports with field selection", status: "done", notes: "ReportBuilder page with entity, field, filter selection" },
+      { name: "Date Range Selection", description: "Filter report data by date range", status: "done", notes: "Date range picker with presets (today, 7d, 30d, custom)" },
+      { name: "Chart Visualization", description: "Display report data as charts", status: "done", notes: "Bar, line, pie chart options using Recharts" },
+      { name: "Table View", description: "Tabular report data with sorting", status: "done", notes: "Sortable data table with pagination" },
+      { name: "Report Scheduling", description: "Schedule reports to run and email periodically", status: "done", notes: "scheduled-report-email edge function with cron" },
+      { name: "Export Report", description: "Export report results as CSV", status: "done", notes: "CSV download of report data" },
+    ],
+  },
+  {
+    category: "Staff Permissions & Roles",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Role CRUD", description: "Create custom staff roles", status: "done", notes: "RolePermissions page with role management" },
+      { name: "Granular Permissions", description: "Per-entity read/write/delete permissions", status: "done", notes: "Permission matrix: products, orders, customers, settings" },
+      { name: "Role Assignment", description: "Assign roles to staff users", status: "done", notes: "user_roles table linking user to role and store" },
+      { name: "Permission Check in UI", description: "Hide/disable UI based on permissions", status: "done", notes: "Permission-aware component rendering" },
+      { name: "Staff Activity Log", description: "Track all staff actions", status: "done", notes: "StaffActivity page showing activity_log entries per user" },
+      { name: "Two-Factor Authentication", description: "Optional 2FA for staff accounts", status: "done", notes: "TwoFactorSetup component with TOTP setup" },
+    ],
+  },
+  {
+    category: "Multi-Currency Checkout",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Currency Switcher", description: "Storefront currency selector", status: "done", notes: "CurrencySwitcher component in storefront header" },
+      { name: "Exchange Rate Management", description: "Admin manages exchange rates", status: "done", notes: "Currencies page with rate configuration" },
+      { name: "Auto-Convert Prices", description: "Display prices in selected currency", status: "done", notes: "Price formatting with currency conversion" },
+      { name: "Currency on Orders", description: "Store currency used at time of order", status: "done", notes: "currency column on orders table" },
+      { name: "Base Currency Setting", description: "Configure store base currency", status: "done", notes: "base_currency on store settings" },
+    ],
+  },
+  {
+    category: "Delivery Estimation",
+    icon: <Timer className="h-5 w-5" />,
+    features: [
+      { name: "Delivery Date Estimate", description: "Show estimated delivery date on product/cart", status: "done", notes: "DeliveryEstimate component with date calculation" },
+      { name: "Shipping Zone Timing", description: "Different delivery times per shipping zone", status: "done", notes: "Delivery days configured per shipping zone" },
+      { name: "Cutoff Time Logic", description: "Same-day dispatch if ordered before cutoff", status: "done", notes: "Cutoff time check for same-day processing" },
+      { name: "Weekend/Holiday Skip", description: "Skip weekends and holidays in delivery calculation", status: "done", notes: "Business days calculation excluding weekends" },
+    ],
+  },
+  {
+    category: "Feature Flags & Toggles",
+    icon: <ToggleLeft className="h-5 w-5" />,
+    features: [
+      { name: "Store Feature Toggles", description: "Enable/disable features per store", status: "done", notes: "Feature flags in store settings JSON" },
+      { name: "Addon Install/Uninstall", description: "Install addons to enable features", status: "done", notes: "store_addons table tracking installed addons" },
+      { name: "Maintenance Mode", description: "Put storefront in maintenance mode", status: "done", notes: "Maintenance mode toggle showing maintenance page" },
+      { name: "Password-Protected Storefront", description: "Require password to access storefront", status: "done", notes: "Password gate for pre-launch stores" },
+    ],
+  },
+  {
+    category: "Session & Security Management",
+    icon: <Fingerprint className="h-5 w-5" />,
+    features: [
+      { name: "Active Sessions List", description: "View all active login sessions", status: "done", notes: "Sessions page showing active sessions with device info" },
+      { name: "Remote Session Revoke", description: "Terminate a specific session remotely", status: "done", notes: "Revoke button per session" },
+      { name: "Login History", description: "View login history with IP and device", status: "done", notes: "Login attempts log with timestamps and locations" },
+      { name: "Password Change", description: "Change account password", status: "done", notes: "Password change form in account settings" },
+      { name: "API Key Management", description: "Create and manage REST API keys", status: "done", notes: "ApiKeys page with key generation, scopes, expiry" },
+    ],
+  },
+  {
+    category: "Drag & Drop UI Patterns",
+    icon: <Grip className="h-5 w-5" />,
+    features: [
+      { name: "Image Reorder DnD", description: "Drag to reorder product images", status: "done", notes: "Drag-and-drop reordering in ProductImageUpload" },
+      { name: "Category Sort Order", description: "Drag to reorder categories", status: "done", notes: "sort_order column on categories with DnD interface" },
+      { name: "Content Block Ordering", description: "Drag to reorder content blocks", status: "done", notes: "sort_order on content_blocks with drag interface" },
+      { name: "Menu Item Ordering", description: "Drag to reorder navigation menu items", status: "done", notes: "sort_order on menu items" },
+    ],
+  },
+  {
+    category: "Integration Webhooks & Sync",
+    icon: <Cable className="h-5 w-5" />,
+    features: [
+      { name: "Webhook URL Registration", description: "Register webhook endpoints", status: "done", notes: "Webhooks page with URL, events, secret configuration" },
+      { name: "Webhook Secret Signing", description: "HMAC signature verification for webhooks", status: "done", notes: "webhook-dispatcher signs payloads with store webhook secret" },
+      { name: "Webhook Delivery Log", description: "Log of webhook delivery attempts", status: "done", notes: "Delivery status, response code, retry count tracking" },
+      { name: "Webhook Retry on Failure", description: "Auto-retry failed webhook deliveries", status: "done", notes: "Exponential backoff retry for failed deliveries" },
+      { name: "Manual Webhook Test", description: "Send test payload to webhook URL", status: "done", notes: "Test button sends sample payload to verify endpoint" },
+    ],
+  },
+  {
+    category: "Storefront Performance",
+    icon: <Tv className="h-5 w-5" />,
+    features: [
+      { name: "Lazy Loading Images", description: "Images load on scroll for performance", status: "done", notes: "loading='lazy' on product images throughout storefront" },
+      { name: "React Query Caching", description: "Client-side data caching with React Query", status: "done", notes: "@tanstack/react-query with staleTime and cacheTime" },
+      { name: "Code Splitting", description: "Route-level code splitting with lazy imports", status: "done", notes: "React.lazy() with Suspense for route components" },
+      { name: "Optimistic Updates", description: "Instant UI updates before server confirms", status: "done", notes: "Cart and wishlist use optimistic updates" },
+      { name: "Debounced Search", description: "Debounced input for search to reduce API calls", status: "done", notes: "Search inputs debounced at 300ms" },
+    ],
+  },
+  {
+    category: "Onboarding & Setup Wizard",
+    icon: <Milestone className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Step Wizard", description: "Guided setup wizard for new stores", status: "done", notes: "Onboarding page with step-by-step store setup" },
+      { name: "Store Name & Details", description: "Enter basic store information", status: "done", notes: "Step 1: store name, contact email, phone" },
+      { name: "Currency & Region", description: "Set default currency and region", status: "done", notes: "Step 2: currency, country, timezone selection" },
+      { name: "First Product", description: "Add first product during onboarding", status: "done", notes: "Step 3: quick product creation form" },
+      { name: "Theme Selection", description: "Choose storefront theme during setup", status: "done", notes: "Step 4: theme template selection" },
+      { name: "Completion Redirect", description: "Redirect to dashboard after onboarding", status: "done", notes: "Navigate to /dashboard on completion" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
