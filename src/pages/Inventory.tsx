@@ -559,9 +559,9 @@ export default function Inventory() {
               </TableHeader>
               <TableBody>
                 {loadingProducts ? (
-                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={8}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : inventoryItems.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={8} className="text-center text-xs text-muted-foreground py-6">No inventory data</TableCell></TableRow>
                 ) : (
                   inventoryItems.map((p) => {
                     const stock = getVariantStock(p);
