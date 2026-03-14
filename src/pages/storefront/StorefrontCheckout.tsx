@@ -1271,16 +1271,34 @@ export default function StorefrontCheckout() {
                    {/* Payment Method */}
                    <div className="space-y-2 bg-muted/50 rounded-md p-3">
                      <p className="text-xs font-medium">Payment Method</p>
-                     <div className="flex gap-3">
-                       <label className="flex items-center gap-1.5 text-xs cursor-pointer">
-                         <input type="radio" name="payment_method" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} className="accent-primary" />
-                         Credit/Debit Card
-                       </label>
-                       <label className="flex items-center gap-1.5 text-xs cursor-pointer">
-                         <input type="radio" name="payment_method" value="cod" checked={paymentMethod === "cod"} onChange={() => setPaymentMethod("cod")} className="accent-primary" />
-                         Cash on Delivery
-                       </label>
-                     </div>
+                      <div className="flex flex-wrap gap-3">
+                        <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                          <input type="radio" name="payment_method" value="card" checked={paymentMethod === "card"} onChange={() => setPaymentMethod("card")} className="accent-primary" />
+                          Credit/Debit Card
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                          <input type="radio" name="payment_method" value="bank_transfer" checked={paymentMethod === "bank_transfer"} onChange={() => setPaymentMethod("bank_transfer")} className="accent-primary" />
+                          Bank Transfer
+                        </label>
+                        <label className="flex items-center gap-1.5 text-xs cursor-pointer">
+                          <input type="radio" name="payment_method" value="cod" checked={paymentMethod === "cod"} onChange={() => setPaymentMethod("cod")} className="accent-primary" />
+                          Cash on Delivery
+                        </label>
+                      </div>
+                      {paymentMethod === "bank_transfer" && (
+                        <div className="mt-2 p-3 bg-accent/50 rounded-md border border-border text-xs space-y-1.5">
+                          <p className="font-medium text-foreground">Bank Transfer Details</p>
+                          <p className="text-muted-foreground">Please transfer the total amount to:</p>
+                          <div className="grid grid-cols-2 gap-1 text-muted-foreground">
+                            <span>Bank:</span><span className="font-medium text-foreground">Commonwealth Bank</span>
+                            <span>Account Name:</span><span className="font-medium text-foreground">Store Pty Ltd</span>
+                            <span>BSB:</span><span className="font-medium text-foreground">062-000</span>
+                            <span>Account No:</span><span className="font-medium text-foreground">1234 5678</span>
+                            <span>Reference:</span><span className="font-medium text-foreground">Your Order Number</span>
+                          </div>
+                          <p className="text-muted-foreground italic">Your order will be processed once payment is confirmed (1-2 business days).</p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Age Verification Gate */}
