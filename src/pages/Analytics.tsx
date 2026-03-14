@@ -105,6 +105,8 @@ export default function Analytics() {
   const [salesByRegion, setSalesByRegion] = useState<{ region: string; orders: number; revenue: number }[]>([]);
   const [returnAnalytics, setReturnAnalytics] = useState<{ byReason: { reason: string; count: number; amount: number }[]; totalReturns: number; totalRefunded: number }>({ byReason: [], totalReturns: 0, totalRefunded: 0 });
   const [repeatPurchaseRate, setRepeatPurchaseRate] = useState<{ rate: number; totalCustomers: number; repeatCustomers: number }>({ rate: 0, totalCustomers: 0, repeatCustomers: 0 });
+  const [rfmData, setRfmData] = useState<{ segment: string; count: number; avgMonetary: number }[]>([]);
+  const [salesByGroup, setSalesByGroup] = useState<{ group: string; orders: number; revenue: number }[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -428,6 +430,53 @@ export default function Analytics() {
         totalCustomers: totalWithOrders,
         repeatCustomers: repeatBuyers,
       });
+
+      // RFM Segmentation
+      const now = new Date();
+      const customerRfm: Record<string, { lastOrder: Date; frequency: number; monetary: number }> = {};
+      (orders as any[]).forEach((o: any) => {
+        if (!o.customer_id) return;
+        const d = new Date(o.created_at);
+        if (!customerRfm[o.customer_id]) customerRfm[o.customer_id] = { lastOrder: d, frequency: 0, monetary: 0 };
+        const entry = customerRfm[o.customer_id];
+        if (d > entry.lastOrder) entry.lastOrder = d;
+        entry.frequency++;
+        entry.monetary += Number(o.total || 0);
+      });
+      const rfmEntries = Object.values(customerRfm);
+      const getRScore = (days: number) => days <= 30 ? 5 : days <= 60 ? 4 : days <= 90 ? 3 : days <= 180 ? 2 : 1;
+      const getFScore = (f: number) => f >= 10 ? 5 : f >= 5 ? 4 : f >= 3 ? 3 : f >= 2 ? 2 : 1;
+      const getMScore = (m: number, avg: number) => m >= avg * 3 ? 5 : m >= avg * 1.5 ? 4 : m >= avg ? 3 : m >= avg * 0.5 ? 2 : 1;
+      const avgM = rfmEntries.length > 0 ? rfmEntries.reduce((s, e) => s + e.monetary, 0) / rfmEntries.length : 1;
+      const segmentMap: Record<string, { count: number; totalM: number }> = {};
+      rfmEntries.forEach(e => {
+        const daysSince = Math.floor((now.getTime() - e.lastOrder.getTime()) / 86400000);
+        const r = getRScore(daysSince);
+        const f = getFScore(e.frequency);
+        const m = getMScore(e.monetary, avgM);
+        const avg = (r + f + m) / 3;
+        const seg = avg >= 4 ? "Champions" : avg >= 3 ? "Loyal" : avg >= 2.3 ? "Potential" : avg >= 1.5 ? "At Risk" : "Lost";
+        if (!segmentMap[seg]) segmentMap[seg] = { count: 0, totalM: 0 };
+        segmentMap[seg].count++;
+        segmentMap[seg].totalM += e.monetary;
+      });
+      setRfmData(Object.entries(segmentMap).map(([segment, d]) => ({ segment, count: d.count, avgMonetary: d.count > 0 ? d.totalM / d.count : 0 })).sort((a, b) => b.count - a.count));
+
+      // Sales by Customer Group
+      const { data: custData } = await supabase.from("customers").select("id, segment, customer_group_id").eq("store_id", currentStore.id);
+      const { data: groupsData } = await supabase.from("customer_groups").select("id, name").eq("store_id", currentStore.id);
+      const groupNameMap: Record<string, string> = {};
+      (groupsData || []).forEach((g: any) => { groupNameMap[g.id] = g.name; });
+      const custGroupMap: Record<string, string> = {};
+      (custData || []).forEach((c: any) => { custGroupMap[c.id] = c.customer_group_id ? (groupNameMap[c.customer_group_id] || "Unknown Group") : (c.segment || "No Group"); });
+      const groupSales: Record<string, { orders: number; revenue: number }> = {};
+      (orders as any[]).forEach((o: any) => {
+        const grp = o.customer_id ? (custGroupMap[o.customer_id] || "No Group") : "Guest";
+        if (!groupSales[grp]) groupSales[grp] = { orders: 0, revenue: 0 };
+        groupSales[grp].orders++;
+        groupSales[grp].revenue += Number(o.total || 0);
+      });
+      setSalesByGroup(Object.entries(groupSales).map(([group, d]) => ({ group, ...d })).sort((a, b) => b.revenue - a.revenue));
 
       setLoadingTopProducts(false);
     };
@@ -1180,6 +1229,67 @@ export default function Analytics() {
                   </div>
                 </div>
               </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* RFM Segmentation */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Customer RFM Segmentation</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[120px]" /> : rfmData.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">No customer data available.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Segment</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Customers</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Avg Spend</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rfmData.map(row => (
+                    <TableRow key={row.segment} className="text-xs">
+                      <TableCell className="py-1.5 font-medium">
+                        <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${row.segment === "Champions" ? "bg-green-500" : row.segment === "Loyal" ? "bg-blue-500" : row.segment === "Potential" ? "bg-yellow-500" : row.segment === "At Risk" ? "bg-orange-500" : "bg-red-500"}`} />
+                        {row.segment}
+                      </TableCell>
+                      <TableCell className="py-1.5 text-right">{row.count}</TableCell>
+                      <TableCell className="py-1.5 text-right">${row.avgMonetary.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sales by Customer Group */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Customer Group</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[120px]" /> : salesByGroup.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">No data.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Group</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {salesByGroup.map(row => (
+                    <TableRow key={row.group} className="text-xs">
+                      <TableCell className="py-1.5 font-medium">{row.group}</TableCell>
+                      <TableCell className="py-1.5 text-right">{row.orders}</TableCell>
+                      <TableCell className="py-1.5 text-right">${row.revenue.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
