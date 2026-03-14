@@ -93,6 +93,23 @@ export default function StorefrontCheckout() {
   const [creditTerms, setCreditTerms] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
+  
+  // Cart reservation timer (15 min)
+  const RESERVATION_MINUTES = 15;
+  const [reservationEnd] = useState(() => Date.now() + RESERVATION_MINUTES * 60 * 1000);
+  const [timeLeft, setTimeLeft] = useState(RESERVATION_MINUTES * 60);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((reservationEnd - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        toast.error("Your cart reservation has expired. Please re-add items.");
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [reservationEnd]);
 
   useEffect(() => {
     async function loadData() {

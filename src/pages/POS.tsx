@@ -515,6 +515,14 @@ export default function POS() {
                 <Wifi className="h-3 w-3" /> Syncing {offlineQueue.length}...
               </Badge>
             )}
+            {currentStaff && (
+              <Badge variant="outline" className="gap-1">
+                <User className="h-3 w-3" /> {currentStaff}
+              </Badge>
+            )}
+            <Button variant="outline" size="sm" onClick={() => setShowPinLogin(true)} className="gap-1.5">
+              <KeyRound className="h-3.5 w-3.5" /> Staff
+            </Button>
             <Button variant="outline" size="sm" onClick={openCashDrawer} className="gap-2">
               <DollarSign className="h-4 w-4" /> Open Drawer
             </Button>
