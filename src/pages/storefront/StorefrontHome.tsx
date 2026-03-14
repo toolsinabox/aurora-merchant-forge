@@ -104,17 +104,19 @@ export default function StorefrontHome() {
         </section>
 
         {/* Trust Badges */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-8 sm:my-10">
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-8 sm:my-10 stagger-children">
           {[
             { icon: Truck, label: "Free Shipping", desc: "On qualifying orders" },
             { icon: ShieldCheck, label: "Secure Checkout", desc: "100% encrypted" },
             { icon: RotateCcw, label: "Easy Returns", desc: "Hassle-free process" },
             { icon: Star, label: "Quality Promise", desc: "Curated products" },
           ].map((badge) => (
-            <div key={badge.label} className="flex flex-col items-center text-center p-4 rounded-xl bg-card border hover:shadow-sm transition-shadow">
-              <badge.icon className="h-6 w-6 text-primary mb-2" />
+            <div key={badge.label} className="card-hover flex flex-col items-center text-center p-5 rounded-xl bg-card border group cursor-default">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                <badge.icon className="h-5 w-5 text-primary" />
+              </div>
               <p className="text-sm font-semibold">{badge.label}</p>
-              <p className="text-xs text-muted-foreground">{badge.desc}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{badge.desc}</p>
             </div>
           ))}
         </section>
@@ -156,9 +158,9 @@ export default function StorefrontHome() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
               {products.map((p) => (
-                <div key={p.id} className="group relative">
+                <div key={p.id} className="group relative card-hover rounded-xl border bg-card overflow-hidden">
                   <Link to={`${basePath}/product/${p.id}`}>
-                    <div className="aspect-square rounded-xl overflow-hidden bg-muted border mb-3 relative">
+                    <div className="aspect-square overflow-hidden bg-muted relative">
                       {p.images?.[0] ? (
                         <img
                           src={getImageUrl(p.images[0])}
@@ -170,24 +172,26 @@ export default function StorefrontHome() {
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No image</div>
                       )}
                       {p.compare_at_price && p.compare_at_price > p.price && (
-                        <span className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-md">
+                        <span className="absolute top-2.5 left-2.5 bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-md shadow-sm">
                           Sale
                         </span>
                       )}
                     </div>
-                    <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2 leading-snug">{p.title}</h3>
-                    <div className="flex items-baseline gap-2 mt-1">
-                      <p className="text-sm font-bold">${Number(p.price).toFixed(2)}</p>
-                      {p.compare_at_price && p.compare_at_price > p.price && (
-                        <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
-                      )}
+                    <div className="p-3">
+                      <h3 className="text-sm font-medium group-hover:text-primary transition-colors line-clamp-2 leading-snug">{p.title}</h3>
+                      <div className="flex items-baseline gap-2 mt-1.5">
+                        <p className="text-sm font-bold">${Number(p.price).toFixed(2)}</p>
+                        {p.compare_at_price && p.compare_at_price > p.price && (
+                          <p className="text-xs text-muted-foreground line-through">${Number(p.compare_at_price).toFixed(2)}</p>
+                        )}
+                      </div>
                     </div>
                   </Link>
-                  <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200">
                     <Button
                       variant="secondary"
                       size="icon"
-                      className="h-8 w-8 rounded-full shadow-sm"
+                      className="h-8 w-8 rounded-full shadow-md backdrop-blur-sm bg-card/80"
                       onClick={() => { toggleItem(p.id, store?.id); }}
                     >
                       <Heart className={`h-3.5 w-3.5 ${isWishlisted(p.id) ? "fill-destructive text-destructive" : ""}`} />
@@ -195,7 +199,7 @@ export default function StorefrontHome() {
                     <Button
                       variant="secondary"
                       size="icon"
-                      className="h-8 w-8 rounded-full shadow-sm"
+                      className="h-8 w-8 rounded-full shadow-md backdrop-blur-sm bg-card/80"
                       onClick={() => {
                         addItem({
                           product_id: p.id,
