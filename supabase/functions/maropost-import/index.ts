@@ -601,11 +601,11 @@ serve(async (req) => {
           }
 
           // Import order line items
-          if (o.OrderLine) {
+          if (o.OrderLine && !dry_run && orderId !== "dry-run") {
             const lines = Array.isArray(o.OrderLine) ? o.OrderLine : [o.OrderLine];
             for (const line of lines) {
               await supabase.from("order_items").insert({
-                order_id: inserted.id,
+                order_id: orderId,
                 store_id,
                 title: line.ProductName || line.ItemDescription || "Item",
                 sku: line.SKU || null,
@@ -617,11 +617,11 @@ serve(async (req) => {
           }
 
           // Import order payments
-          if (o.OrderPayment) {
+          if (o.OrderPayment && !dry_run && orderId !== "dry-run") {
             const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
             for (const pay of payments) {
               await supabase.from("order_payments").insert({
-                order_id: inserted.id,
+                order_id: orderId,
                 store_id,
                 amount: parseFloat(pay.Amount) || 0,
                 payment_method: pay.PaymentMethod || "unknown",
@@ -630,7 +630,7 @@ serve(async (req) => {
             }
           }
 
-          await logEntity("order", o.OrderID, inserted.id);
+          await logEntity("order", o.OrderID, orderId);
           imported++;
         } catch (err: any) {
           failed++;
