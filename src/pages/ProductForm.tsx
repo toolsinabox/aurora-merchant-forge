@@ -289,7 +289,7 @@ export default function ProductForm() {
         </div>
 
         <Tabs defaultValue="general" className="space-y-3">
-          <TabsList className="h-8 flex-wrap">
+          <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="general" className="text-xs h-7">General</TabsTrigger>
             <TabsTrigger value="content" className="text-xs h-7">Content</TabsTrigger>
             <TabsTrigger value="pricing" className="text-xs h-7">Pricing</TabsTrigger>
