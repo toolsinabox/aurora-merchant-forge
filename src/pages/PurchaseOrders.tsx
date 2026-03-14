@@ -36,7 +36,7 @@ const emptyForm: POForm = {
 };
 
 const statusColors: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
-  draft: "outline", sent: "secondary", partial: "secondary", received: "default", closed: "default", cancelled: "destructive",
+  draft: "outline", pending_approval: "secondary", sent: "secondary", partial: "secondary", received: "default", closed: "default", cancelled: "destructive",
 };
 
 export default function PurchaseOrders() {
