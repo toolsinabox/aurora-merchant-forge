@@ -57,6 +57,38 @@ export default function PickPack() {
   const [waveSelectedOrders, setWaveSelectedOrders] = useState<Record<string, boolean>>({});
   const [waveName, setWaveName] = useState("");
 
+  // Zone state
+  const [zones, setZones] = useState<WarehouseZone[]>(() => {
+    try { return JSON.parse(localStorage.getItem("warehouse_zones") || "[]"); } catch { return []; }
+  });
+  const [zoneForm, setZoneForm] = useState({ name: "", description: "", assignedPicker: "", binPrefixes: "" });
+
+  const saveZones = (updated: WarehouseZone[]) => { setZones(updated); localStorage.setItem("warehouse_zones", JSON.stringify(updated)); };
+  const addZone = () => {
+    if (!zoneForm.name.trim()) { toast.error("Zone name required"); return; }
+    const zone: WarehouseZone = { id: crypto.randomUUID(), name: zoneForm.name.trim(), description: zoneForm.description, assignedPicker: zoneForm.assignedPicker, binPrefixes: zoneForm.binPrefixes.split(",").map(s => s.trim()).filter(Boolean) };
+    saveZones([...zones, zone]);
+    setZoneForm({ name: "", description: "", assignedPicker: "", binPrefixes: "" });
+    toast.success(`Zone "${zone.name}" created`);
+  };
+  const deleteZone = (id: string) => { saveZones(zones.filter(z => z.id !== id)); toast.success("Zone deleted"); };
+
+  // Carton state
+  const [cartons, setCartons] = useState<CartonType[]>(() => {
+    try { return JSON.parse(localStorage.getItem("carton_types") || "[]"); } catch { return []; }
+  });
+  const [cartonForm, setCartonForm] = useState({ name: "", lengthCm: "", widthCm: "", heightCm: "", maxWeightKg: "" });
+
+  const saveCartons = (updated: CartonType[]) => { setCartons(updated); localStorage.setItem("carton_types", JSON.stringify(updated)); };
+  const addCarton = () => {
+    if (!cartonForm.name.trim()) { toast.error("Carton name required"); return; }
+    const c: CartonType = { id: crypto.randomUUID(), name: cartonForm.name.trim(), lengthCm: Number(cartonForm.lengthCm) || 0, widthCm: Number(cartonForm.widthCm) || 0, heightCm: Number(cartonForm.heightCm) || 0, maxWeightKg: Number(cartonForm.maxWeightKg) || 0 };
+    saveCartons([...cartons, c]);
+    setCartonForm({ name: "", lengthCm: "", widthCm: "", heightCm: "", maxWeightKg: "" });
+    toast.success(`Carton "${c.name}" added`);
+  };
+  const deleteCarton = (id: string) => { saveCartons(cartons.filter(c => c.id !== id)); toast.success("Carton deleted"); };
+
   const saveWaves = (updated: PickWave[]) => {
     setWaves(updated);
     localStorage.setItem("pick_waves", JSON.stringify(updated));
