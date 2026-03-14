@@ -37,10 +37,10 @@ interface Refund {
 }
 
 const mockRefunds: Refund[] = [
-  { id: "1", refund_number: "RFD-001", order_id: "o1", order_number: "ORD-1042", customer_name: "Sarah Chen", amount: 89.99, reason: "Item not as described", refund_method: "original_payment", status: "processed", processed_by: "admin@store.com", processed_at: "2026-03-12T10:00:00Z", created_at: "2026-03-10T14:30:00Z" },
-  { id: "2", refund_number: "RFD-002", order_id: "o2", order_number: "ORD-1038", customer_name: "James Wilson", amount: 249.50, reason: "Damaged in transit", refund_method: "store_credit", status: "approved", processed_by: null, processed_at: null, created_at: "2026-03-11T09:15:00Z" },
-  { id: "3", refund_number: "RFD-003", order_id: "o3", order_number: "ORD-1051", customer_name: "Maria Lopez", amount: 34.00, reason: "Wrong size", refund_method: "original_payment", status: "pending", processed_by: null, processed_at: null, created_at: "2026-03-13T16:45:00Z" },
-  { id: "4", refund_number: "RFD-004", order_id: "o4", order_number: "ORD-1029", customer_name: "Tom Baker", amount: 150.00, reason: "Changed mind", refund_method: "manual", status: "rejected", processed_by: "admin@store.com", processed_at: "2026-03-12T11:00:00Z", created_at: "2026-03-09T08:20:00Z" },
+  { id: "1", refund_number: "RFD-001", order_id: "o1", order_number: "ORD-1042", customer_name: "Sarah Chen", amount: 89.99, reason: "Item not as described", refund_method: "original_payment", status: "processed", processed_by: "admin@store.com", processed_at: "2026-03-12T10:00:00Z", created_at: "2026-03-10T14:30:00Z", refund_type: "full" },
+  { id: "2", refund_number: "RFD-002", order_id: "o2", order_number: "ORD-1038", customer_name: "James Wilson", amount: 249.50, reason: "Damaged in transit", refund_method: "store_credit", status: "approved", processed_by: null, processed_at: null, created_at: "2026-03-11T09:15:00Z", refund_type: "full" },
+  { id: "3", refund_number: "RFD-003", order_id: "o3", order_number: "ORD-1051", customer_name: "Maria Lopez", amount: 34.00, reason: "Wrong size", refund_method: "original_payment", status: "pending", processed_by: null, processed_at: null, created_at: "2026-03-13T16:45:00Z", refund_type: "partial", line_items: [{ title: "Blue T-Shirt (M)", quantity: 1, unit_price: 34.00, refund_amount: 34.00 }] },
+  { id: "4", refund_number: "RFD-004", order_id: "o4", order_number: "ORD-1029", customer_name: "Tom Baker", amount: 150.00, reason: "Changed mind", refund_method: "manual", status: "rejected", processed_by: "admin@store.com", processed_at: "2026-03-12T11:00:00Z", created_at: "2026-03-09T08:20:00Z", refund_type: "partial", line_items: [{ title: "Wireless Headphones", quantity: 1, unit_price: 199.99, refund_amount: 150.00 }] },
 ];
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive"; icon: React.ReactNode }> = {
