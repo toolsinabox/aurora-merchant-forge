@@ -138,6 +138,10 @@ export default function Coupons() {
     (c.description || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const activeCount = (coupons as any[]).filter(c => c.is_active).length;
+  const expiredCount = (coupons as any[]).filter(c => c.expires_at && new Date(c.expires_at) < new Date()).length;
+  const totalUsed = (coupons as any[]).reduce((s, c) => s + (c.used_count || 0), 0);
+
   return (
     <AdminLayout>
       <div className="space-y-4">
