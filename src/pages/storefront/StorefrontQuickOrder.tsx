@@ -144,7 +144,17 @@ export default function StorefrontQuickOrder() {
     <StorefrontLayout>
       <div className="max-w-4xl mx-auto py-8 px-4">
         <h1 className="text-2xl font-bold mb-2">Quick Order</h1>
-        <p className="text-muted-foreground mb-6">Enter SKUs or barcodes to quickly add multiple products to your cart.</p>
+        <p className="text-muted-foreground mb-6">Enter SKUs or barcodes to quickly add multiple products to your cart, or upload a CSV.</p>
+
+        <div className="flex gap-2 mb-4">
+          <label className="cursor-pointer">
+            <input type="file" accept=".csv,.tsv,.txt" className="hidden" onChange={handleCsvUpload} />
+            <Button variant="outline" size="sm" className="gap-1" asChild>
+              <span><Upload className="h-4 w-4" /> Upload CSV</span>
+            </Button>
+          </label>
+          <p className="text-xs text-muted-foreground self-center">Format: SKU, Quantity (one per line)</p>
+        </div>
 
         <Card>
           <CardHeader className="pb-2">
