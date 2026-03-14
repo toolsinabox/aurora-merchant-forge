@@ -8107,7 +8107,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "COGS Report", description: "Cost of goods sold over period", status: "done", notes: "Analytics page Profit Margin by Product section" },
       { name: "Gross Margin Report", description: "Gross margin by product/category/brand", status: "done", notes: "Analytics page Profit Margin table with margin % column" },
       { name: "ABC Analysis (Inventory)", description: "Classify products as A/B/C by sales contribution", status: "done", notes: "InventoryReports ABC tab" },
-      { name: "Customer Cohort Analysis", description: "Retention analysis by signup cohort", status: "not_started" },
+      { name: "Customer Cohort Analysis", description: "Retention analysis by signup cohort", status: "done", notes: "Analytics page cohort table" },
       { name: "Customer RFM Segmentation", description: "Recency/Frequency/Monetary analysis", status: "not_started" },
       { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel", status: "done", notes: "Analytics page Conversion Funnel with percentage visualization" },
       { name: "Cart Abandonment Rate Report", description: "Abandonment rate trends over time", status: "done", notes: "AbandonedCarts page" },
