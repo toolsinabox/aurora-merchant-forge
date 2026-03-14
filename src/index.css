@@ -248,6 +248,16 @@
     @apply flex flex-wrap gap-2;
   }
 
+  /* Make admin content area responsive — page headers auto-stack on mobile */
+  .admin-main > div > div:first-child:has(> div > h1) {
+    @apply flex flex-col gap-2;
+  }
+  @media (min-width: 640px) {
+    .admin-main > div > div:first-child:has(> div > h1) {
+      @apply flex-row items-center justify-between;
+    }
+  }
+
   /* Horizontal scroll wrapper for tables on mobile */
   .table-scroll {
     @apply overflow-x-auto -mx-0;
