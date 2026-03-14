@@ -8602,7 +8602,7 @@ const returnPortalFeatures: FeatureCategory[] = [
       { name: "Exchange Workflow", description: "Exchange returned item for different variant/product", status: "not_started" },
       { name: "Return Restocking Fee", description: "Deduct restocking fee from refund", status: "not_started" },
       { name: "Return Stock Re-Integration", description: "Auto-add returned stock back to inventory", status: "not_started" },
-      { name: "Return Analytics", description: "Track return rates, reasons, costs", status: "not_started" },
+      { name: "Return Analytics", description: "Track return rates, reasons, costs", status: "done", notes: "Analytics page Return Analytics" },
       { name: "Warranty Claim Tracking", description: "Track warranty claims separate from returns", status: "not_started" },
     ],
   },
