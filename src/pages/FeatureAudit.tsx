@@ -8338,7 +8338,7 @@ const multimarketDeepFeatures: FeatureCategory[] = [
       { name: "Regional Shipping Zones", description: "Different shipping zones per market", status: "done", notes: "shipping_zones table" },
       { name: "Country-Based Redirects", description: "Auto-redirect visitors to regional store", status: "not_started" },
       { name: "Geolocation-Based Currency", description: "Auto-select currency based on visitor IP", status: "not_started" },
-      { name: "Multi-Domain / Subdomain per Market", description: "Separate domain per regional market", status: "partial" },
+      { name: "Multi-Domain / Subdomain per Market", description: "Separate domain per regional market", status: "done", notes: "subdomain.ts routing with per-store custom_domain support, multimarket_settings per region" },
       { name: "Hreflang Tags (SEO)", description: "Hreflang tags for multi-language SEO", status: "not_started" },
       { name: "Regional Product Availability", description: "Show/hide products per market region", status: "partial" },
     ],
