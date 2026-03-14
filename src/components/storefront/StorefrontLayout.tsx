@@ -52,6 +52,8 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
       if (s) {
         setStoreId(s.id);
+        // Check maintenance mode
+        if ((s as any).maintenance_mode) { setMaintenanceMode(true); return; }
         if ((s as any).social_links) setSocialLinks((s as any).social_links as Record<string, string>);
         // Banner scheduling
         const bt = (s as any).banner_text;
