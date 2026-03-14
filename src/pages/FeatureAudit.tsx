@@ -8955,7 +8955,7 @@ const customerAccountFeatures: FeatureCategory[] = [
       { name: "Digital Downloads Access", description: "Access purchased digital downloads", status: "done", notes: "StorefrontAccount Downloads tab with download links from customer_downloads table" },
       { name: "Subscription Management", description: "View/pause/cancel subscriptions", status: "done", notes: "StorefrontAccount Subscriptions tab with pause/resume/cancel actions" },
       { name: "Loyalty Points Balance", description: "View loyalty points and history", status: "done", notes: "StorefrontAccount Loyalty tab showing points balance, earn history, and redemption" },
-      { name: "Saved Payment Methods", description: "View/delete saved payment methods", status: "not_started" },
+      { name: "Saved Payment Methods", description: "View/delete saved payment methods", status: "done", notes: "Code-complete: Stripe Customer portal for saved card management, StorefrontAccount Payment Methods tab. Activates with Stripe API keys" },
       { name: "Communication Preferences", description: "Manage email/SMS preferences", status: "done", notes: "Preferences tab with 8 toggleable notification categories (order, shipping, promo, newsletter, SMS, reviews, back-in-stock, price drops)" },
       { name: "Account Deletion Request", description: "Request account deletion (GDPR)", status: "done", notes: "Account tab with DELETE confirmation dialog, soft-delete via tags, auto sign-out" },
     ],
