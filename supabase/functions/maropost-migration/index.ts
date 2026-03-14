@@ -7,12 +7,13 @@ const corsHeaders = {
 };
 
 interface MaropostRequest {
-  action: string; // test_connection, get_products, get_categories, get_orders, get_customers, get_content, get_currency, get_shipping, get_suppliers, get_vouchers, get_rma, get_payments, get_warehouses
+  action: string;
   store_domain: string;
   api_key: string;
   filter?: Record<string, unknown>;
   page?: number;
   limit?: number;
+  scan_mode?: boolean; // Use minimal output selectors for fast counting
 }
 
 const ACTION_MAP: Record<string, string> = {
@@ -31,6 +32,17 @@ const ACTION_MAP: Record<string, string> = {
   get_warehouses: 'GetWarehouse',
 };
 
+// Minimal selectors for scanning/counting (fast, small response)
+const SCAN_SELECTORS: Record<string, string[]> = {
+  get_products: ["ID", "Name", "ParentSKU"],
+  get_categories: ["CategoryID", "CategoryName"],
+  get_customers: ["Username", "EmailAddress"],
+  get_orders: ["OrderID", "GrandTotal"],
+  get_content: ["ContentID", "ContentName"],
+  test_connection: ["ID", "Name", "Model"],
+};
+
+// Full selectors for actual data import
 const OUTPUT_SELECTORS: Record<string, string[]> = {
   get_products: [
     "ParentSKU", "ID", "Brand", "Model", "Name", "PrimarySupplier",
@@ -86,13 +98,29 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
   test_connection: ["ID", "Name", "Model"],
 };
 
+// Max page sizes per entity (Maropost has response size limits with large OutputSelectors)
+const MAX_PAGE_SIZE: Record<string, number> = {
+  get_products: 20,    // Products have 60+ fields, must keep small
+  get_categories: 200,
+  get_customers: 100,
+  get_orders: 50,      // Orders include line items, medium size
+  get_content: 100,
+  get_vouchers: 100,
+  get_suppliers: 100,
+  get_rma: 100,
+  get_payments: 100,
+  get_warehouses: 100,
+  get_shipping: 100,
+  get_currency: 100,
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { action, store_domain, api_key, filter, page = 0, limit = 100 }: MaropostRequest = await req.json();
+    const { action, store_domain, api_key, filter, page = 0, limit = 100, scan_mode = false }: MaropostRequest = await req.json();
 
     if (!store_domain || !api_key) {
       return new Response(JSON.stringify({ error: "store_domain and api_key are required" }), {
@@ -107,14 +135,39 @@ serve(async (req) => {
       });
     }
 
-    // Build the Maropost API request
-    const outputSelector = OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection;
+    // Use scan selectors for counting (small response) vs full selectors for import
+    const outputSelector = scan_mode
+      ? (SCAN_SELECTORS[action] || SCAN_SELECTORS.test_connection)
+      : (OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection);
+
+    // Enforce max page sizes per entity to avoid Maropost response size limits
+    const maxLimit = MAX_PAGE_SIZE[action] || 100;
+    const effectiveLimit = Math.min(limit, maxLimit);
     
+    // Maropost API requires specific filter keys per entity type to return data
+    const DEFAULT_FILTERS: Record<string, Record<string, unknown>> = {
+      get_products: { IsActive: ["True"] },
+      get_categories: { Active: ["True"] },
+      get_customers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
+      get_orders: { DatePlacedFrom: "2000-01-01 00:00:00", DatePlacedTo: "2030-01-01 00:00:00" },
+      get_content: { Active: ["True"] },
+      get_vouchers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
+      get_suppliers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
+      get_rma: { DateIssuedFrom: "2000-01-01 00:00:00", DateIssuedTo: "2030-01-01 00:00:00" },
+      get_payments: { DatePaidFrom: "2000-01-01 00:00:00", DatePaidTo: "2030-01-01 00:00:00" },
+      get_warehouses: { WarehouseID: ["1","2","3","4","5","6","7","8","9","10"] },
+      get_shipping: {},
+      get_currency: {},
+    };
+
+    const defaultFilter = DEFAULT_FILTERS[action] || {};
+    const mergedFilter = { ...defaultFilter, ...filter };
+
     const requestBody: Record<string, unknown> = {
       Filter: {
-        ...filter,
+        ...mergedFilter,
         Page: String(page),
-        Limit: String(limit),
+        Limit: String(effectiveLimit),
         OutputSelector: outputSelector,
       },
     };
@@ -134,6 +187,8 @@ serve(async (req) => {
     const apiUrl = `${domain}/do/WS/NetoAPI`;
 
     console.log(`Maropost API call: ${netoAction} to ${apiUrl}`);
+    console.log(`Request body: ${JSON.stringify(requestBody)}`);
+    console.log(`Scan mode: ${scan_mode}, Effective limit: ${effectiveLimit}, Max limit: ${maxLimit}`);
 
     const response = await fetch(apiUrl, {
       method: 'POST',

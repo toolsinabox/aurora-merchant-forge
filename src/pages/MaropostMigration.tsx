@@ -67,7 +67,8 @@ const IMPORT_ACTION_MAP: Record<string, string> = {
   templates: "import_theme_css", payments: "import_orders", // payments attached to orders
 };
 
-const ITEMS_PER_PAGE = 100;
+const ITEMS_PER_PAGE = 20; // Maropost API has response size limits, products especially need small pages
+const SCAN_PAGE_SIZE = 500; // Scan mode uses minimal fields, can handle larger pages
 
 export default function MaropostMigration() {
   const [step, setStep] = useState<MigrationStep>("connect");
@@ -131,34 +132,50 @@ export default function MaropostMigration() {
     for (const entity of MIGRATION_ENTITIES) {
       try {
         addLog(`Scanning ${entity.label}...`);
+        // Use a small page to detect presence, but let the edge function handle filters
         const { data } = await supabase.functions.invoke("maropost-migration", {
           body: {
             action: FETCH_ACTION_MAP[entity.entity] || "test_connection",
             store_domain: storeDomain, api_key: apiKey,
-            filter: { Limit: "1", Page: "0" },
+            page: 0,
+            limit: 10,
           },
         });
 
         const responseData = data?.data;
         let count = 0;
         if (responseData) {
-          const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime");
+          const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
           if (keys.length > 0) {
             const items = responseData[keys[0]];
             if (Array.isArray(items)) count = items.length;
-            else if (items) count = 1;
-            // Estimate real count (API returned 1 item, likely more)
-            if (count > 0) {
-              // Try to detect actual count from response headers or messages
-              const totalField = responseData.Messages?.Total || responseData.Total;
-              count = totalField ? parseInt(totalField) : count * 100; // estimate
+            else if (items && typeof items === "object") count = 1;
+            // If we got the max (10), there are likely more pages
+            if (count >= 10) {
+              // Fetch a larger page to better estimate
+              const { data: bigPage } = await supabase.functions.invoke("maropost-migration", {
+                body: {
+                  action: FETCH_ACTION_MAP[entity.entity] || "test_connection",
+                  store_domain: storeDomain, api_key: apiKey,
+                  page: 0, limit: 1000,
+                },
+              });
+              const bigData = bigPage?.data;
+              if (bigData) {
+                const bKeys = Object.keys(bigData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
+                if (bKeys.length > 0) {
+                  const bItems = bigData[bKeys[0]];
+                  count = Array.isArray(bItems) ? bItems.length : count;
+                }
+              }
             }
           }
         }
 
-        addLog(`  → ${entity.label}: ~${count} records`);
-        scannedEntities.push({ ...entity, count, selected: count > 0, status: "pending", imported: 0, failed: 0, errors: [], pages: Math.ceil(count / ITEMS_PER_PAGE) });
-      } catch {
+        addLog(`  → ${entity.label}: ${count} records found`);
+        scannedEntities.push({ ...entity, count, selected: count > 0, status: "pending", imported: 0, failed: 0, errors: [], pages: Math.max(1, Math.ceil(count / ITEMS_PER_PAGE)) });
+      } catch (err: any) {
+        addLog(`  → ${entity.label}: scan failed (${err.message})`);
         scannedEntities.push({ ...entity, count: 0, selected: false, status: "pending", imported: 0, failed: 0, errors: [], pages: 0 });
       }
     }
@@ -184,7 +201,8 @@ export default function MaropostMigration() {
         body: {
           action: FETCH_ACTION_MAP[entity] || "test_connection",
           store_domain: storeDomain, api_key: apiKey,
-          filter: {}, page, limit: ITEMS_PER_PAGE,
+          page, limit: ITEMS_PER_PAGE,
+          // Don't pass scan_mode - we want full data for import
         },
       });
 
@@ -192,12 +210,13 @@ export default function MaropostMigration() {
 
       const responseData = data?.data;
       if (responseData) {
-        const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime");
+        const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
         if (keys.length > 0) {
           const items = responseData[keys[0]];
           if (Array.isArray(items) && items.length > 0) {
             allItems = [...allItems, ...items];
             addLog(`  Fetched page ${page + 1}: ${items.length} ${entity}`);
+            // If we got fewer items than the page size, we've reached the end
             if (items.length < ITEMS_PER_PAGE) hasMore = false;
           } else {
             hasMore = false;
@@ -209,8 +228,8 @@ export default function MaropostMigration() {
         hasMore = false;
       }
       page++;
-      // Safety: max 50 pages (5000 items)
-      if (page >= 50) { addLog(`  ⚠ Reached 50-page limit for ${entity}`); break; }
+      // Safety: max 200 pages
+      if (page >= 200) { addLog(`  ⚠ Reached 200-page limit for ${entity}`); break; }
     }
 
     return allItems;
