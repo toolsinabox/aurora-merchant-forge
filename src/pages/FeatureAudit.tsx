@@ -7563,7 +7563,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Barcode Scanner Integration", description: "Support USB/Bluetooth barcode scanners for pick/pack/receive", status: "done", notes: "BarcodeScanner component" },
       { name: "Mobile Warehouse App", description: "Responsive mobile UI for warehouse operations", status: "partial", notes: "Responsive but not native" },
       { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifest for pickups", status: "done", notes: "CarrierManifest page with date picker, carrier filter, summary cards, printable manifest" },
-      { name: "Carrier Pickup Scheduling", description: "Schedule carrier pickups from warehouse", status: "not_started" },
+      { name: "Carrier Pickup Scheduling", description: "Schedule carrier pickups from warehouse", status: "done", notes: "CarrierManifest Schedule Pickup dialog with carrier select, date/time, notes, localStorage persistence, pickup table with complete/cancel actions" },
       { name: "Returns Receiving", description: "Scan and receive returned items back into inventory", status: "done", notes: "Returns Receiving tab with order number scan/entry, approved returns queue, scanned items with condition selection (good/damaged/defective/opened), per-item notes, Process button marks as refunded with receiving details in admin_notes" },
       { name: "Damaged Goods Processing", description: "Flag and quarantine damaged items during receiving", status: "not_started" },
       { name: "Warehouse User Roles", description: "Restrict warehouse staff to pick/pack only (no admin access)", status: "partial", notes: "Role system exists" },
