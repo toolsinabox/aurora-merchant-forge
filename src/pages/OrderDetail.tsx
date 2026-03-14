@@ -622,18 +622,64 @@ export default function OrderDetail() {
                 <CardTitle className="text-sm flex items-center gap-2"><Clock className="h-4 w-4" /> Timeline</CardTitle>
               </CardHeader>
               <CardContent className="px-4 pb-4 pt-0">
-                {/* Add comment */}
-                <div className="flex gap-2 mb-4">
-                  <Input
-                    className="h-8 text-xs flex-1"
-                    placeholder="Add a comment..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddComment()}
-                  />
-                  <Button size="sm" className="h-8 text-xs px-3" disabled={!newComment.trim()} onClick={handleAddComment}>
-                    <Send className="h-3.5 w-3.5" />
-                  </Button>
+                {/* Add comment with @mention support */}
+                <div className="relative mb-4">
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Input
+                        className="h-8 text-xs w-full"
+                        placeholder="Add a comment... (type @ to mention staff)"
+                        value={newComment}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNewComment(val);
+                          const cursorPos = e.target.selectionStart || 0;
+                          const textBeforeCursor = val.slice(0, cursorPos);
+                          const atMatch = textBeforeCursor.match(/@(\w*)$/);
+                          if (atMatch) {
+                            setMentionQuery(atMatch[1].toLowerCase());
+                            setMentionOpen(true);
+                            setMentionIndex(0);
+                          } else {
+                            setMentionOpen(false);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (mentionOpen) {
+                            const filtered = teamMembers.filter(m => m.display_name.toLowerCase().includes(mentionQuery));
+                            if (e.key === "ArrowDown") { e.preventDefault(); setMentionIndex(Math.min(mentionIndex + 1, filtered.length - 1)); return; }
+                            if (e.key === "ArrowUp") { e.preventDefault(); setMentionIndex(Math.max(mentionIndex - 1, 0)); return; }
+                            if (e.key === "Enter" && filtered.length > 0) {
+                              e.preventDefault();
+                              insertMention(filtered[mentionIndex].display_name);
+                              return;
+                            }
+                            if (e.key === "Escape") { setMentionOpen(false); return; }
+                          }
+                          if (e.key === "Enter" && !mentionOpen) handleAddComment();
+                        }}
+                      />
+                      {mentionOpen && (() => {
+                        const filtered = teamMembers.filter(m => m.display_name.toLowerCase().includes(mentionQuery));
+                        return filtered.length > 0 ? (
+                          <div className="absolute bottom-full left-0 mb-1 w-56 bg-popover border border-border rounded-md shadow-lg z-50 py-1 max-h-40 overflow-y-auto">
+                            {filtered.map((m, i) => (
+                              <button
+                                key={m.user_id}
+                                className={`w-full text-left px-3 py-1.5 text-xs hover:bg-accent ${i === mentionIndex ? "bg-accent" : ""}`}
+                                onMouseDown={(e) => { e.preventDefault(); insertMention(m.display_name); }}
+                              >
+                                @{m.display_name}
+                              </button>
+                            ))}
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
+                    <Button size="sm" className="h-8 text-xs px-3" disabled={!newComment.trim()} onClick={handleAddComment}>
+                      <Send className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
                 {(timeline as any[]).length === 0 ? (
                   <p className="text-xs text-muted-foreground">No events yet.</p>
