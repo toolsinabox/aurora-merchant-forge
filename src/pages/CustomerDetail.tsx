@@ -511,6 +511,9 @@ export default function CustomerDetail() {
             {/* Customer Files */}
             <CustomerFilesCard customerId={customer.id} storeId={currentStore?.id || ""} />
 
+            {/* Communication Log */}
+            <CustomerCommunicationsCard customerId={customer.id} storeId={currentStore?.id || ""} />
+
             {/* Order History */}
             <Card>
               <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Order History</CardTitle></CardHeader>
