@@ -51,6 +51,72 @@ function TimelineIcon({ type }: { type: string }) {
   }
 }
 
+function OrderCustomFieldsCard({ orderId, storeId }: { orderId: string; storeId: string }) {
+  const [fields, setFields] = useState<Array<{ key: string; value: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem(`order_custom_fields_${orderId}`) || "[]"); } catch { return []; }
+  });
+  const [newKey, setNewKey] = useState("");
+  const [newValue, setNewValue] = useState("");
+
+  const save = (updated: Array<{ key: string; value: string }>) => {
+    setFields(updated);
+    localStorage.setItem(`order_custom_fields_${orderId}`, JSON.stringify(updated));
+  };
+
+  const addField = () => {
+    if (!newKey.trim()) return;
+    save([...fields, { key: newKey.trim(), value: newValue.trim() }]);
+    setNewKey("");
+    setNewValue("");
+  };
+
+  const removeField = (index: number) => {
+    save(fields.filter((_, i) => i !== index));
+  };
+
+  const updateField = (index: number, value: string) => {
+    save(fields.map((f, i) => i === index ? { ...f, value } : f));
+  };
+
+  return (
+    <Card>
+      <CardHeader className="py-3 px-4">
+        <CardTitle className="text-sm flex items-center gap-2">
+          <Tag className="h-4 w-4" /> Custom Fields
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-4 pb-4 pt-0 space-y-2">
+        {fields.length > 0 ? (
+          <div className="space-y-1.5">
+            {fields.map((field, idx) => (
+              <div key={idx} className="flex items-center gap-1.5">
+                <span className="text-xs font-medium min-w-[80px] truncate">{field.key}</span>
+                <Input
+                  className="h-6 text-xs flex-1"
+                  value={field.value}
+                  onChange={(e) => updateField(idx, e.target.value)}
+                />
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => removeField(idx)}>
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">No custom fields added.</p>
+        )}
+        <div className="flex items-center gap-1.5 pt-1">
+          <Input className="h-6 text-xs w-24" placeholder="Field name" value={newKey} onChange={(e) => setNewKey(e.target.value)} />
+          <Input className="h-6 text-xs flex-1" placeholder="Value" value={newValue} onChange={(e) => setNewValue(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addField()} />
+          <Button variant="outline" size="sm" className="h-6 text-xs px-2" onClick={addField} disabled={!newKey.trim()}>
+            <Plus className="h-3 w-3" />
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -1042,6 +1108,9 @@ export default function OrderDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Order Custom Fields */}
+            <OrderCustomFieldsCard orderId={order.id} storeId={(order as any).store_id} />
 
             {/* Tags */}
             {/* Credit Notes */}
