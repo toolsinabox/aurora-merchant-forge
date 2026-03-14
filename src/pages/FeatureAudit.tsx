@@ -1043,6 +1043,68 @@ const featureData: FeatureCategory[] = [
       { name: "Upsell Products at Checkout", description: "Show related/cross-sell products before payment", status: "done", notes: "Upsell section showing related products from product_relations" },
     ],
   },
+
+  // ═══════ 49. STORE CREDIT / WALLET ═══════
+  {
+    category: "Store Credit / Wallet",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Store Credit Balance", description: "Per-customer store credit wallet with balance tracking", status: "done", notes: "store_credits table with customer_id, balance, lifetime_credited/debited; unique per customer per store" },
+      { name: "Credit Transactions", description: "Log all credit/debit transactions with descriptions", status: "done", notes: "store_credit_transactions table with amount, transaction_type (credit/debit), description, order_id reference" },
+      { name: "Apply Store Credit at Checkout", description: "Customers can apply store credit balance at checkout", status: "done", notes: "useStoreCredit checkbox at checkout deducts from store_credits balance" },
+      { name: "Admin Credit Management", description: "Admin can issue/adjust store credits per customer", status: "done", notes: "Credit adjustment via customer detail page with reason tracking" },
+    ],
+  },
+
+  // ═══════ 50. EMAIL AUTOMATIONS ═══════
+  {
+    category: "Email Automations",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Automation Workflow CRUD", description: "Create and manage automated email workflows", status: "done", notes: "email_automations table with CRUD, admin /email-automations page" },
+      { name: "Trigger Types", description: "7 trigger types: welcome, post-purchase, win-back, birthday, abandoned cart, review request, reorder reminder", status: "done", notes: "trigger_type enum with descriptive labels and descriptions" },
+      { name: "Delay Configuration", description: "Set delay in hours after trigger before sending", status: "done", notes: "delay_hours column, 0 = immediate" },
+      { name: "Active/Inactive Toggle", description: "Enable/disable automations without deleting", status: "done", notes: "is_active toggle with inline switch on admin table" },
+      { name: "Send Count Tracking", description: "Track total emails sent per automation", status: "done", notes: "sent_count counter on email_automations" },
+      { name: "HTML Email Body", description: "Custom HTML email templates with variable placeholders", status: "done", notes: "html_body textarea with {{store_name}}, {{customer_name}} placeholders" },
+    ],
+  },
+
+  // ═══════ 51. PRODUCT BADGES ═══════
+  {
+    category: "Product Badges",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "New Product Badge", description: "Auto-generated 'New' badge for products created within 14 days", status: "done", notes: "ProductBadges component checks created_at vs current date" },
+      { name: "Sale Badge", description: "Auto-generated 'Sale' badge when promo price or compare-at price is active", status: "done", notes: "Detects active promo schedule or compare_at_price > price" },
+      { name: "Low Stock Badge", description: "Auto-generated 'Only X left' badge when stock ≤ 5", status: "done", notes: "Checks track_inventory and stock_on_hand fields" },
+      { name: "Best Seller Badge", description: "Badge when custom_label contains 'best seller'", status: "done", notes: "Uses existing custom_label field for merchant-defined badges" },
+      { name: "Pre-Order Badge", description: "Badge when product is available for pre-order", status: "done", notes: "Shows when preorder_quantity > 0 and stock is 0" },
+    ],
+  },
+
+  // ═══════ 52. DELIVERY ESTIMATION ═══════
+  {
+    category: "Delivery Estimation",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Estimated Delivery Date on Product Page", description: "Show estimated delivery date range on product detail", status: "done", notes: "DeliveryEstimate component using shipping estimated_days, shows business day range with date-fns addBusinessDays" },
+      { name: "Estimated Delivery at Checkout", description: "Show delivery date estimate during checkout", status: "done", notes: "Checkout already shows estimated delivery via addBusinessDays from date-fns" },
+    ],
+  },
+
+  // ═══════ 53. SOCIAL SHARING ═══════
+  {
+    category: "Social Sharing",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Facebook Share Button", description: "Share product on Facebook", status: "done", notes: "SocialShare component with Facebook sharer URL popup" },
+      { name: "Twitter/X Share Button", description: "Share product on Twitter/X", status: "done", notes: "Twitter intent URL with product title and URL" },
+      { name: "Pinterest Pin Button", description: "Pin product on Pinterest with image", status: "done", notes: "Pinterest pin/create with product image, description, and URL" },
+      { name: "Email Share Button", description: "Share product via email", status: "done", notes: "mailto: link with subject and body" },
+      { name: "Copy Link Button", description: "Copy product URL to clipboard", status: "done", notes: "navigator.clipboard.writeText with success toast and check icon feedback" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
