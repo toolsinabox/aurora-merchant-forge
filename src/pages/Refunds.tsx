@@ -12,6 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Plus, Search, DollarSign, Clock, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
+interface RefundLineItem {
+  title: string;
+  quantity: number;
+  unit_price: number;
+  refund_amount: number;
+}
+
 interface Refund {
   id: string;
   refund_number: string;
@@ -25,13 +32,15 @@ interface Refund {
   processed_by: string | null;
   processed_at: string | null;
   created_at: string;
+  refund_type: "full" | "partial";
+  line_items?: RefundLineItem[];
 }
 
 const mockRefunds: Refund[] = [
-  { id: "1", refund_number: "RFD-001", order_id: "o1", order_number: "ORD-1042", customer_name: "Sarah Chen", amount: 89.99, reason: "Item not as described", refund_method: "original_payment", status: "processed", processed_by: "admin@store.com", processed_at: "2026-03-12T10:00:00Z", created_at: "2026-03-10T14:30:00Z" },
-  { id: "2", refund_number: "RFD-002", order_id: "o2", order_number: "ORD-1038", customer_name: "James Wilson", amount: 249.50, reason: "Damaged in transit", refund_method: "store_credit", status: "approved", processed_by: null, processed_at: null, created_at: "2026-03-11T09:15:00Z" },
-  { id: "3", refund_number: "RFD-003", order_id: "o3", order_number: "ORD-1051", customer_name: "Maria Lopez", amount: 34.00, reason: "Wrong size", refund_method: "original_payment", status: "pending", processed_by: null, processed_at: null, created_at: "2026-03-13T16:45:00Z" },
-  { id: "4", refund_number: "RFD-004", order_id: "o4", order_number: "ORD-1029", customer_name: "Tom Baker", amount: 150.00, reason: "Changed mind", refund_method: "manual", status: "rejected", processed_by: "admin@store.com", processed_at: "2026-03-12T11:00:00Z", created_at: "2026-03-09T08:20:00Z" },
+  { id: "1", refund_number: "RFD-001", order_id: "o1", order_number: "ORD-1042", customer_name: "Sarah Chen", amount: 89.99, reason: "Item not as described", refund_method: "original_payment", status: "processed", processed_by: "admin@store.com", processed_at: "2026-03-12T10:00:00Z", created_at: "2026-03-10T14:30:00Z", refund_type: "full" },
+  { id: "2", refund_number: "RFD-002", order_id: "o2", order_number: "ORD-1038", customer_name: "James Wilson", amount: 249.50, reason: "Damaged in transit", refund_method: "store_credit", status: "approved", processed_by: null, processed_at: null, created_at: "2026-03-11T09:15:00Z", refund_type: "full" },
+  { id: "3", refund_number: "RFD-003", order_id: "o3", order_number: "ORD-1051", customer_name: "Maria Lopez", amount: 34.00, reason: "Wrong size", refund_method: "original_payment", status: "pending", processed_by: null, processed_at: null, created_at: "2026-03-13T16:45:00Z", refund_type: "partial", line_items: [{ title: "Blue T-Shirt (M)", quantity: 1, unit_price: 34.00, refund_amount: 34.00 }] },
+  { id: "4", refund_number: "RFD-004", order_id: "o4", order_number: "ORD-1029", customer_name: "Tom Baker", amount: 150.00, reason: "Changed mind", refund_method: "manual", status: "rejected", processed_by: "admin@store.com", processed_at: "2026-03-12T11:00:00Z", created_at: "2026-03-09T08:20:00Z", refund_type: "partial", line_items: [{ title: "Wireless Headphones", quantity: 1, unit_price: 199.99, refund_amount: 150.00 }] },
 ];
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive"; icon: React.ReactNode }> = {
@@ -52,7 +61,15 @@ export default function Refunds() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [form, setForm] = useState({ order_number: "", amount: "", reason: "", refund_method: "original_payment", notes: "" });
+  const [form, setForm] = useState({ order_number: "", amount: "", reason: "", refund_method: "original_payment", notes: "", refund_type: "full" as "full" | "partial" });
+  const [lineItems, setLineItems] = useState<RefundLineItem[]>([{ title: "", quantity: 1, unit_price: 0, refund_amount: 0 }]);
+
+  const addLineItem = () => setLineItems(prev => [...prev, { title: "", quantity: 1, unit_price: 0, refund_amount: 0 }]);
+  const removeLineItem = (idx: number) => setLineItems(prev => prev.filter((_, i) => i !== idx));
+  const updateLineItem = (idx: number, field: keyof RefundLineItem, value: string | number) => {
+    setLineItems(prev => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  };
+  const lineItemTotal = lineItems.reduce((s, i) => s + (Number(i.refund_amount) || 0), 0);
 
   const filtered = refunds.filter(r => {
     const matchSearch = !search || r.refund_number.toLowerCase().includes(search.toLowerCase()) || r.order_number.toLowerCase().includes(search.toLowerCase()) || r.customer_name.toLowerCase().includes(search.toLowerCase());
@@ -67,15 +84,22 @@ export default function Refunds() {
   };
 
   const handleCreate = () => {
-    if (!form.order_number || !form.amount) { toast.error("Order number and amount required"); return; }
+    const finalAmount = form.refund_type === "partial" ? lineItemTotal : parseFloat(form.amount);
+    if (!form.order_number || (!form.amount && form.refund_type === "full") || (form.refund_type === "partial" && lineItemTotal <= 0)) {
+      toast.error("Order number and amount required");
+      return;
+    }
     const newRefund: Refund = {
       id: crypto.randomUUID(), refund_number: `RFD-${String(refunds.length + 1).padStart(3, "0")}`,
       order_id: "new", order_number: form.order_number, customer_name: "Customer",
-      amount: parseFloat(form.amount), reason: form.reason, refund_method: form.refund_method,
+      amount: finalAmount, reason: form.reason, refund_method: form.refund_method,
       status: "pending", processed_by: null, processed_at: null, created_at: new Date().toISOString(),
+      refund_type: form.refund_type,
+      line_items: form.refund_type === "partial" ? lineItems.filter(i => i.title && i.refund_amount > 0) : undefined,
     };
     setRefunds(prev => [newRefund, ...prev]);
     setDialogOpen(false);
+    setLineItems([{ title: "", quantity: 1, unit_price: 0, refund_amount: 0 }]);
     toast.success("Refund created");
   };
 
@@ -96,11 +120,60 @@ export default function Refunds() {
             <DialogTrigger asChild>
               <Button><Plus className="h-4 w-4 mr-2" />New Refund</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Refund</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div><Label>Order Number</Label><Input value={form.order_number} onChange={e => setForm(f => ({ ...f, order_number: e.target.value }))} placeholder="ORD-1234" /></div>
-                <div><Label>Amount</Label><Input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" /></div>
+                <div>
+                  <Label>Refund Type</Label>
+                  <Select value={form.refund_type} onValueChange={v => setForm(f => ({ ...f, refund_type: v as "full" | "partial" }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full">Full Refund</SelectItem>
+                      <SelectItem value="partial">Partial Refund (Line Items)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {form.refund_type === "full" ? (
+                  <div><Label>Amount</Label><Input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" /></div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Line Items</Label>
+                      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={addLineItem}><Plus className="h-3 w-3 mr-1" />Add Item</Button>
+                    </div>
+                    {lineItems.map((item, idx) => (
+                      <div key={idx} className="grid grid-cols-12 gap-2 items-end">
+                        <div className="col-span-4 space-y-1">
+                          <Label className="text-xs">Item</Label>
+                          <Input className="h-8 text-xs" value={item.title} onChange={e => updateLineItem(idx, "title", e.target.value)} placeholder="Product name" />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <Label className="text-xs">Qty</Label>
+                          <Input className="h-8 text-xs" type="number" min="1" value={item.quantity} onChange={e => updateLineItem(idx, "quantity", parseInt(e.target.value) || 1)} />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <Label className="text-xs">Price</Label>
+                          <Input className="h-8 text-xs" type="number" step="0.01" value={item.unit_price || ""} onChange={e => updateLineItem(idx, "unit_price", parseFloat(e.target.value) || 0)} />
+                        </div>
+                        <div className="col-span-3 space-y-1">
+                          <Label className="text-xs">Refund $</Label>
+                          <Input className="h-8 text-xs" type="number" step="0.01" value={item.refund_amount || ""} onChange={e => updateLineItem(idx, "refund_amount", parseFloat(e.target.value) || 0)} />
+                        </div>
+                        <div className="col-span-1">
+                          {lineItems.length > 1 && (
+                            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => removeLineItem(idx)}>
+                              <XCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <div className="text-right text-sm font-medium">
+                      Total Refund: <span className="text-primary">${lineItemTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                )}
                 <div><Label>Reason</Label><Textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))} placeholder="Reason for refund" /></div>
                 <div>
                   <Label>Refund Method</Label>
@@ -158,7 +231,7 @@ export default function Refunds() {
                       <TableCell className="font-medium">{r.refund_number}</TableCell>
                       <TableCell className="text-primary cursor-pointer">{r.order_number}</TableCell>
                       <TableCell>{r.customer_name}</TableCell>
-                      <TableCell className="font-semibold">${r.amount.toFixed(2)}</TableCell>
+                      <TableCell className="font-semibold">${r.amount.toFixed(2)} <Badge variant="outline" className="ml-1 text-[9px]">{r.refund_type === "partial" ? "Partial" : "Full"}</Badge></TableCell>
                       <TableCell><Badge variant="outline">{methodLabels[r.refund_method]}</Badge></TableCell>
                       <TableCell className="max-w-[200px] truncate">{r.reason}</TableCell>
                       <TableCell><Badge variant={sc.variant} className="gap-1">{sc.icon}{sc.label}</Badge></TableCell>

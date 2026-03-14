@@ -23,6 +23,19 @@ import { format } from "date-fns";
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
 const RETURN_TYPES = ["return", "warranty_claim"];
 const DISPUTE_TYPES = ["refund", "repair", "replace"];
+const DEFAULT_RETURN_REASONS = [
+  "Wrong item received",
+  "Item damaged on arrival",
+  "Item not as described",
+  "Changed mind",
+  "Wrong size/colour",
+  "Better price found",
+  "Arrived too late",
+  "Missing parts or accessories",
+  "Quality not as expected",
+  "Other",
+];
+
 const DISPUTE_REASONS = [
   "Product defective on arrival",
   "Product broke within warranty period",
