@@ -142,14 +142,14 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-72">
-                  <div className="flex items-center gap-2 mb-8 mt-2">
-                    <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+                <SheetContent side="left" className="w-72 p-0">
+                  <div className="flex items-center gap-2 p-5 border-b">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm">
                       <Store className="h-4 w-4 text-primary-foreground" />
                     </div>
                     <span className="font-bold">{storeName || "Store"}</span>
                   </div>
-                  <nav className="flex flex-col gap-4">
+                  <nav className="flex flex-col gap-1 p-3">
                     <Link to={basePath || "/"} className="text-sm font-medium hover:text-primary transition-colors">Home</Link>
                     <Link to={`${basePath}/products`} className="text-sm font-medium hover:text-primary transition-colors">All Products</Link>
                     {user ? (
