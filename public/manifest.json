@@ -1,0 +1,17 @@
+{
+  "name": "Aurora Merchant",
+  "short_name": "Aurora",
+  "description": "Multi-tenant e-commerce platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#2563eb",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ]
+}

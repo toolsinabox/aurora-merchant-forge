@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { Search, GitCompareArrows, SlidersHorizontal, X, ShoppingCart, Heart, Eye, Loader2 } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { useCompare } from "@/contexts/CompareContext";
 import { useCart } from "@/contexts/CartContext";
@@ -201,8 +201,7 @@ export default function StorefrontProducts() {
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
   const [showFilters, setShowFilters] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
+  const [pageSize] = useState(PAGE_SIZES[1]); // 24 items per batch
 
   // Price range
   const maxPrice = useMemo(() => Math.ceil(Math.max(...products.map(p => Number(p.price)), 0)), [products]);
@@ -270,11 +269,31 @@ export default function StorefrontProducts() {
       });
   }, [products, search, category, brandFilter, specFilters, sort, priceRange, allSpecifics]);
 
-  // Reset page when filters change
-  useEffect(() => { setPage(1); }, [search, category, brandFilter, specFilters, sort, priceRange, pageSize]);
+  // Reset visible count when filters change
+  const [visibleCount, setVisibleCount] = useState(pageSize);
+  useEffect(() => { setVisibleCount(pageSize); }, [search, category, brandFilter, specFilters, sort, priceRange, pageSize]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const paginated = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  // Infinite scroll observer
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        setLoadingMore(true);
+        setTimeout(() => {
+          setVisibleCount((prev) => prev + pageSize);
+          setLoadingMore(false);
+        }, 300);
+      }
+    }, { rootMargin: "200px" });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, pageSize, visibleCount]);
 
   const activeFilterCount = brandFilter.length + Object.values(specFilters).reduce((sum, v) => sum + v.length, 0) +
     (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
@@ -443,56 +462,13 @@ export default function StorefrontProducts() {
                   ))}
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-8 gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">Show</span>
-                      <Select value={pageSize.toString()} onValueChange={(v) => setPageSize(Number(v))}>
-                        <SelectTrigger className="w-20 h-8 text-xs"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {PAGE_SIZES.map(s => <SelectItem key={s} value={s.toString()} className="text-xs">{s}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                        let pageNum: number;
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (page <= 3) {
-                          pageNum = i + 1;
-                        } else if (page >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = page - 2 + i;
-                        }
-                        return (
-                          <Button
-                            key={pageNum}
-                            variant={page === pageNum ? "default" : "outline"}
-                            size="icon"
-                            className="h-8 w-8 text-xs"
-                            onClick={() => setPage(pageNum)}
-                          >
-                            {pageNum}
-                          </Button>
-                        );
-                      })}
-                      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    <span className="text-xs text-muted-foreground hidden sm:block">
-                      Page {page} of {totalPages}
-                    </span>
-                  </div>
-                )}
+                {/* Infinite scroll sentinel */}
+                <div ref={sentinelRef} className="py-4 flex justify-center">
+                  {loadingMore && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
+                  {!hasMore && filtered.length > pageSize && (
+                    <p className="text-xs text-muted-foreground">Showing all {filtered.length} products</p>
+                  )}
+                </div>
               </>
             ) : (
               <div className="text-center py-16 text-muted-foreground">
