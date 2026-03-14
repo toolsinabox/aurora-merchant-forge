@@ -650,6 +650,149 @@ function ReturnsReceivingTab() {
   );
 }
 
+function DamagedGoodsTab() {
+  const [quarantined, setQuarantined] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("quarantined_goods") || "[]"); } catch { return []; }
+  });
+
+  const updateDisposition = (id: string, disposition: string) => {
+    const updated = quarantined.map(q => q.id === id ? { ...q, disposition, resolved_at: new Date().toISOString() } : q);
+    setQuarantined(updated);
+    localStorage.setItem("quarantined_goods", JSON.stringify(updated));
+    toast.success(`Disposition set to: ${disposition}`);
+  };
+
+  const removeItem = (id: string) => {
+    const updated = quarantined.filter(q => q.id !== id);
+    setQuarantined(updated);
+    localStorage.setItem("quarantined_goods", JSON.stringify(updated));
+    toast.success("Item removed from quarantine");
+  };
+
+  const pending = quarantined.filter(q => q.disposition === "pending");
+  const resolved = quarantined.filter(q => q.disposition !== "pending");
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <AlertTriangle className="h-5 w-5 mx-auto mb-1 text-destructive" />
+          <p className="text-xs text-muted-foreground">Quarantined</p>
+          <p className="text-lg font-bold">{pending.length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <CheckCircle className="h-5 w-5 mx-auto mb-1 text-primary" />
+          <p className="text-xs text-muted-foreground">Resolved</p>
+          <p className="text-lg font-bold">{resolved.length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <Package className="h-5 w-5 mx-auto mb-1 text-chart-2" />
+          <p className="text-xs text-muted-foreground">Write-offs</p>
+          <p className="text-lg font-bold">{quarantined.filter(q => q.disposition === "write_off").length}</p>
+        </CardContent></Card>
+        <Card><CardContent className="pt-4 pb-3 text-center">
+          <RefreshCw className="h-5 w-5 mx-auto mb-1 text-chart-3" />
+          <p className="text-xs text-muted-foreground">Repaired</p>
+          <p className="text-lg font-bold">{quarantined.filter(q => q.disposition === "repair").length}</p>
+        </CardContent></Card>
+      </div>
+
+      {pending.length > 0 && (
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm flex items-center gap-2 text-destructive"><AlertTriangle className="h-4 w-4" /> Pending Disposition ({pending.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Order</TableHead>
+                  <TableHead className="text-xs h-8">Customer</TableHead>
+                  <TableHead className="text-xs h-8">Condition</TableHead>
+                  <TableHead className="text-xs h-8">Notes</TableHead>
+                  <TableHead className="text-xs h-8">Quarantined</TableHead>
+                  <TableHead className="text-xs h-8">Disposition</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pending.map((q: any) => (
+                  <TableRow key={q.id} className="text-xs">
+                    <TableCell className="py-2 font-mono font-medium">{q.order_number}</TableCell>
+                    <TableCell className="py-2">{q.customer}</TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant="destructive" className="text-[10px] capitalize">{q.condition}</Badge>
+                    </TableCell>
+                    <TableCell className="py-2 max-w-[150px] truncate text-muted-foreground">{q.notes || "—"}</TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{new Date(q.quarantined_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="py-2">
+                      <Select onValueChange={v => updateDisposition(q.id, v)}>
+                        <SelectTrigger className="h-7 w-28 text-[11px]"><SelectValue placeholder="Action..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="write_off" className="text-xs">Write Off</SelectItem>
+                          <SelectItem value="repair" className="text-xs">Send for Repair</SelectItem>
+                          <SelectItem value="resell" className="text-xs">Resell (Discounted)</SelectItem>
+                          <SelectItem value="return_to_supplier" className="text-xs">Return to Supplier</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {resolved.length > 0 && (
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Resolved ({resolved.length})</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Order</TableHead>
+                  <TableHead className="text-xs h-8">Condition</TableHead>
+                  <TableHead className="text-xs h-8">Disposition</TableHead>
+                  <TableHead className="text-xs h-8">Resolved</TableHead>
+                  <TableHead className="text-xs h-8 w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {resolved.map((q: any) => (
+                  <TableRow key={q.id} className="text-xs">
+                    <TableCell className="py-2 font-mono">{q.order_number}</TableCell>
+                    <TableCell className="py-2 capitalize">{q.condition}</TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant="outline" className="text-[10px] capitalize">{q.disposition.replace("_", " ")}</Badge>
+                    </TableCell>
+                    <TableCell className="py-2 text-muted-foreground">{q.resolved_at ? new Date(q.resolved_at).toLocaleDateString() : "—"}</TableCell>
+                    <TableCell className="py-2">
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeItem(q.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {quarantined.length === 0 && (
+        <Card>
+          <CardContent className="text-center py-8 text-xs text-muted-foreground">
+            <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+            No damaged goods in quarantine. Items flagged as damaged/defective during returns receiving will appear here.
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 function WarrantyClaimsTab() {
   const { currentStore } = useAuth();
   const queryClient = useQueryClient();
