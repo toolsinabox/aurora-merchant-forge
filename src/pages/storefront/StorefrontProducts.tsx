@@ -270,11 +270,31 @@ export default function StorefrontProducts() {
       });
   }, [products, search, category, brandFilter, specFilters, sort, priceRange, allSpecifics]);
 
-  // Reset page when filters change
-  useEffect(() => { setPage(1); }, [search, category, brandFilter, specFilters, sort, priceRange, pageSize]);
+  // Reset visible count when filters change
+  const [visibleCount, setVisibleCount] = useState(pageSize);
+  useEffect(() => { setVisibleCount(pageSize); }, [search, category, brandFilter, specFilters, sort, priceRange, pageSize]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const paginated = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  // Infinite scroll observer
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore && !loadingMore) {
+        setLoadingMore(true);
+        setTimeout(() => {
+          setVisibleCount((prev) => prev + pageSize);
+          setLoadingMore(false);
+        }, 300);
+      }
+    }, { rootMargin: "200px" });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, pageSize, visibleCount]);
 
   const activeFilterCount = brandFilter.length + Object.values(specFilters).reduce((sum, v) => sum + v.length, 0) +
     (priceRange[0] > 0 || priceRange[1] < maxPrice ? 1 : 0);
