@@ -187,6 +187,8 @@ serve(async (req) => {
     const apiUrl = `${domain}/do/WS/NetoAPI`;
 
     console.log(`Maropost API call: ${netoAction} to ${apiUrl}`);
+    console.log(`Request body: ${JSON.stringify(requestBody)}`);
+    console.log(`Scan mode: ${scan_mode}, Effective limit: ${effectiveLimit}, Max limit: ${maxLimit}`);
 
     const response = await fetch(apiUrl, {
       method: 'POST',
