@@ -107,6 +107,7 @@ import Subscriptions from "./pages/Subscriptions.tsx";
 import DigitalDownloads from "./pages/DigitalDownloads.tsx";
 import InventoryForecasting from "./pages/InventoryForecasting.tsx";
 import SavedCarts from "./pages/SavedCarts.tsx";
+import EmailAutomations from "./pages/EmailAutomations.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
