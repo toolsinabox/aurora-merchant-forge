@@ -545,6 +545,9 @@ export default function Inventory() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-xs h-8 w-8">
+                    <Checkbox checked={selectedProducts.size === inventoryItems.length && inventoryItems.length > 0} onCheckedChange={toggleAllProducts} />
+                  </TableHead>
                   <TableHead className="text-xs h-8">Product</TableHead>
                   <TableHead className="text-xs h-8">SKU</TableHead>
                   <TableHead className="text-xs h-8">Bin Location</TableHead>
