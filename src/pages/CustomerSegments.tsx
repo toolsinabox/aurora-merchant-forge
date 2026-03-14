@@ -24,6 +24,9 @@ const RULE_FIELDS = [
   { value: "segment", label: "Current Segment" },
   { value: "created_at", label: "Account Created" },
   { value: "tags", label: "Tags" },
+  { value: "rfm_recency", label: "RFM Recency (days since last order)" },
+  { value: "rfm_frequency", label: "RFM Frequency (order count)" },
+  { value: "rfm_monetary", label: "RFM Monetary (total spent)" },
 ];
 
 const OPERATORS = [
