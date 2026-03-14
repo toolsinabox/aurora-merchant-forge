@@ -291,13 +291,18 @@
   /* ─── AUTO-RESPONSIVE RULES ─── */
 
   @media (max-width: 639px) {
-    /* 2-col grids → 1 col on mobile in admin */
-    .admin-main .grid-cols-2 {
+    /* Form/dialog 2-col grids → 1 col on mobile (but NOT stat card grids) */
+    .admin-main form .grid-cols-2,
+    .admin-main [role="dialog"] .grid-cols-2,
+    .admin-main .grid-cols-2.gap-3:not(.stagger-children):has(> div > .space-y-1) {
       grid-template-columns: 1fr !important;
     }
-    /* 3-col stat grids → 1 col */
+    /* 3-col stat grids → 2 col on mobile to stay filled */
     .admin-main .sm\:grid-cols-3:not(.grid-cols-2) {
-      grid-template-columns: 1fr !important;
+      grid-template-columns: 1fr 1fr !important;
+    }
+    .admin-main .md\:grid-cols-3 {
+      grid-template-columns: 1fr 1fr !important;
     }
     /* Filter/search bars → full-width stack */
     .admin-main [class*="border-b"] > div:has(> input),
@@ -316,9 +321,13 @@
       gap: 0.25rem !important;
       padding: 0.25rem !important;
     }
-    /* KPI cards → compact 2-col grid on mobile */
+    /* KPI cards → compact 2-col grid on mobile (filled look) */
     .admin-main .grid-cols-2.sm\:grid-cols-4,
     .admin-main .grid-cols-2.md\:grid-cols-4 {
+      grid-template-columns: 1fr 1fr !important;
+    }
+    /* sm:grid-cols-2 KPI rows stay 2-col */
+    .admin-main .grid-cols-1.sm\:grid-cols-2 {
       grid-template-columns: 1fr 1fr !important;
     }
   }
