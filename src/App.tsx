@@ -116,6 +116,8 @@ import CarrierManifest from "./pages/CarrierManifest.tsx";
 import PriceLists from "./pages/PriceLists.tsx";
 import StoreLocator from "./pages/StoreLocator.tsx";
 import Notifications from "./pages/Notifications.tsx";
+import CreditNotes from "./pages/CreditNotes.tsx";
+import BatchInvoicePrint from "./pages/BatchInvoicePrint.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
