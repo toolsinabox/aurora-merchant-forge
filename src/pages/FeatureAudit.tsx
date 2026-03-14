@@ -7907,7 +7907,7 @@ const checkoutDeepFeatures: FeatureCategory[] = [
       { name: "Terms & Conditions Checkbox", description: "Require acceptance of T&C before placing order", status: "partial" },
       { name: "Age Verification Gate", description: "Age gate for restricted products (alcohol, etc.)", status: "not_started" },
       { name: "Minimum Order Enforcement", description: "Block checkout below minimum order value", status: "partial" },
-      { name: "Cart Reservation / Timer", description: "Reserve stock for X minutes while in checkout", status: "not_started" },
+      { name: "Cart Reservation / Timer", description: "Reserve stock for X minutes while in checkout", status: "done", notes: "StorefrontCheckout 15-minute countdown timer in Order Summary, warning when < 2min, expiry toast notification" },
       { name: "Express Checkout (Saved Details)", description: "One-click checkout for returning customers", status: "not_started" },
       { name: "Checkout Upsell/Cross-Sell", description: "Show related products during checkout", status: "done", notes: "StorefrontCheckout upsellProducts section with add-to-cart from related products" },
       { name: "Checkout Progress Indicator", description: "Visual progress bar showing checkout steps", status: "partial" },
