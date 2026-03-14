@@ -363,6 +363,40 @@ export default function CustomerDetail() {
               }}>
                 <Mail className="h-3 w-3 mr-1" />Email Statement
               </Button>
+              <Button size="sm" variant="outline" className="text-xs" onClick={async () => {
+                if (!currentStore) return;
+                try {
+                  // Gather all customer data for GDPR export
+                  const [ordersRes, addrsRes, commsRes, filesRes, creditsRes] = await Promise.all([
+                    supabase.from("orders").select("*").eq("customer_id", customer.id).eq("store_id", currentStore.id),
+                    supabase.from("customer_addresses" as any).select("*").eq("customer_id", customer.id),
+                    supabase.from("customer_communications" as any).select("*").eq("customer_id", customer.id),
+                    supabase.from("customer_files" as any).select("*").eq("customer_id", customer.id),
+                    supabase.from("store_credit_transactions" as any).select("*").eq("customer_id", customer.id),
+                  ]);
+                  const exportData = {
+                    exported_at: new Date().toISOString(),
+                    customer: { ...customer },
+                    addresses: addrsRes.data || [],
+                    orders: ordersRes.data || [],
+                    communications: commsRes.data || [],
+                    files: (filesRes.data || []).map((f: any) => ({ ...f, file_url: "[redacted]" })),
+                    store_credits: creditsRes.data || [],
+                  };
+                  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `customer-data-${customer.id}.json`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast.success("Customer data exported (GDPR)");
+                } catch (err: any) {
+                  toast.error(err.message || "Export failed");
+                }
+              }}>
+                <Download className="h-3 w-3 mr-1" />GDPR Export
+              </Button>
               <Dialog open={mergeOpen} onOpenChange={setMergeOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" variant="outline" className="text-xs"><Merge className="h-3 w-3 mr-1" />Merge</Button>

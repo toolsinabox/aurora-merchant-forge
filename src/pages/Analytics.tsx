@@ -1232,6 +1232,67 @@ export default function Analytics() {
             )}
           </CardContent>
         </Card>
+
+        {/* RFM Segmentation */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Customer RFM Segmentation</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[120px]" /> : rfmData.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">No customer data available.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Segment</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Customers</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Avg Spend</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rfmData.map(row => (
+                    <TableRow key={row.segment} className="text-xs">
+                      <TableCell className="py-1.5 font-medium">
+                        <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${row.segment === "Champions" ? "bg-green-500" : row.segment === "Loyal" ? "bg-blue-500" : row.segment === "Potential" ? "bg-yellow-500" : row.segment === "At Risk" ? "bg-orange-500" : "bg-red-500"}`} />
+                        {row.segment}
+                      </TableCell>
+                      <TableCell className="py-1.5 text-right">{row.count}</TableCell>
+                      <TableCell className="py-1.5 text-right">${row.avgMonetary.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sales by Customer Group */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Customer Group</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[120px]" /> : salesByGroup.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">No data.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">Group</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {salesByGroup.map(row => (
+                    <TableRow key={row.group} className="text-xs">
+                      <TableCell className="py-1.5 font-medium">{row.group}</TableCell>
+                      <TableCell className="py-1.5 text-right">{row.orders}</TableCell>
+                      <TableCell className="py-1.5 text-right">${row.revenue.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
