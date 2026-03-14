@@ -76,6 +76,7 @@ export default function ProductForm() {
     is_bought: false, is_sold: true, is_inventoried: true,
     tax_free: false, tax_inclusive: false,
     is_kit: false, editable_bundle: false, virtual_product: false,
+    dangerous_goods: false, oversized_item: false, temperature_sensitive: false,
     auto_url_update: true,
     warranty: "", availability_description: "",
     reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
