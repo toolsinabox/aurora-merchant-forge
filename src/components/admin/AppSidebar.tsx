@@ -4,6 +4,7 @@ import {
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
+  FileDown, TrendingUp, Save,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -29,12 +30,14 @@ const catalogNav = [
   { title: "Products", url: `${prefix}/products`, icon: Package },
   { title: "Categories", url: `${prefix}/categories`, icon: Layers },
   { title: "Smart Collections", url: `${prefix}/smart-collections`, icon: Sparkles },
+  { title: "Digital Downloads", url: `${prefix}/digital-downloads`, icon: FileDown },
   { title: "Inventory", url: `${prefix}/inventory`, icon: Warehouse },
   { title: "Stock Adjustments", url: `${prefix}/stock-adjustments`, icon: History },
   { title: "Stocktake", url: `${prefix}/stocktake`, icon: ClipboardCheck },
   { title: "Suppliers", url: `${prefix}/suppliers`, icon: Building },
   { title: "Purchase Orders", url: `${prefix}/purchase-orders`, icon: ClipboardCopy },
   { title: "Backorders", url: `${prefix}/backorders`, icon: PackageX },
+  { title: "Forecasting", url: `${prefix}/inventory-forecasting`, icon: TrendingUp },
 ];
 
 const salesNav = [
@@ -47,6 +50,7 @@ const salesNav = [
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
   { title: "Customers", url: `${prefix}/customers`, icon: Users },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
+  { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
   { title: "Warehouse", url: `${prefix}/warehouse`, icon: Warehouse },
   { title: "Pick & Pack", url: `${prefix}/pick-pack`, icon: ClipboardCopy },
 ];

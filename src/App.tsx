@@ -104,6 +104,9 @@ import Integrations from "./pages/Integrations.tsx";
 import Multimarket from "./pages/Multimarket.tsx";
 import Marketplaces from "./pages/Marketplaces.tsx";
 import Subscriptions from "./pages/Subscriptions.tsx";
+import DigitalDownloads from "./pages/DigitalDownloads.tsx";
+import InventoryForecasting from "./pages/InventoryForecasting.tsx";
+import SavedCarts from "./pages/SavedCarts.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -224,6 +227,9 @@ const App = () => (
                    <Route path="/_cpanel/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
                    <Route path="/_cpanel/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
                    <Route path="/_cpanel/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
+                   <Route path="/_cpanel/digital-downloads" element={<RequireAuth><DigitalDownloads /></RequireAuth>} />
+                   <Route path="/_cpanel/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
+                   <Route path="/_cpanel/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -316,6 +322,9 @@ const App = () => (
                    <Route path="/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
                    <Route path="/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
                    <Route path="/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
+                   <Route path="/digital-downloads" element={<RequireAuth><DigitalDownloads /></RequireAuth>} />
+                   <Route path="/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
+                   <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

@@ -59,6 +59,7 @@ export default function StorefrontCheckout() {
     billing_same: true,
     billing_address: "", billing_city: "", billing_zip: "", billing_country: "",
     notes: "",
+    delivery_instructions: "",
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [shippingZones, setShippingZones] = useState<any[]>([]);
@@ -430,7 +431,7 @@ export default function StorefrontCheckout() {
           total: finalTotal,
           status: deliveryMethod === "pickup" ? "processing" : "pending",
           payment_status: payOnAccount ? "pending" : "pending",
-          notes: form.notes ? (payOnAccount ? `[Pay on Account - ${creditTerms}] ${form.notes}` : form.notes) : (payOnAccount ? `Pay on Account - ${creditTerms}` : null),
+          notes: [payOnAccount ? `Pay on Account - ${creditTerms}` : null, form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null, form.notes].filter(Boolean).join(" ") || null,
           shipping_address: shippingAddr,
           billing_address: form.billing_same ? shippingAddr : `${form.billing_address}, ${form.billing_city} ${form.billing_zip}, ${form.billing_country}`,
           coupon_id: appliedCoupon?.id || null,
@@ -773,10 +774,19 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
+              {/* Delivery Instructions */}
+              {deliveryMethod === "shipping" && (
+                <div className="border rounded-lg p-5 space-y-4">
+                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Delivery Instructions</h2>
+                  <Textarea value={form.delivery_instructions} onChange={(e) => update("delivery_instructions", e.target.value)} placeholder="Leave at front door, ring doorbell, etc." className="min-h-[60px]" maxLength={300} />
+                  <p className="text-xs text-muted-foreground">{form.delivery_instructions.length}/300 characters</p>
+                </div>
+              )}
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
-                <Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Special instructions..." className="min-h-[80px]" />
+                <Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Special instructions or comments..." className="min-h-[80px]" />
               </div>
             </div>
 

@@ -987,6 +987,62 @@ const featureData: FeatureCategory[] = [
       { name: "LiveChat / Zendesk / Tidio", description: "Customer support chat widget", status: "done", notes: "chat_widget_code column on stores table; embed code input in Settings; storefront injects chat widget script" },
     ],
   },
+
+  // ═══════ 45. DIGITAL DOWNLOADS ═══════
+  {
+    category: "Digital Downloads",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Product Download Files", description: "Attach downloadable files to products", status: "done", notes: "product_downloads table with file_name, file_url, download_limit, expiry_days; admin /digital-downloads page with CRUD" },
+      { name: "Download Limit per File", description: "Set maximum download count per purchased file", status: "done", notes: "download_limit column on product_downloads, enforced via customer_downloads.download_count" },
+      { name: "Download Expiry", description: "Set expiry period (days) after purchase for download access", status: "done", notes: "expiry_days column on product_downloads, expires_at calculated on customer_downloads" },
+      { name: "Customer Download Tokens", description: "Unique secure tokens generated per purchase for file access", status: "done", notes: "customer_downloads table with unique download_token, linked to order and product_download" },
+      { name: "Download Tracking", description: "Track download count per customer per file", status: "done", notes: "download_count column on customer_downloads, displayed in admin Recent Customer Downloads table" },
+      { name: "Multiple Files per Product", description: "Attach multiple downloadable files to a single product", status: "done", notes: "One-to-many relationship: product_downloads linked to products via product_id" },
+    ],
+  },
+
+  // ═══════ 46. INVENTORY FORECASTING ═══════
+  {
+    category: "Inventory Forecasting",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Sales Velocity Analysis", description: "Calculate average daily sales rate per product from 30-day history", status: "done", notes: "Admin /inventory-forecasting page calculates avg daily sales from order_items over last 30 days" },
+      { name: "Days of Stock Remaining", description: "Predict how many days current stock will last", status: "done", notes: "stock_on_hand / avg_daily_sales calculation with color-coded risk levels" },
+      { name: "Reorder Date Prediction", description: "Suggest when to reorder based on current velocity and lead time", status: "done", notes: "Reorder By column showing date when stock will reach 7-day threshold" },
+      { name: "Suggested Reorder Quantity", description: "Calculate optimal reorder quantity for 30-day coverage", status: "done", notes: "suggestedReorder = max(0, ceil(avgDaily * 30) - currentStock)" },
+      { name: "Risk Level Classification", description: "Categorize products by stock risk: out, critical, low, medium, healthy", status: "done", notes: "Color-coded badges: out (0), critical (≤7d), low (≤14d), medium (≤30d), healthy (>30d)" },
+      { name: "Sortable Forecast Table", description: "Sort by days of stock or sales velocity", status: "done", notes: "Clickable column headers with asc/desc toggle for days_of_stock and avg_daily_sales" },
+    ],
+  },
+
+  // ═══════ 47. SAVED CARTS ═══════
+  {
+    category: "Saved Carts",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Save Cart for Later", description: "Customers can save their shopping cart for future purchase", status: "done", notes: "saved_carts table with customer_id, cart_items JSONB, cart_total; admin /saved-carts page" },
+      { name: "Named Saved Carts", description: "Give saved carts custom names for identification", status: "done", notes: "name column on saved_carts table, default 'My Cart'" },
+      { name: "Admin Saved Cart Management", description: "View, inspect, and delete customer saved carts", status: "done", notes: "Admin page with customer info, item count, total value, view dialog, delete action" },
+      { name: "Saved Cart KPI Dashboard", description: "Overview metrics for saved carts", status: "done", notes: "KPI cards: total saved carts, total value, unique customers" },
+    ],
+  },
+
+  // ═══════ 48. CHECKOUT ENHANCEMENTS ═══════
+  {
+    category: "Checkout Enhancements",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Delivery Instructions Field", description: "Customer can provide delivery instructions (leave at door, etc.)", status: "done", notes: "delivery_instructions field on checkout form with 300 char limit, prepended to order notes as [Delivery: ...]" },
+      { name: "Order Notes at Checkout", description: "Customer can add special instructions or comments to order", status: "done", notes: "notes textarea on checkout form, stored on orders.notes" },
+      { name: "Gift Message at Checkout", description: "Add gift message when gift voucher is applied", status: "done", notes: "giftMessage textarea appears when voucher is applied, 500 char limit" },
+      { name: "Store Credit at Checkout", description: "Apply store credit balance to reduce order total", status: "done", notes: "useStoreCredit checkbox with balance display, deducted from total" },
+      { name: "Pay on Account (B2B)", description: "B2B customers can pay on their credit terms", status: "done", notes: "payOnAccount checkbox for customers with credit_terms, tagged in order notes" },
+      { name: "Multi-Address Split Shipping", description: "Ship different items to different addresses", status: "done", notes: "splitShipping toggle with per-item address fields when 2+ items" },
+      { name: "Click & Collect at Checkout", description: "Toggle between shipping and in-store pickup", status: "done", notes: "deliveryMethod toggle: shipping vs pickup with free shipping for pickup" },
+      { name: "Upsell Products at Checkout", description: "Show related/cross-sell products before payment", status: "done", notes: "Upsell section showing related products from product_relations" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
