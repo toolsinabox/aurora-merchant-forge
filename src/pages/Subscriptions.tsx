@@ -30,6 +30,13 @@ export default function Subscriptions() {
   const storeId = currentStore?.id;
   const qc = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancellingSubId, setCancellingSubId] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const CANCEL_REASONS = [
+    "Too expensive", "Don't need it anymore", "Switching to competitor",
+    "Product quality issues", "Delivery issues", "Other",
+  ];
   const [form, setForm] = useState({
     customer_id: "", product_id: "", quantity: 1,
     frequency: "monthly", interval_count: 1, unit_price: 0,
@@ -352,7 +359,7 @@ export default function Subscriptions() {
                             </Button>
                           )}
                           {(s.status === "active" || s.status === "paused") && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Cancel" onClick={() => { if (confirm("Cancel this subscription?")) updateStatus.mutate({ id: s.id, status: "cancelled" }); }}>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" title="Cancel" onClick={() => { setCancellingSubId(s.id); setCancelReason(""); setCancelDialogOpen(true); }}>
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           )}
@@ -365,6 +372,33 @@ export default function Subscriptions() {
             </Table>
           </CardContent>
         </Card>
+
+      {/* Cancellation Survey Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle className="text-sm">Cancel Subscription</DialogTitle></DialogHeader>
+          <p className="text-xs text-muted-foreground">We're sorry to see you go. Please tell us why you're cancelling so we can improve.</p>
+          <div className="space-y-2">
+            {CANCEL_REASONS.map(r => (
+              <label key={r} className="flex items-center gap-2 text-sm cursor-pointer p-2 rounded-md hover:bg-muted/50 transition-colors">
+                <input type="radio" name="cancel_reason" value={r} checked={cancelReason === r} onChange={() => setCancelReason(r)} className="accent-primary" />
+                {r}
+              </label>
+            ))}
+          </div>
+          <div className="flex gap-2 justify-end pt-2">
+            <Button variant="outline" size="sm" onClick={() => setCancelDialogOpen(false)}>Keep Subscription</Button>
+            <Button variant="destructive" size="sm" disabled={!cancelReason} onClick={() => {
+              if (cancellingSubId) {
+                updateStatus.mutate({ id: cancellingSubId, status: "cancelled" });
+                toast.info(`Cancellation reason: ${cancelReason}`);
+              }
+              setCancelDialogOpen(false);
+              setCancellingSubId(null);
+            }}>Confirm Cancel</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
       </div>
     </AdminLayout>
   );

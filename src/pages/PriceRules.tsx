@@ -42,6 +42,7 @@ export default function PriceRules() {
     min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
     starts_at: "", ends_at: "", priority: "0", max_uses: "",
     gift_product_sku: "", // for gift_with_purchase type
+    is_stackable: true, // whether this promo stacks with others
   });
 
   const { data: rules = [] } = useQuery({
@@ -108,7 +109,7 @@ export default function PriceRules() {
     setEditingId(null);
     setForm({ name: "", rule_type: "percentage", discount_value: "10", applies_to: "all",
       min_order_amount: "", min_quantity: "", buy_quantity: "2", get_quantity: "1",
-      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "" });
+      starts_at: "", ends_at: "", priority: "0", max_uses: "", gift_product_sku: "", is_stackable: true });
   };
 
   const editRule = (r: any) => {
@@ -125,6 +126,7 @@ export default function PriceRules() {
       priority: String(r.priority || 0),
       max_uses: r.max_uses ? String(r.max_uses) : "",
       gift_product_sku: r.gift_product_sku || "",
+      is_stackable: r.is_stackable !== false,
     });
     setEditingId(r.id);
     setShowForm(true);
@@ -279,6 +281,16 @@ export default function PriceRules() {
               <div><Label>Priority (higher = first)</Label><Input type="number" value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))} /></div>
               <div><Label>Max Uses</Label><Input type="number" value={form.max_uses} onChange={e => setForm(f => ({ ...f, max_uses: e.target.value }))} placeholder="Unlimited" /></div>
             </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div>
+                <Label className="text-sm">Stackable</Label>
+                <p className="text-[10px] text-muted-foreground">Allow this promotion to combine with other active promos</p>
+              </div>
+              <Switch checked={form.is_stackable} onCheckedChange={v => setForm(f => ({ ...f, is_stackable: v }))} />
+            </div>
+            {form.rule_type === "gift_with_purchase" && (
+              <div><Label>Gift Product SKU</Label><Input value={form.gift_product_sku} onChange={e => setForm(f => ({ ...f, gift_product_sku: e.target.value }))} placeholder="Enter SKU of free gift product" /></div>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={closeForm}>Cancel</Button>
