@@ -110,9 +110,29 @@ serve(async (req) => {
     // Build the Maropost API request
     const outputSelector = OUTPUT_SELECTORS[action] || OUTPUT_SELECTORS.test_connection;
     
+    // Maropost API requires specific filter keys per entity type to return data
+    // Without these, the API returns empty arrays
+    const DEFAULT_FILTERS: Record<string, Record<string, unknown>> = {
+      get_products: { IsActive: ["True", "False"], Approved: ["True", "False"] },
+      get_categories: { Active: ["True", "False"] },
+      get_customers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
+      get_orders: { DatePlacedFrom: "2000-01-01 00:00:00", DatePlacedTo: "2030-01-01 00:00:00" },
+      get_content: { Active: ["True", "False"] },
+      get_vouchers: { Active: ["True", "False"] },
+      get_suppliers: { Active: ["True", "False"] },
+      get_rma: { DateIssuedFrom: "2000-01-01 00:00:00", DateIssuedTo: "2030-01-01 00:00:00" },
+      get_payments: { DatePaidFrom: "2000-01-01 00:00:00", DatePaidTo: "2030-01-01 00:00:00" },
+      get_warehouses: {},
+      get_shipping: {},
+      get_currency: {},
+    };
+
+    const defaultFilter = DEFAULT_FILTERS[action] || {};
+    const mergedFilter = { ...defaultFilter, ...filter };
+
     const requestBody: Record<string, unknown> = {
       Filter: {
-        ...filter,
+        ...mergedFilter,
         Page: String(page),
         Limit: String(limit),
         OutputSelector: outputSelector,
