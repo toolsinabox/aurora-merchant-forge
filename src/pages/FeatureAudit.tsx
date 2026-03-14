@@ -8643,7 +8643,7 @@ const accessibilityFeatures: FeatureCategory[] = [
       { name: "Form Error Announcements", description: "Screen reader announces form validation errors", status: "partial" },
       { name: "Responsive Font Sizing", description: "Text scales appropriately across devices", status: "done" },
       { name: "Alt Text on All Images", description: "All images have descriptive alt text", status: "partial" },
-      { name: "Reduced Motion Support", description: "Respect prefers-reduced-motion media query", status: "not_started" },
+      { name: "Reduced Motion Support", description: "Respect prefers-reduced-motion media query", status: "done", notes: "motion-reduce:transition-none classes" },
     ],
   },
 ];
