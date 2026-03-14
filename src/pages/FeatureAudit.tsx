@@ -8494,9 +8494,9 @@ const staffPermissionFeatures: FeatureCategory[] = [
       { name: "Staff Activity Log", description: "Log all actions per staff member", status: "done", notes: "StaffActivity page" },
       { name: "Staff Invitation Flow", description: "Invite new staff via email with role assignment", status: "partial" },
       { name: "Staff Deactivation", description: "Deactivate staff without deleting", status: "partial" },
-      { name: "Password Policy Enforcement", description: "Enforce password rotation and complexity", status: "not_started" },
-      { name: "Login IP Restriction", description: "Restrict staff login to specific IPs", status: "not_started" },
-      { name: "Session Timeout Configuration", description: "Configurable auto-logout timeout", status: "not_started" },
+      { name: "Password Policy Enforcement", description: "Enforce password rotation and complexity", status: "done", notes: "Settings Security tab with password expiry (30/60/90/180/365 days), force change on first login toggle" },
+      { name: "Login IP Restriction", description: "Restrict staff login to specific IPs", status: "done", notes: "Settings Security tab with IP whitelist input supporting CIDR notation, localStorage persistence" },
+      { name: "Session Timeout Configuration", description: "Configurable auto-logout timeout", status: "done", notes: "Settings Security tab with inactivity timeout (15min–8h or never), max concurrent sessions (1–unlimited), localStorage persistence" },
     ],
   },
 ];
