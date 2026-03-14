@@ -251,7 +251,7 @@ function ProductExportTab() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Select Fields</CardTitle>
+              <CardTitle className="text-base">Select Fields</CardTitle>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setSelectedFields(new Set(ALL_PRODUCT_FIELDS.map(f => f.key)))}>All</Button>
                 <Button variant="outline" size="sm" onClick={() => setSelectedFields(new Set())}>None</Button>
@@ -285,7 +285,7 @@ function ProductExportTab() {
       </div>
       <div className="space-y-4">
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-lg">Options</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Options</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <label className="flex items-center gap-3 cursor-pointer">
               <Checkbox checked={useMaropostHeaders} onCheckedChange={(v) => setUseMaropostHeaders(!!v)} />
@@ -393,7 +393,7 @@ function OrderExportTab() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-4">
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-lg">Order Fields</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Order Fields</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
               {ORDER_FIELDS.map(f => (
@@ -414,7 +414,7 @@ function OrderExportTab() {
       </div>
       <div className="space-y-4">
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-lg">Filters & Options</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Filters & Options</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <Label className="text-xs">Status Filter</Label>
@@ -506,7 +506,7 @@ function CategoryExportTab() {
 
   return (
     <Card className="max-w-md">
-      <CardHeader><CardTitle className="text-lg">Export Categories</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-base">Export Categories</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
           Export all categories with names, slugs, descriptions, hierarchy, and SEO fields.
@@ -564,7 +564,7 @@ function ReviewExportTab() {
 
   return (
     <Card className="max-w-md">
-      <CardHeader><CardTitle className="text-lg">Export Reviews</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-base">Export Reviews</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
           Export all product reviews with ratings, text, author, and admin replies.
