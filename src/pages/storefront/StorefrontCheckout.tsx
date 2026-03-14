@@ -93,8 +93,9 @@ export default function StorefrontCheckout() {
   const [creditTerms, setCreditTerms] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
-  const [ageVerified, setAgeVerified] = useState(false);
-  const [hasRestrictedItems] = useState(() => false); // Will be set from cart items
+  const [hasRestrictedItems] = useState(() => false);
+  const [expressCheckout, setExpressCheckout] = useState(false);
+  const [hasSavedDetails, setHasSavedDetails] = useState(false);
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
