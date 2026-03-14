@@ -9078,7 +9078,161 @@ const auditComplianceFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures]);
+// ═══════ WAVE 11 — FINAL NICHE & EDGE FEATURES ═══════
+
+const giftRegistryFeatures: FeatureCategory[] = [
+  {
+    category: "Gift Registry & Wishlists — Advanced",
+    icon: <Gift className="h-5 w-5" />,
+    features: [
+      { name: "Public Wishlist Sharing", description: "Share wishlist via link or social media", status: "partial" },
+      { name: "Gift Registry Creation", description: "Create wedding/baby/event gift registries", status: "not_started" },
+      { name: "Gift Registry Search (Public)", description: "Search registries by name/event", status: "not_started" },
+      { name: "Gift Registry Item Purchase Tracking", description: "Track which items have been purchased", status: "not_started" },
+      { name: "Gift Registry Thank You Notes", description: "Send thank you notes for purchased gifts", status: "not_started" },
+      { name: "Gift Wrapping Option", description: "Add gift wrapping service at checkout", status: "not_started" },
+      { name: "Gift Message per Item", description: "Custom gift message per line item", status: "partial" },
+      { name: "Gift Receipt (No Prices)", description: "Print receipt without prices for gifts", status: "not_started" },
+    ],
+  },
+];
+
+const warehouseAutomationFeatures: FeatureCategory[] = [
+  {
+    category: "Warehouse Automation & Rules",
+    icon: <Workflow className="h-5 w-5" />,
+    features: [
+      { name: "Order Routing Rules", description: "Auto-route orders to nearest warehouse", status: "not_started" },
+      { name: "Split Order by Warehouse", description: "Auto-split order if items in different warehouses", status: "not_started" },
+      { name: "Shipping Method Auto-Selection", description: "Auto-select cheapest/fastest carrier", status: "not_started" },
+      { name: "Auto-Print Labels on Status Change", description: "Trigger label print when status changes", status: "not_started" },
+      { name: "Packing Rules (Box Selection)", description: "Auto-suggest box size based on items", status: "not_started" },
+      { name: "Cartonization Algorithm", description: "Optimize item packing across boxes", status: "not_started" },
+      { name: "Warehouse Staff Assignment", description: "Assign orders to specific warehouse staff", status: "not_started" },
+      { name: "Picking Route Optimization", description: "Optimize pick path through warehouse", status: "not_started" },
+      { name: "Dock Scheduling", description: "Schedule inbound/outbound dock appointments", status: "not_started" },
+      { name: "Cross-Docking Support", description: "Route inbound directly to outbound", status: "not_started" },
+    ],
+  },
+];
+
+const returnPolicyFeatures: FeatureCategory[] = [
+  {
+    category: "Return Policies & Configuration",
+    icon: <Scale className="h-5 w-5" />,
+    features: [
+      { name: "Return Window (Days)", description: "Configure return window per product/category", status: "partial" },
+      { name: "Non-Returnable Products", description: "Mark products as final sale / non-returnable", status: "not_started" },
+      { name: "Return Condition Requirements", description: "Define acceptable return conditions (unused, tags attached)", status: "not_started" },
+      { name: "Return Shipping Cost Rules", description: "Who pays return shipping (customer/store)", status: "not_started" },
+      { name: "Exchange-Only Products", description: "Allow exchange but not refund on certain items", status: "not_started" },
+      { name: "Return Policy Display", description: "Show return policy on product page", status: "partial" },
+      { name: "Return Reason Analytics", description: "Track why items are returned", status: "not_started" },
+      { name: "Auto-Approve Returns Under $X", description: "Auto-approve returns below threshold", status: "not_started" },
+    ],
+  },
+];
+
+const customerSegmentationFeatures: FeatureCategory[] = [
+  {
+    category: "Customer Segmentation — Rules Engine",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Segment by Total Spent", description: "Segment customers by lifetime spend", status: "done", notes: "customer_segmentation_rules" },
+      { name: "Segment by Order Count", description: "Segment by number of orders placed", status: "done" },
+      { name: "Segment by Last Order Date", description: "Segment by recency of last purchase", status: "done" },
+      { name: "Segment by Product Purchased", description: "Customers who bought specific products", status: "partial" },
+      { name: "Segment by Category Purchased", description: "Customers who bought from specific categories", status: "partial" },
+      { name: "Segment by Location", description: "Segment by shipping address state/country", status: "partial" },
+      { name: "Segment by Registration Date", description: "Segment by account age", status: "done" },
+      { name: "Segment by Email Engagement", description: "Segment by email open/click rate", status: "not_started" },
+      { name: "Auto-Assign Segment", description: "Auto-assign customers to segments on rule match", status: "done", notes: "is_active rules" },
+      { name: "Segment-Based Email Campaigns", description: "Send targeted emails to segments", status: "partial" },
+      { name: "Segment-Based Discounts", description: "Auto-apply discounts per segment", status: "partial" },
+      { name: "VIP / High-Value Auto-Tag", description: "Auto-tag high-value customers as VIP", status: "partial" },
+    ],
+  },
+];
+
+const internationalFeatures: FeatureCategory[] = [
+  {
+    category: "International Commerce",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Duties & Tariff Calculation", description: "Calculate import duties at checkout", status: "not_started" },
+      { name: "HS Code per Product", description: "Harmonized System codes for customs", status: "not_started" },
+      { name: "Country of Origin", description: "Country of origin field per product", status: "partial" },
+      { name: "Commercial Invoice Generation", description: "Generate customs commercial invoices", status: "not_started" },
+      { name: "Restricted Countries", description: "Block orders from specific countries", status: "not_started" },
+      { name: "Country-Specific Product Restrictions", description: "Hide products restricted in certain countries", status: "not_started" },
+      { name: "International Returns Handling", description: "Different return policies for international orders", status: "not_started" },
+      { name: "DDP / DDU Shipping Terms", description: "Delivered Duty Paid vs Unpaid options", status: "not_started" },
+      { name: "Export Documentation", description: "Generate packing lists and export docs", status: "not_started" },
+      { name: "Currency Rounding Rules", description: "Currency-specific rounding (e.g., .95 pricing)", status: "not_started" },
+    ],
+  },
+];
+
+const productSchedulingFeatures: FeatureCategory[] = [
+  {
+    category: "Product Scheduling & Visibility",
+    icon: <Timer className="h-5 w-5" />,
+    features: [
+      { name: "Scheduled Publish Date", description: "Auto-publish product at future date/time", status: "done", notes: "publish_start field" },
+      { name: "Scheduled Unpublish Date", description: "Auto-hide product after date/time", status: "done", notes: "publish_end field" },
+      { name: "Pre-Order Mode", description: "Accept orders before product is available", status: "done", notes: "preorder flag" },
+      { name: "Pre-Order Expected Date", description: "Show expected availability date", status: "done" },
+      { name: "Coming Soon Mode", description: "Show product as 'Coming Soon' without buy button", status: "partial" },
+      { name: "Hidden Product (URL-Only Access)", description: "Product only accessible via direct URL", status: "partial" },
+      { name: "Customer Group Visibility", description: "Show products only to specific customer groups", status: "partial" },
+      { name: "Seasonal Product Scheduling", description: "Auto-show/hide seasonal products by date", status: "done" },
+      { name: "Launch Day Countdown Timer", description: "Countdown to product launch date", status: "not_started" },
+      { name: "Embargo / NDA Product Handling", description: "Products hidden until embargo lifts", status: "partial" },
+    ],
+  },
+];
+
+const orderPrintingFeatures: FeatureCategory[] = [
+  {
+    category: "Order Processing — Print & Batch",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Batch Print Invoices", description: "Select multiple orders and print invoices", status: "not_started" },
+      { name: "Batch Print Packing Slips", description: "Print packing slips for multiple orders", status: "not_started" },
+      { name: "Batch Print Shipping Labels", description: "Print labels for multiple orders at once", status: "not_started" },
+      { name: "Batch Update Tracking Numbers", description: "Upload CSV of tracking numbers", status: "not_started" },
+      { name: "Batch Mark as Shipped", description: "Mark multiple orders as shipped at once", status: "partial" },
+      { name: "Batch Mark as Paid", description: "Mark multiple orders as paid at once", status: "not_started" },
+      { name: "Thermal Label Format (4x6)", description: "Format labels for 4x6 thermal printers", status: "not_started" },
+      { name: "A4 Label Format", description: "Format labels for A4 sheet printers", status: "partial" },
+      { name: "Custom Print Template (Invoice)", description: "Customize invoice template with logo/layout", status: "partial" },
+      { name: "Custom Print Template (Packing)", description: "Customize packing slip template", status: "partial" },
+    ],
+  },
+];
+
+const developerToolsFeatures: FeatureCategory[] = [
+  {
+    category: "Developer Tools & Extensibility",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "REST API v1 (Full Coverage)", description: "Complete CRUD API for all entities", status: "done", notes: "rest-api function" },
+      { name: "API Versioning", description: "Versioned API endpoints for backward compatibility", status: "not_started" },
+      { name: "GraphQL API", description: "GraphQL endpoint for flexible queries", status: "not_started" },
+      { name: "Webhook Event System", description: "Subscribe to events via webhooks", status: "done", notes: "Webhooks page" },
+      { name: "API Sandbox / Test Mode", description: "Sandbox environment for API testing", status: "not_started" },
+      { name: "API Response Filtering", description: "Select specific fields in API response", status: "partial" },
+      { name: "API Pagination (Cursor)", description: "Cursor-based pagination for large datasets", status: "partial" },
+      { name: "API Bulk Operations", description: "Batch create/update/delete via API", status: "done", notes: "batch-api function" },
+      { name: "Custom Metadata Fields (API)", description: "Arbitrary metadata on entities via API", status: "partial" },
+      { name: "Event-Driven Architecture", description: "Internal event bus for extensibility", status: "partial" },
+      { name: "Edge Function Marketplace", description: "Share/install custom edge functions", status: "not_started" },
+      { name: "CLI Tooling", description: "Command-line tools for store management", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures, ...giftRegistryFeatures, ...warehouseAutomationFeatures, ...returnPolicyFeatures, ...customerSegmentationFeatures, ...internationalFeatures, ...productSchedulingFeatures, ...orderPrintingFeatures, ...developerToolsFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
