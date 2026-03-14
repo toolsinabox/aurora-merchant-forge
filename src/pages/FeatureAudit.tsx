@@ -7656,7 +7656,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
       { name: "Square Payments", description: "Square online payment processing", status: "not_started" },
       { name: "Apple Pay", description: "Apple Pay at checkout via payment gateway", status: "not_started" },
       { name: "Google Pay", description: "Google Pay at checkout via payment gateway", status: "not_started" },
-      { name: "Bank Transfer / Direct Deposit", description: "Offline payment with bank details shown", status: "partial" },
+      { name: "Bank Transfer / Direct Deposit", description: "Offline payment with bank details shown", status: "done", notes: "StorefrontCheckout bank_transfer payment method with full bank details display (bank name, BSB, account number, reference), payment status noted in order, awaiting payment confirmation workflow" },
       { name: "Cash on Delivery", description: "COD payment option", status: "done", notes: "StorefrontCheckout payment method radio with card/COD options, COD note added to order" },
       { name: "Store Credit / Account Balance", description: "Allow customers to pay from store credit balance", status: "partial", notes: "Credit notes exist" },
       { name: "Gift Voucher as Payment", description: "Redeem gift voucher at checkout to reduce balance", status: "done", notes: "Gift vouchers system" },
