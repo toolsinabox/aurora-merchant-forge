@@ -164,6 +164,7 @@ export default function EmailTemplates() {
         <Tabs defaultValue="templates">
           <TabsList>
             <TabsTrigger value="templates">Templates ({templates.length})</TabsTrigger>
+            <TabsTrigger value="sms">SMS Templates ({smsTemplates.length})</TabsTrigger>
             <TabsTrigger value="queue">Email Queue ({emailQueue.length})</TabsTrigger>
           </TabsList>
 
