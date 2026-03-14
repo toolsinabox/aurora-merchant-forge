@@ -8511,7 +8511,7 @@ const warehouseFulfillmentFeatures: FeatureCategory[] = [
       { name: "Pick & Pack Workflow", description: "Step-by-step pick and pack process", status: "done", notes: "PickPack page" },
       { name: "Barcode Scanning (Pick)", description: "Scan barcodes to verify picked items", status: "done", notes: "BarcodeScanner component" },
       { name: "Barcode Label Printing", description: "Print barcode labels for products", status: "done", notes: "PrintBarcodeLabels page" },
-      { name: "Wave Picking", description: "Group multiple orders into pick waves", status: "partial" },
+      { name: "Wave Picking", description: "Group multiple orders into pick waves", status: "done", notes: "PickPack page Wave tab groups orders by zone/priority for batch picking" },
       { name: "Zone-Based Picking", description: "Assign pickers to warehouse zones", status: "not_started" },
       { name: "Batch Picking", description: "Pick same SKU for multiple orders at once", status: "not_started" },
       { name: "Pack Station Verification", description: "Verify items at pack station before shipping", status: "partial" },
