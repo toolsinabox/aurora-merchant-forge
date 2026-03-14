@@ -286,6 +286,46 @@ export default function ContentPages() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Version History Dialog */}
+        <Dialog open={!!versionPageId} onOpenChange={(v) => { if (!v) setVersionPageId(null); }}>
+          <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2"><History className="h-4 w-4" /> Version History</DialogTitle>
+            </DialogHeader>
+            {versions.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No previous versions saved yet. Versions are created each time you edit and save a page.</p>
+            ) : (
+              <div className="space-y-2">
+                {versions.map(v => (
+                  <div key={v.id} className="border rounded-md p-3 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium">{v.title}</p>
+                        <p className="text-[10px] text-muted-foreground">{format(new Date(v.savedAt), "dd MMM yyyy HH:mm")} · {v.savedBy}</p>
+                      </div>
+                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={async () => {
+                        if (!versionPageId) return;
+                        // Save current as version first
+                        const current = pages.find((p: any) => p.id === versionPageId);
+                        if (current) saveVersion(versionPageId, current.title, current.content || "");
+                        // Restore
+                        const { error } = await supabase.from("content_pages").update({ title: v.title, content: v.content, updated_at: new Date().toISOString() }).eq("id", versionPageId);
+                        if (error) { toast.error(error.message); return; }
+                        queryClient.invalidateQueries({ queryKey: ["content_pages"] });
+                        setVersionPageId(null);
+                        toast.success("Version restored");
+                      }}>
+                        <RotateCcw className="h-3 w-3" /> Restore
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground max-h-20 overflow-hidden" dangerouslySetInnerHTML={{ __html: v.content.slice(0, 200) + (v.content.length > 200 ? "..." : "") }} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
