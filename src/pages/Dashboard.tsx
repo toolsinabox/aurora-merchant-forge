@@ -451,7 +451,7 @@ export default function Dashboard() {
                 <CardContent className="p-4 pt-2">
                   {loadingProducts ? <Skeleton className="h-16 w-full" /> : lowStockProducts > 0 ? (
                     <div>
-                      <p className="text-2xl font-bold text-warning">{lowStockProducts}</p>
+                      <p className="text-lg font-bold text-warning">{lowStockProducts}</p>
                       <p className="text-xs text-muted-foreground mb-2">Products with low stock (≤10 units)</p>
                       <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => navigate("/inventory")}>
                         Manage Inventory

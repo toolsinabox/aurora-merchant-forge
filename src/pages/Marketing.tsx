@@ -209,7 +209,7 @@ export default function Marketing() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs text-muted-foreground">{seg.label}</p>
-                        <p className="text-2xl font-bold">{seg.count}</p>
+                        <p className="text-lg font-bold">{seg.count}</p>
                       </div>
                       <Users className="h-8 w-8 text-muted-foreground/30" />
                     </div>

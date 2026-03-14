@@ -149,7 +149,7 @@ export default function Backorders() {
             <div className="flex items-center gap-2"><PackageX className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{totalQty}</p><p className="text-[10px] text-muted-foreground">Units on Backorder</p></div></div>
           </CardContent></Card>
           <Card><CardContent className="p-4">
-            <div className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{(backorders as any[]).filter((b: any) => b.expected_date && new Date(b.expected_date) < new Date() && b.status === "pending").length}</p><p className="text-[10px] text-muted-foreground">Overdue</p></div></div>
+            <div className="flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{(backorders as any[]).filter((b: any) => b.expected_date && new Date(b.expected_date) < new Date() && b.status === "pending").length}</p><p className="text-[10px] text-muted-foreground">Overdue</p></div></div>
           </CardContent></Card>
         </div>
 
