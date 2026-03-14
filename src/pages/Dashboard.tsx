@@ -6,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useProducts, useOrders, useCustomers } from "@/hooks/use-data";
 import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
-  Users, Plus, ExternalLink, ArrowRight,
+  Users, Plus, ExternalLink, ArrowRight, Settings2,
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -108,6 +110,29 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { currentStore } = useAuth();
 
+  // Widget visibility
+  const WIDGET_KEYS = ["kpis", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts"] as const;
+  const WIDGET_LABELS: Record<string, string> = {
+    kpis: "KPI Cards", revenue: "Revenue Chart", dailyOrders: "Daily Orders", recentOrders: "Recent Orders",
+    topProducts: "Top Products", customerGrowth: "Customer Growth", orderStatus: "Order Status",
+    customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts",
+  };
+  const [visibleWidgets, setVisibleWidgets] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem("dashboard_widgets");
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return Object.fromEntries(WIDGET_KEYS.map(k => [k, true]));
+  });
+  const toggleWidget = (key: string) => {
+    setVisibleWidgets(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      localStorage.setItem("dashboard_widgets", JSON.stringify(next));
+      return next;
+    });
+  };
+  const w = (key: string) => visibleWidgets[key] !== false;
+
   const totalRevenue = orders.reduce((s: number, o: any) => s + Number(o.total), 0);
   const activeProducts = products.filter((p) => p.status === "active").length;
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
@@ -192,6 +217,22 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="page-header-actions">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+                  <Settings2 className="h-3.5 w-3.5" /> <span className="btn-label">Widgets</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-52 p-2" align="end">
+                <p className="text-xs font-medium mb-2 px-1">Show/Hide Widgets</p>
+                {WIDGET_KEYS.map(key => (
+                  <label key={key} className="flex items-center gap-2 px-1 py-1 text-xs cursor-pointer hover:bg-muted rounded">
+                    <Checkbox checked={w(key)} onCheckedChange={() => toggleWidget(key)} />
+                    {WIDGET_LABELS[key]}
+                  </label>
+                ))}
+              </PopoverContent>
+            </Popover>
             <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate("/products/new")}>
               <Plus className="h-3.5 w-3.5" /> <span className="btn-label">Product</span>
             </Button>
@@ -210,15 +251,15 @@ export default function Dashboard() {
           <EmptyDashboard navigate={navigate} />
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {w("kpis") && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <KPICard title="Total Revenue" value={totalRevenue.toFixed(2)} icon={DollarSign} prefix="$" loading={loadingOrders} change={revenueChange} />
               <KPICard title="Total Orders" value={orders.length} icon={ShoppingCart} loading={loadingOrders} />
               <KPICard title="Avg Order Value" value={avgOrderValue.toFixed(2)} icon={TrendingUp} prefix="$" loading={loadingOrders} />
               <KPICard title="Active Products" value={activeProducts} icon={Package} loading={loadingProducts} suffix={lowStockProducts > 0 ? ` (${lowStockProducts} low stock)` : ""} />
-            </div>
+            </div>}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <Card className="lg:col-span-2">
+              {w("revenue") && <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium">Revenue (Last 30 Days)</CardTitle>
                 </CardHeader>
@@ -241,9 +282,9 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
 
-              <Card>
+              {w("dailyOrders") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium">Daily Orders (30 Days)</CardTitle>
                 </CardHeader>
@@ -260,12 +301,12 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               {/* Recent Orders */}
-              <Card className="lg:col-span-2">
+              {w("recentOrders") && <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                   <CardTitle className="text-sm font-medium">Recent Orders</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/orders")}>
@@ -306,10 +347,10 @@ export default function Dashboard() {
                   </Table>
                   </div>
                 </CardContent>
-              </Card>
+              </Card>}
 
               {/* Top Products */}
-              <Card>
+              {w("topProducts") && <Card>
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                   <CardTitle className="text-sm font-medium">Top Products</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/products")}>
@@ -354,12 +395,12 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
 
             {/* Customer Growth + Order Status */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <Card className="lg:col-span-2">
+              {w("customerGrowth") && <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
                   <CardTitle className="text-sm font-medium">Customer Growth (30 Days)</CardTitle>
                   <Button variant="ghost" size="sm" className="text-xs gap-1 h-7" onClick={() => navigate("/customers")}>
@@ -379,9 +420,9 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
 
-              <Card>
+              {w("orderStatus") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium">Order Status</CardTitle>
                 </CardHeader>
@@ -412,12 +453,12 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
 
             {/* Inventory Alerts */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Card>
+              {w("customersSummary") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Users className="h-4 w-4" /> Customers
@@ -441,9 +482,9 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
 
-              <Card>
+              {w("inventoryAlerts") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     {lowStockProducts > 0 && <AlertTriangle className="h-4 w-4 text-warning" />}
@@ -465,7 +506,7 @@ export default function Dashboard() {
                     </div>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
           </>
         )}

@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCustomers, useCreateCustomer } from "@/hooks/use-data";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2 } from "lucide-react";
+import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2, Merge } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -52,6 +53,47 @@ export default function Customers() {
   const [newCustomer, setNewCustomer] = useState({ name: "", email: "", phone: "", segment: "new" });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
+  const [selectedForMerge, setSelectedForMerge] = useState<string[]>([]);
+  const [showMerge, setShowMerge] = useState(false);
+  const [merging, setMerging] = useState(false);
+  const [primaryId, setPrimaryId] = useState<string>("");
+
+  const toggleMergeSelection = (id: string) => {
+    setSelectedForMerge(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  const handleMerge = async () => {
+    if (!primaryId || selectedForMerge.length < 2 || !currentStore) return;
+    setMerging(true);
+    try {
+      const secondaryIds = selectedForMerge.filter(id => id !== primaryId);
+      // Reassign orders from secondary customers to primary
+      for (const secId of secondaryIds) {
+        await supabase.from("orders").update({ customer_id: primaryId } as any).eq("customer_id", secId).eq("store_id", currentStore.id);
+      }
+      // Sum up totals from secondary customers
+      const secondaryCustomers = customers.filter(c => secondaryIds.includes(c.id));
+      const primaryCustomer = customers.find(c => c.id === primaryId);
+      if (primaryCustomer) {
+        const totalOrders = secondaryCustomers.reduce((s, c) => s + c.total_orders, primaryCustomer.total_orders);
+        const totalSpent = secondaryCustomers.reduce((s, c) => s + Number(c.total_spent), Number(primaryCustomer.total_spent));
+        await supabase.from("customers").update({ total_orders: totalOrders, total_spent: totalSpent } as any).eq("id", primaryId);
+      }
+      // Delete secondary customers
+      for (const secId of secondaryIds) {
+        await supabase.from("customers").delete().eq("id", secId);
+      }
+      toast.success(`Merged ${secondaryIds.length} customers into primary record`);
+      setSelectedForMerge([]);
+      setShowMerge(false);
+      setPrimaryId("");
+      qc.invalidateQueries({ queryKey: ["customers"] });
+    } catch (err: any) {
+      toast.error(err.message || "Merge failed");
+    } finally {
+      setMerging(false);
+    }
+  };
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || (c.email || "").toLowerCase().includes(search.toLowerCase());
@@ -133,6 +175,11 @@ export default function Customers() {
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={handleExport}>
               <Download className="h-3.5 w-3.5" /> <span className="btn-label">Export</span>
             </Button>
+            {selectedForMerge.length >= 2 && (
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => { setPrimaryId(selectedForMerge[0]); setShowMerge(true); }}>
+                <Merge className="h-3.5 w-3.5" /> Merge ({selectedForMerge.length})
+              </Button>
+            )}
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowCreate(true)}><Plus className="h-3.5 w-3.5" /> <span className="btn-label">Add Customer</span></Button>
           </div>
         </div>
@@ -179,6 +226,7 @@ export default function Customers() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-xs h-8 w-8"></TableHead>
                   <TableHead className="text-xs h-8">Name</TableHead>
                   <TableHead className="text-xs h-8">Email</TableHead>
                   <TableHead className="text-xs h-8">Segment</TableHead>
@@ -188,17 +236,20 @@ export default function Customers() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={5}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={6}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">No customers yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">No customers yet.</TableCell></TableRow>
                 ) : (
                   filtered.slice((page - 1) * pageSize, page * pageSize).map((c) => (
-                    <TableRow key={c.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/customers/${c.id}`)}>
-                      <TableCell className="py-2 font-medium">{c.name}</TableCell>
-                      <TableCell className="py-2 text-muted-foreground">{c.email || "—"}</TableCell>
-                      <TableCell className="py-2"><StatusBadge status={c.segment} /></TableCell>
-                      <TableCell className="py-2 text-right">{c.total_orders}</TableCell>
-                      <TableCell className="py-2 text-right font-medium">${Number(c.total_spent).toLocaleString()}</TableCell>
+                    <TableRow key={c.id} className="text-xs cursor-pointer hover:bg-muted/50">
+                      <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox checked={selectedForMerge.includes(c.id)} onCheckedChange={() => toggleMergeSelection(c.id)} />
+                      </TableCell>
+                      <TableCell className="py-2 font-medium" onClick={() => navigate(`/customers/${c.id}`)}>{c.name}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground" onClick={() => navigate(`/customers/${c.id}`)}>{c.email || "—"}</TableCell>
+                      <TableCell className="py-2" onClick={() => navigate(`/customers/${c.id}`)}><StatusBadge status={c.segment} /></TableCell>
+                      <TableCell className="py-2 text-right" onClick={() => navigate(`/customers/${c.id}`)}>{c.total_orders}</TableCell>
+                      <TableCell className="py-2 text-right font-medium" onClick={() => navigate(`/customers/${c.id}`)}>${Number(c.total_spent).toLocaleString()}</TableCell>
                     </TableRow>
                   ))
                 )}
@@ -255,6 +306,36 @@ export default function Customers() {
                 });
               }}>
                 {createCustomer.isPending ? "Creating..." : "Create Customer"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Merge Dialog */}
+        <Dialog open={showMerge} onOpenChange={setShowMerge}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Merge Customers</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Select the primary record. Orders and data from the others will be merged into it, and duplicates will be deleted.</p>
+            <div className="space-y-2 my-2">
+              {selectedForMerge.map(id => {
+                const c = customers.find(x => x.id === id);
+                if (!c) return null;
+                return (
+                  <label key={id} className="flex items-center gap-2 p-2 rounded border text-xs cursor-pointer hover:bg-muted/50">
+                    <input type="radio" name="primaryCustomer" checked={primaryId === id} onChange={() => setPrimaryId(id)} className="accent-primary" />
+                    <span className="font-medium">{c.name}</span>
+                    <span className="text-muted-foreground">{c.email || "No email"}</span>
+                    <span className="ml-auto text-muted-foreground">{c.total_orders} orders · ${Number(c.total_spent).toLocaleString()}</span>
+                    {primaryId === id && <span className="text-primary text-[10px] font-semibold">PRIMARY</span>}
+                  </label>
+                );
+              })}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowMerge(false)}>Cancel</Button>
+              <Button onClick={handleMerge} disabled={!primaryId || merging} className="gap-1">
+                {merging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Merge className="h-3.5 w-3.5" />}
+                Merge Customers
               </Button>
             </DialogFooter>
           </DialogContent>

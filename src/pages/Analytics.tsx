@@ -104,6 +104,7 @@ export default function Analytics() {
   const [salesByChannel, setSalesByChannel] = useState<{ channel: string; orders: number; revenue: number }[]>([]);
   const [salesByRegion, setSalesByRegion] = useState<{ region: string; orders: number; revenue: number }[]>([]);
   const [returnAnalytics, setReturnAnalytics] = useState<{ byReason: { reason: string; count: number; amount: number }[]; totalReturns: number; totalRefunded: number }>({ byReason: [], totalReturns: 0, totalRefunded: 0 });
+  const [repeatPurchaseRate, setRepeatPurchaseRate] = useState<{ rate: number; totalCustomers: number; repeatCustomers: number }>({ rate: 0, totalCustomers: 0, repeatCustomers: 0 });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -413,6 +414,19 @@ export default function Analytics() {
         byReason: Object.entries(reasonMap).map(([reason, d]) => ({ reason, ...d })).sort((a, b) => b.count - a.count),
         totalReturns: (returnsData || []).length,
         totalRefunded,
+      });
+
+      // Repeat Purchase Rate
+      const customerOrderCounts: Record<string, number> = {};
+      (orders as any[]).forEach((o: any) => {
+        if (o.customer_id) customerOrderCounts[o.customer_id] = (customerOrderCounts[o.customer_id] || 0) + 1;
+      });
+      const totalWithOrders = Object.keys(customerOrderCounts).length;
+      const repeatBuyers = Object.values(customerOrderCounts).filter(c => c > 1).length;
+      setRepeatPurchaseRate({
+        rate: totalWithOrders > 0 ? (repeatBuyers / totalWithOrders) * 100 : 0,
+        totalCustomers: totalWithOrders,
+        repeatCustomers: repeatBuyers,
       });
 
       setLoadingTopProducts(false);
@@ -1142,6 +1156,30 @@ export default function Analytics() {
                   ))}
                 </TableBody>
               </Table>
+            )}
+          </CardContent>
+        </Card>
+        {/* Repeat Purchase Rate */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Repeat Purchase Rate</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[80px]" /> : (
+              <div className="flex items-center gap-8">
+                <div>
+                  <p className="text-2xl font-bold">{repeatPurchaseRate.rate.toFixed(1)}%</p>
+                  <p className="text-xs text-muted-foreground">of customers have reordered</p>
+                </div>
+                <div className="flex gap-6">
+                  <div>
+                    <p className="text-lg font-semibold">{repeatPurchaseRate.totalCustomers}</p>
+                    <p className="text-xs text-muted-foreground">Total customers with orders</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-semibold">{repeatPurchaseRate.repeatCustomers}</p>
+                    <p className="text-xs text-muted-foreground">Repeat buyers (2+ orders)</p>
+                  </div>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
