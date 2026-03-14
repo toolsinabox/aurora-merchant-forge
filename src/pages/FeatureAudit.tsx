@@ -8517,7 +8517,7 @@ const warehouseFulfillmentFeatures: FeatureCategory[] = [
       { name: "Pack Station Verification", description: "Verify items at pack station before shipping", status: "done", notes: "PickPack page pack station with barcode scan verification, item checklist, weight capture" },
       { name: "Shipping Label Auto-Print", description: "Auto-print carrier label after packing", status: "done", notes: "Code-complete: carrier label generation via StarShipIt/ShipStation edge functions. Activates with carrier credentials" },
       { name: "Warehouse Dashboard (KPIs)", description: "Fulfillment KPIs and queue overview", status: "done", notes: "WarehouseDashboard page" },
-      { name: "Order Queue Prioritization", description: "Priority-based order queue for fulfillment", status: "partial" },
+      { name: "Order Queue Prioritization", description: "Priority-based order queue for fulfillment", status: "done", notes: "OrderDetail Priority card with low/normal/high/urgent selector, WarehouseDashboard sorts queue by priority" },
       { name: "Multi-Box Shipment", description: "Split single order into multiple boxes", status: "not_started" },
       { name: "Package Weight Capture", description: "Record actual package weight at pack station", status: "not_started" },
       { name: "Fulfillment SLA Tracking", description: "Track time from order to shipment vs SLA", status: "done", notes: "Warehouse Dashboard SLA cards showing avg fulfillment time, SLA target (48h), and within-SLA percentage" },
