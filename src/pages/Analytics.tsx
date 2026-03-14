@@ -151,13 +151,15 @@ export default function Analytics() {
       const prodCatMap: Record<string, string> = {};
       (prods || []).forEach((p: any) => { if (p.category_id) prodCatMap[p.id] = catMap[p.category_id] || "Other"; });
       
-      const catRevenue: Record<string, number> = {};
+      const catRevenueMap: Record<string, { revenue: number; units: number }> = {};
       (items || []).forEach((item: any) => {
         const cat = prodCatMap[item.product_id] || "Uncategorized";
-        catRevenue[cat] = (catRevenue[cat] || 0) + Number(item.total);
+        if (!catRevenueMap[cat]) catRevenueMap[cat] = { revenue: 0, units: 0 };
+        catRevenueMap[cat].revenue += Number(item.total);
+        catRevenueMap[cat].units += item.quantity;
       });
       setSalesByCategory(
-        Object.entries(catRevenue).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
+        Object.entries(catRevenueMap).map(([name, d]) => ({ name, value: d.revenue, units: d.units })).sort((a, b) => b.value - a.value)
       );
 
       // Sales by brand
@@ -770,14 +772,34 @@ export default function Analytics() {
               {loadingTopProducts ? <Skeleton className="h-[200px]" /> : salesByCategory.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-8">No category data yet</p>
               ) : (
-                <ResponsiveContainer width="100%" height={220}>
-                  <PieChart>
-                    <Pie data={salesByCategory} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                      {salesByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Pie>
-                    <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <div className="space-y-3">
+                  <ResponsiveContainer width="100%" height={180}>
+                    <PieChart>
+                      <Pie data={salesByCategory} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+                        {salesByCategory.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip contentStyle={{ fontSize: 12, borderRadius: 6 }} formatter={(v: number) => [`$${v.toFixed(2)}`, "Revenue"]} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Category</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Units</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {salesByCategory.slice(0, 10).map((c: any, i: number) => (
+                        <TableRow key={i} className="text-xs">
+                          <TableCell className="py-1.5 font-medium">{c.name}</TableCell>
+                          <TableCell className="py-1.5 text-right font-mono">{c.units || 0}</TableCell>
+                          <TableCell className="py-1.5 text-right font-medium">${c.value.toFixed(2)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               )}
             </CardContent>
           </Card>

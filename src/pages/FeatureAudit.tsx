@@ -8009,7 +8009,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
     category: "Order Workflows — Advanced",
     icon: <Workflow className="h-5 w-5" />,
     features: [
-      { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "partial", notes: "Status-based hold" },
+      { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "done", notes: "OrderHolds page with hold/release workflow, KPI cards (active/released/total), hold reasons (fraud, payment, address verification, high value, suspicious activity), search/filter, order selection from pending/processing orders" },
       { name: "Order Auto-Allocation Rules", description: "Auto-assign orders to warehouse by region/stock", status: "done", notes: "Settings Fulfillment tab AutoAssignWarehouseCard with region/country-based routing to warehouses, priority ordering, active toggle" },
       { name: "Split Shipment (Partial Fulfillment)", description: "Ship part of an order, hold remainder", status: "done", notes: "Create Shipment dialog with per-item checkbox and quantity selector for partial fulfillment, Split Order dialog for splitting items into new order, fulfillment_status supports unfulfilled/partial/fulfilled" },
       { name: "Backorder Auto-Creation", description: "Auto-create backorders when stock insufficient", status: "done", notes: "backorders table" },
@@ -8097,7 +8097,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
     icon: <BarChart3 className="h-5 w-5" />,
     features: [
       { name: "Sales by Channel Report", description: "Revenue breakdown by channel (web, eBay, POS, etc.)", status: "partial", notes: "Dashboard analytics" },
-      { name: "Sales by Category Report", description: "Revenue and units by product category", status: "partial" },
+      { name: "Sales by Category Report", description: "Revenue and units by product category", status: "done", notes: "Analytics page Sales by Category section with pie chart and detailed table showing category name, units sold, and revenue per category" },
       { name: "Sales by Brand Report", description: "Revenue and units by brand", status: "done", notes: "Analytics page Sales by Brand table with revenue and units per brand" },
       { name: "Sales by Customer Group Report", description: "Revenue by customer segment/group", status: "done", notes: "Analytics page Sales by Customer Group table" },
       { name: "Sales by Geography Report", description: "Revenue by state/country", status: "done", notes: "Analytics page Sales by Region table with region, orders, revenue from shipping address parsing" },
@@ -8119,7 +8119,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Forecast vs Actual Sales", description: "Compare forecasted to actual sales", status: "done", notes: "Analytics page Forecast vs Actual card with 12-week line chart (actual vs 3-week moving average forecast), accuracy %" },
       { name: "Custom Report Builder", description: "Drag-and-drop report builder with saved reports", status: "done", notes: "ReportBuilder page" },
       { name: "Scheduled Report Emails", description: "Auto-email reports on schedule", status: "done", notes: "scheduled-report-email function" },
-      { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "partial" },
+      { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "done", notes: "ReportBuilder page with CSV, Excel (TSV with BOM for UTF-8), and JSON export buttons for all report results" },
       { name: "Dashboard Widget Customization", description: "Rearrange/add dashboard widgets", status: "done", notes: "Dashboard Widgets popover" },
     ],
   },
