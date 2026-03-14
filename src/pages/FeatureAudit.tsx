@@ -8021,7 +8021,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
       { name: "Order Internal Notes (Timeline)", description: "Chronological internal notes log per order", status: "done", notes: "order_notes table" },
       { name: "Order Custom Fields", description: "Custom metadata fields on orders", status: "partial" },
       { name: "Order Status Webhook Triggers", description: "Fire webhooks on order status changes", status: "done", notes: "webhook-dispatcher function" },
-      { name: "Order Archive / Purge", description: "Archive old orders, purge test orders", status: "not_started" },
+      { name: "Order Archive / Purge", description: "Archive old orders, purge test orders", status: "done", notes: "archived_at column on orders" },
       { name: "Draft Orders / Quotes Conversion", description: "Convert draft/quote to live order with one click", status: "done", notes: "Quotes page" },
       { name: "Order Fraud Scoring", description: "Risk score based on IP, email, address signals", status: "not_started" },
       { name: "Order Batch Status Update", description: "Bulk change status of multiple orders", status: "done", notes: "Orders page bulk action bar" },
