@@ -673,7 +673,8 @@ export default function POS() {
 
               {/* Totals & Pay */}
               <div className="p-3 border-t space-y-2">
-                <div className="flex justify-between text-xs"><span className="text-muted-foreground">Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between text-xs"><span className="text-muted-foreground">Subtotal</span><span>${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span></div>
+                {totalDiscount > 0 && <div className="flex justify-between text-xs text-primary"><span>Discounts</span><span>-${totalDiscount.toFixed(2)}</span></div>}
                 <div className="flex justify-between text-xs"><span className="text-muted-foreground">GST (10%)</span><span>${tax.toFixed(2)}</span></div>
                 {appliedVoucher && <div className="flex justify-between text-xs text-primary"><span>Voucher</span><span>-${voucherDiscount.toFixed(2)}</span></div>}
                 <Separator />
