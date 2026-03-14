@@ -1161,6 +1161,56 @@ export type Database = {
           },
         ]
       }
+      email_automations: {
+        Row: {
+          created_at: string
+          delay_hours: number
+          html_body: string
+          id: string
+          is_active: boolean
+          name: string
+          sent_count: number
+          store_id: string
+          subject: string
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delay_hours?: number
+          html_body?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sent_count?: number
+          store_id: string
+          subject?: string
+          trigger_type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delay_hours?: number
+          html_body?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sent_count?: number
+          store_id?: string
+          subject?: string
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_automations_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       email_queue: {
         Row: {
           created_at: string
@@ -4685,6 +4735,54 @@ export type Database = {
           },
           {
             foreignKeyName: "store_credit_transactions_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      store_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          customer_id: string
+          id: string
+          lifetime_credited: number
+          lifetime_debited: number
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          customer_id: string
+          id?: string
+          lifetime_credited?: number
+          lifetime_debited?: number
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          customer_id?: string
+          id?: string
+          lifetime_credited?: number
+          lifetime_debited?: number
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_credits_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_credits_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
