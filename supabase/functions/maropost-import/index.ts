@@ -93,7 +93,7 @@ serve(async (req) => {
             }
           }
 
-          const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
+          // slug already computed above for image paths
 
           const productData: Record<string, any> = {
             store_id,
