@@ -7562,7 +7562,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Pick List PDF Generation", description: "Generate printable pick lists grouped by wave/zone", status: "done", notes: "PrintPickList page" },
       { name: "Barcode Scanner Integration", description: "Support USB/Bluetooth barcode scanners for pick/pack/receive", status: "done", notes: "BarcodeScanner component" },
       { name: "Mobile Warehouse App", description: "Responsive mobile UI for warehouse operations", status: "partial", notes: "Responsive but not native" },
-      { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifest for pickups", status: "not_started" },
+      { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifest for pickups", status: "done", notes: "CarrierManifest page with date picker, carrier filter, summary cards, printable manifest" },
       { name: "Carrier Pickup Scheduling", description: "Schedule carrier pickups from warehouse", status: "not_started" },
       { name: "Returns Receiving", description: "Scan and receive returned items back into inventory", status: "partial" },
       { name: "Damaged Goods Processing", description: "Flag and quarantine damaged items during receiving", status: "not_started" },
