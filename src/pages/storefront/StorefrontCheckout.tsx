@@ -12,7 +12,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles, Timer } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 import { addBusinessDays, format } from "date-fns";
 
@@ -93,6 +93,23 @@ export default function StorefrontCheckout() {
   const [creditTerms, setCreditTerms] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
+  
+  // Cart reservation timer (15 min)
+  const RESERVATION_MINUTES = 15;
+  const [reservationEnd] = useState(() => Date.now() + RESERVATION_MINUTES * 60 * 1000);
+  const [timeLeft, setTimeLeft] = useState(RESERVATION_MINUTES * 60);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const remaining = Math.max(0, Math.floor((reservationEnd - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining <= 0) {
+        clearInterval(interval);
+        toast.error("Your cart reservation has expired. Please re-add items.");
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [reservationEnd]);
 
   useEffect(() => {
     async function loadData() {
@@ -609,20 +626,32 @@ export default function StorefrontCheckout() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Address</Label>
-                  <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" />
+                  <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
+                  {form.address.length > 0 && form.address.length < 10 && (
+                    <p className="text-[10px] text-destructive flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label>City</Label>
                     <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
+                    {form.city && !/^[a-zA-Z\s'-]+$/.test(form.city) && <p className="text-[10px] text-destructive">City should contain only letters</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>ZIP Code</Label>
+                    <Label>ZIP / Postcode</Label>
                     <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
+                    {form.zip && form.zip.length < 3 && <p className="text-[10px] text-destructive">Please enter a valid postcode</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label>Country</Label>
-                    <Input value={form.country} onChange={(e) => update("country", e.target.value)} className="h-10" />
+                    <Select value={form.country} onValueChange={(v) => update("country", v)}>
+                      <SelectTrigger className="h-10"><SelectValue placeholder="Select country" /></SelectTrigger>
+                      <SelectContent>
+                        {["Australia", "New Zealand", "United States", "United Kingdom", "Canada", "Singapore", "Hong Kong", "Japan", "Germany", "France", "Netherlands", "Ireland"].map(c => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -837,6 +866,19 @@ export default function StorefrontCheckout() {
             {/* Summary */}
             <div className="lg:col-span-1">
               <div className="border rounded-lg p-5 space-y-4 sticky top-20">
+                {/* Cart Reservation Timer */}
+                {timeLeft > 0 && (
+                  <div className={`flex items-center gap-2 text-xs px-3 py-2 rounded-md ${timeLeft < 120 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                    <Timer className="h-3.5 w-3.5" />
+                    <span>Cart reserved for {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}</span>
+                  </div>
+                )}
+                {timeLeft <= 0 && (
+                  <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-md bg-destructive/10 text-destructive">
+                    <Timer className="h-3.5 w-3.5" />
+                    <span>Reservation expired — items may no longer be available</span>
+                  </div>
+                )}
                 <h2 className="font-semibold">Order Summary</h2>
                 <div className="space-y-3 divide-y">
                   {items.map((item) => (
