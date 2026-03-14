@@ -8010,7 +8010,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
     icon: <Workflow className="h-5 w-5" />,
     features: [
       { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "partial", notes: "Status-based hold" },
-      { name: "Order Auto-Allocation Rules", description: "Auto-assign orders to warehouse by region/stock", status: "not_started" },
+      { name: "Order Auto-Allocation Rules", description: "Auto-assign orders to warehouse by region/stock", status: "done", notes: "Settings Fulfillment tab AutoAssignWarehouseCard with region/country-based routing to warehouses, priority ordering, active toggle" },
       { name: "Split Shipment (Partial Fulfillment)", description: "Ship part of an order, hold remainder", status: "partial" },
       { name: "Backorder Auto-Creation", description: "Auto-create backorders when stock insufficient", status: "done", notes: "backorders table" },
       { name: "Order Merge", description: "Merge multiple orders from same customer", status: "done", notes: "OrderDetail merge dialog" },
