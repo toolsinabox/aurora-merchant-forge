@@ -30,6 +30,13 @@ export default function Subscriptions() {
   const storeId = currentStore?.id;
   const qc = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [cancellingSubId, setCancellingSubId] = useState<string | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const CANCEL_REASONS = [
+    "Too expensive", "Don't need it anymore", "Switching to competitor",
+    "Product quality issues", "Delivery issues", "Other",
+  ];
   const [form, setForm] = useState({
     customer_id: "", product_id: "", quantity: 1,
     frequency: "monthly", interval_count: 1, unit_price: 0,
