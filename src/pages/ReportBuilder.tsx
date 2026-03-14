@@ -173,9 +173,17 @@ export default function ReportBuilder() {
                 <BarChart3 className="h-4 w-4" /> Results {results && <Badge variant="secondary" className="text-[10px]">{results.length} rows</Badge>}
               </CardTitle>
               {results && results.length > 0 && (
-                <Button size="sm" variant="outline" onClick={exportCsv} className="gap-1 h-7 text-xs">
-                  <Download className="h-3 w-3" /> Export CSV
-                </Button>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="outline" onClick={exportCsv} className="gap-1 h-7 text-xs">
+                    <Download className="h-3 w-3" /> CSV
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={exportExcel} className="gap-1 h-7 text-xs">
+                    <Download className="h-3 w-3" /> Excel
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={exportJson} className="gap-1 h-7 text-xs">
+                    <Download className="h-3 w-3" /> JSON
+                  </Button>
+                </div>
               )}
             </CardHeader>
             <CardContent>
