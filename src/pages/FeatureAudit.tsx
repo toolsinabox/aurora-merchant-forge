@@ -7754,7 +7754,7 @@ const reportingDeepFeatures: FeatureCategory[] = [
       { name: "Discount Usage Report", description: "How often each coupon/discount is used and revenue impact", status: "partial" },
       { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel analysis", status: "not_started" },
       { name: "Product Performance Dashboard", description: "Per-product views, conversion, revenue, margin dashboard", status: "partial" },
-      { name: "Inventory Valuation Report", description: "Total inventory value at cost and retail", status: "not_started" },
+      { name: "Inventory Valuation Report", description: "Total inventory value at cost and retail", status: "done", notes: "Analytics page Inventory Valuation card + InventoryReports valuation tab" },
       { name: "Custom Report Builder Formulas", description: "User-defined calculated columns in report builder", status: "partial", notes: "ReportBuilder page exists" },
       { name: "Scheduled Report Email", description: "Auto-email reports on schedule (daily/weekly/monthly)", status: "done", notes: "scheduled-report-email function" },
       { name: "Report Export (CSV/PDF)", description: "Export any report to CSV or PDF", status: "done", notes: "ExportWizard page" },
