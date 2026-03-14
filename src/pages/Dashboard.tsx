@@ -303,6 +303,7 @@ export default function Dashboard() {
                       )}
                     </TableBody>
                   </Table>
+                  </div>
                 </CardContent>
               </Card>
 
