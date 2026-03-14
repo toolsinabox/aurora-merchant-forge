@@ -208,11 +208,11 @@ export default function PurchaseOrders() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Purchase Orders</h1>
-            <p className="text-sm text-muted-foreground">{pos.length} purchase orders</p>
+            <h1 className="text-lg font-semibold">Purchase Orders</h1>
+            <p className="text-xs text-muted-foreground">{pos.length} purchase orders</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setForm({ ...emptyForm, po_number: genPO() }); }}>
             <DialogTrigger asChild>
