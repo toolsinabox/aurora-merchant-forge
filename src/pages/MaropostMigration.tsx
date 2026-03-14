@@ -815,9 +815,13 @@ export default function MaropostMigration() {
                             {!importing && <Button variant="outline" size="sm" onClick={() => retryEntity(entity.entity)}><RefreshCw className="h-3 w-3 mr-1" />Retry</Button>}
                           </>
                         )}
-                        {entity.status === "importing" && <span>Importing…</span>}
+                        {entity.status === "importing" && <span>Importing… {entity.batchProgress || 0}%</span>}
                         {entity.status === "pending" && <span>Waiting</span>}
                       </div>
+                    </div>
+                    {entity.status === "importing" && (
+                      <Progress value={entity.batchProgress || 0} className="h-1.5" />
+                    )}
                     </div>
                     {entity.errors.length > 0 && (
                       <details className="text-xs">
