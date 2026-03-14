@@ -64,12 +64,12 @@ function SupplierPerformance({ suppliers, storeId }: { suppliers: any[]; storeId
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Supplier</TableHead>
-          <TableHead className="text-right">POs</TableHead>
-          <TableHead className="text-right">Total Spend</TableHead>
-          <TableHead className="text-right">Received</TableHead>
-          <TableHead className="text-right">On-Time %</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="text-xs h-8">Supplier</TableHead>
+          <TableHead className="text-xs h-8 text-right">POs</TableHead>
+          <TableHead className="text-xs h-8 text-right">Total Spend</TableHead>
+          <TableHead className="text-xs h-8 text-right">Received</TableHead>
+          <TableHead className="text-xs h-8 text-right">On-Time %</TableHead>
+          <TableHead className="text-xs h-8">Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
