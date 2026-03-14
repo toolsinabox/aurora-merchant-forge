@@ -56,9 +56,9 @@ export default function StorefrontContact() {
   if (submitted) {
     return (
       <StorefrontLayout storeName={storeName}>
-        <div className="max-w-lg mx-auto px-4 py-16 text-center">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-5">
-            <Check className="h-8 w-8 text-primary" />
+        <div className="max-w-lg mx-auto px-4 py-16 text-center animate-fade-in">
+          <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-5">
+            <Check className="h-8 w-8 text-success" />
           </div>
           <h1 className="text-2xl font-bold mb-2">Message Sent!</h1>
           <p className="text-muted-foreground">Thank you for reaching out. We'll get back to you as soon as possible.</p>
@@ -69,13 +69,13 @@ export default function StorefrontContact() {
 
   return (
     <StorefrontLayout storeName={storeName}>
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
             <Mail className="h-6 w-6 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Contact Us</h1>
-          <p className="text-muted-foreground mt-1">We'd love to hear from you</p>
+          <h1 className="text-2xl font-bold tracking-tight">Contact Us</h1>
+          <p className="text-muted-foreground text-sm mt-1">We'd love to hear from you</p>
         </div>
 
         <form onSubmit={handleSubmit}>
