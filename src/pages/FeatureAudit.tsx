@@ -8813,7 +8813,7 @@ const emailTemplateDeepFeatures: FeatureCategory[] = [
       { name: "Order Shipped Email", description: "Auto-email with tracking on shipment", status: "done", notes: "shipment-email" },
       { name: "Order Delivered Email", description: "Auto-email when marked delivered", status: "done", notes: "order-delivered-email" },
       { name: "Payment Received Email", description: "Email on payment confirmation", status: "done", notes: "payment-email" },
-      { name: "Refund Processed Email", description: "Email when refund issued", status: "partial" },
+      { name: "Refund Processed Email", description: "Email when refund issued", status: "done", notes: "Code-complete: send-email edge function with refund template. Activates with email domain" },
       { name: "Welcome Email (New Account)", description: "Welcome email on registration", status: "done", notes: "welcome-email" },
       { name: "Password Reset Email", description: "Password reset link email", status: "done" },
       { name: "Abandoned Cart Recovery Email", description: "Recover abandoned carts via email", status: "done", notes: "abandoned-cart-email" },
