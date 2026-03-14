@@ -349,11 +349,7 @@ export default function StorefrontProductDetail() {
                       </>
                     )}
                   </div>
-                  {promoActive && product.promo_end && (
-                    <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> Sale ends {new Date(product.promo_end).toLocaleDateString()}
-                    </p>
-                  )}
+                  {promoActive && product.promo_end && <FlashSaleTimer endDate={product.promo_end} />}
                 </>
               )}
               {applicableTier && (
