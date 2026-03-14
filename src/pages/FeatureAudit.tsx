@@ -7939,7 +7939,7 @@ const seoContentDeepFeatures: FeatureCategory[] = [
       { name: "Blog / Content Publishing", description: "Blog posts with categories, tags, and scheduling", status: "done", notes: "StorefrontBlog + content_pages" },
       { name: "Blog Comments / Reviews", description: "Comments/reviews on blog posts", status: "done", notes: "content_reviews table" },
       { name: "Rich Text Editor (WYSIWYG)", description: "Full WYSIWYG editor for content with media embedding", status: "done", notes: "rich-text-editor component" },
-      { name: "Content Versioning", description: "Track and restore previous versions of content", status: "not_started" },
+      { name: "Content Versioning", description: "Track and restore previous versions of content", status: "done", notes: "ContentPages saves version on each edit, History button per page shows up to 20 versions with restore capability" },
       { name: "Content Scheduling", description: "Schedule content pages for future publish", status: "done", notes: "published_at field" },
       { name: "Multi-Language Content", description: "Translate content pages into multiple languages", status: "partial", notes: "Multimarket exists" },
     ],
