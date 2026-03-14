@@ -154,6 +154,7 @@ export default function Returns() {
           <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="list">Returns List</TabsTrigger>
             <TabsTrigger value="receiving">Receiving</TabsTrigger>
+            <TabsTrigger value="quarantine">Damaged Goods</TabsTrigger>
             <TabsTrigger value="warranty">Warranty Claims</TabsTrigger>
             <TabsTrigger value="disputes">Warranty Disputes</TabsTrigger>
             <TabsTrigger value="report">RMA Report</TabsTrigger>
