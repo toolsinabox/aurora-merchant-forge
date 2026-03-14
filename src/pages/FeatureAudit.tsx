@@ -8099,7 +8099,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Sales by Channel Report", description: "Revenue breakdown by channel (web, eBay, POS, etc.)", status: "partial", notes: "Dashboard analytics" },
       { name: "Sales by Category Report", description: "Revenue and units by product category", status: "partial" },
       { name: "Sales by Brand Report", description: "Revenue and units by brand", status: "done", notes: "Analytics page Sales by Brand table with revenue and units per brand" },
-      { name: "Sales by Customer Group Report", description: "Revenue by customer segment/group", status: "not_started" },
+      { name: "Sales by Customer Group Report", description: "Revenue by customer segment/group", status: "done", notes: "Analytics page Sales by Customer Group table" },
       { name: "Sales by Geography Report", description: "Revenue by state/country", status: "not_started" },
       { name: "Sales by Payment Method Report", description: "Payment method usage breakdown", status: "done", notes: "Analytics page Payment Status breakdown" },
       { name: "Sales Tax Report", description: "Tax collected breakdown by jurisdiction", status: "done", notes: "Analytics page Tax Report with monthly breakdown" },
