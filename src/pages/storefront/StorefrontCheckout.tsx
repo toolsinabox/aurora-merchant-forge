@@ -84,6 +84,8 @@ export default function StorefrontCheckout() {
   const [taxMode, setTaxMode] = useState("standard");
   const [estimatedDelivery, setEstimatedDelivery] = useState<string>("");
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [shippingServices, setShippingServices] = useState<any[]>([]);
+  const [selectedServiceId, setSelectedServiceId] = useState<string>("");
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
   const [storeCreditBalance, setStoreCreditBalance] = useState(0);
   const [useStoreCredit, setUseStoreCredit] = useState(false);
