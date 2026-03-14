@@ -291,6 +291,16 @@ export default function Orders() {
                       <TableCell className="py-2 font-medium">{o.order_number}</TableCell>
                       <TableCell className="py-2">{o.customers?.name || "—"}</TableCell>
                       <TableCell className="py-2">{o.items_count}</TableCell>
+                      <TableCell className="py-2">
+                        {o.tags && (o.tags as string[]).length > 0 && (
+                          <div className="flex gap-0.5 flex-wrap">
+                            {(o.tags as string[]).slice(0, 2).map((t: string) => (
+                              <Badge key={t} variant="secondary" className="text-[10px] px-1 py-0">{t}</Badge>
+                            ))}
+                            {(o.tags as string[]).length > 2 && <span className="text-[10px] text-muted-foreground">+{(o.tags as string[]).length - 2}</span>}
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.status} /></TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.payment_status} /></TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.fulfillment_status || "unfulfilled"} /></TableCell>
