@@ -160,7 +160,8 @@ export default function DigitalDownloads() {
                   <TableHead>File</TableHead>
                   <TableHead>Limit</TableHead>
                   <TableHead>Expiry</TableHead>
-                  <TableHead className="w-12"></TableHead>
+                  <TableHead>License Keys</TableHead>
+                  <TableHead className="w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
