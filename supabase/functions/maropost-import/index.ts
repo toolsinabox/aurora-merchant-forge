@@ -290,9 +290,34 @@ serve(async (req) => {
       const items = source_data?.Customer || source_data || [];
       const customers = Array.isArray(items) ? items : [items];
 
+      // First: auto-create customer groups from unique UserGroup values
+      const groupMap: Record<string, string> = {};
+      const uniqueGroups = [...new Set(customers.map((c: any) => c.UserGroup).filter(Boolean))];
+      for (const groupName of uniqueGroups) {
+        try {
+          const { data: existing } = await supabase
+            .from("customer_groups")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("name", groupName as string)
+            .maybeSingle();
+
+          if (existing) {
+            groupMap[groupName as string] = existing.id;
+          } else {
+            const { data: created } = await supabase
+              .from("customer_groups")
+              .insert({ store_id, name: groupName as string })
+              .select("id")
+              .single();
+            if (created) groupMap[groupName as string] = created.id;
+          }
+        } catch { /* ignore group creation errors */ }
+      }
+
       for (const c of customers) {
         try {
-          const custData = {
+          const custData: Record<string, any> = {
             store_id,
             name: `${c.Name || ""} ${c.Surname || ""}`.trim() || c.Username || "Unknown",
             email: c.EmailAddress || c.Email || null,
@@ -303,6 +328,10 @@ serve(async (req) => {
             credit_limit: parseFloat(c.CreditLimit) || null,
             tags: c.UserGroup ? [c.UserGroup] : [],
           };
+          // Link to customer group if found
+          if (c.UserGroup && groupMap[c.UserGroup]) {
+            custData.customer_group_id = groupMap[c.UserGroup];
+          }
 
           const { data: inserted, error } = await supabase
             .from("customers").insert(custData).select("id").single();
