@@ -1090,6 +1090,18 @@ export default function StorefrontCheckout() {
                       </label>
                     </div>
 
+                    {/* Terms & Conditions */}
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
+                      <Checkbox
+                        id="terms_accept"
+                        checked={termsAccepted}
+                        onCheckedChange={(checked) => setTermsAccepted(!!checked)}
+                      />
+                      <label htmlFor="terms_accept" className="text-xs cursor-pointer">
+                        I agree to the <a href={`${basePath}/page/terms-of-service`} target="_blank" rel="noopener noreferrer" className="text-primary underline">Terms & Conditions</a> and <a href={`${basePath}/page/privacy-policy`} target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a>
+                      </label>
+                    </div>
+
                     <Separator />
 
                 <div className="space-y-1.5 text-sm">
