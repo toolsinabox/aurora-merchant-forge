@@ -365,7 +365,15 @@ export default function Products() {
                         </div>
                       </TableCell>
                       {visibleCols.sku && <TableCell className="py-2 font-mono text-muted-foreground">{product.sku || "—"}</TableCell>}
-                      {visibleCols.status && <TableCell className="py-2"><StatusBadge status={product.status} /></TableCell>}
+                      {visibleCols.status && <TableCell className="py-2" onClick={(e) => { e.stopPropagation(); setEditingCell({ id: product.id, field: "status" }); setEditValue(product.status); }}>
+                        {editingCell?.id === product.id && editingCell.field === "status" ? (
+                          <select className="text-xs border rounded px-1 py-0.5 bg-background" autoFocus value={editValue} onChange={(e) => handleInlineEdit(product.id, "status", e.target.value)} onBlur={() => setEditingCell(null)}>
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                            <option value="archived">Archived</option>
+                          </select>
+                        ) : <StatusBadge status={product.status} />}
+                      </TableCell>}
                       {visibleCols.stock && <TableCell className="py-2">
                         {product.product_variants && product.product_variants.length > 0 ? (
                           <div className="flex items-center gap-1.5">
@@ -374,10 +382,25 @@ export default function Products() {
                           </div>
                         ) : "—"}
                       </TableCell>}
-                      {visibleCols.price && <TableCell className="py-2 text-right font-medium">
-                        ${Number(product.price).toFixed(2)}
-                        {product.compare_at_price && (
-                          <span className="ml-1 text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
+                      {visibleCols.price && <TableCell className="py-2 text-right font-medium" onClick={(e) => { e.stopPropagation(); setEditingCell({ id: product.id, field: "price" }); setEditValue(String(product.price)); }}>
+                        {editingCell?.id === product.id && editingCell.field === "price" ? (
+                          <Input
+                            type="number"
+                            step="0.01"
+                            className="h-6 w-20 text-xs text-right ml-auto"
+                            autoFocus
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onBlur={() => handleInlineEdit(product.id, "price", editValue)}
+                            onKeyDown={(e) => { if (e.key === "Enter") handleInlineEdit(product.id, "price", editValue); if (e.key === "Escape") setEditingCell(null); }}
+                          />
+                        ) : (
+                          <>
+                            ${Number(product.price).toFixed(2)}
+                            {product.compare_at_price && (
+                              <span className="ml-1 text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
+                            )}
+                          </>
                         )}
                       </TableCell>}
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
