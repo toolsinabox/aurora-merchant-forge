@@ -13,12 +13,29 @@ import { format } from "date-fns";
 
 interface Notification {
   id: string;
-  type: "order" | "customer" | "review";
+  type: "order" | "customer" | "review" | "stock";
   title: string;
   detail: string;
   created_at: string;
   read: boolean;
   link: string;
+}
+
+// Simple beep for new order alerts
+function playOrderAlert() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = "sine";
+    gain.gain.value = 0.15;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch {}
 }
 
 export function NotificationBell() {
@@ -63,13 +80,14 @@ export function NotificationBell() {
           const n = payload.new as any;
           const notif: Notification = {
             id: n.id, type: "order",
-            title: `New order ${n.order_number}`,
+            title: `🛒 New order ${n.order_number}`,
             detail: `$${Number(n.total).toFixed(2)}`,
             created_at: n.created_at, read: false,
             link: `/orders/${n.id}`,
           };
           setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
           setUnreadCount((c) => c + 1);
+          playOrderAlert();
         }
       )
       .on(
@@ -102,6 +120,34 @@ export function NotificationBell() {
           };
           setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
           setUnreadCount((c) => c + 1);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "inventory_stock", filter: `store_id=eq.${currentStore.id}` },
+        (payload) => {
+          const n = payload.new as any;
+          if (n.quantity <= 0) {
+            const notif: Notification = {
+              id: `stock-${n.id}-${Date.now()}`, type: "stock",
+              title: `⚠️ Out of stock alert`,
+              detail: `Product stock reached 0`,
+              created_at: new Date().toISOString(), read: false,
+              link: `/inventory`,
+            };
+            setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+            setUnreadCount((c) => c + 1);
+          } else if (n.quantity <= n.low_stock_threshold) {
+            const notif: Notification = {
+              id: `lowstock-${n.id}-${Date.now()}`, type: "stock",
+              title: `📦 Low stock warning`,
+              detail: `${n.quantity} units remaining`,
+              created_at: new Date().toISOString(), read: false,
+              link: `/inventory`,
+            };
+            setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+            setUnreadCount((c) => c + 1);
+          }
         }
       )
       .subscribe();
