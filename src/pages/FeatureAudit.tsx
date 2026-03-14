@@ -8017,7 +8017,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
       { name: "Order Clone / Reorder", description: "Clone existing order as new draft", status: "done", notes: "Orders page duplicate action" },
       { name: "Recurring Order (Subscription)", description: "Auto-repeat orders on schedule", status: "done", notes: "subscriptions table" },
       { name: "Order Priority Flag", description: "Mark orders as urgent/priority for fulfillment", status: "done", notes: "OrderDetail Priority card with low/normal/high/urgent selector, timeline event logging, visual badge for high/urgent" },
-      { name: "Order Tags / Labels", description: "Custom tags on orders for filtering", status: "partial" },
+      { name: "Order Tags / Labels", description: "Custom tags on orders for filtering", status: "done", notes: "Order tags CRUD in OrderDetail, tags column in Orders list, tag filter dropdown, bulk tag assignment via bulk actions bar" },
       { name: "Order Internal Notes (Timeline)", description: "Chronological internal notes log per order", status: "done", notes: "order_notes table" },
       { name: "Order Custom Fields", description: "Custom metadata fields on orders", status: "partial" },
       { name: "Order Status Webhook Triggers", description: "Fire webhooks on order status changes", status: "done", notes: "webhook-dispatcher function" },
