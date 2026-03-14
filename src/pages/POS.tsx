@@ -101,6 +101,77 @@ export default function POS() {
     toast.success("Parked order deleted");
   };
 
+  // POS Returns state
+  const [showReturn, setShowReturn] = useState(false);
+  const [returnOrderSearch, setReturnOrderSearch] = useState("");
+  const [returnOrder, setReturnOrder] = useState<any>(null);
+  const [returnItems, setReturnItems] = useState<Record<string, number>>({});
+  const [returnReason, setReturnReason] = useState("defective");
+  const [returnProcessing, setReturnProcessing] = useState(false);
+
+  const searchReturnOrder = async () => {
+    if (!returnOrderSearch.trim() || !storeId) return;
+    const { data } = await supabase.from("orders").select("id, order_number, total, customer_id, items_count, created_at").eq("store_id", storeId).ilike("order_number", `%${returnOrderSearch.trim()}%`).limit(1).maybeSingle();
+    if (data) {
+      const { data: items } = await supabase.from("order_items").select("id, title, sku, quantity, unit_price").eq("order_id", data.id);
+      setReturnOrder({ ...data, items: items || [] });
+      setReturnItems({});
+    } else {
+      toast.error("Order not found");
+    }
+  };
+
+  const processReturn = async () => {
+    if (!returnOrder || !storeId || !user) return;
+    const selectedItems = Object.entries(returnItems).filter(([, qty]) => qty > 0);
+    if (selectedItems.length === 0) { toast.error("Select items to return"); return; }
+    setReturnProcessing(true);
+    try {
+      const refundTotal = selectedItems.reduce((s, [itemId, qty]) => {
+        const item = returnOrder.items.find((i: any) => i.id === itemId);
+        return s + (item ? Number(item.unit_price) * qty : 0);
+      }, 0);
+      await supabase.from("returns" as any).insert({
+        store_id: storeId, order_id: returnOrder.id,
+        customer_id: returnOrder.customer_id,
+        reason: returnReason, status: "approved",
+        refund_amount: refundTotal, refund_method: "store_credit",
+        items: selectedItems.map(([itemId, qty]) => {
+          const item = returnOrder.items.find((i: any) => i.id === itemId);
+          return { item_id: itemId, title: item?.title, qty, unit_price: item?.unit_price };
+        }),
+        processed_by: user.id,
+      });
+      toast.success(`Return processed — $${refundTotal.toFixed(2)} refunded`);
+      setShowReturn(false);
+      setReturnOrder(null);
+      setReturnOrderSearch("");
+      setReturnItems({});
+    } catch (err: any) { toast.error(err.message); }
+    finally { setReturnProcessing(false); }
+  };
+
+  // Staff PIN login
+  const [showPinLogin, setShowPinLogin] = useState(false);
+  const [staffPin, setStaffPin] = useState("");
+  const [currentStaff, setCurrentStaff] = useState<string | null>(null);
+
+  const staffPinLogin = () => {
+    // Simple PIN-based staff switch using localStorage registry
+    try {
+      const pins: Record<string, string> = JSON.parse(localStorage.getItem("pos_staff_pins") || "{}");
+      const match = Object.entries(pins).find(([, pin]) => pin === staffPin);
+      if (match) {
+        setCurrentStaff(match[0]);
+        setShowPinLogin(false);
+        setStaffPin("");
+        toast.success(`Switched to ${match[0]}`);
+      } else {
+        toast.error("Invalid PIN");
+      }
+    } catch { toast.error("No staff PINs configured"); }
+  };
+
   // Gift voucher state
   const [voucherCode, setVoucherCode] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
