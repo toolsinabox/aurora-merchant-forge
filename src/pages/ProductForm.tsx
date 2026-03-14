@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDeleteVariant, useCreateVariant, useProductShipping, useUpsertProductShipping, useProductSpecifics, useCreateProductSpecific, useDeleteProductSpecific, useProductPricingTiers, useCreatePricingTier, useDeletePricingTier, useProductRelations, useCreateProductRelation, useDeleteProductRelation, useProducts } from "@/hooks/use-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 import { ArrowLeft, Save, Plus, Trash2, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
