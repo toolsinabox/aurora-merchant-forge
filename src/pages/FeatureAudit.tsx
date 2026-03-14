@@ -9624,8 +9624,8 @@ const invoiceFeatures: FeatureCategory[] = [
       { name: "Credit Note Generation", description: "Generate credit notes for refunds", status: "done", notes: "credit_notes table" },
       { name: "Credit Note PDF", description: "PDF credit note document", status: "done", notes: "CreditNotes page with printable credit note layout" },
       { name: "Proforma Invoice", description: "Generate proforma invoices for quotes", status: "done", notes: "PrintQuote serves as proforma invoice with line items and totals" },
-      { name: "Invoice Overdue Tracking", description: "Track overdue invoices for B2B", status: "not_started" },
-      { name: "Invoice Payment Link", description: "Include payment link in invoice email", status: "not_started" },
+      { name: "Invoice Overdue Tracking", description: "Track overdue invoices for B2B", status: "done", notes: "Orders with payment_terms display overdue status based on created_at + terms days, CustomerDetail shows outstanding balance" },
+      { name: "Invoice Payment Link", description: "Include payment link in invoice email", status: "done", notes: "invoice-payment-link edge function generates branded email with Pay Now button and payment token" },
     ],
   },
 ];
