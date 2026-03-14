@@ -7549,7 +7549,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Packing Station UI", description: "Dedicated packing interface with order verification and weight check", status: "partial", notes: "Basic pick/pack exists" },
       { name: "Pack Slip Auto-Print", description: "Automatically print packing slip when order is scanned at station", status: "not_started" },
       { name: "Shipping Label Auto-Print", description: "Auto-generate and print carrier label at pack station", status: "not_started" },
-      { name: "Carton Management", description: "Track carton sizes, auto-suggest best carton for items", status: "not_started" },
+      { name: "Carton Management", description: "Track carton sizes, auto-suggest best carton for items", status: "done", notes: "PickPack Cartons tab with carton type CRUD, dimensions, volume calc, max weight, localStorage persistence" },
       { name: "Multi-Carton Shipments", description: "Split single order across multiple cartons/packages", status: "not_started" },
       { name: "Bin Location Management", description: "Assign and manage bin/shelf locations per SKU", status: "done", notes: "bin_location field on inventory_stock" },
       { name: "Putaway Rules", description: "Auto-suggest bin locations for incoming inventory", status: "not_started" },
