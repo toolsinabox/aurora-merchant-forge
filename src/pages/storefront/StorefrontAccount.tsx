@@ -7,13 +7,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard, ShieldAlert, FileText, Download } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard, ShieldAlert, FileText, Download, ShoppingCart, Bell, UserX } from "lucide-react";
 import { toast } from "sonner";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
