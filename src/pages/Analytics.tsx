@@ -132,7 +132,7 @@ export default function Analytics() {
         .eq("store_id", currentStore.id);
       const { data: prods } = await supabase
         .from("products")
-        .select("id, category_id")
+        .select("id, category_id, brand")
         .eq("store_id", currentStore.id);
       
       const catMap: Record<string, string> = {};
