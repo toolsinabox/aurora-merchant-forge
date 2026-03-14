@@ -8445,8 +8445,8 @@ const mediaManagementFeatures: FeatureCategory[] = [
     icon: <Image className="h-5 w-5" />,
     features: [
       { name: "Media Library (Centralized)", description: "Central library for all uploaded images/files", status: "done", notes: "MediaLibrary page" },
-      { name: "Image Auto-Resize / Thumbnails", description: "Auto-generate thumbnails on upload", status: "partial" },
-      { name: "Image Alt Text Management", description: "Set alt text per image for SEO", status: "partial" },
+      { name: "Image Auto-Resize / Thumbnails", description: "Auto-generate thumbnails on upload", status: "done", notes: "Supabase Storage image transformations with size parameters in URL" },
+      { name: "Image Alt Text Management", description: "Set alt text per image for SEO", status: "done", notes: "ProductImageUpload alt_text field, SEOHead component outputs alt attributes" },
       { name: "Image CDN Delivery", description: "Serve images via CDN for performance", status: "done", notes: "Supabase Storage CDN" },
       { name: "Image Lazy Loading", description: "Lazy load images below the fold", status: "done" },
       { name: "WebP / AVIF Auto-Conversion", description: "Auto-serve modern image formats", status: "not_started" },
