@@ -80,7 +80,7 @@ export default function ProductForm() {
     dangerous_goods: false, oversized_item: false, temperature_sensitive: false,
     auto_url_update: true,
     warranty: "", availability_description: "",
-    reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
+    reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0", min_order_quantity: "1",
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
     scheduled_publish_at: "", scheduled_unpublish_at: "",
     video_url: "",
@@ -136,6 +136,7 @@ export default function ProductForm() {
         reorder_quantity: (existing as any).reorder_quantity?.toString() || "0",
         restock_quantity: (existing as any).restock_quantity?.toString() || "0",
         preorder_quantity: (existing as any).preorder_quantity?.toString() || "0",
+        min_order_quantity: (existing as any).min_order_quantity?.toString() || "1",
         misc1: (existing as any).misc1 || "", misc2: (existing as any).misc2 || "",
         misc3: (existing as any).misc3 || "", misc4: (existing as any).misc4 || "",
         misc5: (existing as any).misc5 || "",
@@ -258,6 +259,7 @@ export default function ProductForm() {
       reorder_quantity: parseInt(form.reorder_quantity) || 0,
       restock_quantity: parseInt(form.restock_quantity) || 0,
       preorder_quantity: parseInt(form.preorder_quantity) || 0,
+      min_order_quantity: parseInt(form.min_order_quantity) || 1,
       misc1: form.misc1 || null, misc2: form.misc2 || null, misc3: form.misc3 || null,
       misc4: form.misc4 || null, misc5: form.misc5 || null,
       scheduled_publish_at: form.scheduled_publish_at || null,
@@ -623,6 +625,10 @@ export default function ProductForm() {
                       <div className="space-y-1">
                         <FieldLabel label="Preorder Qty" field="preorder_quantity" />
                         <Input className="h-8 text-xs" type="number" value={form.preorder_quantity} onChange={(e) => update("preorder_quantity", e.target.value)} />
+                      </div>
+                      <div className="space-y-1">
+                        <FieldLabel label="Min Order Qty" field="min_order_quantity" />
+                        <Input className="h-8 text-xs" type="number" min="1" value={form.min_order_quantity} onChange={(e) => update("min_order_quantity", e.target.value)} />
                       </div>
                     </div>
                   </CardContent>
