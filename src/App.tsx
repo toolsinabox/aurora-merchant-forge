@@ -113,6 +113,9 @@ import PriceRules from "./pages/PriceRules.tsx";
 import GoLiveChecklist from "./pages/GoLiveChecklist.tsx";
 import InventoryReports from "./pages/InventoryReports.tsx";
 import CarrierManifest from "./pages/CarrierManifest.tsx";
+import PriceLists from "./pages/PriceLists.tsx";
+import StoreLocator from "./pages/StoreLocator.tsx";
+import Notifications from "./pages/Notifications.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -243,6 +246,9 @@ const App = () => (
                    <Route path="/_cpanel/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/_cpanel/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
                    <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
+                   <Route path="/_cpanel/price-lists" element={<RequireAuth><PriceLists /></RequireAuth>} />
+                   <Route path="/_cpanel/store-locator" element={<RequireAuth><StoreLocator /></RequireAuth>} />
+                   <Route path="/_cpanel/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -342,6 +348,9 @@ const App = () => (
                    <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
+                   <Route path="/price-lists" element={<RequireAuth><PriceLists /></RequireAuth>} />
+                   <Route path="/store-locator" element={<RequireAuth><StoreLocator /></RequireAuth>} />
+                   <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

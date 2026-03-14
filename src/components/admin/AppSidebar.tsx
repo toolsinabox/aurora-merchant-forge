@@ -4,7 +4,7 @@ import {
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
-  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes,
+  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -87,6 +87,7 @@ const marketingNav = [
   { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Price Rules", url: `${prefix}/price-rules`, icon: Zap },
+  { title: "Price Lists", url: `${prefix}/price-lists`, icon: List },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
   { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
 ];
@@ -103,10 +104,12 @@ const contentNav = [
   { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
   { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
+  { title: "Store Locator", url: `${prefix}/store-locator`, icon: Navigation },
 ];
 
 // ── Settings & System ──
 const systemNav = [
+  { title: "Notifications", url: `${prefix}/notifications`, icon: Bell },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
   { title: "Accounting", url: `${prefix}/accounting`, icon: Calculator },
