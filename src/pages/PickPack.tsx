@@ -140,10 +140,21 @@ export default function PickPack() {
     },
   });
 
+  // Pick path optimization: sort by bin location for optimal warehouse walking route
+  const [pickPathOptimized, setPickPathOptimized] = useState(false);
+
   const pickItems = useMemo(() => {
     const unfulfilledOrderIds = new Set(pendingOrders.map((o: any) => o.id));
-    return orderItems.filter((item: any) => unfulfilledOrderIds.has(item.order_id));
-  }, [orderItems, pendingOrders]);
+    const items = orderItems.filter((item: any) => unfulfilledOrderIds.has(item.order_id));
+    if (pickPathOptimized) {
+      return [...items].sort((a: any, b: any) => {
+        const binA = (a.bin_location || a.sku || "ZZZ").toLowerCase();
+        const binB = (b.bin_location || b.sku || "ZZZ").toLowerCase();
+        return binA.localeCompare(binB);
+      });
+    }
+    return items;
+  }, [orderItems, pendingOrders, pickPathOptimized]);
 
   // Batch picking: group by SKU across all orders
   const batchPickItems = useMemo(() => {
@@ -250,12 +261,17 @@ export default function PickPack() {
           <Card>
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center justify-between">
-                Pick Items ({pickItems.length} items from {pendingOrders.length} orders)
-                {checkedCount > 0 && (
-                  <Button size="sm" className="text-xs" onClick={markAsPacked}>
-                    Mark {checkedCount} Picked → Pack
+                <span>Pick Items ({pickItems.length} items from {pendingOrders.length} orders)</span>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant={pickPathOptimized ? "default" : "outline"} className="text-xs gap-1" onClick={() => setPickPathOptimized(!pickPathOptimized)}>
+                    <MapPin className="h-3 w-3" /> {pickPathOptimized ? "Path Optimized" : "Optimize Path"}
                   </Button>
-                )}
+                  {checkedCount > 0 && (
+                    <Button size="sm" className="text-xs" onClick={markAsPacked}>
+                      Mark {checkedCount} Picked → Pack
+                    </Button>
+                  )}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">

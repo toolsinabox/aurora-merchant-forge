@@ -97,6 +97,9 @@ export default function StorefrontCheckout() {
   const [hasRestrictedItems] = useState(() => false);
   const [expressCheckout, setExpressCheckout] = useState(false);
   const [hasSavedDetails, setHasSavedDetails] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [orderGiftMessage, setOrderGiftMessage] = useState("");
+  const [checkoutStep, setCheckoutStep] = useState(1);
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
@@ -479,6 +482,7 @@ export default function StorefrontCheckout() {
             form.po_number ? `[PO#: ${form.po_number}]` : null,
             form.custom_field_1 ? `[Custom: ${form.custom_field_1}]` : null,
             utmParams ? `[UTM: ${Object.entries(utmParams).map(([k,v]) => `${k}=${v}`).join("&")}]` : null,
+            orderGiftMessage ? `[Gift Message: ${orderGiftMessage}]` : null,
             form.notes,
           ].filter(Boolean).join(" ") || null,
           shipping_address: shippingAddr,
@@ -616,6 +620,21 @@ export default function StorefrontCheckout() {
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* Checkout Progress Indicator */}
+          <div className="flex items-center justify-center gap-0 mb-8">
+            {[{ step: 1, label: "Details" }, { step: 2, label: "Shipping" }, { step: 3, label: "Payment" }].map((s, i) => (
+              <div key={s.step} className="flex items-center">
+                {i > 0 && <div className={`w-12 h-0.5 ${checkoutStep >= s.step ? "bg-primary" : "bg-border"}`} />}
+                <button type="button" onClick={() => setCheckoutStep(s.step)} className="flex flex-col items-center gap-1">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors ${checkoutStep >= s.step ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border"}`}>
+                    {checkoutStep > s.step ? <Check className="h-4 w-4" /> : s.step}
+                  </div>
+                  <span className={`text-[10px] ${checkoutStep >= s.step ? "text-primary font-medium" : "text-muted-foreground"}`}>{s.label}</span>
+                </button>
+              </div>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form */}
             <div className="lg:col-span-2 space-y-6">
@@ -893,6 +912,13 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
+              {/* Gift Message */}
+              <div className="border rounded-lg p-5 space-y-4">
+                <h2 className="font-semibold flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Message</h2>
+                <Textarea value={orderGiftMessage} onChange={(e) => setOrderGiftMessage(e.target.value)} placeholder="Add a personal gift message to include with your order..." className="min-h-[60px]" maxLength={500} />
+                <p className="text-xs text-muted-foreground">{orderGiftMessage.length}/500 characters</p>
+              </div>
+
               {/* Notes */}
               <div className="border rounded-lg p-5 space-y-4">
                 <h2 className="font-semibold">Order Notes</h2>
@@ -1064,6 +1090,18 @@ export default function StorefrontCheckout() {
                       </label>
                     </div>
 
+                    {/* Terms & Conditions */}
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
+                      <Checkbox
+                        id="terms_accept"
+                        checked={termsAccepted}
+                        onCheckedChange={(checked) => setTermsAccepted(!!checked)}
+                      />
+                      <label htmlFor="terms_accept" className="text-xs cursor-pointer">
+                        I agree to the <a href={`${basePath}/page/terms-of-service`} target="_blank" rel="noopener noreferrer" className="text-primary underline">Terms & Conditions</a> and <a href={`${basePath}/page/privacy-policy`} target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a>
+                      </label>
+                    </div>
+
                     <Separator />
 
                 <div className="space-y-1.5 text-sm">
@@ -1112,10 +1150,11 @@ export default function StorefrontCheckout() {
                   <span>Total</span>
                   <span>${finalTotal.toFixed(2)}</span>
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={submitting || !ageVerified}>
+                <Button type="submit" className="w-full h-11" disabled={submitting || !ageVerified || !termsAccepted}>
                   {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Placing Order...</> : "Place Order"}
                 </Button>
                 {!ageVerified && <p className="text-[10px] text-muted-foreground text-center">Please confirm your age to proceed</p>}
+                {!termsAccepted && ageVerified && <p className="text-[10px] text-muted-foreground text-center">Please accept the Terms & Conditions</p>}
               </div>
             </div>
           </div>
