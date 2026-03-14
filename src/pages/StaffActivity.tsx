@@ -91,7 +91,7 @@ export default function StaffActivity() {
             <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{(members as any[]).length}</p><p className="text-[10px] text-muted-foreground">Team Members</p></div></div>
           </CardContent></Card>
           <Card><CardContent className="p-4">
-            <div className="flex items-center gap-2"><Activity className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{totalActions}</p><p className="text-[10px] text-muted-foreground">Actions (30d)</p></div></div>
+            <div className="flex items-center gap-2"><Activity className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{totalActions}</p><p className="text-[10px] text-muted-foreground">Actions (30d)</p></div></div>
           </CardContent></Card>
           <Card><CardContent className="p-4">
             <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{activeToday}</p><p className="text-[10px] text-muted-foreground">Active Today</p></div></div>
