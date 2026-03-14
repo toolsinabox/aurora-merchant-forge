@@ -540,6 +540,23 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
         </div>
       )}
+      <div className="border-t pt-3 mt-1 space-y-2">
+        <p className="text-xs font-medium">Rural / Remote Surcharge</p>
+        <div>
+          <Label className="text-xs">Surcharge Postcodes <span className="text-muted-foreground">(comma-separated ranges e.g. 0800-0899,4000-4999)</span></Label>
+          <Input placeholder="e.g. 0800-0899, 6700-6799" value={form.surcharge_postcodes} onChange={(e) => setForm({ ...form, surcharge_postcodes: e.target.value })} className="text-xs" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs">Surcharge Amount ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.surcharge_amount} onChange={(e) => setForm({ ...form, surcharge_amount: e.target.value })} />
+          </div>
+          <div>
+            <Label className="text-xs">Surcharge Label</Label>
+            <Input value={form.surcharge_label} onChange={(e) => setForm({ ...form, surcharge_label: e.target.value })} />
+          </div>
+        </div>
+      </div>
       <Button onClick={onSubmit} disabled={loading} className="w-full">{label}</Button>
     </div>
   );
