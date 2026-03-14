@@ -8345,7 +8345,211 @@ const multimarketDeepFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures]);
+// ═══════ WAVE 7 — FINAL REMAINING GAPS ═══════
+
+const paymentGatewayDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Payment Gateways — Deep",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Stripe Checkout Integration", description: "Redirect to Stripe-hosted checkout page", status: "done", notes: "payment-gateway function" },
+      { name: "Stripe Elements (Embedded)", description: "Embedded card form via Stripe Elements", status: "partial" },
+      { name: "Stripe Connect (Marketplace)", description: "Split payments to multiple sellers", status: "not_started" },
+      { name: "PayPal Standard", description: "PayPal redirect checkout", status: "partial" },
+      { name: "PayPal Express Checkout", description: "PayPal button on cart/product page", status: "not_started" },
+      { name: "Afterpay / Clearpay", description: "Buy-now-pay-later via Afterpay", status: "not_started" },
+      { name: "Klarna", description: "Klarna BNPL integration", status: "not_started" },
+      { name: "Zip (Zip Pay / Zip Money)", description: "Zip BNPL integration for AU/NZ", status: "not_started" },
+      { name: "Humm (Buy Now Pay Later)", description: "Humm BNPL integration", status: "not_started" },
+      { name: "Latitude Pay", description: "Latitude interest-free payments", status: "not_started" },
+      { name: "eWAY Payment Gateway", description: "eWAY credit card processing (AU)", status: "not_started" },
+      { name: "Braintree Payment Gateway", description: "Braintree (PayPal) card processing", status: "not_started" },
+      { name: "Square Payment Gateway", description: "Square online payments", status: "not_started" },
+      { name: "Manual / Bank Transfer Payment", description: "Offline payment method (bank deposit, cheque)", status: "partial" },
+      { name: "Cash on Delivery (COD)", description: "COD payment option", status: "not_started" },
+      { name: "Store Credit Payment", description: "Pay using store credit balance", status: "not_started" },
+      { name: "Gift Voucher Payment", description: "Redeem gift voucher at checkout", status: "partial", notes: "gift_vouchers table" },
+      { name: "Split Payment (Multiple Methods)", description: "Pay partially with voucher + card", status: "not_started" },
+      { name: "Payment Tokenization (Saved Cards)", description: "Save card tokens for repeat purchases", status: "not_started" },
+      { name: "3D Secure / SCA Compliance", description: "Strong Customer Authentication support", status: "not_started" },
+      { name: "Apple Pay", description: "Apple Pay web payments", status: "not_started" },
+      { name: "Google Pay", description: "Google Pay web payments", status: "not_started" },
+    ],
+  },
+];
+
+const purchaseOrderFeatures: FeatureCategory[] = [
+  {
+    category: "Purchase Orders — Deep",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "PO Creation (Manual)", description: "Create purchase orders to suppliers manually", status: "done", notes: "PurchaseOrders page" },
+      { name: "PO Auto-Generation (Reorder Point)", description: "Auto-create PO when stock hits reorder point", status: "not_started" },
+      { name: "PO Approval Workflow", description: "Multi-level approval for purchase orders", status: "not_started" },
+      { name: "PO Line Items with Variants", description: "Add specific variants to PO line items", status: "partial" },
+      { name: "PO Partial Receiving", description: "Receive partial shipments against a PO", status: "partial" },
+      { name: "PO Cost Price Update on Receipt", description: "Auto-update product cost on PO receipt", status: "not_started" },
+      { name: "PO Email to Supplier", description: "Email PO PDF directly to supplier", status: "partial" },
+      { name: "PO Print / PDF Export", description: "Generate printable PO document", status: "done", notes: "PrintPurchaseOrder page" },
+      { name: "PO Status Tracking", description: "Track PO through draft/sent/partial/received/closed", status: "done" },
+      { name: "PO Expected Delivery Date", description: "Set and track expected delivery per PO", status: "done" },
+      { name: "PO Notes / Internal Comments", description: "Internal notes on purchase orders", status: "done" },
+      { name: "PO Currency / Multi-Currency", description: "PO in supplier's currency with conversion", status: "not_started" },
+      { name: "PO Landed Cost Calculation", description: "Include freight, duties, insurance in landed cost", status: "not_started" },
+      { name: "Supplier Performance Tracking", description: "Track on-time delivery rate per supplier", status: "not_started" },
+    ],
+  },
+];
+
+const subscriptionDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Subscriptions & Recurring — Deep",
+    icon: <Repeat className="h-5 w-5" />,
+    features: [
+      { name: "Subscription Product Flag", description: "Mark products as subscription-eligible", status: "done", notes: "subscriptions table" },
+      { name: "Subscription Frequencies", description: "Weekly, fortnightly, monthly, quarterly, yearly", status: "done" },
+      { name: "Subscription Discount", description: "Discount for subscribing (e.g. 10% off)", status: "partial" },
+      { name: "Subscription Pause / Resume", description: "Customer can pause and resume subscription", status: "partial" },
+      { name: "Subscription Skip Delivery", description: "Skip next delivery without cancelling", status: "not_started" },
+      { name: "Subscription Swap Product", description: "Change product in active subscription", status: "not_started" },
+      { name: "Subscription Quantity Change", description: "Adjust quantity on active subscription", status: "not_started" },
+      { name: "Subscription Payment Retry", description: "Auto-retry failed subscription payments", status: "not_started" },
+      { name: "Subscription Dunning Emails", description: "Email sequence for failed payments", status: "not_started" },
+      { name: "Subscription Analytics", description: "MRR, churn rate, LTV for subscriptions", status: "not_started" },
+      { name: "Subscription Cancellation Survey", description: "Ask reason when customer cancels", status: "not_started" },
+      { name: "Subscription Admin Dashboard", description: "Overview of active/churned/paused subscriptions", status: "done", notes: "Subscriptions page" },
+    ],
+  },
+];
+
+const digitalProductFeatures: FeatureCategory[] = [
+  {
+    category: "Digital Products & Downloads",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Digital File Upload per Product", description: "Attach downloadable files to products", status: "done", notes: "product_downloads table" },
+      { name: "Download Link Generation", description: "Unique, time-limited download links", status: "done", notes: "customer_downloads table" },
+      { name: "Download Limit per Purchase", description: "Max download attempts per customer", status: "done", notes: "max_downloads field" },
+      { name: "Download Expiry", description: "Downloads expire after X days", status: "done", notes: "expires_at field" },
+      { name: "License Key Generation", description: "Auto-generate license keys on purchase", status: "not_started" },
+      { name: "License Key Management", description: "View, revoke, reissue license keys", status: "not_started" },
+      { name: "Streaming / Preview Access", description: "Preview digital content before download", status: "not_started" },
+      { name: "Digital Downloads Admin Page", description: "Manage all digital products and downloads", status: "done", notes: "DigitalDownloads page" },
+    ],
+  },
+];
+
+const mediaManagementFeatures: FeatureCategory[] = [
+  {
+    category: "Media & Asset Management",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Media Library (Centralized)", description: "Central library for all uploaded images/files", status: "done", notes: "MediaLibrary page" },
+      { name: "Image Auto-Resize / Thumbnails", description: "Auto-generate thumbnails on upload", status: "partial" },
+      { name: "Image Alt Text Management", description: "Set alt text per image for SEO", status: "partial" },
+      { name: "Image CDN Delivery", description: "Serve images via CDN for performance", status: "done", notes: "Supabase Storage CDN" },
+      { name: "Image Lazy Loading", description: "Lazy load images below the fold", status: "done" },
+      { name: "WebP / AVIF Auto-Conversion", description: "Auto-serve modern image formats", status: "not_started" },
+      { name: "Bulk Image Upload", description: "Upload multiple images at once", status: "done" },
+      { name: "Image Drag-and-Drop Reorder", description: "Reorder product images via drag and drop", status: "done", notes: "ProductImageUpload" },
+      { name: "SVG Upload Support", description: "Allow SVG file uploads for logos/icons", status: "partial" },
+      { name: "Video Upload / Hosting", description: "Upload and host product videos", status: "not_started" },
+    ],
+  },
+];
+
+const smartCollectionDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Smart Collections & Merchandising",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Smart Collection Rules (JSONB)", description: "Rules-based auto-collections using JSONB conditions", status: "done", notes: "SmartCollections page" },
+      { name: "Collection Rule: Price Range", description: "Include products within price range", status: "done" },
+      { name: "Collection Rule: Tag Contains", description: "Include products with specific tags", status: "done" },
+      { name: "Collection Rule: Brand Equals", description: "Include products of specific brand", status: "done" },
+      { name: "Collection Rule: Stock Level", description: "Include products with stock above/below threshold", status: "done" },
+      { name: "Collection Rule: Created Date", description: "Include products created within date range", status: "done" },
+      { name: "Collection Rule: Weight Range", description: "Include by product weight", status: "partial" },
+      { name: "Collection Sort Order (Manual)", description: "Manually sort products within collection", status: "partial" },
+      { name: "Collection Sort Order (Auto)", description: "Auto-sort by best-selling, newest, price", status: "done" },
+      { name: "Collection Featured Image", description: "Hero image for collection page", status: "done" },
+      { name: "Collection SEO Fields", description: "Custom meta title/description per collection", status: "done" },
+      { name: "Product Pinning in Collection", description: "Pin specific products to top of collection", status: "not_started" },
+      { name: "Merchandising Zones (Homepage)", description: "Configurable product zones on homepage", status: "partial" },
+      { name: "Cross-Sell Rules", description: "Define related products / cross-sell rules", status: "done", notes: "product_relations" },
+      { name: "Upsell Rules", description: "Define upsell products per product", status: "done" },
+    ],
+  },
+];
+
+const staffPermissionFeatures: FeatureCategory[] = [
+  {
+    category: "Staff & Permissions — Deep",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Role-Based Access Control (RBAC)", description: "Define roles with granular permissions", status: "done", notes: "RolePermissions page" },
+      { name: "Per-Module Permission Toggle", description: "Enable/disable access per admin module", status: "done" },
+      { name: "Read vs Write Permissions", description: "Separate read and write access per module", status: "partial" },
+      { name: "Store-Scoped Staff Access", description: "Staff can only access assigned stores", status: "done", notes: "store_staff table" },
+      { name: "Staff Activity Log", description: "Log all actions per staff member", status: "done", notes: "StaffActivity page" },
+      { name: "Staff Invitation Flow", description: "Invite new staff via email with role assignment", status: "partial" },
+      { name: "Staff Deactivation", description: "Deactivate staff without deleting", status: "partial" },
+      { name: "Password Policy Enforcement", description: "Enforce password rotation and complexity", status: "not_started" },
+      { name: "Login IP Restriction", description: "Restrict staff login to specific IPs", status: "not_started" },
+      { name: "Session Timeout Configuration", description: "Configurable auto-logout timeout", status: "not_started" },
+    ],
+  },
+];
+
+const warehouseFulfillmentFeatures: FeatureCategory[] = [
+  {
+    category: "Warehouse Fulfillment — Operations",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Pick List Generation", description: "Generate pick lists for warehouse staff", status: "done", notes: "PrintPickList page" },
+      { name: "Packing Slip Generation", description: "Print packing slips per order", status: "done", notes: "PrintPackingSlip page" },
+      { name: "Pick & Pack Workflow", description: "Step-by-step pick and pack process", status: "done", notes: "PickPack page" },
+      { name: "Barcode Scanning (Pick)", description: "Scan barcodes to verify picked items", status: "done", notes: "BarcodeScanner component" },
+      { name: "Barcode Label Printing", description: "Print barcode labels for products", status: "done", notes: "PrintBarcodeLabels page" },
+      { name: "Wave Picking", description: "Group multiple orders into pick waves", status: "partial" },
+      { name: "Zone-Based Picking", description: "Assign pickers to warehouse zones", status: "not_started" },
+      { name: "Batch Picking", description: "Pick same SKU for multiple orders at once", status: "not_started" },
+      { name: "Pack Station Verification", description: "Verify items at pack station before shipping", status: "partial" },
+      { name: "Shipping Label Auto-Print", description: "Auto-print carrier label after packing", status: "not_started" },
+      { name: "Warehouse Dashboard (KPIs)", description: "Fulfillment KPIs and queue overview", status: "done", notes: "WarehouseDashboard page" },
+      { name: "Order Queue Prioritization", description: "Priority-based order queue for fulfillment", status: "partial" },
+      { name: "Multi-Box Shipment", description: "Split single order into multiple boxes", status: "not_started" },
+      { name: "Package Weight Capture", description: "Record actual package weight at pack station", status: "not_started" },
+      { name: "Fulfillment SLA Tracking", description: "Track time from order to shipment vs SLA", status: "not_started" },
+    ],
+  },
+];
+
+const thirdPartyIntegrationFeatures: FeatureCategory[] = [
+  {
+    category: "Third-Party Integrations — Remaining",
+    icon: <Cable className="h-5 w-5" />,
+    features: [
+      { name: "ShipStation Integration", description: "Sync orders to ShipStation for fulfillment", status: "done", notes: "shipstation-sync function" },
+      { name: "Starshipit Integration", description: "Shipping automation via Starshipit", status: "done", notes: "starshipit-sync function" },
+      { name: "eBay Integration", description: "List products and import orders from eBay", status: "done", notes: "ebay-sync function" },
+      { name: "Amazon Integration", description: "Amazon marketplace listing and order sync", status: "not_started" },
+      { name: "Catch.com.au Integration", description: "Catch marketplace integration", status: "not_started" },
+      { name: "MyDeal Integration", description: "MyDeal marketplace listing", status: "not_started" },
+      { name: "Kogan Integration", description: "Kogan marketplace integration", status: "not_started" },
+      { name: "TradeMe Integration (NZ)", description: "TradeMe marketplace for New Zealand", status: "not_started" },
+      { name: "Google Merchant Center", description: "Product feed to Google Merchant Center", status: "done", notes: "google-shopping-feed function" },
+      { name: "Zapier / Make Integration", description: "Connect via Zapier/Make using webhooks", status: "done", notes: "Webhooks + API" },
+      { name: "Slack Notifications", description: "Send order/stock alerts to Slack channel", status: "not_started" },
+      { name: "Freshdesk / Zendesk Integration", description: "Link orders to support tickets", status: "not_started" },
+      { name: "LiveChat / Intercom Widget", description: "Embed live chat on storefront", status: "not_started" },
+      { name: "Google Tag Manager", description: "GTM container for custom tracking scripts", status: "not_started" },
+      { name: "Hotjar / Microsoft Clarity", description: "Session recording and heatmap tools", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
