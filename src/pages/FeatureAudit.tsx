@@ -7806,7 +7806,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
       { name: "Refund to Original Payment", description: "Process refund back to original payment method", status: "not_started" },
       { name: "Refund to Store Credit", description: "Issue return refund as store credit instead of cash", status: "partial", notes: "Credit notes exist" },
       { name: "Exchange Workflow", description: "Exchange returned item for different size/color", status: "not_started" },
-      { name: "Restocking Fee", description: "Apply configurable restocking fee on returns", status: "not_started" },
+      { name: "Restocking Fee", description: "Apply configurable restocking fee on returns", status: "done", notes: "Configurable restocking fee percentage in Settings Returns tab" },
       { name: "Return Window Configuration", description: "Set days allowed for returns per category/product", status: "done", notes: "Settings Returns tab with return window days, restocking fee %, require reason, allow exchanges, auto-approve, non-returnable categories" },
       { name: "Non-Returnable Flag", description: "Mark specific products as non-returnable", status: "done", notes: "Non-returnable categories list in Settings Returns tab" },
       { name: "Return Analytics", description: "Report on return rates by product/category/reason", status: "done", notes: "Analytics page Return Analytics table with reason breakdown, counts, refund amounts" },
