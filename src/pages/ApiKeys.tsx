@@ -44,7 +44,7 @@ export default function ApiKeys() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [newKey, setNewKey] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", scopes: [] as string[] });
+  const [form, setForm] = useState({ name: "", scopes: [] as string[], ip_whitelist: "" });
 
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ["api_keys", currentStore?.id],
