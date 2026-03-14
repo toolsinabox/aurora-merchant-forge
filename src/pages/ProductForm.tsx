@@ -189,6 +189,7 @@ export default function ProductForm() {
         actual_width: sd.actual_width?.toString() || "0",
         actual_height: sd.actual_height?.toString() || "0",
         requires_packaging: sd.requires_packaging ?? false,
+        free_shipping: sd.free_shipping ?? false,
         shipping_category: sd.shipping_category || "",
         flat_rate_charge: sd.flat_rate_charge?.toString() || "",
         selling_unit: sd.selling_unit || "",
