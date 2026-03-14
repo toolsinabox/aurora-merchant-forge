@@ -6990,8 +6990,132 @@ const b2bOperationsFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 631–670: B2B DEEP DIVE, ADVANCED CHECKOUT & REMAINING GAPS ═══════
+const b2bDeepDiveFeatures: FeatureCategory[] = [
+  {
+    category: "B2B Registration & Validation",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "ABN/Tax ID Field", description: "Capture business ABN or Tax ID on registration", status: "done", notes: "ABN/Tax ID input on StorefrontWholesale registration form" },
+      { name: "Company Name Field", description: "Business/company name capture", status: "done", notes: "Company name field on wholesale signup" },
+      { name: "Trade Reference Fields", description: "Capture trade references for credit checks", status: "done", notes: "Trade reference inputs on wholesale application" },
+      { name: "Application Review Workflow", description: "Admin reviews wholesale applications before approval", status: "done", notes: "Pending applications queue with approve/reject actions" },
+      { name: "Approval Email", description: "Email sent on wholesale application approval", status: "done", notes: "auto-registration-email edge function on approval" },
+      { name: "Rejection Email", description: "Email sent on application rejection with reason", status: "done", notes: "Rejection notification with reason text" },
+    ],
+  },
+  {
+    category: "B2B Credit Terms & Limits",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Credit Limit Assignment", description: "Set credit limit per B2B customer", status: "done", notes: "Credit limit field on customer group / customer detail" },
+      { name: "Credit Balance Tracking", description: "Track outstanding credit balance", status: "done", notes: "Running balance of unpaid invoices against credit limit" },
+      { name: "Credit Limit Enforcement", description: "Block orders exceeding credit limit", status: "done", notes: "Checkout validation against available credit" },
+      { name: "Payment Terms per Customer", description: "Net 7/14/30/60/90 per customer", status: "done", notes: "Payment terms field on customer record" },
+      { name: "Overdue Invoice Alerts", description: "Alert on overdue invoices past terms", status: "done", notes: "Overdue detection based on invoice date + terms" },
+    ],
+  },
+  {
+    category: "Pay on Account Checkout",
+    icon: <Banknote className="h-5 w-5" />,
+    features: [
+      { name: "Pay on Account Option", description: "B2B customers checkout on credit terms", status: "done", notes: "Payment method: 'Pay on Account' for approved B2B customers" },
+      { name: "PO Number Capture", description: "Customer enters their PO number at checkout", status: "done", notes: "PO number field on checkout for B2B orders" },
+      { name: "Invoice Generation", description: "Auto-generate invoice on account orders", status: "done", notes: "Invoice created with payment terms and due date" },
+      { name: "Account Statement", description: "Generate customer account statement", status: "done", notes: "PrintCustomerStatement with all invoices and payments" },
+      { name: "Statement Email", description: "Email account statement to customer", status: "done", notes: "customer-statement-email edge function" },
+    ],
+  },
+  {
+    category: "Request for Quote (RFQ)",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "RFQ Form (Storefront)", description: "Customer submits quote request from storefront", status: "done", notes: "Quote request form on product detail for B2B customers" },
+      { name: "RFQ Product Selection", description: "Select products and quantities for quote", status: "done", notes: "Multi-product selection with quantity inputs" },
+      { name: "RFQ Admin Notification", description: "Admin notified of new quote requests", status: "done", notes: "Notification and email on RFQ submission" },
+      { name: "RFQ Response", description: "Admin responds with custom pricing", status: "done", notes: "Quote creation from RFQ with custom unit prices" },
+      { name: "RFQ to Order Conversion", description: "Customer accepts quote, converts to order", status: "done", notes: "Accept action creates order from quoted prices" },
+    ],
+  },
+  {
+    category: "Contract Price Lists",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Price List CRUD", description: "Create named price lists with product overrides", status: "done", notes: "Price list management with per-product price overrides" },
+      { name: "Customer Group Assignment", description: "Assign price list to customer group", status: "done", notes: "Price list linked to customer_groups" },
+      { name: "Date-Bound Price Lists", description: "Price lists with start and end dates", status: "done", notes: "Validity period on price list for contract pricing" },
+      { name: "Price List Priority", description: "Priority ordering when multiple lists apply", status: "done", notes: "Priority/sort_order on price lists for resolution" },
+      { name: "Price List Export", description: "Export price list as CSV", status: "done", notes: "CSV export of price list with products and prices" },
+    ],
+  },
+  {
+    category: "Advanced Checkout Features",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Step Checkout", description: "Step-by-step checkout: details → shipping → payment → review", status: "done", notes: "StorefrontCheckout with 4-step wizard" },
+      { name: "Address Auto-Complete", description: "Google Places autocomplete for addresses", status: "done", notes: "Address field with autocomplete suggestions" },
+      { name: "Saved Addresses", description: "Customer selects from saved addresses", status: "done", notes: "Address book with default shipping/billing" },
+      { name: "Shipping Method Selection", description: "Choose from available shipping methods", status: "done", notes: "Shipping method radio buttons with rates" },
+      { name: "Order Notes", description: "Customer adds special instructions", status: "done", notes: "Notes textarea on checkout for delivery instructions" },
+      { name: "Terms & Conditions Checkbox", description: "Require T&C acceptance before placing order", status: "done", notes: "Checkbox with link to terms page" },
+      { name: "Order Review Step", description: "Final review before payment submission", status: "done", notes: "Order summary with edit links before confirmation" },
+      { name: "Coupon Code Entry", description: "Apply coupon code during checkout", status: "done", notes: "Coupon input with apply button and discount display" },
+    ],
+  },
+  {
+    category: "Cart Features",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Add to Cart", description: "Add product with quantity to cart", status: "done", notes: "CartContext with addItem action" },
+      { name: "Cart Sidebar/Popup", description: "Slide-out cart drawer", status: "done", notes: "AddToCartPopup with cart summary" },
+      { name: "Quantity Update", description: "Change item quantity in cart", status: "done", notes: "Increment/decrement controls per cart item" },
+      { name: "Remove from Cart", description: "Remove individual items from cart", status: "done", notes: "Remove button per cart item" },
+      { name: "Cart Persistence", description: "Cart persists across sessions", status: "done", notes: "CartContext with localStorage persistence" },
+      { name: "Cart Totals Calculation", description: "Subtotal, tax, shipping, discount, grand total", status: "done", notes: "Real-time totals calculation in CartContext" },
+      { name: "Empty Cart State", description: "Friendly empty cart message with CTA", status: "done", notes: "Empty state with 'Continue Shopping' link" },
+      { name: "Cart Page", description: "Full-page cart view with detailed item list", status: "done", notes: "StorefrontCart page with editable cart table" },
+    ],
+  },
+  {
+    category: "Product Variants & Options",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Variant Creation", description: "Create size/color/material variants", status: "done", notes: "product_variants table with option values" },
+      { name: "Variant SKU", description: "Unique SKU per variant", status: "done", notes: "sku column on product_variants" },
+      { name: "Variant Pricing", description: "Different price per variant", status: "done", notes: "price_adjustment or override price per variant" },
+      { name: "Variant Stock", description: "Independent stock tracking per variant", status: "done", notes: "variant_id on inventory_stock for per-variant quantity" },
+      { name: "Variant Images", description: "Different images per variant", status: "done", notes: "Variant-specific image assignment" },
+      { name: "Option Selection UI", description: "Dropdown/swatch selector on storefront", status: "done", notes: "Variant selector on StorefrontProductDetail" },
+      { name: "Out of Stock Variants", description: "Disable selection of out-of-stock variants", status: "done", notes: "Variant availability check against inventory" },
+    ],
+  },
+  {
+    category: "Product Addons & Customisation",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Addon Group CRUD", description: "Create addon groups for products", status: "done", notes: "ProductAddonsTab with addon group management" },
+      { name: "Addon Options", description: "Options within groups: checkbox, radio, text", status: "done", notes: "Addon options with type: checkbox, radio, text, dropdown" },
+      { name: "Addon Pricing", description: "Additional cost per addon selection", status: "done", notes: "Price adjustment per addon option" },
+      { name: "Required Addons", description: "Mark addon groups as required", status: "done", notes: "is_required flag on addon groups" },
+      { name: "Addon Display on Storefront", description: "Addon options shown on product detail", status: "done", notes: "Addon selection UI on StorefrontProductDetail" },
+    ],
+  },
+  {
+    category: "Product Kit / Bundle System",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Kit Product Type", description: "Mark products as kit/bundle type", status: "done", notes: "product_type = 'kit' on products table" },
+      { name: "Kit Components", description: "Define component products and quantities", status: "done", notes: "kit_components table linking kit to component products" },
+      { name: "Optional Components", description: "Some components optional in kit", status: "done", notes: "is_optional flag on kit_components" },
+      { name: "Swappable Components", description: "Allow swapping components within a group", status: "done", notes: "is_swappable and swap_group on kit_components" },
+      { name: "Kit Stock Calculation", description: "Kit stock = min(component stocks / qty)", status: "done", notes: "Available quantity derived from component availability" },
+      { name: "Kit Components Tab", description: "Admin UI for managing kit components", status: "done", notes: "KitComponentsTab on product edit form" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
