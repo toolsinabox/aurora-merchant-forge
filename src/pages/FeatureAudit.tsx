@@ -7809,7 +7809,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
       { name: "Restocking Fee", description: "Apply configurable restocking fee on returns", status: "not_started" },
       { name: "Return Window Configuration", description: "Set days allowed for returns per category/product", status: "not_started" },
       { name: "Non-Returnable Flag", description: "Mark specific products as non-returnable", status: "not_started" },
-      { name: "Return Analytics", description: "Report on return rates by product/category/reason", status: "not_started" },
+      { name: "Return Analytics", description: "Report on return rates by product/category/reason", status: "done", notes: "Analytics page Return Analytics table with reason breakdown, counts, refund amounts" },
       { name: "Warranty Claim Processing", description: "Separate workflow for warranty claims vs returns", status: "not_started" },
       { name: "Credit Note Generation", description: "Auto-generate credit note on approved return", status: "done", notes: "credit_notes table" },
       { name: "Return Portal (Self-Service)", description: "Customer self-service portal for initiating returns", status: "not_started" },
