@@ -110,6 +110,7 @@ import SavedCarts from "./pages/SavedCarts.tsx";
 import EmailAutomations from "./pages/EmailAutomations.tsx";
 import PriceRules from "./pages/PriceRules.tsx";
 import GoLiveChecklist from "./pages/GoLiveChecklist.tsx";
+import InventoryReports from "./pages/InventoryReports.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -236,6 +237,7 @@ const App = () => (
                    <Route path="/_cpanel/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
                    <Route path="/_cpanel/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/_cpanel/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
+                   <Route path="/_cpanel/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
                    <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -334,6 +336,7 @@ const App = () => (
                    <Route path="/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
                    <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
+                   <Route path="/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

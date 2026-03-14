@@ -1144,14 +1144,19 @@ export type Database = {
       }
       customers: {
         Row: {
+          birthday: string | null
           created_at: string
+          credit_limit: number | null
           customer_group_id: string | null
           email: string | null
           id: string
+          is_approved: boolean | null
           logo_url: string | null
           name: string
           notes: string | null
+          payment_terms: string | null
           phone: string | null
+          requires_approval: boolean | null
           segment: string
           store_id: string
           tags: string[] | null
@@ -1161,14 +1166,19 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          birthday?: string | null
           created_at?: string
+          credit_limit?: number | null
           customer_group_id?: string | null
           email?: string | null
           id?: string
+          is_approved?: boolean | null
           logo_url?: string | null
           name: string
           notes?: string | null
+          payment_terms?: string | null
           phone?: string | null
+          requires_approval?: boolean | null
           segment?: string
           store_id: string
           tags?: string[] | null
@@ -1178,14 +1188,19 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          birthday?: string | null
           created_at?: string
+          credit_limit?: number | null
           customer_group_id?: string | null
           email?: string | null
           id?: string
+          is_approved?: boolean | null
           logo_url?: string | null
           name?: string
           notes?: string | null
+          payment_terms?: string | null
           phone?: string | null
+          requires_approval?: boolean | null
           segment?: string
           store_id?: string
           tags?: string[] | null

@@ -314,6 +314,8 @@ export default function CustomerDetail() {
         tags,
         customer_group_id: editForm.customer_group_id || null,
         logo_url: (editForm as any).logo_url || null,
+        payment_terms: (editForm as any).payment_terms || null,
+        credit_limit: (editForm as any).credit_limit ?? null,
       } as any)
       .eq("id", customer.id);
     if (error) { toast.error(error.message); return; }
@@ -454,6 +456,22 @@ export default function CustomerDetail() {
                     <div><Label className="text-xs">Tags (comma separated)</Label><Input className="h-8 text-xs" value={editForm.tags} onChange={(e) => setEditForm({ ...editForm, tags: e.target.value })} placeholder="vip, wholesale" /></div>
                     <div><Label className="text-xs">Notes</Label><Textarea className="text-xs min-h-[60px]" value={editForm.notes} onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })} /></div>
                     <div><Label className="text-xs">Dropship Logo URL</Label><Input className="h-8 text-xs" value={editForm.logo_url} onChange={(e) => setEditForm({ ...editForm, logo_url: e.target.value })} placeholder="https://..." /></div>
+                    <div>
+                      <Label className="text-xs">Payment Terms</Label>
+                      <Select value={(editForm as any).payment_terms || ""} onValueChange={(v) => setEditForm({ ...editForm, payment_terms: v } as any)}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="None" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="" className="text-xs">None</SelectItem>
+                          <SelectItem value="COD" className="text-xs">COD</SelectItem>
+                          <SelectItem value="Net 7" className="text-xs">Net 7</SelectItem>
+                          <SelectItem value="Net 14" className="text-xs">Net 14</SelectItem>
+                          <SelectItem value="Net 30" className="text-xs">Net 30</SelectItem>
+                          <SelectItem value="Net 60" className="text-xs">Net 60</SelectItem>
+                          <SelectItem value="Net 90" className="text-xs">Net 90</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div><Label className="text-xs">Credit Limit ($)</Label><Input className="h-8 text-xs" type="number" min="0" step="0.01" value={(editForm as any).credit_limit ?? ""} onChange={(e) => setEditForm({ ...editForm, credit_limit: e.target.value ? Number(e.target.value) : null } as any)} placeholder="No limit" /></div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 text-xs" onClick={saveEdit}><Save className="h-3 w-3 mr-1" />Save</Button>
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditing(false)}>Cancel</Button>
@@ -482,6 +500,22 @@ export default function CustomerDetail() {
                       <div className="mt-2">
                         <Label className="text-[10px] text-muted-foreground">Dropship Logo</Label>
                         <img src={(customer as any).logo_url} alt="Customer logo" className="h-12 mt-1 rounded border object-contain" />
+                      </div>
+                    )}
+                    {((customer as any).payment_terms || (customer as any).credit_limit != null) && (
+                      <div className="mt-2 space-y-1 border-t pt-2">
+                        {(customer as any).payment_terms && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Payment Terms:</span>
+                            <Badge variant="outline" className="text-[10px]">{(customer as any).payment_terms}</Badge>
+                          </div>
+                        )}
+                        {(customer as any).credit_limit != null && (
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Credit Limit:</span>
+                            <span className="font-medium">${Number((customer as any).credit_limit).toLocaleString()}</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </>
