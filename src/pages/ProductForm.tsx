@@ -689,6 +689,10 @@ export default function ProductForm() {
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Packing & Units</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
                     <div className="flex items-center justify-between">
+                      <Label className="text-xs font-medium text-primary">Free Shipping</Label>
+                      <Switch checked={shipping.free_shipping} onCheckedChange={(v) => setShipping(p => ({ ...p, free_shipping: v }))} />
+                    </div>
+                    <div className="flex items-center justify-between">
                       <Label className="text-xs">Requires Packaging</Label>
                       <Switch checked={shipping.requires_packaging} onCheckedChange={(v) => setShipping(p => ({ ...p, requires_packaging: v }))} />
                     </div>

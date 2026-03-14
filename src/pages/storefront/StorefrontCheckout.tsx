@@ -562,7 +562,7 @@ export default function StorefrontCheckout() {
           status: deliveryMethod === "pickup" ? "processing" : "pending",
           payment_status: payOnAccount ? "pending" : paymentMethod === "cod" ? "pending" : "pending",
           notes: [
-            paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
+            paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : paymentMethod === "bank_transfer" ? "[Payment: Bank Transfer — Awaiting Payment]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
             deliveryMethod === "pickup" ? `[Click & Collect: ${pickupLocations.find(l => l.id === selectedPickupLocation)?.name || "Store pickup"}${pickupLocations.find(l => l.id === selectedPickupLocation)?.address ? ` — ${pickupLocations.find(l => l.id === selectedPickupLocation)?.address}` : ""}]` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
