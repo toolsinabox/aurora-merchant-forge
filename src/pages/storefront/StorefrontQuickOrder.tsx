@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2, ShoppingCart, Search, Loader2 } from "lucide-react";
+import { Plus, Trash2, ShoppingCart, Search, Loader2, Upload } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 
 interface OrderLine {
@@ -75,6 +75,51 @@ export default function StorefrontQuickOrder() {
   const totalItems = lines.filter(l => l.found).reduce((s, l) => s + l.quantity, 0);
   const totalValue = lines.filter(l => l.found).reduce((s, l) => s + l.price * l.quantity, 0);
 
+  const handleCsvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      const text = evt.target?.result as string;
+      if (!text) return;
+      const rows = text.split("\n").map(r => r.trim()).filter(Boolean);
+      // Skip header if first row contains "sku" or "SKU"
+      const start = rows[0]?.toLowerCase().includes("sku") ? 1 : 0;
+      const newLines: OrderLine[] = [];
+      for (let i = start; i < rows.length; i++) {
+        const cols = rows[i].split(/[,\t;]/);
+        const sku = cols[0]?.trim();
+        const qty = parseInt(cols[1]?.trim()) || 1;
+        if (!sku) continue;
+        newLines.push({
+          id: `csv-${Date.now()}-${i}`,
+          sku, productId: "", title: "", price: 0, quantity: qty, found: false,
+        });
+      }
+      if (newLines.length === 0) { toast.error("No valid rows found in CSV"); return; }
+      setLines(newLines);
+      toast.success(`Loaded ${newLines.length} lines from CSV. Looking up products...`);
+      // Auto-lookup all SKUs
+      for (const line of newLines) {
+        const { data } = await supabase
+          .from("products")
+          .select("id, title, price, sku")
+          .or(`sku.eq.${line.sku},barcode.eq.${line.sku}`)
+          .eq("status", "active")
+          .limit(1)
+          .maybeSingle();
+        if (data) {
+          setLines(prev => prev.map(l => l.id === line.id ? {
+            ...l, productId: data.id, title: data.title, price: Number(data.price), found: true,
+          } : l));
+        }
+      }
+      toast.success("CSV lookup complete");
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
   const handleAddAllToCart = () => {
     const validLines = lines.filter(l => l.found && l.quantity > 0);
     if (validLines.length === 0) {
@@ -99,7 +144,17 @@ export default function StorefrontQuickOrder() {
     <StorefrontLayout>
       <div className="max-w-4xl mx-auto py-8 px-4">
         <h1 className="text-2xl font-bold mb-2">Quick Order</h1>
-        <p className="text-muted-foreground mb-6">Enter SKUs or barcodes to quickly add multiple products to your cart.</p>
+        <p className="text-muted-foreground mb-6">Enter SKUs or barcodes to quickly add multiple products to your cart, or upload a CSV.</p>
+
+        <div className="flex gap-2 mb-4">
+          <label className="cursor-pointer">
+            <input type="file" accept=".csv,.tsv,.txt" className="hidden" onChange={handleCsvUpload} />
+            <Button variant="outline" size="sm" className="gap-1" asChild>
+              <span><Upload className="h-4 w-4" /> Upload CSV</span>
+            </Button>
+          </label>
+          <p className="text-xs text-muted-foreground self-center">Format: SKU, Quantity (one per line)</p>
+        </div>
 
         <Card>
           <CardHeader className="pb-2">

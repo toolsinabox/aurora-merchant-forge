@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap, ShoppingBag, UserPlus } from "lucide-react";
+import { Plus, Edit, Trash2, Percent, DollarSign, Gift, Truck, Zap, ShoppingBag, UserPlus, Tag } from "lucide-react";
 import { format } from "date-fns";
 
 const RULE_TYPES = [
@@ -144,7 +144,33 @@ export default function PriceRules() {
             <h1 className="text-lg font-semibold">Automatic Discounts</h1>
             <p className="text-xs text-muted-foreground">Price rules that apply automatically at checkout without a coupon code</p>
           </div>
-          <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowForm(true)}><Plus className="h-3.5 w-3.5" /> New Rule</Button>
+          <div className="flex gap-2">
+            <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowForm(true)}><Plus className="h-3.5 w-3.5" /> New Rule</Button>
+            <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={async () => {
+              if (!storeId) return;
+              // Clearance auto-tag: find products with margin below threshold (e.g. 10%)
+              const MARGIN_THRESHOLD = 10;
+              const { data: products } = await supabase.from("products").select("id, title, price, cost_price, tags").eq("store_id", storeId).eq("status", "active");
+              if (!products) { toast.error("Failed to load products"); return; }
+              let tagged = 0;
+              for (const p of products as any[]) {
+                const price = Number(p.price) || 0;
+                const cost = Number(p.cost_price) || 0;
+                if (cost <= 0 || price <= 0) continue;
+                const margin = ((price - cost) / price) * 100;
+                if (margin < MARGIN_THRESHOLD) {
+                  const currentTags = (p.tags || []) as string[];
+                  if (!currentTags.includes("clearance")) {
+                    await supabase.from("products").update({ tags: [...currentTags, "clearance"] }).eq("id", p.id);
+                    tagged++;
+                  }
+                }
+              }
+              toast.success(`Tagged ${tagged} product(s) as clearance (margin < ${MARGIN_THRESHOLD}%)`);
+            }}>
+              <Tag className="h-3.5 w-3.5" /> Auto-Tag Clearance
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

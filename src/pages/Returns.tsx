@@ -6,7 +6,7 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { useReturns, useUpdateReturn } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle, RefreshCw, ShieldAlert } from "lucide-react";
+import { Search, RotateCcw, BarChart3, DollarSign, TrendingUp, AlertTriangle, RefreshCw, ShieldAlert, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
+const RETURN_TYPES = ["return", "warranty_claim"];
 const DISPUTE_TYPES = ["refund", "repair", "replace"];
 const DISPUTE_REASONS = [
   "Product defective on arrival",
@@ -151,6 +152,7 @@ export default function Returns() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-auto flex-wrap gap-1 p-1">
             <TabsTrigger value="list">Returns List</TabsTrigger>
+            <TabsTrigger value="warranty">Warranty Claims</TabsTrigger>
             <TabsTrigger value="disputes">Warranty Disputes</TabsTrigger>
             <TabsTrigger value="report">RMA Report</TabsTrigger>
           </TabsList>
@@ -225,6 +227,10 @@ export default function Returns() {
                 </CardContent>
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="warranty">
+            <WarrantyClaimsTab />
           </TabsContent>
 
           <TabsContent value="disputes">
@@ -400,6 +406,180 @@ export default function Returns() {
         </DialogContent>
       </Dialog>
     </AdminLayout>
+  );
+}
+
+function WarrantyClaimsTab() {
+  const { currentStore } = useAuth();
+  const queryClient = useQueryClient();
+  const [showCreate, setShowCreate] = useState(false);
+  const [claimForm, setClaimForm] = useState({
+    orderId: "", productId: "", claimType: "repair", reason: "", description: "",
+    purchaseDate: "", warrantyExpiry: "",
+  });
+
+  const { data: claims = [], isLoading } = useQuery({
+    queryKey: ["warranty_claims", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase
+        .from("warranty_disputes" as any)
+        .select("*, orders(order_number), customers(name), products(title)")
+        .eq("store_id", currentStore.id)
+        .not("dispute_type", "eq", "refund") // warranty claims are repair/replace type
+        .order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!currentStore,
+  });
+
+  const createClaim = useMutation({
+    mutationFn: async () => {
+      if (!currentStore) throw new Error("No store");
+      const { error } = await supabase.from("warranty_disputes" as any).insert({
+        store_id: currentStore.id,
+        order_id: claimForm.orderId || null,
+        product_id: claimForm.productId || null,
+        dispute_type: claimForm.claimType,
+        reason: claimForm.reason,
+        description: `${claimForm.description}\n\nPurchase Date: ${claimForm.purchaseDate || "N/A"}\nWarranty Expiry: ${claimForm.warrantyExpiry || "N/A"}`,
+        status: "open",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["warranty_claims"] });
+      setShowCreate(false);
+      setClaimForm({ orderId: "", productId: "", claimType: "repair", reason: "", description: "", purchaseDate: "", warrantyExpiry: "" });
+      toast.success("Warranty claim created");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  const { data: orders = [] } = useQuery({
+    queryKey: ["orders-for-claims", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase.from("orders").select("id, order_number").eq("store_id", currentStore.id).order("created_at", { ascending: false }).limit(100);
+      return data || [];
+    },
+    enabled: !!currentStore && showCreate,
+  });
+
+  const { data: productsList = [] } = useQuery({
+    queryKey: ["products-for-claims", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase.from("products").select("id, title").eq("store_id", currentStore.id).eq("status", "active").order("title").limit(200);
+      return data || [];
+    },
+    enabled: !!currentStore && showCreate,
+  });
+
+  return (
+    <Card>
+      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+        <CardTitle className="text-sm">Warranty Claims</CardTitle>
+        <Button size="sm" className="h-7 text-xs gap-1" onClick={() => setShowCreate(true)}>
+          <Plus className="h-3 w-3" /> New Claim
+        </Button>
+      </CardHeader>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-xs h-8">Order</TableHead>
+              <TableHead className="text-xs h-8">Product</TableHead>
+              <TableHead className="text-xs h-8">Type</TableHead>
+              <TableHead className="text-xs h-8">Reason</TableHead>
+              <TableHead className="text-xs h-8">Status</TableHead>
+              <TableHead className="text-xs h-8">Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow><TableCell colSpan={6}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+            ) : claims.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">
+                  <ShieldAlert className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                  No warranty claims yet.
+                </TableCell>
+              </TableRow>
+            ) : (
+              claims.map((c: any) => (
+                <TableRow key={c.id} className="text-xs">
+                  <TableCell className="py-2 font-medium">{c.orders?.order_number || "—"}</TableCell>
+                  <TableCell className="py-2 max-w-[150px] truncate">{c.products?.title || "—"}</TableCell>
+                  <TableCell className="py-2"><Badge variant="outline" className="text-[10px] capitalize">{c.dispute_type}</Badge></TableCell>
+                  <TableCell className="py-2 max-w-[150px] truncate">{c.reason}</TableCell>
+                  <TableCell className="py-2"><Badge variant={c.status === "resolved" ? "default" : "secondary"} className="text-[10px] capitalize">{c.status?.replace("_", " ")}</Badge></TableCell>
+                  <TableCell className="py-2 text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+
+      <Dialog open={showCreate} onOpenChange={setShowCreate}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="text-base">New Warranty Claim</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Order (optional)</Label>
+              <Select value={claimForm.orderId} onValueChange={(v) => setClaimForm({ ...claimForm, orderId: v })}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select order..." /></SelectTrigger>
+                <SelectContent>{orders.map((o: any) => <SelectItem key={o.id} value={o.id} className="text-xs">{o.order_number}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Product</Label>
+              <Select value={claimForm.productId} onValueChange={(v) => setClaimForm({ ...claimForm, productId: v })}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select product..." /></SelectTrigger>
+                <SelectContent>{productsList.map((p: any) => <SelectItem key={p.id} value={p.id} className="text-xs">{p.title}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Claim Type</Label>
+              <Select value={claimForm.claimType} onValueChange={(v) => setClaimForm({ ...claimForm, claimType: v })}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="repair" className="text-xs">Repair</SelectItem>
+                  <SelectItem value="replace" className="text-xs">Replace</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Purchase Date</Label>
+                <Input type="date" className="h-8 text-xs" value={claimForm.purchaseDate} onChange={(e) => setClaimForm({ ...claimForm, purchaseDate: e.target.value })} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Warranty Expiry</Label>
+                <Input type="date" className="h-8 text-xs" value={claimForm.warrantyExpiry} onChange={(e) => setClaimForm({ ...claimForm, warrantyExpiry: e.target.value })} />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Reason</Label>
+              <Select value={claimForm.reason} onValueChange={(v) => setClaimForm({ ...claimForm, reason: v })}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select reason..." /></SelectTrigger>
+                <SelectContent>
+                  {DISPUTE_REASONS.map((r) => <SelectItem key={r} value={r} className="text-xs">{r}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Description</Label>
+              <Textarea className="text-sm min-h-[60px]" value={claimForm.description} onChange={(e) => setClaimForm({ ...claimForm, description: e.target.value })} placeholder="Describe the issue..." />
+            </div>
+            <Button size="sm" className="w-full text-xs" onClick={() => createClaim.mutate()} disabled={createClaim.isPending || !claimForm.reason}>
+              {createClaim.isPending ? "Creating..." : "Create Warranty Claim"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </Card>
   );
 }
 
