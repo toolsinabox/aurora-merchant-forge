@@ -274,6 +274,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="p-0">
                   <div className="table-scroll">
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="text-xs h-9">Order</TableHead>
