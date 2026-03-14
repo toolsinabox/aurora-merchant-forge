@@ -666,6 +666,27 @@ export default function POS() {
         </TabsContent>
       </Tabs>
 
+      {/* Custom Sale Dialog */}
+      <Dialog open={showCustomSale} onOpenChange={setShowCustomSale}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>Custom Sale Item</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Item Name</Label>
+              <Input value={customTitle} onChange={e => setCustomTitle(e.target.value)} className="h-8 text-sm" />
+            </div>
+            <div>
+              <Label className="text-xs">Price ($)</Label>
+              <Input type="number" min="0" step="0.01" value={customPrice} onChange={e => setCustomPrice(e.target.value)} className="h-8 text-sm" placeholder="0.00" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowCustomSale(false)}>Cancel</Button>
+            <Button size="sm" onClick={addCustomSale}>Add to Cart</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Park Order Dialog */}
       <Dialog open={showParkDialog} onOpenChange={setShowParkDialog}>
         <DialogContent className="max-w-sm">
