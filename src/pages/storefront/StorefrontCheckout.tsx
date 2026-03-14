@@ -170,6 +170,10 @@ export default function StorefrontCheckout() {
           setSavedAddresses(addrs);
           const def = addrs.find((a: any) => a.is_default_shipping) || addrs[0];
           applyAddress(def);
+          // Enable express checkout if user has saved address + email
+          if (c.email && def) {
+            setHasSavedDetails(true);
+          }
         }
       } else {
         setForm((prev) => ({ ...prev, email: user!.email || prev.email }));
