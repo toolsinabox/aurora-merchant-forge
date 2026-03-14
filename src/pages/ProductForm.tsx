@@ -91,7 +91,7 @@ export default function ProductForm() {
     shipping_weight: "0", shipping_cubic: "0",
     shipping_length: "0", shipping_width: "0", shipping_height: "0",
     actual_length: "0", actual_width: "0", actual_height: "0",
-    requires_packaging: false, shipping_category: "",
+    requires_packaging: false, free_shipping: false, shipping_category: "",
     flat_rate_charge: "", selling_unit: "", base_unit: "", base_unit_qty: "1", cartons: "0",
   });
 
@@ -189,6 +189,7 @@ export default function ProductForm() {
         actual_width: sd.actual_width?.toString() || "0",
         actual_height: sd.actual_height?.toString() || "0",
         requires_packaging: sd.requires_packaging ?? false,
+        free_shipping: sd.free_shipping ?? false,
         shipping_category: sd.shipping_category || "",
         flat_rate_charge: sd.flat_rate_charge?.toString() || "",
         selling_unit: sd.selling_unit || "",
@@ -284,6 +285,7 @@ export default function ProductForm() {
           actual_width: parseFloat(shipping.actual_width) || 0,
           actual_height: parseFloat(shipping.actual_height) || 0,
           requires_packaging: shipping.requires_packaging,
+          free_shipping: shipping.free_shipping,
           shipping_category: shipping.shipping_category || null,
           flat_rate_charge: shipping.flat_rate_charge ? parseFloat(shipping.flat_rate_charge) : null,
           selling_unit: shipping.selling_unit || null,
@@ -686,6 +688,10 @@ export default function ProductForm() {
                 <Card>
                   <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Packing & Units</CardTitle></CardHeader>
                   <CardContent className="p-4 pt-2 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-medium text-primary">Free Shipping</Label>
+                      <Switch checked={shipping.free_shipping} onCheckedChange={(v) => setShipping(p => ({ ...p, free_shipping: v }))} />
+                    </div>
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Requires Packaging</Label>
                       <Switch checked={shipping.requires_packaging} onCheckedChange={(v) => setShipping(p => ({ ...p, requires_packaging: v }))} />
