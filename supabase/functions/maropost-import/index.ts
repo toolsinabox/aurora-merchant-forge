@@ -188,19 +188,32 @@ serve(async (req) => {
             }
           }
 
-          // Import variants
+          // Import variants (with SKU-based dedup)
           if (p.VariantInventory) {
             const variants = Array.isArray(p.VariantInventory) ? p.VariantInventory : [p.VariantInventory];
             for (const v of variants) {
               if (v && v.SKU) {
-                await supabase.from("product_variants").insert({
+                const variantData = {
                   product_id: productId,
                   store_id,
                   sku: v.SKU || null,
                   name: v.VariationName || v.SKU || "Variant",
                   price: parseFloat(v.DefaultPrice) || null,
                   stock: parseInt(v.Quantity) || 0,
-                } as any).catch(() => {});
+                };
+                if (!dry_run) {
+                  const { data: existingVar } = await supabase
+                    .from("product_variants")
+                    .select("id")
+                    .eq("store_id", store_id)
+                    .eq("sku", v.SKU)
+                    .maybeSingle();
+                  if (existingVar) {
+                    await supabase.from("product_variants").update(variantData as any).eq("id", existingVar.id).catch(() => {});
+                  } else {
+                    await supabase.from("product_variants").insert(variantData as any).catch(() => {});
+                  }
+                }
               }
             }
           }
