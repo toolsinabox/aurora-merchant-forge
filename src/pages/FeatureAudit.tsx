@@ -8416,7 +8416,7 @@ const subscriptionDeepFeatures: FeatureCategory[] = [
       { name: "Subscription Payment Retry", description: "Auto-retry failed subscription payments", status: "not_started" },
       { name: "Subscription Dunning Emails", description: "Email sequence for failed payments", status: "not_started" },
       { name: "Subscription Analytics", description: "MRR, churn rate, LTV for subscriptions", status: "done", notes: "Subscriptions page KPI cards with MRR, ARR, Active count, Churn Rate %, Total subscriptions" },
-      { name: "Subscription Cancellation Survey", description: "Ask reason when customer cancels", status: "not_started" },
+      { name: "Subscription Cancellation Survey", description: "Ask reason when customer cancels", status: "done", notes: "Subscriptions page cancellation dialog with 6 predefined reasons (too expensive, don't need it, switching, quality, delivery, other)" },
       { name: "Subscription Admin Dashboard", description: "Overview of active/churned/paused subscriptions", status: "done", notes: "Subscriptions page" },
     ],
   },
