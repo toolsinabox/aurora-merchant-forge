@@ -219,9 +219,22 @@ export default function Webhooks() {
                         />
                       </TableCell>
                       <TableCell className="py-2">
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => remove.mutate(wh.id)}>
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                        <div className="flex gap-1">
+                          {(wh.failure_count || 0) > 0 && (
+                            <Button variant="ghost" size="icon" className="h-6 w-6" title="Reset failure count"
+                              onClick={() => {
+                                supabase.from("webhooks" as any).update({ failure_count: 0 }).eq("id", wh.id).then(() => {
+                                  qc.invalidateQueries({ queryKey: ["webhooks"] });
+                                  toast.success("Failure count reset");
+                                });
+                              }}>
+                              <RefreshCw className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => remove.mutate(wh.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))

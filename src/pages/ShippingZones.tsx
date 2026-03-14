@@ -689,6 +689,18 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           </div>
         </div>
       </div>
+      <div className="border-t pt-3 mt-1 space-y-2">
+        <p className="text-xs font-medium flex items-center gap-1.5"><Ban className="h-3.5 w-3.5" /> Blocked Postcodes</p>
+        <p className="text-[10px] text-muted-foreground">Orders with these postcodes will be blocked from checkout.</p>
+        <div>
+          <Label className="text-xs">Blocked Postcode Ranges <span className="text-muted-foreground">(comma-separated e.g. 0800-0899,9000-9999)</span></Label>
+          <Input placeholder="e.g. 0800-0899, 9000-9999" value={form.blocked_postcodes} onChange={(e) => setForm({ ...form, blocked_postcodes: e.target.value })} className="text-xs" />
+        </div>
+        <div>
+          <Label className="text-xs">Blocked Message</Label>
+          <Input value={form.blocked_message} onChange={(e) => setForm({ ...form, blocked_message: e.target.value })} className="text-xs" placeholder="Shown to customer at checkout" />
+        </div>
+      </div>
       <Button onClick={onSubmit} disabled={loading} className="w-full">{label}</Button>
     </div>
   );

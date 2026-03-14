@@ -298,6 +298,11 @@ export default function PriceRules() {
                 <SelectContent>{APPLIES_TO.map(a => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
+            {form.applies_to === "specific_brands" && (
+              <div><Label>Brand Names <span className="text-xs text-muted-foreground">(comma-separated)</span></Label>
+                <Input value={form.brand_names} onChange={e => setForm(f => ({ ...f, brand_names: e.target.value }))} placeholder="e.g. Nike, Adidas, Puma" />
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <div><Label>Min Order Amount ($)</Label><Input type="number" value={form.min_order_amount} onChange={e => setForm(f => ({ ...f, min_order_amount: e.target.value }))} placeholder="Optional" /></div>
               <div><Label>Min Quantity</Label><Input type="number" value={form.min_quantity} onChange={e => setForm(f => ({ ...f, min_quantity: e.target.value }))} placeholder="Optional" /></div>
