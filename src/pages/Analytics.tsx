@@ -152,12 +152,15 @@ export default function Analytics() {
       (prods || []).forEach((p: any) => { if (p.category_id) prodCatMap[p.id] = catMap[p.category_id] || "Other"; });
       
       const catRevenue: Record<string, number> = {};
+      const catRevenueMap: Record<string, { revenue: number; units: number }> = {};
       (items || []).forEach((item: any) => {
         const cat = prodCatMap[item.product_id] || "Uncategorized";
-        catRevenue[cat] = (catRevenue[cat] || 0) + Number(item.total);
+        if (!catRevenueMap[cat]) catRevenueMap[cat] = { revenue: 0, units: 0 };
+        catRevenueMap[cat].revenue += Number(item.total);
+        catRevenueMap[cat].units += item.quantity;
       });
       setSalesByCategory(
-        Object.entries(catRevenue).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
+        Object.entries(catRevenueMap).map(([name, d]) => ({ name, value: d.revenue, units: d.units })).sort((a, b) => b.value - a.value)
       );
 
       // Sales by brand
