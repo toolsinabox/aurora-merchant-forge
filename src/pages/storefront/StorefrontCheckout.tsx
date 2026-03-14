@@ -131,9 +131,8 @@ export default function StorefrontCheckout() {
       if (svcData) setShippingServices(svcData);
 
       // Load default tax rate and tax mode
-      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default").order("is_default", { ascending: false });
+      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default, is_compound, is_inclusive, priority, applies_to").order("priority", { ascending: false });
       if (taxRates && taxRates.length > 0) {
-        // Store all rates for address-based lookup later, use default for now
         setAllTaxRates(taxRates as any[]);
         const defaultRate = (taxRates as any[]).find((r: any) => r.is_default) || taxRates[0];
         setTaxRate(Number((defaultRate as any).rate) / 100);
