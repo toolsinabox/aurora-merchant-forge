@@ -482,6 +482,7 @@ export default function StorefrontCheckout() {
             form.po_number ? `[PO#: ${form.po_number}]` : null,
             form.custom_field_1 ? `[Custom: ${form.custom_field_1}]` : null,
             utmParams ? `[UTM: ${Object.entries(utmParams).map(([k,v]) => `${k}=${v}`).join("&")}]` : null,
+            orderGiftMessage ? `[Gift Message: ${orderGiftMessage}]` : null,
             form.notes,
           ].filter(Boolean).join(" ") || null,
           shipping_address: shippingAddr,

@@ -7910,7 +7910,7 @@ const checkoutDeepFeatures: FeatureCategory[] = [
       { name: "Cart Reservation / Timer", description: "Reserve stock for X minutes while in checkout", status: "done", notes: "StorefrontCheckout 15-minute countdown timer in Order Summary, warning when < 2min, expiry toast notification" },
       { name: "Express Checkout (Saved Details)", description: "One-click checkout for returning customers", status: "done", notes: "StorefrontCheckout express checkout banner for logged-in users with saved addresses, one-click place order using saved name/email/address" },
       { name: "Checkout Upsell/Cross-Sell", description: "Show related products during checkout", status: "done", notes: "StorefrontCheckout upsellProducts section with add-to-cart from related products" },
-      { name: "Checkout Progress Indicator", description: "Visual progress bar showing checkout steps", status: "partial" },
+      { name: "Checkout Progress Indicator", description: "Visual progress bar showing checkout steps", status: "done", notes: "StorefrontCheckout 3-step progress indicator (Details → Shipping → Payment) with clickable steps, checkmarks for completed steps" },
       { name: "Order Confirmation Page", description: "Thank you page with order summary and next steps", status: "done" },
       { name: "Order Confirmation Email", description: "Auto-send order confirmation email", status: "done", notes: "order-email-trigger function" },
     ],
