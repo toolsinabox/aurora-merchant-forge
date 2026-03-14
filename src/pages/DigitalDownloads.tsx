@@ -90,6 +90,32 @@ export default function DigitalDownloads() {
     },
   });
 
+  const generateLicenseKey = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const segments = 4;
+    const segLen = 5;
+    return Array.from({ length: segments }, () =>
+      Array.from({ length: segLen }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+    ).join("-");
+  };
+
+  const addLicenseKeys = (productId: string, count: number) => {
+    const existing = licenseKeys[productId] || [];
+    const newKeys = Array.from({ length: count }, () => generateLicenseKey());
+    const updated = { ...licenseKeys, [productId]: [...existing, ...newKeys] };
+    setLicenseKeys(updated);
+    localStorage.setItem("license_keys_store", JSON.stringify(updated));
+    toast.success(`Generated ${count} license keys`);
+  };
+
+  const revokeLicenseKey = (productId: string, key: string) => {
+    const existing = licenseKeys[productId] || [];
+    const updated = { ...licenseKeys, [productId]: existing.filter(k => k !== key) };
+    setLicenseKeys(updated);
+    localStorage.setItem("license_keys_store", JSON.stringify(updated));
+    toast.success("License key revoked");
+  };
+
   const paged = downloads.slice((page - 1) * pageSize, page * pageSize);
 
   return (
