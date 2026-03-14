@@ -1072,6 +1072,79 @@ export default function Analytics() {
             )}
           </CardContent>
         </Card>
+        {/* Sales by Channel */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Channel</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[150px]" /> : salesByChannel.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No channel data</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead className="text-xs h-8">Channel</TableHead><TableHead className="text-xs h-8 text-right">Orders</TableHead><TableHead className="text-xs h-8 text-right">Revenue</TableHead><TableHead className="text-xs h-8 text-right">AOV</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {salesByChannel.map(ch => (
+                    <TableRow key={ch.channel} className="text-xs">
+                      <TableCell className="py-1.5 font-medium capitalize">{ch.channel}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{ch.orders}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${ch.revenue.toFixed(2)}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${ch.orders > 0 ? (ch.revenue / ch.orders).toFixed(2) : "0.00"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Sales by Region */}
+        <Card>
+          <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Region</CardTitle></CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[150px]" /> : salesByRegion.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No region data</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead className="text-xs h-8">Region</TableHead><TableHead className="text-xs h-8 text-right">Orders</TableHead><TableHead className="text-xs h-8 text-right">Revenue</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {salesByRegion.map(r => (
+                    <TableRow key={r.region} className="text-xs">
+                      <TableCell className="py-1.5 font-medium">{r.region}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{r.orders}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${r.revenue.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Return Analytics */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Return Analytics</CardTitle>
+            <p className="text-xs text-muted-foreground">{returnAnalytics.totalReturns} returns · ${returnAnalytics.totalRefunded.toFixed(2)} refunded</p>
+          </CardHeader>
+          <CardContent className="p-4 pt-0">
+            {loadingTopProducts ? <Skeleton className="h-[150px]" /> : returnAnalytics.byReason.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No return data</p>
+            ) : (
+              <Table>
+                <TableHeader><TableRow><TableHead className="text-xs h-8">Reason</TableHead><TableHead className="text-xs h-8 text-right">Count</TableHead><TableHead className="text-xs h-8 text-right">Refunded</TableHead><TableHead className="text-xs h-8 text-right">% of Returns</TableHead></TableRow></TableHeader>
+                <TableBody>
+                  {returnAnalytics.byReason.map(r => (
+                    <TableRow key={r.reason} className="text-xs">
+                      <TableCell className="py-1.5 font-medium capitalize">{r.reason}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{r.count}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">${r.amount.toFixed(2)}</TableCell>
+                      <TableCell className="py-1.5 text-right font-mono">{returnAnalytics.totalReturns > 0 ? ((r.count / returnAnalytics.totalReturns) * 100).toFixed(1) : 0}%</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
