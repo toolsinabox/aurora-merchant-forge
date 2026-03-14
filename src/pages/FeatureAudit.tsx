@@ -9067,8 +9067,8 @@ const auditComplianceFeatures: FeatureCategory[] = [
     icon: <Shield className="h-5 w-5" />,
     features: [
       { name: "Full Activity Audit Trail", description: "Every admin action logged with timestamp and user", status: "done", notes: "activity_log table" },
-      { name: "Login Audit Log", description: "Track all login attempts (success/fail)", status: "partial" },
-      { name: "Data Change History", description: "Track changes to critical data (prices, stock)", status: "partial" },
+      { name: "Login Audit Log", description: "Track all login attempts (success/fail)", status: "done", notes: "Sessions page with login timestamps, IP addresses, user agents, success/fail status" },
+      { name: "Data Change History", description: "Track changes to critical data (prices, stock)", status: "done", notes: "activity_log tracks all entity changes with before/after snapshots in details JSONB" },
       { name: "Export Audit Logs", description: "Export audit logs for compliance review", status: "not_started" },
       { name: "Regulatory Report (Tax)", description: "Tax-specific reports for BAS/GST filing", status: "not_started" },
       { name: "Fraud Detection Rules", description: "Configurable fraud detection rules", status: "not_started" },
