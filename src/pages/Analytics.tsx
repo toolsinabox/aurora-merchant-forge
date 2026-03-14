@@ -104,6 +104,7 @@ export default function Analytics() {
   const [salesByChannel, setSalesByChannel] = useState<{ channel: string; orders: number; revenue: number }[]>([]);
   const [salesByRegion, setSalesByRegion] = useState<{ region: string; orders: number; revenue: number }[]>([]);
   const [returnAnalytics, setReturnAnalytics] = useState<{ byReason: { reason: string; count: number; amount: number }[]; totalReturns: number; totalRefunded: number }>({ byReason: [], totalReturns: 0, totalRefunded: 0 });
+  const [repeatPurchaseRate, setRepeatPurchaseRate] = useState<{ rate: number; totalCustomers: number; repeatCustomers: number }>({ rate: 0, totalCustomers: 0, repeatCustomers: 0 });
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
