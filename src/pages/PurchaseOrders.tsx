@@ -296,6 +296,21 @@ export default function PurchaseOrders() {
                     <TableCell className="py-2 text-muted-foreground">{format(new Date(p.created_at), "dd MMM yyyy")}</TableCell>
                     <TableCell className="py-2">
                       <div className="flex gap-1">
+                        {p.status === "pending_approval" && (
+                          <>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-green-600" title="Approve" onClick={() => updateStatus.mutate({ id: p.id, status: "sent" })}>
+                              <CheckCircle className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" title="Reject" onClick={() => updateStatus.mutate({ id: p.id, status: "cancelled" })}>
+                              <XCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          </>
+                        )}
+                        {p.status === "draft" && (
+                          <Button variant="ghost" size="icon" className="h-6 w-6" title="Submit for Approval" onClick={() => updateStatus.mutate({ id: p.id, status: "pending_approval" })}>
+                            <CheckCircle className="h-3 w-3" />
+                          </Button>
+                        )}
                         {["sent", "partial"].includes(p.status) && (
                           <Button variant="ghost" size="icon" className="h-6 w-6" title="Receive Items" onClick={() => openReceiveDialog(p)}>
                             <PackageCheck className="h-3 w-3" />
