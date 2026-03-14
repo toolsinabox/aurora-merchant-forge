@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { TablePagination } from "@/components/admin/TablePagination";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
