@@ -400,6 +400,7 @@ export default function POS() {
           <div className="flex items-center gap-3">
             <TabsList>
               <TabsTrigger value="sale">New Sale</TabsTrigger>
+              <TabsTrigger value="parked">Parked ({parkedOrders.length})</TabsTrigger>
               <TabsTrigger value="today">Today's Sales ({todayOrders.length})</TabsTrigger>
             </TabsList>
             {registers.length > 0 && (
