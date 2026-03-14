@@ -1260,6 +1260,118 @@ const featureData: FeatureCategory[] = [
       { name: "Language Switcher", description: "Multi-language support on storefront", status: "done", notes: "LanguageSwitcher component with LanguageProvider context for i18n" },
     ],
   },
+
+  // ═══════ 66. AUTOMATIC DISCOUNTS / PRICE RULES ═══════
+  {
+    category: "Automatic Discounts / Price Rules",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Price Rule CRUD", description: "Create and manage automatic discount rules", status: "done", notes: "price_rules table with full CRUD, admin /price-rules page with KPI cards" },
+      { name: "Percentage Off Rule", description: "Automatic percentage discount", status: "done", notes: "rule_type: percentage with discount_value %" },
+      { name: "Fixed Amount Off Rule", description: "Automatic fixed dollar amount discount", status: "done", notes: "rule_type: fixed_amount with discount_value $" },
+      { name: "Buy X Get Y Free", description: "Buy quantity X, get Y items free", status: "done", notes: "rule_type: buy_x_get_y with buy_quantity and get_quantity" },
+      { name: "Free Shipping Rule", description: "Automatic free shipping based on conditions", status: "done", notes: "rule_type: free_shipping with min order / quantity conditions" },
+      { name: "Min Order Amount Condition", description: "Require minimum cart value for discount", status: "done", notes: "min_order_amount threshold on price_rules" },
+      { name: "Min Quantity Condition", description: "Require minimum item quantity for discount", status: "done", notes: "min_quantity threshold on price_rules" },
+      { name: "Schedule Start/End", description: "Time-limited automatic discounts", status: "done", notes: "starts_at and ends_at datetime fields on price_rules" },
+      { name: "Priority Ordering", description: "Control which rules apply first", status: "done", notes: "priority integer field, higher = first evaluated" },
+      { name: "Usage Tracking & Limits", description: "Track usage count and set max uses", status: "done", notes: "usage_count and max_uses on price_rules" },
+      { name: "Active/Inactive Toggle", description: "Enable/disable rules without deleting", status: "done", notes: "is_active boolean with inline switch on admin table" },
+      { name: "Target Scope (All/Products/Categories)", description: "Apply to all products or specific sets", status: "done", notes: "applies_to with product_ids and category_ids arrays" },
+    ],
+  },
+
+  // ═══════ 67. DASHBOARD & ANALYTICS ═══════
+  {
+    category: "Dashboard & Analytics",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Revenue KPI Card", description: "Total revenue with period comparison", status: "done", notes: "KPI card on Dashboard with $ total and % change vs prior period" },
+      { name: "Orders KPI Card", description: "Order count with trend", status: "done", notes: "KPI card showing total orders and percentage change" },
+      { name: "Revenue Chart (Area)", description: "Daily revenue time series chart", status: "done", notes: "Recharts AreaChart with 30-day daily revenue data" },
+      { name: "Orders Chart (Bar)", description: "Daily orders bar chart", status: "done", notes: "Recharts BarChart with daily order counts" },
+      { name: "Top Products Table", description: "Best-selling products by revenue", status: "done", notes: "Table showing top products sorted by total revenue from order_items" },
+      { name: "Recent Orders Feed", description: "Latest orders with status badges", status: "done", notes: "Table of 10 most recent orders with status, customer, and total" },
+      { name: "Low Stock Alerts", description: "Products below reorder threshold", status: "done", notes: "Alert card showing products with stock below threshold" },
+      { name: "Customer KPI", description: "Total customers with growth trend", status: "done", notes: "KPI card showing customer count and period change" },
+      { name: "Report Builder", description: "Custom report creation with date ranges and metrics", status: "done", notes: "Admin /report-builder page with configurable report types, date filtering, and chart generation" },
+    ],
+  },
+
+  // ═══════ 68. AUTHENTICATION & SECURITY ═══════
+  {
+    category: "Authentication & Security",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Email/Password Login", description: "Standard email and password authentication", status: "done", notes: "Supabase Auth with Login page for admin and StorefrontLogin for customers" },
+      { name: "User Registration", description: "New account signup with email verification", status: "done", notes: "Signup page with email, password, full name; email verification required" },
+      { name: "Forgot Password / Reset", description: "Password reset flow via email", status: "done", notes: "ForgotPassword page sends reset email, ResetPassword page handles token-based reset" },
+      { name: "Google OAuth Login", description: "Social login with Google on storefront", status: "done", notes: "Google OAuth button on StorefrontLogin and StorefrontSignup via supabase.auth.signInWithOAuth" },
+      { name: "Two-Factor Authentication (TOTP)", description: "TOTP-based 2FA setup for admin accounts", status: "done", notes: "TwoFactorSetup component with QR code generation, verification code input, and enrollment flow" },
+      { name: "Session Management", description: "View and manage active sessions", status: "done", notes: "Admin /sessions page showing active sessions with device, IP, last activity, and terminate action" },
+      { name: "Role-Based Access Control (RBAC)", description: "User roles per store (owner, admin, staff)", status: "done", notes: "user_roles table with app_role enum, has_store_role() security definer function, RolePermissions admin page" },
+      { name: "Staff Activity Tracking", description: "Log staff actions for audit trail", status: "done", notes: "Admin /staff-activity page showing user actions with timestamps" },
+      { name: "Activity Log", description: "Entity-level activity audit log", status: "done", notes: "activity_log table tracking action, entity_type, entity_id per user per store" },
+    ],
+  },
+
+  // ═══════ 69. STORE SETTINGS & CONFIGURATION ═══════
+  {
+    category: "Store Settings & Configuration",
+    icon: <Settings className="h-5 w-5" />,
+    features: [
+      { name: "General Settings (Name, Currency, Timezone)", description: "Core store identity configuration", status: "done", notes: "Settings page General tab with store name, currency, timezone" },
+      { name: "Branding / Theme Customization", description: "Logo, colors, fonts, banner configuration", status: "done", notes: "Settings Branding tab with logo URL, primary/accent colors, font family, banner text with scheduling" },
+      { name: "Shipping Zone Management", description: "Configure shipping zones and rates", status: "done", notes: "Dedicated /shipping-zones page and Settings Shipping tab with CRUD" },
+      { name: "Tax Rate Configuration", description: "Set tax rates by name and percentage", status: "done", notes: "Dedicated /tax-rates page and Settings Tax tab with CRUD" },
+      { name: "Payment Gateway Configuration", description: "Configure payment processors", status: "done", notes: "Settings Payment Gateways tab supporting Stripe, PayPal, Square, eWAY, Braintree, Afterpay, Bank Transfer" },
+      { name: "Team / Staff Management", description: "Invite and manage team members", status: "done", notes: "Settings Team tab with member list, role display, invite functionality" },
+      { name: "Customer Group Management", description: "Create customer groups for pricing/access", status: "done", notes: "Settings Customer Groups tab with CRUD, credit terms, and tax exemption" },
+      { name: "Notification Preferences", description: "Configure notification channels and events", status: "done", notes: "Settings Notifications tab with toggleable notification types" },
+      { name: "Social Media Links", description: "Configure social media profile URLs", status: "done", notes: "Settings Branding tab with Facebook, Instagram, Twitter, YouTube, TikTok, LinkedIn URL fields" },
+      { name: "Analytics Tracking (GA, GTM, Pixel)", description: "Configure Google Analytics, GTM, and Facebook Pixel IDs", status: "done", notes: "ga_tracking_id, gtm_container_id, fb_pixel_id, google_ads_id fields on stores table, configurable in Settings" },
+      { name: "Chat Widget Integration", description: "Embed third-party chat widgets", status: "done", notes: "chat_widget_code field on stores table, pasted embed code injected into storefront" },
+    ],
+  },
+
+  // ═══════ 70. ONBOARDING ═══════
+  {
+    category: "Onboarding",
+    icon: <Store className="h-5 w-5" />,
+    features: [
+      { name: "Store Creation Wizard", description: "Guided store setup with name, slug, currency, timezone", status: "done", notes: "Onboarding page with store name → auto-slug generation, currency/timezone selectors, slug availability check" },
+      { name: "Slug Availability Check", description: "Real-time subdomain/slug availability validation", status: "done", notes: "Debounced check against stores table with available/taken status indicators" },
+      { name: "Auto-Role Assignment on Store Creation", description: "Creator automatically gets owner role", status: "done", notes: "handle_new_store() trigger auto-creates user_roles entry with 'owner' role" },
+      { name: "Multi-Store Support", description: "Users can create and switch between multiple stores", status: "done", notes: "AuthContext loads all user stores via get_user_store_ids(), store switcher dropdown in sidebar header" },
+    ],
+  },
+
+  // ═══════ 71. PLATFORM ADMIN (MULTI-TENANT) ═══════
+  {
+    category: "Platform Admin (Multi-Tenant)",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Platform Admin Dashboard", description: "Overview of all merchants and platform metrics", status: "done", notes: "PlatformDashboard page with total merchants, revenue, orders, customers KPI cards" },
+      { name: "Merchant Management", description: "View and manage all merchant stores", status: "done", notes: "PlatformMerchants page listing all stores with owner, plan, and status" },
+      { name: "Platform Customer View", description: "Cross-merchant customer overview", status: "done", notes: "PlatformCustomers page with aggregated customer data across stores" },
+      { name: "Platform Analytics", description: "Platform-wide analytics and reporting", status: "done", notes: "PlatformAnalytics page with cross-store metrics and charts" },
+      { name: "Platform Settings", description: "Global platform configuration", status: "done", notes: "PlatformSettings page with platform-level preferences" },
+      { name: "Platform Admin Access Control", description: "Separate platform admin role and login", status: "done", notes: "platform_roles table, is_platform_admin() function, RequirePlatformAdmin component, separate /platform/login route" },
+      { name: "Auto-Promote First Admin", description: "First user automatically becomes platform admin", status: "done", notes: "auto_promote_first_admin() trigger on profiles table" },
+    ],
+  },
+
+  // ═══════ 72. REAL-TIME NOTIFICATIONS ═══════
+  {
+    category: "Real-Time Notifications",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Notification Bell", description: "In-app notification bell with unread count", status: "done", notes: "NotificationBell component in admin TopBar with badge count and dropdown" },
+      { name: "Order Notifications", description: "Real-time alerts for new orders", status: "done", notes: "New order events trigger notification entries" },
+      { name: "Low Stock Notifications", description: "Alerts when products fall below stock threshold", status: "done", notes: "Low stock detection triggers admin notifications" },
+      { name: "Return/Dispute Notifications", description: "Alerts for new returns and warranty disputes", status: "done", notes: "Return and dispute creation triggers admin notifications" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
