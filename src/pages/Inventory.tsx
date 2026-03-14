@@ -693,6 +693,41 @@ export default function Inventory() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Bulk Adjust Dialog */}
+        <Dialog open={bulkAdjustOpen} onOpenChange={setBulkAdjustOpen}>
+          <DialogContent>
+            <DialogHeader><DialogTitle className="text-sm">Bulk Stock Adjustment</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Adjust stock for {selectedProducts.size} selected products.</p>
+            <div className="space-y-3 my-2">
+              <div className="space-y-1">
+                <Label className="text-xs">Adjustment Type</Label>
+                <Select value={bulkAdjustType} onValueChange={(v) => setBulkAdjustType(v as any)}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="add" className="text-xs">Add to stock</SelectItem>
+                    <SelectItem value="subtract" className="text-xs">Subtract from stock</SelectItem>
+                    <SelectItem value="set" className="text-xs">Set stock to</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Quantity</Label>
+                <Input type="number" min={0} className="h-8 text-xs" value={bulkAdjustQty} onChange={(e) => setBulkAdjustQty(+e.target.value)} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">Reason (optional)</Label>
+                <Input className="h-8 text-xs" value={bulkAdjustReason} onChange={(e) => setBulkAdjustReason(e.target.value)} placeholder="e.g. Stocktake correction" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" onClick={() => setBulkAdjustOpen(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleBulkAdjust} disabled={bulkAdjusting}>
+                {bulkAdjusting ? "Adjusting..." : `Adjust ${selectedProducts.size} Products`}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
