@@ -103,6 +103,7 @@ import AccountingIntegration from "./pages/AccountingIntegration.tsx";
 import Integrations from "./pages/Integrations.tsx";
 import Multimarket from "./pages/Multimarket.tsx";
 import Marketplaces from "./pages/Marketplaces.tsx";
+import Subscriptions from "./pages/Subscriptions.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -222,6 +223,7 @@ const App = () => (
                    <Route path="/_cpanel/returns/:returnId/label" element={<RequireAuth><PrintReturnLabel /></RequireAuth>} />
                    <Route path="/_cpanel/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
                    <Route path="/_cpanel/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
+                   <Route path="/_cpanel/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
                    <Route path="/_cpanel/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
@@ -313,6 +315,7 @@ const App = () => (
                    <Route path="/integrations" element={<RequireAuth><Integrations /></RequireAuth>} />
                    <Route path="/multimarket" element={<RequireAuth><Multimarket /></RequireAuth>} />
                    <Route path="/marketplaces" element={<RequireAuth><Marketplaces /></RequireAuth>} />
+                   <Route path="/subscriptions" element={<RequireAuth><Subscriptions /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}

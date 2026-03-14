@@ -3,7 +3,7 @@ import {
   BarChart3, Settings, ChevronDown, Store, Ticket, RotateCcw, Star, ClipboardList, Code2, ClipboardCheck,
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
-  Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag,
+  Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -43,6 +43,7 @@ const salesNav = [
   { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
   { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
+  { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
   { title: "Customers", url: `${prefix}/customers`, icon: Users },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },

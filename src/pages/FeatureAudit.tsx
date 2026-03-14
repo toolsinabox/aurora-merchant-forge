@@ -935,7 +935,35 @@ const featureData: FeatureCategory[] = [
     ],
   },
 
-  // ═══════ 42. THIRD-PARTY INTEGRATIONS ═══════
+  // ═══════ 42. SUBSCRIPTIONS / RECURRING ORDERS ═══════
+  {
+    category: "Subscriptions / Recurring Orders",
+    icon: <Repeat className="h-5 w-5" />,
+    features: [
+      { name: "Subscription Plan CRUD", description: "Create and manage recurring product subscriptions", status: "done", notes: "subscription_plans table with full CRUD, admin /subscriptions page" },
+      { name: "Subscription Frequency Options", description: "Weekly, fortnightly, monthly, quarterly, biannual, annual", status: "done", notes: "7 frequency options selectable per plan" },
+      { name: "Subscription Discount", description: "Percentage discount for subscription orders", status: "done", notes: "discount_percent on subscription_plans, reflected in effective price" },
+      { name: "Subscription Pause/Resume", description: "Pause and resume subscriptions", status: "done", notes: "Status toggle active↔paused on admin subscriptions page" },
+      { name: "Subscription Cancel", description: "Cancel subscriptions with status tracking", status: "done", notes: "Cancel action sets status to cancelled" },
+      { name: "Next Order Date Scheduling", description: "Set and track next auto-order date", status: "done", notes: "next_order_date on subscription_plans with date picker" },
+      { name: "Order Count Tracking", description: "Track total orders created from subscription", status: "done", notes: "total_orders_created counter on subscription_plans" },
+      { name: "Subscription Revenue KPIs", description: "Active count, estimated monthly revenue dashboard", status: "done", notes: "KPI cards on admin subscriptions page with active, paused, and est. monthly revenue" },
+    ],
+  },
+
+  // ═══════ 43. CUSTOMER COMMUNICATIONS ═══════
+  {
+    category: "Customer Communications",
+    icon: <MessageSquare className="h-5 w-5" />,
+    features: [
+      { name: "Communication Log", description: "Track all emails and interactions with customers", status: "done", notes: "customer_communications table, Communication Log card on customer detail page" },
+      { name: "Log Manual Communication", description: "Staff can log emails, calls, and notes sent to customers", status: "done", notes: "Log dialog with subject, body, direction; stores channel, sent_by user" },
+      { name: "Communication History Display", description: "View chronological communication history per customer", status: "done", notes: "Scrollable communication list on customer detail page with subject, body preview, direction badge, timestamp" },
+      { name: "Outbound/Inbound Direction", description: "Track direction of communication (outbound/inbound)", status: "done", notes: "direction column on customer_communications with badge display" },
+    ],
+  },
+
+  // ═══════ 44. THIRD-PARTY INTEGRATIONS ═══════
   {
     category: "Third-Party Integrations",
     icon: <Link className="h-5 w-5" />,

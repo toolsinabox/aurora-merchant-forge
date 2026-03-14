@@ -866,6 +866,66 @@ export type Database = {
           },
         ]
       }
+      customer_communications: {
+        Row: {
+          body: string | null
+          channel: string
+          created_at: string
+          customer_id: string
+          direction: string
+          id: string
+          related_entity_id: string | null
+          related_entity_type: string | null
+          sent_by: string | null
+          status: string
+          store_id: string
+          subject: string | null
+        }
+        Insert: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          customer_id: string
+          direction?: string
+          id?: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          sent_by?: string | null
+          status?: string
+          store_id: string
+          subject?: string | null
+        }
+        Update: {
+          body?: string | null
+          channel?: string
+          created_at?: string
+          customer_id?: string
+          direction?: string
+          id?: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          sent_by?: string | null
+          status?: string
+          store_id?: string
+          subject?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_communications_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_communications_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customer_files: {
         Row: {
           created_at: string
@@ -4798,6 +4858,104 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          customer_id: string
+          discount_percent: number
+          frequency: string
+          id: string
+          interval_count: number
+          last_order_date: string | null
+          max_orders: number | null
+          next_order_date: string | null
+          notes: string | null
+          payment_method: string | null
+          product_id: string | null
+          quantity: number
+          shipping_address: Json | null
+          status: string
+          store_id: string
+          total_orders_created: number
+          unit_price: number
+          updated_at: string
+          variant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          discount_percent?: number
+          frequency?: string
+          id?: string
+          interval_count?: number
+          last_order_date?: string | null
+          max_orders?: number | null
+          next_order_date?: string | null
+          notes?: string | null
+          payment_method?: string | null
+          product_id?: string | null
+          quantity?: number
+          shipping_address?: Json | null
+          status?: string
+          store_id: string
+          total_orders_created?: number
+          unit_price?: number
+          updated_at?: string
+          variant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          discount_percent?: number
+          frequency?: string
+          id?: string
+          interval_count?: number
+          last_order_date?: string | null
+          max_orders?: number | null
+          next_order_date?: string | null
+          notes?: string | null
+          payment_method?: string | null
+          product_id?: string | null
+          quantity?: number
+          shipping_address?: Json | null
+          status?: string
+          store_id?: string
+          total_orders_created?: number
+          unit_price?: number
+          updated_at?: string
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_plans_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_plans_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_plans_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_plans_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       supplier_products: {
         Row: {
