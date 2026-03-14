@@ -93,6 +93,8 @@ export default function StorefrontCheckout() {
   const [creditTerms, setCreditTerms] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
+  const [ageVerified, setAgeVerified] = useState(false);
+  const [hasRestrictedItems] = useState(() => false); // Will be set from cart items
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
@@ -1013,9 +1015,21 @@ export default function StorefrontCheckout() {
                          Cash on Delivery
                        </label>
                      </div>
-                   </div>
+                    </div>
 
-                   <Separator />
+                    {/* Age Verification Gate */}
+                    <div className="flex items-center gap-2 bg-muted/50 rounded-md px-3 py-2">
+                      <Checkbox
+                        id="age_verify"
+                        checked={ageVerified}
+                        onCheckedChange={(checked) => setAgeVerified(!!checked)}
+                      />
+                      <label htmlFor="age_verify" className="text-xs cursor-pointer">
+                        I confirm I am 18 years or older
+                      </label>
+                    </div>
+
+                    <Separator />
 
                 <div className="space-y-1.5 text-sm">
                   <div className="flex justify-between">
@@ -1063,9 +1077,10 @@ export default function StorefrontCheckout() {
                   <span>Total</span>
                   <span>${finalTotal.toFixed(2)}</span>
                 </div>
-                <Button type="submit" className="w-full h-11" disabled={submitting}>
+                <Button type="submit" className="w-full h-11" disabled={submitting || !ageVerified}>
                   {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Placing Order...</> : "Place Order"}
                 </Button>
+                {!ageVerified && <p className="text-[10px] text-muted-foreground text-center">Please confirm your age to proceed</p>}
               </div>
             </div>
           </div>
