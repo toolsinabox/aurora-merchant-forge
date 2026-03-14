@@ -13,12 +13,29 @@ import { format } from "date-fns";
 
 interface Notification {
   id: string;
-  type: "order" | "customer" | "review";
+  type: "order" | "customer" | "review" | "stock";
   title: string;
   detail: string;
   created_at: string;
   read: boolean;
   link: string;
+}
+
+// Simple beep for new order alerts
+function playOrderAlert() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 880;
+    osc.type = "sine";
+    gain.gain.value = 0.15;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + 0.3);
+  } catch {}
 }
 
 export function NotificationBell() {
