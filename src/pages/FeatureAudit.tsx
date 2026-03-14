@@ -3284,6 +3284,253 @@ const featureData: FeatureCategory[] = [
       { name: "Auto-Timestamps", description: "Auto-update updated_at on changes", status: "done", notes: "update_updated_at_column() trigger" },
     ],
   },
+
+  // ═══════ 211. PROMO POPUPS ═══════
+  {
+    category: "Promo Popups",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Timed Popup", description: "Show popup after delay on storefront", status: "done", notes: "PromoPopup with PROMO_DELAY_MS (3s default)" },
+      { name: "Dismissal Persistence", description: "Remember dismissed state in localStorage", status: "done", notes: "PROMO_DISMISSED_KEY in localStorage" },
+      { name: "Customizable CTA", description: "Link to signup with discount offer", status: "done", notes: "10% off first order CTA with signup link" },
+      { name: "Backdrop Overlay", description: "Semi-transparent overlay behind popup", status: "done", notes: "bg-black/40 backdrop with fade-in animation" },
+    ],
+  },
+
+  // ═══════ 212. SAVED CARTS ═══════
+  {
+    category: "Saved Carts",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Save Cart", description: "Save current cart for later", status: "done", notes: "saved_carts table with cart_items JSONB" },
+      { name: "Load Saved Cart", description: "Restore a previously saved cart", status: "done", notes: "Load action replaces current cart with saved items" },
+      { name: "Named Carts", description: "Give carts a name for reference", status: "done", notes: "name column on saved_carts" },
+      { name: "Saved Carts List", description: "Admin view of all saved carts", status: "done", notes: "Admin /saved-carts page" },
+    ],
+  },
+
+  // ═══════ 213. STOCKTAKE ═══════
+  {
+    category: "Stocktake",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "Create Stocktake", description: "Initiate a physical stock count", status: "done", notes: "stocktakes table with status, location_id" },
+      { name: "Count Items", description: "Record counted quantities per product", status: "done", notes: "stocktake_items with expected_qty and counted_qty" },
+      { name: "Variance Report", description: "Show difference between expected and counted", status: "done", notes: "Variance calculated as counted - expected" },
+      { name: "Apply Adjustments", description: "Apply counted quantities to inventory", status: "done", notes: "Finalize stocktake updates inventory_stock" },
+      { name: "Stocktake History", description: "View past stocktakes with results", status: "done", notes: "Completed stocktakes with variance summary" },
+    ],
+  },
+
+  // ═══════ 214. STOCK ADJUSTMENTS ═══════
+  {
+    category: "Stock Adjustments",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Manual Adjustment", description: "Add or remove stock manually", status: "done", notes: "stock_adjustments table with quantity_change, reason" },
+      { name: "Adjustment Reasons", description: "Predefined reasons (damaged, lost, received)", status: "done", notes: "Reason dropdown with common adjustment reasons" },
+      { name: "Reference Tracking", description: "Link adjustment to reference document", status: "done", notes: "reference_number column for traceability" },
+      { name: "Adjustment History", description: "View all past adjustments with filters", status: "done", notes: "Admin /stock-adjustments page with date and product filters" },
+    ],
+  },
+
+  // ═══════ 215. INVENTORY TRANSFERS ═══════
+  {
+    category: "Inventory Transfers",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Create Transfer", description: "Transfer stock between locations", status: "done", notes: "inventory_transfers table with source/destination location" },
+      { name: "Transfer Items", description: "Specify products and quantities", status: "done", notes: "inventory_transfer_items with quantity_requested/shipped/received" },
+      { name: "Transfer Workflow", description: "Requested → Shipped → Received status flow", status: "done", notes: "Status workflow with shipped_at and received_at timestamps" },
+      { name: "Transfer Number", description: "Auto-generated transfer reference number", status: "done", notes: "transfer_number column with unique constraint" },
+      { name: "Approval Flow", description: "Approve transfers before shipping", status: "done", notes: "approved_by column with user attribution" },
+    ],
+  },
+
+  // ═══════ 216. CREDIT NOTES ═══════
+  {
+    category: "Credit Notes",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Issue Credit Note", description: "Create credit note against an order", status: "done", notes: "credit_notes table with amount, reason, order_id" },
+      { name: "Credit Number", description: "Unique credit note number", status: "done", notes: "credit_number column with unique constraint" },
+      { name: "Credit Status", description: "Track issued/applied/void status", status: "done", notes: "status column with workflow" },
+      { name: "Apply to Order", description: "Apply credit to future orders", status: "done", notes: "Store credit application at checkout" },
+    ],
+  },
+
+  // ═══════ 217. CUSTOMER COMMUNICATIONS ═══════
+  {
+    category: "Customer Communications",
+    icon: <MessageSquare className="h-5 w-5" />,
+    features: [
+      { name: "Communication Log", description: "Log all customer communications", status: "done", notes: "customer_communications table with channel, direction, status" },
+      { name: "Email Channel", description: "Track email communications", status: "done", notes: "channel='email' with subject and body" },
+      { name: "SMS Channel", description: "Track SMS communications", status: "done", notes: "channel='sms' with body content" },
+      { name: "Related Entity Linking", description: "Link communications to orders/returns", status: "done", notes: "related_entity_type and related_entity_id columns" },
+      { name: "Direction Tracking", description: "Track inbound vs outbound messages", status: "done", notes: "direction column (inbound/outbound)" },
+    ],
+  },
+
+  // ═══════ 218. CUSTOMER FILES ═══════
+  {
+    category: "Customer Files",
+    icon: <Upload className="h-5 w-5" />,
+    features: [
+      { name: "Upload Files", description: "Upload files to customer record", status: "done", notes: "customer_files table with file_url, file_type, file_size" },
+      { name: "File Description", description: "Add description to uploaded files", status: "done", notes: "description column on customer_files" },
+      { name: "File Type Tracking", description: "Track file MIME type", status: "done", notes: "file_type column for content type" },
+      { name: "Upload Attribution", description: "Track who uploaded each file", status: "done", notes: "uploaded_by column with user_id" },
+    ],
+  },
+
+  // ═══════ 219. CUSTOMER GROUPS ═══════
+  {
+    category: "Customer Groups",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Group CRUD", description: "Create and manage customer groups", status: "done", notes: "customer_groups table with name, description" },
+      { name: "Group Discount", description: "Percentage discount per group", status: "done", notes: "discount_percent column on customer_groups" },
+      { name: "Tax Exemption", description: "Tax-exempt flag per group", status: "done", notes: "is_tax_exempt column on customer_groups" },
+      { name: "Minimum Order", description: "Minimum order amount per group", status: "done", notes: "min_order_amount column" },
+      { name: "Assign Customers", description: "Assign customers to groups", status: "done", notes: "customer_group_id on customers table" },
+    ],
+  },
+
+  // ═══════ 220. EMAIL QUEUE ═══════
+  {
+    category: "Email Queue",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Queue Emails", description: "Queue emails for batch sending", status: "done", notes: "email_queue table with to_email, subject, html_body" },
+      { name: "Queue Status", description: "Track pending/sent/failed status", status: "done", notes: "status column with pending/sent/failed" },
+      { name: "Error Tracking", description: "Store error messages on failure", status: "done", notes: "error column for failed email details" },
+      { name: "Template Reference", description: "Link to email template used", status: "done", notes: "template_key column for template tracking" },
+      { name: "Sent Timestamp", description: "Record when email was sent", status: "done", notes: "sent_at timestamp on email_queue" },
+    ],
+  },
+
+  // ═══════ 221. IMPORT TEMPLATES ═══════
+  {
+    category: "Import Templates",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Create Template", description: "Save import field mappings as template", status: "done", notes: "import_templates table with field_mappings JSONB" },
+      { name: "Field Mapping", description: "Map CSV columns to database fields", status: "done", notes: "field_mappings JSONB with source → target mapping" },
+      { name: "Static Values", description: "Set static values for unmapped fields", status: "done", notes: "static_values JSONB for default values" },
+      { name: "Transformations", description: "Apply transformations during import", status: "done", notes: "transformations JSONB for data transforms" },
+      { name: "Custom Delimiter", description: "Support different CSV delimiters", status: "done", notes: "delimiter column (comma, tab, semicolon)" },
+    ],
+  },
+
+  // ═══════ 222. IMPORT LOGS ═══════
+  {
+    category: "Import Logs",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Import History", description: "View all past imports with status", status: "done", notes: "import_logs table with status, entity_type, file_name" },
+      { name: "Row Counts", description: "Track total, success, and error counts", status: "done", notes: "total_rows, success_count, error_count columns" },
+      { name: "Error Details", description: "Store detailed error info per row", status: "done", notes: "errors JSONB with per-row error details" },
+      { name: "Template Link", description: "Link import to template used", status: "done", notes: "template_id foreign key to import_templates" },
+      { name: "Notification Email", description: "Email notification on import complete", status: "done", notes: "import-notification-email edge function" },
+    ],
+  },
+
+  // ═══════ 223. CONTENT REVIEWS ═══════
+  {
+    category: "Content Reviews",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Review Submission", description: "Submit reviews on content pages (blog)", status: "done", notes: "content_reviews table with rating, title, body" },
+      { name: "Review Moderation", description: "Approve/reject reviews before publishing", status: "done", notes: "is_approved column for moderation" },
+      { name: "Star Ratings", description: "1-5 star rating system", status: "done", notes: "rating column (1-5)" },
+      { name: "Author Attribution", description: "Track review author name and user", status: "done", notes: "author_name and user_id columns" },
+    ],
+  },
+
+  // ═══════ 224. CONTACT SUBMISSIONS ═══════
+  {
+    category: "Contact Submissions",
+    icon: <Headphones className="h-5 w-5" />,
+    features: [
+      { name: "Contact Form", description: "Storefront contact form submissions", status: "done", notes: "contact_submissions table with name, email, message" },
+      { name: "Read Status", description: "Mark submissions as read/unread", status: "done", notes: "is_read column for tracking" },
+      { name: "Subject Field", description: "Optional subject line", status: "done", notes: "subject column on contact_submissions" },
+      { name: "Email Notification", description: "Email merchant on new submission", status: "done", notes: "contact-email edge function" },
+    ],
+  },
+
+  // ═══════ 225. DISPUTES ═══════
+  {
+    category: "Disputes",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Dispute Filing", description: "File dispute against an order", status: "done", notes: "disputes table with reason, status, order_id" },
+      { name: "Dispute Status", description: "Track open/under_review/resolved/closed", status: "done", notes: "status workflow column" },
+      { name: "Resolution Tracking", description: "Record dispute resolution and outcome", status: "done", notes: "resolution and resolved_at columns" },
+      { name: "Evidence Uploads", description: "Attach evidence to disputes", status: "done", notes: "evidence_urls array column" },
+      { name: "Dispute Notifications", description: "Email notifications on dispute events", status: "done", notes: "dispute-email edge function" },
+    ],
+  },
+
+  // ═══════ 226. NEWSLETTER SUBSCRIBERS ═══════
+  {
+    category: "Newsletter Subscribers",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Subscribe Form", description: "Email signup form on storefront", status: "done", notes: "NewsletterSignup component in footer" },
+      { name: "Subscriber Storage", description: "Store subscriber emails", status: "done", notes: "newsletter_subscribers table with email, subscribed_at" },
+      { name: "Unsubscribe", description: "Allow subscribers to unsubscribe", status: "done", notes: "unsubscribed_at timestamp for opt-out" },
+      { name: "Source Tracking", description: "Track where signup came from", status: "done", notes: "source column (footer, popup, checkout)" },
+    ],
+  },
+
+  // ═══════ 227. SOCIAL SHARE ═══════
+  {
+    category: "Social Share",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Share Buttons", description: "Social share buttons on products", status: "done", notes: "SocialShare component with Facebook, Twitter, Pinterest, WhatsApp" },
+      { name: "Copy Link", description: "Copy product URL to clipboard", status: "done", notes: "Copy link button with toast confirmation" },
+      { name: "Email Share", description: "Share via email", status: "done", notes: "mailto: link with pre-filled subject and body" },
+      { name: "Open Graph Tags", description: "OG meta tags for rich previews", status: "done", notes: "SEOHead component with og:title, og:image, og:description" },
+    ],
+  },
+
+  // ═══════ 228. COOKIE CONSENT ═══════
+  {
+    category: "Cookie Consent",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Cookie Banner", description: "GDPR-compliant cookie consent banner", status: "done", notes: "CookieConsentBanner component on storefront" },
+      { name: "Accept/Decline", description: "Accept or decline cookies", status: "done", notes: "Accept and decline buttons with localStorage persistence" },
+      { name: "Persistence", description: "Remember consent decision", status: "done", notes: "localStorage key for consent state" },
+      { name: "Privacy Link", description: "Link to privacy policy", status: "done", notes: "Link to privacy/cookie policy page" },
+    ],
+  },
+
+  // ═══════ 229. STORE FINDER ═══════
+  {
+    category: "Store Finder",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Store Locator Page", description: "Find physical store locations", status: "done", notes: "StorefrontStoreFinder page" },
+      { name: "Location List", description: "Display all store locations", status: "done", notes: "List view with address, phone, hours" },
+      { name: "Search by Area", description: "Filter locations by city/region", status: "done", notes: "Search input filtering locations" },
+    ],
+  },
+
+  // ═══════ 230. QUICK ORDER ═══════
+  {
+    category: "Quick Order",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Quick Order Page", description: "Rapid order entry by SKU", status: "done", notes: "StorefrontQuickOrder page for B2B rapid ordering" },
+      { name: "SKU Lookup", description: "Find products by SKU", status: "done", notes: "SKU search with auto-complete" },
+      { name: "Bulk Add to Cart", description: "Add multiple items at once", status: "done", notes: "Multi-line order form with quantity inputs" },
+      { name: "CSV Upload", description: "Upload CSV for bulk ordering", status: "done", notes: "CSV file upload with SKU and quantity mapping" },
+    ],
+  },
 ];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
