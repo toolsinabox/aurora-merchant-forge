@@ -221,6 +221,8 @@ export default function ProductForm() {
       preorder_quantity: parseInt(form.preorder_quantity) || 0,
       misc1: form.misc1 || null, misc2: form.misc2 || null, misc3: form.misc3 || null,
       misc4: form.misc4 || null, misc5: form.misc5 || null,
+      scheduled_publish_at: form.scheduled_publish_at || null,
+      scheduled_unpublish_at: form.scheduled_unpublish_at || null,
       images: productImages,
     };
 
