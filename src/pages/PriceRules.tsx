@@ -124,6 +124,7 @@ export default function PriceRules() {
       ends_at: r.ends_at ? r.ends_at.slice(0, 16) : "",
       priority: String(r.priority || 0),
       max_uses: r.max_uses ? String(r.max_uses) : "",
+      gift_product_sku: r.gift_product_sku || "",
     });
     setEditingId(r.id);
     setShowForm(true);
