@@ -72,6 +72,7 @@ import Redirects from "./pages/Redirects.tsx";
 import PrintBarcodeLabels from "./pages/PrintBarcodeLabels.tsx";
 import PickPack from "./pages/PickPack.tsx";
 import StorefrontContact from "./pages/storefront/StorefrontContact.tsx";
+import StorefrontRequestQuote from "./pages/storefront/StorefrontRequestQuote.tsx";
 import StorefrontQuickOrder from "./pages/storefront/StorefrontQuickOrder.tsx";
 import StorefrontWholesale from "./pages/storefront/StorefrontWholesale.tsx";
 import StorefrontStoreFinder from "./pages/storefront/StorefrontStoreFinder.tsx";
@@ -154,6 +155,7 @@ const App = () => (
                   <Route path="/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/contact" element={<StorefrontContact />} />
+                  <Route path="/request-quote" element={<StorefrontRequestQuote />} />
                   <Route path="/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/wholesale" element={<StorefrontWholesale />} />
                   <Route path="/store-finder" element={<StorefrontStoreFinder />} />
@@ -359,6 +361,7 @@ const App = () => (
                   <Route path="/store/:storeSlug/gift-vouchers" element={<StorefrontGiftVouchers />} />
                   <Route path="/store/:storeSlug/gift-vouchers/print/:code" element={<PrintGiftVoucher />} />
                   <Route path="/store/:storeSlug/contact" element={<StorefrontContact />} />
+                  <Route path="/store/:storeSlug/request-quote" element={<StorefrontRequestQuote />} />
                   <Route path="/store/:storeSlug/quick-order" element={<StorefrontQuickOrder />} />
                   <Route path="/store/:storeSlug/wholesale" element={<StorefrontWholesale />} />
                   <Route path="/store/:storeSlug/store-finder" element={<StorefrontStoreFinder />} />

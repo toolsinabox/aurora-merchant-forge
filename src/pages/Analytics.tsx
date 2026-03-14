@@ -109,6 +109,8 @@ export default function Analytics() {
   const [salesByGroup, setSalesByGroup] = useState<{ group: string; orders: number; revenue: number }[]>([]);
   const [salesByStaff, setSalesByStaff] = useState<{ staffName: string; orders: number; revenue: number }[]>([]);
   const [discountUsage, setDiscountUsage] = useState<{ code: string; usedCount: number; revenue: number; discountTotal: number }[]>([]);
+  const [topSearches, setTopSearches] = useState<{ query: string; count: number; avgResults: number }[]>([]);
+  const [zeroResultSearches, setZeroResultSearches] = useState<{ query: string; count: number }[]>([]);
   const [loadingTopProducts, setLoadingTopProducts] = useState(true);
 
   useEffect(() => {
@@ -514,6 +516,20 @@ export default function Analytics() {
         }
       }
       setDiscountUsage(Object.values(couponRevMap).filter(c => c.usedCount > 0).sort((a, b) => b.usedCount - a.usedCount));
+
+      // ── Search Analytics ──
+      const { data: searchData } = await supabase.from("search_queries" as any).select("query, results_count").eq("store_id", currentStore.id).order("created_at", { ascending: false }).limit(1000);
+      if (searchData && searchData.length > 0) {
+        const queryMap: Record<string, { count: number; totalResults: number }> = {};
+        (searchData as any[]).forEach((s: any) => {
+          const q = s.query.toLowerCase().trim();
+          if (!queryMap[q]) queryMap[q] = { count: 0, totalResults: 0 };
+          queryMap[q].count++;
+          queryMap[q].totalResults += s.results_count;
+        });
+        setTopSearches(Object.entries(queryMap).map(([query, d]) => ({ query, count: d.count, avgResults: Math.round(d.totalResults / d.count) })).sort((a, b) => b.count - a.count).slice(0, 20));
+        setZeroResultSearches(Object.entries(queryMap).filter(([, d]) => d.totalResults === 0).map(([query, d]) => ({ query, count: d.count })).sort((a, b) => b.count - a.count).slice(0, 15));
+      }
 
       setLoadingTopProducts(false);
     };
@@ -1441,6 +1457,62 @@ export default function Analytics() {
                     <TableCell className="py-1.5 text-right">{d.usedCount}</TableCell>
                     <TableCell className="py-1.5 text-right">${d.revenue.toFixed(2)}</TableCell>
                     <TableCell className="py-1.5 text-right text-destructive">${d.discountTotal.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Search Analytics — Top Queries */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Top Search Queries</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Query</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Searches</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Avg Results</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {topSearches.length === 0 ? (
+                  <TableRow><TableCell colSpan={3} className="text-center text-xs text-muted-foreground py-6">No search data yet</TableCell></TableRow>
+                ) : topSearches.map(s => (
+                  <TableRow key={s.query} className="text-xs">
+                    <TableCell className="py-1.5 font-medium">"{s.query}"</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.count}</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.avgResults}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Search Analytics — Zero Results */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Zero-Result Searches</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Query</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Times Searched</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {zeroResultSearches.length === 0 ? (
+                  <TableRow><TableCell colSpan={2} className="text-center text-xs text-muted-foreground py-6">No zero-result searches — great!</TableCell></TableRow>
+                ) : zeroResultSearches.map(s => (
+                  <TableRow key={s.query} className="text-xs">
+                    <TableCell className="py-1.5 font-medium text-destructive">"{s.query}"</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.count}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
