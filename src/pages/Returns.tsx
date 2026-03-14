@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const RETURN_STATUSES = ["requested", "approved", "rejected", "refunded", "completed"];
+const RETURN_TYPES = ["return", "warranty_claim"];
 const DISPUTE_TYPES = ["refund", "repair", "replace"];
 const DISPUTE_REASONS = [
   "Product defective on arrival",
