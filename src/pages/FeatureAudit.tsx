@@ -3784,7 +3784,7 @@ export default function FeatureAudit() {
 
   const filteredCategories = useMemo(() => {
     const q = search.toLowerCase();
-    return featureData.map(cat => {
+    return allFeatureData.map(cat => {
       const features = cat.features.filter(f => {
         if (statusFilter !== "all" && f.status !== statusFilter) return false;
         if (q && !f.name.toLowerCase().includes(q) && !f.description.toLowerCase().includes(q) && !(f.notes || "").toLowerCase().includes(q) && !cat.category.toLowerCase().includes(q)) return false;
