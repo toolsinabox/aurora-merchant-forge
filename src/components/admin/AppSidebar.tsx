@@ -87,6 +87,7 @@ const marketingNav = [
   { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Price Rules", url: `${prefix}/price-rules`, icon: Zap },
+  { title: "Price Lists", url: `${prefix}/price-lists`, icon: List },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
   { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
 ];
