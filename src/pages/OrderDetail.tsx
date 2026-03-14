@@ -742,6 +742,39 @@ export default function OrderDetail() {
               </CardContent>
             </Card>
 
+            {/* Priority Flag */}
+            <Card>
+              <CardHeader className="py-3 px-4">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4" /> Priority
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="px-4 pb-4 pt-0 space-y-2">
+                <Select value={(order as any).priority || "normal"} onValueChange={async (v) => {
+                  await updateOrder.mutateAsync({ id: order.id, priority: v } as any);
+                  await createTimelineEvent.mutateAsync({
+                    order_id: order.id,
+                    event_type: "status_change",
+                    title: "Priority changed",
+                    description: `Set to ${v}`,
+                  });
+                }}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low" className="text-xs">🟢 Low</SelectItem>
+                    <SelectItem value="normal" className="text-xs">⚪ Normal</SelectItem>
+                    <SelectItem value="high" className="text-xs">🟡 High</SelectItem>
+                    <SelectItem value="urgent" className="text-xs">🔴 Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+                {((order as any).priority === "high" || (order as any).priority === "urgent") && (
+                  <Badge variant="destructive" className="text-[10px]">
+                    {(order as any).priority === "urgent" ? "🔴 URGENT" : "🟡 HIGH PRIORITY"}
+                  </Badge>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Order Status */}
             <Card>
               <CardHeader className="py-3 px-4">

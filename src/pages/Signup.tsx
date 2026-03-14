@@ -125,6 +125,36 @@ export default function Signup() {
                 required
                 minLength={8}
               />
+              {form.password && (() => {
+                const p = form.password;
+                const checks = [
+                  { label: "8+ characters", pass: p.length >= 8 },
+                  { label: "Uppercase letter", pass: /[A-Z]/.test(p) },
+                  { label: "Lowercase letter", pass: /[a-z]/.test(p) },
+                  { label: "Number", pass: /[0-9]/.test(p) },
+                  { label: "Special character", pass: /[^A-Za-z0-9]/.test(p) },
+                ];
+                const score = checks.filter(c => c.pass).length;
+                const strengthLabel = score <= 2 ? "Weak" : score <= 3 ? "Fair" : score <= 4 ? "Good" : "Strong";
+                const strengthColor = score <= 2 ? "bg-destructive" : score <= 3 ? "bg-amber-500" : score <= 4 ? "bg-primary" : "bg-green-500";
+                return (
+                  <div className="space-y-1.5 mt-1.5">
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map(i => (
+                        <div key={i} className={`h-1 flex-1 rounded-full transition-colors ${i <= score ? strengthColor : "bg-muted"}`} />
+                      ))}
+                    </div>
+                    <p className={`text-[10px] font-medium ${score <= 2 ? "text-destructive" : score <= 3 ? "text-amber-600" : "text-green-600"}`}>{strengthLabel}</p>
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                      {checks.map(c => (
+                        <span key={c.label} className={`text-[10px] ${c.pass ? "text-green-600" : "text-muted-foreground"}`}>
+                          {c.pass ? "✓" : "○"} {c.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             <Button className="w-full h-10 text-xs font-medium shadow-sm" type="submit" disabled={loading}>
               {loading ? "Creating account..." : "Create Account"}
