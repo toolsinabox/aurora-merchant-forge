@@ -55,8 +55,31 @@ export default function Orders() {
   const filtered = orders.filter((o: any) => {
     const matchSearch = o.order_number.includes(search) || (o.customers?.name || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || o.status === statusFilter;
-    return matchSearch && matchStatus;
+    const matchTag = !tagFilter || ((o.tags as string[]) || []).some((t: string) => t.toLowerCase().includes(tagFilter.toLowerCase()));
+    return matchSearch && matchStatus && matchTag;
   });
+
+  // Collect unique tags for filtering
+  const allTags = Array.from(new Set(orders.flatMap((o: any) => (o.tags as string[]) || [])));
+
+  const handleBulkAddTag = async () => {
+    if (!bulkTagInput.trim() || selected.size === 0) return;
+    setBulkProcessing(true);
+    try {
+      const ids = Array.from(selected);
+      for (const id of ids) {
+        const order = orders.find((o: any) => o.id === id);
+        const existingTags: string[] = (order as any)?.tags || [];
+        if (!existingTags.includes(bulkTagInput.trim())) {
+          await supabase.from("orders").update({ tags: [...existingTags, bulkTagInput.trim()] } as any).eq("id", id);
+        }
+      }
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      toast.success(`Tag "${bulkTagInput.trim()}" added to ${ids.length} orders`);
+      setBulkTagInput("");
+    } catch (err: any) { toast.error(err.message); }
+    finally { setBulkProcessing(false); }
+  };
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
