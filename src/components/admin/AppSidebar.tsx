@@ -109,6 +109,7 @@ const contentNav = [
 
 // ── Settings & System ──
 const systemNav = [
+  { title: "Notifications", url: `${prefix}/notifications`, icon: Bell },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
   { title: "Accounting", url: `${prefix}/accounting`, icon: Calculator },
