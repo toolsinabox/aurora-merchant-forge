@@ -78,6 +78,40 @@ export default function ReportBuilder() {
     URL.revokeObjectURL(url);
   };
 
+  const exportJson = () => {
+    if (!results || results.length === 0) return;
+    const blob = new Blob([JSON.stringify(results, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `report_${entity}_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportExcel = () => {
+    if (!results || results.length === 0) return;
+    // Generate TSV (Excel-compatible) with BOM for UTF-8
+    const headers = Object.keys(results[0]);
+    const tsv = "\uFEFF" + [
+      headers.join("\t"),
+      ...results.map(row =>
+        headers.map(h => {
+          const val = row[h];
+          if (val === null || val === undefined) return "";
+          return typeof val === "object" ? JSON.stringify(val) : String(val).replace(/\t/g, " ");
+        }).join("\t")
+      ),
+    ].join("\n");
+    const blob = new Blob([tsv], { type: "application/vnd.ms-excel" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `report_${entity}_${new Date().toISOString().slice(0, 10)}.xls`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const toggleField = (field: string) => {
     setSelectedFields(prev => prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]);
   };
