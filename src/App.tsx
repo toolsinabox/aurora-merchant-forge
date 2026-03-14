@@ -355,6 +355,8 @@ const App = () => (
                    <Route path="/price-lists" element={<RequireAuth><PriceLists /></RequireAuth>} />
                    <Route path="/store-locator" element={<RequireAuth><StoreLocator /></RequireAuth>} />
                    <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
+                   <Route path="/credit-notes" element={<RequireAuth><CreditNotes /></RequireAuth>} />
+                   <Route path="/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
