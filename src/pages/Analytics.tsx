@@ -1385,6 +1385,66 @@ export default function Analytics() {
                 </Table>
               );
             })()}
+           </CardContent>
+        </Card>
+
+        {/* Sales by Staff Report */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Sales by Staff</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Staff Member</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {salesByStaff.length === 0 ? (
+                  <TableRow><TableCell colSpan={3} className="text-center text-xs text-muted-foreground py-6">No staff sales data</TableCell></TableRow>
+                ) : salesByStaff.map(s => (
+                  <TableRow key={s.staffName} className="text-xs">
+                    <TableCell className="py-1.5 font-medium">{s.staffName}</TableCell>
+                    <TableCell className="py-1.5 text-right">{s.orders}</TableCell>
+                    <TableCell className="py-1.5 text-right">${s.revenue.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Discount Usage Report */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Discount / Coupon Usage</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Coupon Code</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Times Used</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Revenue Generated</TableHead>
+                  <TableHead className="text-xs h-8 text-right">Discount Given</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {discountUsage.length === 0 ? (
+                  <TableRow><TableCell colSpan={4} className="text-center text-xs text-muted-foreground py-6">No coupon usage data</TableCell></TableRow>
+                ) : discountUsage.map(d => (
+                  <TableRow key={d.code} className="text-xs">
+                    <TableCell className="py-1.5 font-mono font-medium">{d.code}</TableCell>
+                    <TableCell className="py-1.5 text-right">{d.usedCount}</TableCell>
+                    <TableCell className="py-1.5 text-right">${d.revenue.toFixed(2)}</TableCell>
+                    <TableCell className="py-1.5 text-right text-destructive">${d.discountTotal.toFixed(2)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       </div>
