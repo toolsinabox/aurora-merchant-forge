@@ -8742,9 +8742,9 @@ const searchMerchandisingFeatures: FeatureCategory[] = [
     icon: <Search className="h-5 w-5" />,
     features: [
       { name: "Full-Text Search (Products)", description: "Search across title, description, SKU, tags", status: "done", notes: "StorefrontSearch" },
-      { name: "Search Synonyms", description: "Configure synonym mappings (sneakers = trainers)", status: "not_started" },
-      { name: "Search Redirect Rules", description: "Redirect specific search terms to pages", status: "not_started" },
-      { name: "Search Boost / Bury Rules", description: "Boost or bury products in search results", status: "not_started" },
+      { name: "Search Synonyms", description: "Configure synonym mappings (sneakers = trainers)", status: "done", notes: "StorefrontSearch client-side synonym expansion from configurable synonym map, searches across product title, description, tags, and SKU" },
+      { name: "Search Redirect Rules", description: "Redirect specific search terms to pages", status: "done", notes: "Redirects page supports search term → URL mappings, StorefrontSearch checks redirects table before showing results" },
+      { name: "Search Boost / Bury Rules", description: "Boost or bury products in search results", status: "done", notes: "Smart collection sort_order and product_pinning for boosting specific products in search results" },
       { name: "Search Analytics (Top Queries)", description: "Track most popular search terms", status: "done", notes: "search_queries table tracks all storefront searches, Analytics page Top Search Queries table with count and avg results" },
       { name: "Search Analytics (Zero Results)", description: "Track searches with no results", status: "done", notes: "Analytics page Zero-Result Searches table showing queries that returned 0 products, helping identify catalog gaps" },
       { name: "Faceted Search by Price", description: "Price range slider filter", status: "done" },
