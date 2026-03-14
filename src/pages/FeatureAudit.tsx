@@ -8826,7 +8826,7 @@ const emailTemplateDeepFeatures: FeatureCategory[] = [
       { name: "Email Template Visual Editor", description: "Drag-and-drop email template builder", status: "done", notes: "EmailTemplates page with HTML editor, variable insertion, live preview" },
       { name: "Email Template Variables", description: "Dynamic merge tags in emails ({{order_number}}, etc.)", status: "done" },
       { name: "Email Preview / Test Send", description: "Preview and send test emails", status: "done", notes: "EmailTemplates page with Preview button showing rendered HTML, Test Send button to any email address" },
-      { name: "Email Unsubscribe Management", description: "Unsubscribe link and preference center", status: "not_started" },
+      { name: "Email Unsubscribe Management", description: "Unsubscribe link and preference center", status: "done", notes: "StorefrontAccount Preferences tab with 8 toggleable email/SMS categories, email templates include unsubscribe link" },
     ],
   },
 ];
