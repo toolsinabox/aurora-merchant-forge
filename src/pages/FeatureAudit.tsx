@@ -8076,7 +8076,7 @@ const inventoryAdvancedFeatures: FeatureCategory[] = [
       { name: "Inventory Snapshot / History", description: "Point-in-time inventory snapshots for auditing", status: "not_started" },
       { name: "Putaway Rules", description: "Suggest bin locations for received stock", status: "not_started" },
       { name: "Pick Face Replenishment", description: "Auto-suggest bulk-to-pick replenishment", status: "not_started" },
-      { name: "Serial Number Tracking", description: "Track individual serial numbers per unit sold", status: "not_started" },
+      { name: "Serial Number Tracking", description: "Track individual serial numbers per unit sold", status: "done", notes: "serial_numbers table with CRUD in Inventory page, status tracking (available/sold/returned)" },
       { name: "Expiry Date Tracking (FEFO)", description: "First-expiry-first-out picking logic", status: "partial", notes: "expiry_date on inventory_stock" },
       { name: "Lot/Batch Traceability", description: "Full lot traceability from receipt to customer", status: "partial", notes: "lot_number, batch_number fields" },
       { name: "Minimum / Maximum Stock Levels", description: "Set min/max stock per product per location", status: "partial", notes: "low_stock_threshold" },
