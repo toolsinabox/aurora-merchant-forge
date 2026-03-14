@@ -620,6 +620,21 @@ export default function StorefrontCheckout() {
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* Checkout Progress Indicator */}
+          <div className="flex items-center justify-center gap-0 mb-8">
+            {[{ step: 1, label: "Details" }, { step: 2, label: "Shipping" }, { step: 3, label: "Payment" }].map((s, i) => (
+              <div key={s.step} className="flex items-center">
+                {i > 0 && <div className={`w-12 h-0.5 ${checkoutStep >= s.step ? "bg-primary" : "bg-border"}`} />}
+                <button type="button" onClick={() => setCheckoutStep(s.step)} className="flex flex-col items-center gap-1">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors ${checkoutStep >= s.step ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border"}`}>
+                    {checkoutStep > s.step ? <Check className="h-4 w-4" /> : s.step}
+                  </div>
+                  <span className={`text-[10px] ${checkoutStep >= s.step ? "text-primary font-medium" : "text-muted-foreground"}`}>{s.label}</span>
+                </button>
+              </div>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form */}
             <div className="lg:col-span-2 space-y-6">
