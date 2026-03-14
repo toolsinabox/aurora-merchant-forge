@@ -564,7 +564,7 @@ function ReviewExportTab() {
 
   return (
     <Card className="max-w-md">
-      <CardHeader><CardTitle className="text-lg">Export Reviews</CardTitle></CardHeader>
+      <CardHeader><CardTitle className="text-base">Export Reviews</CardTitle></CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
           Export all product reviews with ratings, text, author, and admin replies.
