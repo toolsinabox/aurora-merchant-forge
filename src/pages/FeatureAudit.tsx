@@ -7374,8 +7374,148 @@ const templateDeepFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 751–800: ADMIN UI PATTERNS, DATA HOOKS & FINAL INFRASTRUCTURE ═══════
+const adminInfraFeatures: FeatureCategory[] = [
+  {
+    category: "Admin Table Patterns",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Sortable Columns", description: "Click column headers to sort", status: "done", notes: "Sortable table headers across all admin list pages" },
+      { name: "Search / Filter Bar", description: "Search input filtering table rows", status: "done", notes: "Debounced search on all entity list pages" },
+      { name: "Status Filter Tabs", description: "Tab bar filtering by status (All, Active, Draft)", status: "done", notes: "Tab-based status filter on Products, Orders, etc." },
+      { name: "Bulk Selection Checkboxes", description: "Select multiple rows for bulk actions", status: "done", notes: "Checkbox column with select-all header checkbox" },
+      { name: "Pagination Controls", description: "Page navigation with page size options", status: "done", notes: "TablePagination component with prev/next and page numbers" },
+      { name: "Row Actions Menu", description: "Dropdown menu per row: edit, delete, duplicate", status: "done", notes: "DropdownMenu with entity-specific actions" },
+      { name: "Column Visibility", description: "Toggle visible columns on tables", status: "done", notes: "Column visibility options on wider tables" },
+      { name: "Responsive Table", description: "Tables scroll horizontally on mobile", status: "done", notes: "Overflow-x-auto wrapper on admin tables" },
+    ],
+  },
+  {
+    category: "Admin Form Patterns",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Create/Edit Forms", description: "Consistent form layout for all entities", status: "done", notes: "Card-based form sections with labels and descriptions" },
+      { name: "Form Validation", description: "Required field validation with error messages", status: "done", notes: "Client-side validation with inline error display" },
+      { name: "Success/Error Toasts", description: "Toast notification on save/delete", status: "done", notes: "Sonner toast on all form submissions" },
+      { name: "Unsaved Changes Warning", description: "Warn before navigating away from dirty form", status: "done", notes: "Dirty state tracking on form modifications" },
+      { name: "Delete Confirmation Dialog", description: "Confirm before destructive actions", status: "done", notes: "AlertDialog confirmation on all delete actions" },
+      { name: "Rich Text Fields", description: "WYSIWYG editor for description fields", status: "done", notes: "RichTextEditor component on content/product forms" },
+      { name: "Date Picker Fields", description: "Calendar date picker for date inputs", status: "done", notes: "Calendar component for date selection" },
+      { name: "Select / Combobox", description: "Searchable dropdown for entity selection", status: "done", notes: "Select and Command-based combobox components" },
+    ],
+  },
+  {
+    category: "Data Fetching & State (use-data hook)",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "useData Hook", description: "Generic data fetching hook for all entities", status: "done", notes: "use-data.ts with useQuery wrapping Supabase queries" },
+      { name: "Store-Scoped Queries", description: "All queries filtered by current store", status: "done", notes: "store_id filter applied in useData hook" },
+      { name: "Automatic Refetch", description: "Refetch on window focus and mutation", status: "done", notes: "React Query refetchOnWindowFocus and invalidation" },
+      { name: "Optimistic Mutations", description: "Instant UI update before server confirms", status: "done", notes: "useMutation with optimistic update pattern" },
+      { name: "Error State Handling", description: "Error display on failed queries", status: "done", notes: "Error state with retry option" },
+      { name: "Loading Skeletons", description: "Skeleton UI during data loading", status: "done", notes: "Skeleton components matching layout shape" },
+    ],
+  },
+  {
+    category: "Admin Dashboard KPIs",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Revenue Today", description: "Today's total revenue card", status: "done", notes: "Sum of today's paid orders" },
+      { name: "Orders Today", description: "Number of orders placed today", status: "done", notes: "Count of today's orders" },
+      { name: "New Customers", description: "New customer signups this period", status: "done", notes: "Customer count with date filter" },
+      { name: "Conversion Rate", description: "Checkout conversion rate metric", status: "done", notes: "Orders / sessions calculation" },
+      { name: "Revenue Chart", description: "Revenue trend chart (7/30/90 days)", status: "done", notes: "Recharts line/bar chart with date range toggle" },
+      { name: "Top Products", description: "Best-selling products list", status: "done", notes: "Top products by revenue or quantity" },
+      { name: "Recent Orders", description: "Latest orders quick list", status: "done", notes: "Recent orders table on dashboard" },
+      { name: "Low Stock Warnings", description: "Products below reorder threshold", status: "done", notes: "Low stock product list widget" },
+    ],
+  },
+  {
+    category: "Admin Sidebar Navigation",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Collapsible Sidebar", description: "Sidebar collapses to icons on desktop", status: "done", notes: "SidebarProvider with collapsible state" },
+      { name: "Nested Menu Groups", description: "Grouped menu items with collapsible sections", status: "done", notes: "Collapsible menu groups: Catalog, Sales, Marketing, etc." },
+      { name: "Active Route Highlighting", description: "Current page highlighted in sidebar", status: "done", notes: "NavLink with active class based on route match" },
+      { name: "Badge Counts", description: "Notification badges on menu items", status: "done", notes: "Badge count on Orders, Returns menu items" },
+      { name: "Store Switcher", description: "Switch between multiple stores", status: "done", notes: "Store selector dropdown in sidebar header" },
+      { name: "User Profile Menu", description: "User avatar with logout/settings in sidebar", status: "done", notes: "User section at bottom of sidebar" },
+    ],
+  },
+  {
+    category: "Print Document System",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Invoice Template", description: "Professional invoice layout", status: "done", notes: "PrintInvoice with store branding, line items, totals" },
+      { name: "Packing Slip Template", description: "Packing slip with items and addresses", status: "done", notes: "PrintPackingSlip with pick list and shipping info" },
+      { name: "Shipping Label Template", description: "Shipping label with barcode", status: "done", notes: "PrintShippingLabel with address blocks and barcode" },
+      { name: "Quote Template", description: "Professional quote document", status: "done", notes: "PrintQuote with line items, terms, validity" },
+      { name: "Purchase Order Template", description: "PO document for suppliers", status: "done", notes: "PrintPurchaseOrder with supplier details and items" },
+      { name: "Return Label Template", description: "Return shipping label with RMA", status: "done", notes: "PrintReturnLabel with return address and RMA number" },
+      { name: "Customer Statement Template", description: "Account statement document", status: "done", notes: "PrintCustomerStatement with transactions and balance" },
+      { name: "Gift Voucher Template", description: "Printable gift voucher design", status: "done", notes: "PrintGiftVoucher with code, value, and message" },
+      { name: "Barcode Label Template", description: "Product barcode label sheet", status: "done", notes: "PrintBarcodeLabels with configurable label grid" },
+      { name: "Payment Receipt Template", description: "Payment confirmation receipt", status: "done", notes: "PrintPaymentReceipt with payment details" },
+      { name: "Pick List Template", description: "Warehouse pick list document", status: "done", notes: "PrintPickList with products sorted by bin location" },
+      { name: "@media print CSS", description: "Print-optimized stylesheets", status: "done", notes: "Print-specific CSS hiding nav, buttons, adjusting layout" },
+    ],
+  },
+  {
+    category: "Subdomain & Multi-Tenant Routing",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Subdomain Detection", description: "Detect store slug from subdomain", status: "done", notes: "getSubdomainSlug() in subdomain.ts" },
+      { name: "Subdomain-Based Routing", description: "Route to storefront vs admin based on subdomain", status: "done", notes: "App.tsx routing logic checks subdomain presence" },
+      { name: "Store Lookup by Slug", description: "Fetch store data by subdomain slug", status: "done", notes: "Supabase query on stores.slug matching subdomain" },
+      { name: "Admin Panel on Subdomain", description: "/_cpanel routes for admin on subdomain", status: "done", notes: "/_cpanel prefix for admin routes under subdomain" },
+      { name: "Storefront on Root", description: "Storefront pages served at root on subdomain", status: "done", notes: "/ routes serve storefront when subdomain detected" },
+    ],
+  },
+  {
+    category: "Authentication Flow",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Email/Password Login", description: "Standard email and password authentication", status: "done", notes: "Login page with signInWithPassword" },
+      { name: "Email/Password Signup", description: "User registration with email verification", status: "done", notes: "Signup page with signUp and email confirmation" },
+      { name: "Password Reset Flow", description: "Forgot password → email → reset", status: "done", notes: "ForgotPassword → email link → ResetPassword" },
+      { name: "Session Persistence", description: "Auth session persists across tabs/refresh", status: "done", notes: "localStorage session with autoRefreshToken" },
+      { name: "Auth State Context", description: "Global auth state via React context", status: "done", notes: "AuthContext providing user, loading, signOut" },
+      { name: "Protected Routes", description: "RequireAuth wrapper redirects to login", status: "done", notes: "RequireAuth component checking auth state" },
+      { name: "Platform Admin Guard", description: "RequirePlatformAdmin checks platform role", status: "done", notes: "RequirePlatformAdmin with is_platform_admin RPC check" },
+      { name: "Auto-Redirect on Auth", description: "Redirect to dashboard after login", status: "done", notes: "Login success navigates to /dashboard or /_cpanel" },
+    ],
+  },
+  {
+    category: "Addon / Plugin System",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Addon Catalog", description: "Browse available addons/plugins", status: "done", notes: "Addons page with addon_catalog browsing" },
+      { name: "Addon Categories", description: "Filter addons by category", status: "done", notes: "Category filter: shipping, payment, marketing, analytics" },
+      { name: "Addon Install", description: "One-click addon installation", status: "done", notes: "Install action creates store_addons record" },
+      { name: "Addon Uninstall", description: "Remove addon from store", status: "done", notes: "Uninstall action deletes store_addons record" },
+      { name: "Addon Configuration", description: "Per-addon settings after install", status: "done", notes: "Configuration form per addon with settings JSON" },
+      { name: "Free vs Paid Addons", description: "Distinguish free and paid addons", status: "done", notes: "is_free flag and price on addon_catalog" },
+      { name: "Install Count", description: "Show how many stores use each addon", status: "done", notes: "install_count column on addon_catalog" },
+    ],
+  },
+  {
+    category: "Settings Page Sections",
+    icon: <Settings className="h-5 w-5" />,
+    features: [
+      { name: "General Settings", description: "Store name, email, phone, address", status: "done", notes: "General tab on Settings page" },
+      { name: "Checkout Settings", description: "Guest checkout, terms, payment options", status: "done", notes: "Checkout configuration tab" },
+      { name: "Notification Settings", description: "Email notification preferences", status: "done", notes: "Notification toggle per event type" },
+      { name: "Tax Settings", description: "Tax display and calculation preferences", status: "done", notes: "Tax configuration: inclusive/exclusive, rates" },
+      { name: "Shipping Settings", description: "Default shipping and handling config", status: "done", notes: "Shipping defaults tab" },
+      { name: "SMTP Configuration", description: "Email server settings for transactional email", status: "done", notes: "SMTP host, port, username, password, encryption" },
+      { name: "Store Logo Upload", description: "Upload store logo for branding", status: "done", notes: "Logo upload with preview" },
+      { name: "Custom CSS", description: "Custom CSS for storefront appearance", status: "done", notes: "CSS textarea for storefront customization" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
