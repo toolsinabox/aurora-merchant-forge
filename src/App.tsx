@@ -376,6 +376,8 @@ const App = () => (
                    <Route path="/custom-fields" element={<RequireAuth><CustomFields /></RequireAuth>} />
                    <Route path="/refunds" element={<RequireAuth><Refunds /></RequireAuth>} />
                    <Route path="/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
+                   <Route path="/maropost-migration" element={<RequireAuth><MaropostMigration /></RequireAuth>} />
+                   <Route path="/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
