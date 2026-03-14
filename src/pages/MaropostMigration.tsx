@@ -67,7 +67,8 @@ const IMPORT_ACTION_MAP: Record<string, string> = {
   templates: "import_theme_css", payments: "import_orders", // payments attached to orders
 };
 
-const ITEMS_PER_PAGE = 100;
+const ITEMS_PER_PAGE = 20; // Maropost API has response size limits, products especially need small pages
+const SCAN_PAGE_SIZE = 500; // Scan mode uses minimal fields, can handle larger pages
 
 export default function MaropostMigration() {
   const [step, setStep] = useState<MigrationStep>("connect");
