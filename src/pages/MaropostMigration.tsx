@@ -32,6 +32,7 @@ interface EntityCount {
   failed: number;
   errors: string[];
   pages: number;
+  batchProgress?: number; // 0-100
 }
 
 const MIGRATION_ENTITIES: Omit<EntityCount, "count" | "selected" | "status" | "imported" | "failed" | "errors" | "pages">[] = [
