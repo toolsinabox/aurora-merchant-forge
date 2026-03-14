@@ -19,11 +19,14 @@ import { Plus, Mail, Zap, Clock, Edit, Trash2 } from "lucide-react";
 const TRIGGER_TYPES = [
   { value: "welcome", label: "Welcome Series", description: "After customer signup" },
   { value: "post_purchase", label: "Post-Purchase", description: "After order completed" },
-  { value: "winback", label: "Win-Back", description: "Inactive customers (30+ days)" },
-  { value: "birthday", label: "Birthday", description: "On customer's birthday" },
+  { value: "winback", label: "Win-Back", description: "Inactive customers (30+ days no purchase)" },
+  { value: "birthday", label: "Birthday", description: "On customer's birthday (requires birthday field)" },
   { value: "abandoned_cart", label: "Abandoned Cart", description: "Cart abandoned for 1+ hour" },
   { value: "review_request", label: "Review Request", description: "After order delivered" },
   { value: "reorder_reminder", label: "Reorder Reminder", description: "Based on purchase frequency" },
+  { value: "browse_abandon", label: "Browse Abandonment", description: "Viewed products but no purchase" },
+  { value: "vip_upgrade", label: "VIP Tier Upgrade", description: "When customer reaches new loyalty tier" },
+  { value: "subscription_renewal", label: "Subscription Renewal", description: "Before subscription renewal charge" },
 ];
 
 export default function EmailAutomations() {

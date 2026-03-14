@@ -736,18 +736,31 @@ export default function StorefrontAccount() {
                           <TableHead className="text-xs">Order</TableHead>
                           <TableHead className="text-xs">Reason</TableHead>
                           <TableHead className="text-xs">Status</TableHead>
+                          <TableHead className="text-xs">Tracking</TableHead>
                           <TableHead className="text-xs text-right">Refund</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {returns.map((r: any) => (
-                          <TableRow key={r.id} className="text-sm">
-                            <TableCell className="font-medium">{r.orders?.order_number || "—"}</TableCell>
-                            <TableCell className="max-w-[150px] truncate">{r.reason}</TableCell>
-                            <TableCell><StatusBadge status={r.status} /></TableCell>
-                            <TableCell className="text-right font-medium">${Number(r.refund_amount).toFixed(2)}</TableCell>
-                          </TableRow>
-                        ))}
+                        {returns.map((r: any) => {
+                          const statusSteps = ["requested", "approved", "processing", "refunded"];
+                          const currentStep = statusSteps.indexOf(r.status);
+                          return (
+                            <TableRow key={r.id} className="text-sm">
+                              <TableCell className="font-medium">{r.orders?.order_number || "—"}</TableCell>
+                              <TableCell className="max-w-[150px] truncate">{r.reason}</TableCell>
+                              <TableCell><StatusBadge status={r.status} /></TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-0.5">
+                                  {statusSteps.map((step, idx) => (
+                                    <div key={step} className={`h-1.5 w-5 rounded-full ${idx <= currentStep ? "bg-primary" : "bg-muted"}`} />
+                                  ))}
+                                </div>
+                                <span className="text-[10px] text-muted-foreground capitalize">{r.status}</span>
+                              </TableCell>
+                              <TableCell className="text-right font-medium">${Number(r.refund_amount || 0).toFixed(2)}</TableCell>
+                            </TableRow>
+                          );
+                        })}
                       </TableBody>
                     </Table>
                   )}
