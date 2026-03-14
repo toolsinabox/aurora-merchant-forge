@@ -117,7 +117,7 @@ export default function ReportBuilder() {
               </div>
               <div>
                 <Label className="text-xs">Status Filter</Label>
-                <Input placeholder="e.g. completed" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="h-9" />
+                <Input placeholder="e.g. completed" value={statusFilter} onChange={e => setStatusFilter(e.target.value)} className="h-8 text-xs" />
               </div>
               <div>
                 <Label className="text-xs">Fields ({selectedFields.length || "all"})</Label>
