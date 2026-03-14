@@ -263,4 +263,13 @@
   .admin-main {
     @apply flex-1 overflow-auto p-2 sm:p-4 animate-fade-in;
   }
+
+  /* Responsive filter bar */
+  .filter-bar {
+    @apply flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 border-b border-border;
+  }
+
+  .filter-bar .filter-search {
+    @apply relative flex-1 w-full sm:max-w-xs;
+  }
 }
