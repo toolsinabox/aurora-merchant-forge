@@ -136,18 +136,21 @@ export default function EmailTemplates() {
                   </TableHeader>
                   <TableBody>
                     {templates.length === 0 ? (
-                      <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No templates — click "Seed Defaults" to create standard templates</TableCell></TableRow>
+                      <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">
+                        <Mail className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                        No templates — click "Seed Defaults" to create standard templates
+                      </TableCell></TableRow>
                     ) : templates.map((t: any) => (
-                      <TableRow key={t.id}>
-                        <TableCell className="font-mono text-xs">{t.template_key}</TableCell>
-                        <TableCell className="font-medium text-sm">{t.name}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground truncate max-w-[200px]">{t.subject}</TableCell>
-                        <TableCell><Badge variant={t.is_active ? "default" : "outline"} className="text-xs">{t.is_active ? "Active" : "Inactive"}</Badge></TableCell>
-                        <TableCell>
+                      <TableRow key={t.id} className="text-xs">
+                        <TableCell className="py-2 font-mono">{t.template_key}</TableCell>
+                        <TableCell className="py-2 font-medium">{t.name}</TableCell>
+                        <TableCell className="py-2 text-muted-foreground truncate max-w-[200px]">{t.subject}</TableCell>
+                        <TableCell className="py-2"><Badge variant={t.is_active ? "default" : "outline"} className="text-[10px]">{t.is_active ? "Active" : "Inactive"}</Badge></TableCell>
+                        <TableCell className="py-2">
                           <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setPreviewHtml(t.html_body); setPreviewOpen(true); }}><Eye className="h-3.5 w-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setEditTemplate(t); setEditOpen(true); }}><Pencil className="h-3.5 w-3.5" /></Button>
-                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(t.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setPreviewHtml(t.html_body); setPreviewOpen(true); }}><Eye className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setEditTemplate(t); setEditOpen(true); }}><Pencil className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => handleDelete(t.id)}><Trash2 className="h-3 w-3" /></Button>
                           </div>
                         </TableCell>
                       </TableRow>
