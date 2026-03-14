@@ -437,22 +437,89 @@ export default function StorefrontProductDetail() {
               </div>
             )}
 
-            {variants.length > 0 && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Variant</label>
-                <Select value={selectedVariant} onValueChange={setSelectedVariant}>
-                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {variants.map((v: any) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.name} — ${Number(v.price).toFixed(2)}
-                        {v.stock <= 0 ? " (Out of stock)" : ""}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            {variants.length > 0 && (() => {
+              // Detect color variants by checking option names or keywords
+              const colorKeywords = ["color", "colour", "col", "shade"];
+              const isColorVariant = variants.some((v: any) =>
+                colorKeywords.some(kw => v.name?.toLowerCase().includes(kw)) ||
+                colorKeywords.some(kw => v.option1?.toLowerCase().includes(kw))
+              );
+
+              // Color mapping for swatch rendering
+              const colorMap: Record<string, string> = {
+                red: "#ef4444", blue: "#3b82f6", green: "#22c55e", black: "#000000",
+                white: "#ffffff", yellow: "#eab308", orange: "#f97316", purple: "#a855f7",
+                pink: "#ec4899", grey: "#6b7280", gray: "#6b7280", brown: "#92400e",
+                navy: "#1e3a5f", teal: "#14b8a6", coral: "#f87171", beige: "#d2b48c",
+                maroon: "#800000", olive: "#808000", tan: "#d2b48c", cream: "#fffdd0",
+                gold: "#ffd700", silver: "#c0c0c0", charcoal: "#36454f", burgundy: "#800020",
+              };
+
+              const getSwatchColor = (name: string) => {
+                const lower = name.toLowerCase();
+                for (const [key, value] of Object.entries(colorMap)) {
+                  if (lower.includes(key)) return value;
+                }
+                return null;
+              };
+
+              if (isColorVariant) {
+                return (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Color</label>
+                    <div className="flex flex-wrap gap-2">
+                      {variants.map((v: any) => {
+                        const swatchColor = getSwatchColor(v.name);
+                        const isSelected = v.id === selectedVariant;
+                        const isOos = v.stock <= 0;
+                        return (
+                          <button
+                            key={v.id}
+                            onClick={() => setSelectedVariant(v.id)}
+                            disabled={isOos}
+                            className={`relative rounded-full w-10 h-10 border-2 transition-all ${isSelected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/50"} ${isOos ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                            title={`${v.name} — $${Number(v.price).toFixed(2)}${isOos ? " (Out of stock)" : ""}`}
+                            style={swatchColor ? { backgroundColor: swatchColor } : undefined}
+                          >
+                            {!swatchColor && (
+                              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold text-foreground">{v.name.slice(0, 3)}</span>
+                            )}
+                            {isSelected && (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <Check className={`h-4 w-4 ${swatchColor === "#ffffff" || swatchColor === "#fffdd0" ? "text-foreground" : "text-white"}`} />
+                              </span>
+                            )}
+                            {isOos && (
+                              <span className="absolute inset-0 flex items-center justify-center">
+                                <span className="w-full h-[2px] bg-destructive rotate-45 absolute" />
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {currentVariant && <p className="text-xs text-muted-foreground">{currentVariant.name} — ${Number(currentVariant.price).toFixed(2)}</p>}
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Variant</label>
+                  <Select value={selectedVariant} onValueChange={setSelectedVariant}>
+                    <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {variants.map((v: any) => (
+                        <SelectItem key={v.id} value={v.id}>
+                          {v.name} — ${Number(v.price).toFixed(2)}
+                          {v.stock <= 0 ? " (Out of stock)" : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })()}
 
             {/* Quantity pricing tiers */}
             {pricingTiers.length > 0 && (
