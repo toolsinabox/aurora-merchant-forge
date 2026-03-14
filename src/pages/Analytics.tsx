@@ -780,6 +780,35 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
+          {/* Sales by Brand Report */}
+          <Card>
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Sales by Brand</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : salesByBrand.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No brand data available</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Brand</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {salesByBrand.map((b: any, i: number) => (
+                      <TableRow key={i} className="text-xs">
+                        <TableCell className="py-1.5 font-medium">{b.name}</TableCell>
+                        <TableCell className="py-1.5 text-right font-mono">{b.units}</TableCell>
+                        <TableCell className="py-1.5 text-right font-medium">${b.revenue.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Stock Turnover Report */}
           <Card>
             <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Stock Turnover</CardTitle></CardHeader>
