@@ -7582,7 +7582,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Dangerous Goods Flag", description: "Flag products as hazardous; restrict shipping methods", status: "not_started" },
       { name: "Oversized Item Flag", description: "Flag oversized items for special handling/shipping rates", status: "not_started" },
       { name: "Temperature-Sensitive Flag", description: "Mark items requiring cold chain handling", status: "not_started" },
-      { name: "Serial Number Tracking", description: "Track individual serial numbers per unit sold", status: "not_started" },
+      { name: "Serial Number Tracking", description: "Track individual serial numbers per unit sold", status: "done", notes: "serial_numbers table with full CRUD in Inventory page, status tracking (available/sold/returned)" },
       { name: "Lot/Batch Tracking", description: "Track lot and batch numbers for traceability", status: "done", notes: "lot_number, batch_number on inventory_stock" },
       { name: "Expiry Date Tracking", description: "Track expiry dates; FEFO (First Expired, First Out) picking", status: "done", notes: "expiry_date on inventory_stock" },
     ],
