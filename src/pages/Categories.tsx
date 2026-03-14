@@ -98,6 +98,15 @@ export default function Categories() {
 
   const tree = buildTree(categories as Cat[]);
 
+  const swapSortOrder = async (catA: Cat, catB: Cat) => {
+    const tmpA = catA.sort_order;
+    const tmpB = catB.sort_order;
+    await supabase.from("categories").update({ sort_order: tmpB } as any).eq("id", catA.id);
+    await supabase.from("categories").update({ sort_order: tmpA } as any).eq("id", catB.id);
+    qc.invalidateQueries({ queryKey: ["categories"] });
+    toast.success("Order updated");
+  };
+
   const resetForm = () => setForm({ name: "", slug: "", parent_id: "", description: "", image_url: "", seo_title: "", seo_description: "" });
 
   const handleCreate = () => {
