@@ -1144,6 +1144,7 @@ export type Database = {
       }
       customers: {
         Row: {
+          abn_vat_number: string | null
           birthday: string | null
           created_at: string
           credit_limit: number | null
@@ -1166,6 +1167,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          abn_vat_number?: string | null
           birthday?: string | null
           created_at?: string
           credit_limit?: number | null
@@ -1188,6 +1190,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          abn_vat_number?: string | null
           birthday?: string | null
           created_at?: string
           credit_limit?: number | null
