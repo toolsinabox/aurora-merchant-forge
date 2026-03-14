@@ -8882,7 +8882,7 @@ const backupMigrationFeatures: FeatureCategory[] = [
       { name: "Point-in-Time Recovery", description: "Restore database to specific timestamp", status: "done" },
       { name: "Store Data Export (Full)", description: "Export all store data for migration", status: "partial" },
       { name: "Store Data Import (Migration)", description: "Import data from another platform", status: "partial", notes: "ImportWizard" },
-      { name: "Maropost / Neto Migration Tool", description: "Dedicated migration from Maropost/Neto", status: "not_started" },
+      { name: "Maropost / Neto Migration Tool", description: "Dedicated migration from Maropost/Neto", status: "done", notes: "Full 6-step wizard with 14 entity types, scan, import, theme, review" },
       { name: "Shopify Migration Tool", description: "Import products/orders from Shopify", status: "not_started" },
       { name: "WooCommerce Migration Tool", description: "Import from WooCommerce", status: "not_started" },
       { name: "BigCommerce Migration Tool", description: "Import from BigCommerce", status: "not_started" },
@@ -9679,6 +9679,9 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Order-Customer Linking", description: "Link imported orders to existing customers by email match", status: "done", notes: "Queries customers table by email during order import" },
       { name: "Newsletter Subscriber Import", description: "Extract newsletter subscribers from customer NewsletterSubscriber flag", status: "done", notes: "Auto-creates newsletter_subscribers entries during customer import" },
       { name: "Pre-Import Validation Summary", description: "Shows total records, pages, estimated duration before import starts", status: "done", notes: "Validation card in select step with relationship linking info" },
+      { name: "Customer Email Deduplication", description: "Upsert customers by email to prevent duplicates on re-import", status: "done", notes: "Email-based lookup before insert, updates existing records" },
+      { name: "Migration Rollback (Full Delete)", description: "Delete all imported data for the current store with confirmation", status: "done", notes: "Clears 22 tables in dependency order with per-table logging" },
+      { name: "Export Migration Report (CSV)", description: "Download migration results and logs as CSV file", status: "done", notes: "Exports entity stats + full migration log to timestamped CSV" },
     ],
   },
 ];

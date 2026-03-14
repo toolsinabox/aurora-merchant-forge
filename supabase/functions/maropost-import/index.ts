@@ -404,10 +404,11 @@ serve(async (req) => {
 
       for (const c of customers) {
         try {
+          const custEmail = c.EmailAddress || c.Email || null;
           const custData: Record<string, any> = {
             store_id,
             name: `${c.Name || ""} ${c.Surname || ""}`.trim() || c.Username || "Unknown",
-            email: c.EmailAddress || c.Email || null,
+            email: custEmail,
             phone: c.Phone || c.Mobile || null,
             abn_vat_number: c.ABN || null,
             segment: c.Type === "Wholesale" ? "wholesale" : "regular",
@@ -420,9 +421,26 @@ serve(async (req) => {
             custData.customer_group_id = groupMap[c.UserGroup];
           }
 
-          const { data: inserted, error } = await supabase
-            .from("customers").insert(custData).select("id").single();
-          if (error) throw error;
+          // Dedup: check if customer with same email already exists
+          let inserted: { id: string } | null = null;
+          if (custEmail) {
+            const { data: existing } = await supabase
+              .from("customers")
+              .select("id")
+              .eq("store_id", store_id)
+              .eq("email", custEmail)
+              .maybeSingle();
+            if (existing) {
+              await supabase.from("customers").update(custData).eq("id", existing.id);
+              inserted = existing;
+            }
+          }
+          if (!inserted) {
+            const { data: newCust, error } = await supabase
+              .from("customers").insert(custData).select("id").single();
+            if (error) throw error;
+            inserted = newCust;
+          }
 
           // Import addresses
           for (const addrType of ["BillingAddress", "ShippingAddress"]) {
