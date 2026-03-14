@@ -24,7 +24,7 @@ import {
   Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
   Scissors, Merge, AlertTriangle, ShieldCheck, RefreshCw,
 } from "lucide-react";
-import { useState } from "react";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
