@@ -339,6 +339,36 @@ export default function EmailTemplates() {
             <div className="border rounded-lg p-4 bg-background overflow-auto max-h-[60vh]" dangerouslySetInnerHTML={{ __html: previewHtml }} />
           </DialogContent>
         </Dialog>
+        {/* SMS Edit Dialog */}
+        <Dialog open={editSmsOpen} onOpenChange={setEditSmsOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader><DialogTitle>{editSms?.id ? "Edit" : "New"} SMS Template</DialogTitle></DialogHeader>
+            {editSms && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Template Key</Label>
+                    <Input value={editSms.key} onChange={e => setEditSms({ ...editSms, key: e.target.value })} placeholder="order_shipped" disabled={!!editSms.id} className="h-8 text-xs" />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Name</Label>
+                    <Input value={editSms.name} onChange={e => setEditSms({ ...editSms, name: e.target.value })} placeholder="Order Shipped" className="h-8 text-xs" />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Message Body</Label>
+                  <Textarea rows={4} value={editSms.body} onChange={e => setEditSms({ ...editSms, body: e.target.value })} className="text-xs" placeholder="Hi {{customer_name}}, your order..." />
+                  <p className="text-[10px] text-muted-foreground">{editSms.body?.length || 0} / 160 characters (1 SMS segment)</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={editSms.is_active} onCheckedChange={v => setEditSms({ ...editSms, is_active: v })} />
+                  <Label className="text-sm">Active</Label>
+                </div>
+                <Button onClick={saveSmsTemplate} className="w-full">Save SMS Template</Button>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
