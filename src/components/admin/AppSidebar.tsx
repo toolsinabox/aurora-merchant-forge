@@ -5,7 +5,7 @@ import {
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
   FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer, Target,
-  FormInput, ReceiptText, Share2,
+  FormInput, ReceiptText, Share2, ArrowLeftRight,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
