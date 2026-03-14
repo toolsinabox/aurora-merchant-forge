@@ -260,6 +260,9 @@ const App = () => (
                    <Route path="/_cpanel/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
                    <Route path="/_cpanel/order-holds" element={<RequireAuth><OrderHolds /></RequireAuth>} />
                    <Route path="/_cpanel/customer-segments" element={<RequireAuth><CustomerSegments /></RequireAuth>} />
+                   <Route path="/_cpanel/custom-fields" element={<RequireAuth><CustomFields /></RequireAuth>} />
+                   <Route path="/_cpanel/refunds" element={<RequireAuth><Refunds /></RequireAuth>} />
+                   <Route path="/_cpanel/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
