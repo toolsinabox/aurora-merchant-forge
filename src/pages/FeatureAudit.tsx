@@ -8068,7 +8068,7 @@ const inventoryAdvancedFeatures: FeatureCategory[] = [
     icon: <Warehouse className="h-5 w-5" />,
     features: [
       { name: "Stocktake (Full Count)", description: "Full warehouse stock count with variance report", status: "done", notes: "Stocktake page" },
-      { name: "Cycle Count", description: "Partial/rolling stock counts by location or category", status: "partial" },
+      { name: "Cycle Count", description: "Partial/rolling stock counts by location or category", status: "done", notes: "Stocktake page Cycle Count Schedules tab with frequency (daily/weekly/biweekly/monthly/quarterly), zone/category filter, Run Now action to create stocktake, active/inactive toggle, localStorage persistence" },
       { name: "Stock Adjustment Reasons", description: "Predefined reasons for stock adjustments (damage, theft, etc.)", status: "done", notes: "StockAdjustments" },
       { name: "Inventory Valuation Report (FIFO/AVG)", description: "Stock valuation using FIFO or weighted average", status: "done", notes: "InventoryReports page" },
       { name: "Dead Stock Report", description: "Identify products with no sales in X days", status: "done", notes: "InventoryReports dead stock tab" },
