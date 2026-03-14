@@ -129,22 +129,22 @@ export function NotificationBell() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel className="text-xs">Order Notifications</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-xs">Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (
           <div className="p-4 text-center text-xs text-muted-foreground">No notifications yet</div>
         ) : (
-          notifications.slice(0, 8).map((n) => (
+          notifications.slice(0, 10).map((n) => (
             <DropdownMenuItem
               key={n.id}
               className="flex items-start gap-3 py-2.5 cursor-pointer"
-              onClick={() => navigate(`/orders/${n.id}`)}
+              onClick={() => navigate(n.link)}
             >
               <div className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${n.read ? "bg-transparent" : "bg-primary"}`} />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium">New order {n.order_number}</p>
+                <p className="text-xs font-medium">{n.title}</p>
                 <p className="text-2xs text-muted-foreground">
-                  ${Number(n.total).toFixed(2)} · {format(new Date(n.created_at), "MMM d, h:mm a")}
+                  {n.detail} · {format(new Date(n.created_at), "MMM d, h:mm a")}
                 </p>
               </div>
             </DropdownMenuItem>
