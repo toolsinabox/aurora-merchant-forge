@@ -8474,7 +8474,7 @@ const smartCollectionDeepFeatures: FeatureCategory[] = [
       { name: "Collection Sort Order (Auto)", description: "Auto-sort by best-selling, newest, price", status: "done" },
       { name: "Collection Featured Image", description: "Hero image for collection page", status: "done" },
       { name: "Collection SEO Fields", description: "Custom meta title/description per collection", status: "done" },
-      { name: "Product Pinning in Collection", description: "Pin specific products to top of collection", status: "not_started" },
+      { name: "Product Pinning in Collection", description: "Pin specific products to top of collection", status: "partial", notes: "Smart collections support manual sort_order override for pinning" },
       { name: "Merchandising Zones (Homepage)", description: "Configurable product zones on homepage", status: "partial" },
       { name: "Cross-Sell Rules", description: "Define related products / cross-sell rules", status: "done", notes: "product_relations" },
       { name: "Upsell Rules", description: "Define upsell products per product", status: "done" },
