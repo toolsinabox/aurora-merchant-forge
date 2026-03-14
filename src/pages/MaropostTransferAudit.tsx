@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -129,6 +130,38 @@ export default function MaropostTransferAudit() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [dbCounts, setDbCounts] = useState<Record<string, number>>({});
+
+  // Fetch live record counts from the database
+  useEffect(() => {
+    const fetchCounts = async () => {
+      const tables = [
+        { key: "products", table: "products" },
+        { key: "categories", table: "categories" },
+        { key: "customers", table: "customers" },
+        { key: "orders", table: "orders" },
+        { key: "content_pages", table: "content_pages" },
+        { key: "gift_vouchers", table: "gift_vouchers" },
+        { key: "suppliers", table: "suppliers" },
+        { key: "inventory_locations", table: "inventory_locations" },
+        { key: "shipping_zones", table: "shipping_zones" },
+        { key: "product_variants", table: "product_variants" },
+        { key: "product_relations", table: "product_relations" },
+        { key: "customer_addresses", table: "customer_addresses" },
+        { key: "order_items", table: "order_items" },
+        { key: "product_specifics", table: "product_specifics" },
+        { key: "inventory_stock", table: "inventory_stock" },
+      ] as const;
+
+      const counts: Record<string, number> = {};
+      await Promise.all(tables.map(async ({ key, table }) => {
+        const { count } = await supabase.from(table).select("id", { count: "exact", head: true }) as any;
+        counts[key] = count || 0;
+      }));
+      setDbCounts(counts);
+    };
+    fetchCounts();
+  }, []);
 
   const filtered = useMemo(() => {
     return TRANSFER_ITEMS.filter(item => {
@@ -215,6 +248,41 @@ export default function MaropostTransferAudit() {
             </p>
           </CardContent>
         </Card>
+
+        {/* Live Database Counts */}
+        {Object.keys(dbCounts).length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Imported Records (Live)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                {[
+                  { key: "products", label: "Products" },
+                  { key: "product_variants", label: "Variants" },
+                  { key: "categories", label: "Categories" },
+                  { key: "customers", label: "Customers" },
+                  { key: "customer_addresses", label: "Addresses" },
+                  { key: "orders", label: "Orders" },
+                  { key: "order_items", label: "Line Items" },
+                  { key: "content_pages", label: "Pages" },
+                  { key: "gift_vouchers", label: "Vouchers" },
+                  { key: "suppliers", label: "Suppliers" },
+                  { key: "inventory_locations", label: "Warehouses" },
+                  { key: "inventory_stock", label: "Stock Records" },
+                  { key: "shipping_zones", label: "Shipping" },
+                  { key: "product_relations", label: "Relations" },
+                  { key: "product_specifics", label: "Specifics" },
+                ].map(({ key, label }) => (
+                  <div key={key} className="text-center p-2 rounded-lg bg-muted/50">
+                    <p className="text-lg font-bold text-foreground">{dbCounts[key] || 0}</p>
+                    <p className="text-2xs text-muted-foreground">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Filters */}
         <div className="flex gap-3 flex-wrap">

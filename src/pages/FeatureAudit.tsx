@@ -9671,6 +9671,10 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Currency Import", description: "Import store currencies with exchange rates and default currency flag", status: "done", notes: "import_currencies action maps to currencies table" },
       { name: "Retry Failed Entities", description: "Retry button for individually failed entities during import", status: "done", notes: "Per-entity retry with full re-fetch and re-import" },
       { name: "Expandable Error Details", description: "Click-to-expand error lists per entity in import progress view", status: "done", notes: "HTML details/summary for collapsible error log" },
+      { name: "Inventory Stock Level Import", description: "Import per-warehouse stock quantities during product import", status: "done", notes: "Maps WarehouseQuantity/WarehouseLocations to inventory_stock with location matching" },
+      { name: "Customer Communication Log Import", description: "Import CustomerLog entries to customer_communications table", status: "done", notes: "Logs imported with channel, subject, body, and date" },
+      { name: "Currency Entity in Migration Wizard", description: "Currencies appear in scan/select/import UI alongside other entities", status: "done", notes: "Added to MIGRATION_ENTITIES and FETCH_ACTION_MAP" },
+      { name: "Live Database Counts in Transfer Audit", description: "Transfer audit page shows real imported record counts from the database", status: "done", notes: "15 entity counts fetched live via Supabase queries" },
     ],
   },
 ];

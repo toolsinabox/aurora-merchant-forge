@@ -204,6 +204,36 @@ serve(async (req) => {
             }
           }
 
+          // Import warehouse stock levels
+          if (p.WarehouseQuantity || p.WarehouseLocations) {
+            const whData = p.WarehouseLocations || p.WarehouseQuantity;
+            const warehouses = Array.isArray(whData) ? whData : (whData ? [whData] : []);
+            for (const wh of warehouses) {
+              const whName = wh?.WarehouseName || wh?.Name || "Default";
+              const qty = parseInt(wh?.Quantity || wh?.AvailableQuantity || "0") || 0;
+              if (qty > 0 || whName) {
+                // Find or create inventory location
+                const { data: loc } = await supabase
+                  .from("inventory_locations")
+                  .select("id")
+                  .eq("store_id", store_id)
+                  .eq("name", whName)
+                  .maybeSingle();
+                
+                const locationId = loc?.id;
+                if (locationId) {
+                  await supabase.from("inventory_stock").upsert({
+                    store_id,
+                    product_id: productId,
+                    location_id: locationId,
+                    quantity: qty,
+                    bin_location: wh?.BinLocation || wh?.PickZone || null,
+                  } as any, { onConflict: "product_id,location_id" }).catch(() => {});
+                }
+              }
+            }
+          }
+
           // Import item specifics
           if (p.ItemSpecifics) {
             const specsRoot = Array.isArray(p.ItemSpecifics) ? p.ItemSpecifics : [p.ItemSpecifics];
@@ -418,6 +448,25 @@ serve(async (req) => {
                     is_default: true,
                   }).catch(() => {});
                 }
+              }
+            }
+          }
+
+          // Import customer communication logs
+          if (c.CustomerLog) {
+            const logs = Array.isArray(c.CustomerLog) ? c.CustomerLog : [c.CustomerLog];
+            for (const log of logs) {
+              if (log && (log.Notes || log.Description || log.Subject)) {
+                await supabase.from("customer_communications").insert({
+                  customer_id: inserted.id,
+                  store_id,
+                  channel: log.Type || "note",
+                  direction: "inbound",
+                  subject: log.Subject || log.Type || "Log Entry",
+                  body: log.Notes || log.Description || "",
+                  status: "delivered",
+                  created_at: log.DateCreated || log.Date || new Date().toISOString(),
+                }).catch(() => {});
               }
             }
           }
