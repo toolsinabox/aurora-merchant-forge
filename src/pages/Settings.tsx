@@ -1253,7 +1253,7 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent className="p-4 pt-2 space-y-3">
                 <p className="text-xs text-muted-foreground">Configure outgoing email settings for order confirmations, notifications, and marketing emails.</p>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <Label className="text-xs">SMTP Host</Label>
                     <Input className="h-8 text-xs" value={smtpForm.host} onChange={(e) => setSmtpForm({ ...smtpForm, host: e.target.value })} placeholder="smtp.gmail.com" />
