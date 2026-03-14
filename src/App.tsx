@@ -330,6 +330,7 @@ const App = () => (
                    <Route path="/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
