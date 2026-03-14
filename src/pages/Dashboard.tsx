@@ -273,7 +273,7 @@ export default function Dashboard() {
                   </Button>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <Table>
+                  <div className="table-scroll">
                     <TableHeader>
                       <TableRow>
                         <TableHead className="text-xs h-9">Order</TableHead>
