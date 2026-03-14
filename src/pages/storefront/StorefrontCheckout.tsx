@@ -220,7 +220,39 @@ export default function StorefrontCheckout() {
   const discountAmount = appliedCoupon?.discountAmount ?? 0;
   const subtotalAfterDiscount = Math.max(0, totalPrice - discountAmount);
   const actualShipping = deliveryMethod === "pickup" ? 0 : shippingCost;
-  const taxAmount = isTaxExempt ? 0 : Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
+
+  // Compound tax calculation: apply taxes in priority order, compound taxes use accumulated base
+  const taxAmount = (() => {
+    if (isTaxExempt) return 0;
+    // If we have detailed rates matched for current address
+    const matchedRates = allTaxRates.filter((r: any) => {
+      if (r.region && form.country) {
+        return (r.region && form.city && form.city.toLowerCase().includes(r.region.toLowerCase())) ||
+          (r.country && form.country.toLowerCase() === r.country.toLowerCase());
+      }
+      return r.is_default;
+    });
+    const ratesToApply = matchedRates.length > 0 ? matchedRates : allTaxRates.filter((r: any) => r.is_default);
+    if (ratesToApply.length === 0) return Math.round(subtotalAfterDiscount * taxRate * 100) / 100;
+
+    // Sort by priority descending (higher priority applied first)
+    const sorted = [...ratesToApply].sort((a: any, b: any) => (b.priority || 0) - (a.priority || 0));
+    let totalTax = 0;
+    let runningBase = subtotalAfterDiscount;
+    for (const rate of sorted) {
+      const appliesTo = rate.applies_to || "all";
+      let base = 0;
+      if (appliesTo === "products") base = rate.is_compound ? runningBase : subtotalAfterDiscount;
+      else if (appliesTo === "shipping") base = actualShipping;
+      else base = rate.is_compound ? runningBase + actualShipping : subtotalAfterDiscount + actualShipping;
+      
+      const tax = base * (Number(rate.rate) / 100);
+      totalTax += tax;
+      if (rate.is_compound) runningBase += tax;
+    }
+    return Math.round(totalTax * 100) / 100;
+  })();
+
   const totalBeforeVoucher = subtotalAfterDiscount + actualShipping + taxAmount;
   const voucherAmount = appliedVoucher?.amountUsed ?? 0;
   const storeCreditAmount = useStoreCredit ? Math.min(storeCreditBalance, totalBeforeVoucher - voucherAmount) : 0;
