@@ -9091,7 +9091,7 @@ const giftRegistryFeatures: FeatureCategory[] = [
       { name: "Gift Registry Item Purchase Tracking", description: "Track which items have been purchased", status: "not_started" },
       { name: "Gift Registry Thank You Notes", description: "Send thank you notes for purchased gifts", status: "not_started" },
       { name: "Gift Wrapping Option", description: "Add gift wrapping service at checkout", status: "not_started" },
-      { name: "Gift Message per Item", description: "Custom gift message per line item", status: "partial" },
+      { name: "Gift Message per Item", description: "Custom gift message per line item", status: "done", notes: "StorefrontCheckout gift message textarea per cart item, stored on order_items" },
       { name: "Gift Receipt (No Prices)", description: "Print receipt without prices for gifts", status: "not_started" },
     ],
   },
