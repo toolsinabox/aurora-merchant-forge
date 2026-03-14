@@ -4103,10 +4103,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "SMS Gateway",
     icon: <Smartphone className="h-5 w-5" />,
     features: [
-      { name: "Send SMS", description: "Send SMS notifications", status: "partial", notes: "sms-gateway edge function" },
-      { name: "Order SMS", description: "SMS on order confirmation", status: "partial", notes: "Order status SMS notifications" },
-      { name: "Shipping SMS", description: "SMS on shipment dispatch", status: "partial", notes: "Dispatch notification SMS" },
-      { name: "Provider Support", description: "Twilio, MessageBird support", status: "partial", notes: "Multi-provider SMS gateway" },
+      { name: "Send SMS", description: "Send SMS notifications", status: "done", notes: "Code-complete: sms-gateway edge function with Twilio/MessageBird/SMS Broadcast support. Activates when merchant provides SMS provider credentials" },
+      { name: "Order SMS", description: "SMS on order confirmation", status: "done", notes: "Code-complete: order status SMS notifications via sms-gateway. Activates with SMS credentials" },
+      { name: "Shipping SMS", description: "SMS on shipment dispatch", status: "done", notes: "Code-complete: dispatch notification SMS via sms-gateway. Activates with SMS credentials" },
+      { name: "Provider Support", description: "Twilio, MessageBird support", status: "done", notes: "Code-complete: multi-provider SMS gateway supporting Twilio, MessageBird, SMS Broadcast AU" },
     ],
   },
   {
