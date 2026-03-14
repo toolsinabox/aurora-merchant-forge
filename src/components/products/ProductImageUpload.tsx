@@ -110,8 +110,23 @@ export function ProductImageUpload({ storeId, productId, images, onImagesChange 
               >
                 <X className="h-3 w-3" />
               </button>
-              <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <GripVertical className="h-3.5 w-3.5 text-background drop-shadow" />
+              <div className="absolute bottom-1 left-1 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                {idx > 0 && (
+                  <button
+                    onClick={() => moveImage(idx, "up")}
+                    className="bg-background/80 backdrop-blur-sm rounded-full p-1 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowUp className="h-3 w-3" />
+                  </button>
+                )}
+                {idx < images.length - 1 && (
+                  <button
+                    onClick={() => moveImage(idx, "down")}
+                    className="bg-background/80 backdrop-blur-sm rounded-full p-1 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowDown className="h-3 w-3" />
+                  </button>
+                )}
               </div>
             </div>
           ))}

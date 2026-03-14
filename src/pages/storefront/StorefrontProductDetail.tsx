@@ -29,6 +29,39 @@ import type { TemplateContext } from "@/lib/base-template-engine";
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
 
+function FlashSaleTimer({ endDate }: { endDate: string }) {
+  const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0, expired: false });
+  useEffect(() => {
+    const calc = () => {
+      const diff = new Date(endDate).getTime() - Date.now();
+      if (diff <= 0) return { d: 0, h: 0, m: 0, s: 0, expired: true };
+      return {
+        d: Math.floor(diff / 86400000),
+        h: Math.floor((diff % 86400000) / 3600000),
+        m: Math.floor((diff % 3600000) / 60000),
+        s: Math.floor((diff % 60000) / 1000),
+        expired: false,
+      };
+    };
+    setTimeLeft(calc());
+    const id = setInterval(() => setTimeLeft(calc()), 1000);
+    return () => clearInterval(id);
+  }, [endDate]);
+  if (timeLeft.expired) return <p className="text-xs text-destructive mt-1">Sale has ended</p>;
+  return (
+    <div className="mt-2 flex items-center gap-2">
+      <Clock className="h-3.5 w-3.5 text-destructive" />
+      <span className="text-xs font-medium text-destructive">Ends in</span>
+      <div className="flex gap-1">
+        {timeLeft.d > 0 && <span className="bg-destructive/10 text-destructive text-xs font-bold px-1.5 py-0.5 rounded">{timeLeft.d}d</span>}
+        <span className="bg-destructive/10 text-destructive text-xs font-bold px-1.5 py-0.5 rounded">{String(timeLeft.h).padStart(2, "0")}h</span>
+        <span className="bg-destructive/10 text-destructive text-xs font-bold px-1.5 py-0.5 rounded">{String(timeLeft.m).padStart(2, "0")}m</span>
+        <span className="bg-destructive/10 text-destructive text-xs font-bold px-1.5 py-0.5 rounded">{String(timeLeft.s).padStart(2, "0")}s</span>
+      </div>
+    </div>
+  );
+}
+
 export default function StorefrontProductDetail() {
   const { storeSlug: paramSlug, productId } = useParams();
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
