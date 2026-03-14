@@ -7678,8 +7678,8 @@ const b2bWholesaleDeepFeatures: FeatureCategory[] = [
     category: "B2B & Wholesale — Advanced",
     icon: <Building className="h-5 w-5" />,
     features: [
-      { name: "Trade Application Form", description: "Online wholesale account application with approval workflow", status: "partial", notes: "Customer groups exist" },
-      { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number on trade signup", status: "partial", notes: "abn_vat_number field on customers, validation not yet automated" },
+      { name: "Trade Application Form", description: "Online wholesale account application with approval workflow", status: "done", notes: "StorefrontWholesale page with business name, contact, email, phone, ABN, message fields; submits to wholesale_applications table; success confirmation screen" },
+      { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number on trade signup", status: "done", notes: "Client-side ABN checksum validation using weighted algorithm (10,1,3,5,7,9,11,13,15,17,19) with mod-89 check on StorefrontWholesale form" },
       { name: "Wholesale Price Lists", description: "Separate price lists visible only to approved wholesale customers", status: "done", notes: "Customer group pricing" },
       { name: "Minimum Order Quantity (MOQ)", description: "Enforce minimum quantity per product for wholesale", status: "done", notes: "min_order_quantity column on products table (default 1), ProductForm Inventory tab with MOQ input, storefront enforces MOQ on quantity selector (min button respects MOQ), add-to-cart validates quantity >= MOQ with toast error, quantity auto-initialized to MOQ on page load" },
       { name: "Minimum Order Value", description: "Enforce minimum cart total for wholesale orders", status: "done", notes: "min_order_amount on customer_groups" },
