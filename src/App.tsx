@@ -20,6 +20,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import Products from "./pages/Products.tsx";
 import ProductForm from "./pages/ProductForm.tsx";
 import Categories from "./pages/Categories.tsx";
+import SmartCollections from "./pages/SmartCollections.tsx";
 import Inventory from "./pages/Inventory.tsx";
 import Orders from "./pages/Orders.tsx";
 import OrderDetail from "./pages/OrderDetail.tsx";
@@ -158,6 +159,7 @@ const App = () => (
                   <Route path="/_cpanel/products/new" element={<RequireAuth><ProductForm /></RequireAuth>} />
                   <Route path="/_cpanel/products/:id" element={<RequireAuth><ProductForm /></RequireAuth>} />
                   <Route path="/_cpanel/categories" element={<RequireAuth><Categories /></RequireAuth>} />
+                  <Route path="/_cpanel/smart-collections" element={<RequireAuth><SmartCollections /></RequireAuth>} />
                   <Route path="/_cpanel/inventory" element={<RequireAuth><Inventory /></RequireAuth>} />
                   <Route path="/_cpanel/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
@@ -245,6 +247,7 @@ const App = () => (
                   <Route path="/products/new" element={<RequireAuth><ProductForm /></RequireAuth>} />
                   <Route path="/products/:id" element={<RequireAuth><ProductForm /></RequireAuth>} />
                   <Route path="/categories" element={<RequireAuth><Categories /></RequireAuth>} />
+                  <Route path="/smart-collections" element={<RequireAuth><SmartCollections /></RequireAuth>} />
                   <Route path="/inventory" element={<RequireAuth><Inventory /></RequireAuth>} />
                   <Route path="/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />

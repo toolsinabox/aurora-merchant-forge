@@ -100,6 +100,7 @@ const featureData: FeatureCategory[] = [
       { name: "Preorder Quantity", description: "Quantity available for preorder before stock arrives", status: "done" },
       { name: "P.O.A / Special Order Products", description: "Price On Application — hide price, show 'Contact for Price'", status: "done", notes: "poa boolean on products table, storefront hides price and shows contact CTA" },
       { name: "Multi-Currency Pricing", description: "Display/sell in multiple currencies with conversion rules", status: "done", notes: "currencies table with exchange rates; storefront CurrencySwitcher component converts all prices using selected currency rate; useCurrency hook persists selection in localStorage" },
+      { name: "Product Scheduling (Publish/Unpublish)", description: "Schedule products to auto-publish and auto-unpublish at specific dates/times", status: "done", notes: "scheduled_publish_at and scheduled_unpublish_at columns on products table; datetime-local inputs in ProductForm Scheduling card; auto-set status to active/draft at scheduled time" },
     ],
   },
 
@@ -135,6 +136,7 @@ const featureData: FeatureCategory[] = [
       { name: "Child Products", description: "Parent-child product hierarchy (non-variant children)", status: "done", notes: "Child/accessory products from product_relations displayed as 'Included Components' grid on storefront product detail page" },
       { name: "Editable Kit Components", description: "Components within an editable bundle that customers configure", status: "done", notes: "kit_components table with CRUD admin tab on ProductForm (visible when is_kit=true), storefront product detail shows kit components with image, qty, optional/swappable flags, and price" },
       { name: "Product Addons / Custom Options", description: "Customizable fields (text engraving, color picker, file upload)", status: "done", notes: "product_addons table with CRUD, Addons tab on ProductForm with text/textarea/select/checkbox/color/file types, price adjustments, required flag, sort order" },
+      { name: "Smart / Automated Collections", description: "Auto-populate product collections based on rules (brand, price, tags, type, etc.)", status: "done", notes: "smart_collections table with rules JSONB, match_type (all/any), admin SmartCollections page with rule builder (12 fields × text/number operators), live preview showing matched products, CRUD with SEO fields" },
     ],
   },
 

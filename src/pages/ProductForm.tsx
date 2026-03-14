@@ -80,6 +80,7 @@ export default function ProductForm() {
     warranty: "", availability_description: "",
     reorder_quantity: "0", restock_quantity: "0", preorder_quantity: "0",
     misc1: "", misc2: "", misc3: "", misc4: "", misc5: "",
+    scheduled_publish_at: "", scheduled_unpublish_at: "",
   });
 
   const [shipping, setShipping] = useState({
@@ -131,6 +132,8 @@ export default function ProductForm() {
         misc1: (existing as any).misc1 || "", misc2: (existing as any).misc2 || "",
         misc3: (existing as any).misc3 || "", misc4: (existing as any).misc4 || "",
         misc5: (existing as any).misc5 || "",
+        scheduled_publish_at: (existing as any).scheduled_publish_at ? new Date((existing as any).scheduled_publish_at).toISOString().slice(0, 16) : "",
+        scheduled_unpublish_at: (existing as any).scheduled_unpublish_at ? new Date((existing as any).scheduled_unpublish_at).toISOString().slice(0, 16) : "",
       });
       setProductImages(existing.images || []);
     }
@@ -218,6 +221,8 @@ export default function ProductForm() {
       preorder_quantity: parseInt(form.preorder_quantity) || 0,
       misc1: form.misc1 || null, misc2: form.misc2 || null, misc3: form.misc3 || null,
       misc4: form.misc4 || null, misc5: form.misc5 || null,
+      scheduled_publish_at: form.scheduled_publish_at || null,
+      scheduled_unpublish_at: form.scheduled_unpublish_at || null,
       images: productImages,
     };
 
@@ -956,6 +961,22 @@ export default function ProductForm() {
                   <div className="flex items-center justify-between">
                     <Label className="text-xs">Approved</Label>
                     <Switch checked={form.is_approved} onCheckedChange={(v) => update("is_approved", v)} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Scheduling</CardTitle></CardHeader>
+                <CardContent className="p-4 pt-2 space-y-3">
+                  <div className="space-y-1">
+                    <Label className="text-xs">Publish At</Label>
+                    <Input type="datetime-local" className="h-8 text-xs" value={form.scheduled_publish_at} onChange={(e) => update("scheduled_publish_at", e.target.value)} />
+                    <p className="text-2xs text-muted-foreground">Auto-set status to active at this time</p>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs">Unpublish At</Label>
+                    <Input type="datetime-local" className="h-8 text-xs" value={form.scheduled_unpublish_at} onChange={(e) => update("scheduled_unpublish_at", e.target.value)} />
+                    <p className="text-2xs text-muted-foreground">Auto-set status to draft at this time</p>
                   </div>
                 </CardContent>
               </Card>
