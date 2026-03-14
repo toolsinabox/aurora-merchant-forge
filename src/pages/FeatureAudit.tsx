@@ -5064,8 +5064,324 @@ const finalDeepFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 371–400: EXTENDED GRANULAR FEATURES ═══════
+const extendedFeatures: FeatureCategory[] = [
+  {
+    category: "Storefront Cart & Popup",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Add-to-Cart Popup", description: "Mini popup confirming item added to cart", status: "done", notes: "AddToCartPopup component with product image, name, quantity, subtotal, and Continue Shopping / View Cart buttons" },
+      { name: "Cart Quantity Update", description: "Increment/decrement quantities in cart", status: "done", notes: "CartContext with updateQuantity action, +/- buttons on cart page" },
+      { name: "Cart Remove Item", description: "Remove individual items from cart", status: "done", notes: "removeFromCart action in CartContext with confirmation" },
+      { name: "Cart Empty State", description: "Friendly empty cart message with CTA", status: "done", notes: "Empty state with Continue Shopping link on StorefrontCart" },
+      { name: "Cart Subtotal/Tax/Total", description: "Real-time cart total calculations", status: "done", notes: "CartContext computes subtotal, tax, shipping estimate, and grand total" },
+      { name: "Cart Persistence", description: "Cart persists across page navigation", status: "done", notes: "CartContext state maintained in React context, survives navigation" },
+    ],
+  },
+  {
+    category: "Promotional Popups & Banners",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Promo Popup", description: "Timed marketing popup on storefront", status: "done", notes: "PromoPopup component with configurable delay, dismiss persistence" },
+      { name: "Advert Banners", description: "Rotating promotional banners", status: "done", notes: "AdvertBanner component reading from adverts table with placement, scheduling, sort order" },
+      { name: "Banner Scheduling", description: "Show banners within date range only", status: "done", notes: "starts_at and ends_at columns on adverts table filter active banners" },
+      { name: "Banner Placement Zones", description: "Header, footer, sidebar, homepage banner slots", status: "done", notes: "placement column: header, footer, sidebar, homepage, product_page" },
+      { name: "Banner Link/CTA", description: "Clickable banners with custom URL and button text", status: "done", notes: "link_url and button_text columns on adverts" },
+      { name: "HTML Content Banners", description: "Rich HTML content for complex banners", status: "done", notes: "html_content column for custom-coded banner content" },
+    ],
+  },
+  {
+    category: "Product Compare",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Add to Compare", description: "Add products to comparison list", status: "done", notes: "CompareContext with addToCompare, max 4 products" },
+      { name: "Compare Page", description: "Side-by-side product comparison table", status: "done", notes: "StorefrontCompare page with specs, price, availability in columns" },
+      { name: "Compare Widget", description: "Floating compare bar showing selected items", status: "done", notes: "Compare indicator in storefront header with count badge" },
+      { name: "Remove from Compare", description: "Remove individual products from comparison", status: "done", notes: "removeFromCompare action in CompareContext" },
+      { name: "Clear All Compare", description: "Clear entire comparison list", status: "done", notes: "clearCompare action resets list" },
+    ],
+  },
+  {
+    category: "Wishlist",
+    icon: <Heart className="h-5 w-5" />,
+    features: [
+      { name: "Add to Wishlist", description: "Save products to wishlist", status: "done", notes: "WishlistContext with addToWishlist, heart icon on product cards" },
+      { name: "Wishlist Page", description: "View all wishlisted products", status: "done", notes: "StorefrontWishlist page with product grid and remove actions" },
+      { name: "Move to Cart", description: "Move wishlist item directly to cart", status: "done", notes: "Add to Cart button on wishlist items" },
+      { name: "Wishlist Reminder Email", description: "Email customers about items in their wishlist", status: "done", notes: "wishlist-reminder edge function sends email with wishlisted product details" },
+      { name: "Wishlist Persistence", description: "Wishlist saved across sessions for logged-in users", status: "done", notes: "WishlistContext persists via localStorage" },
+    ],
+  },
+  {
+    category: "Social Sharing",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Share to Facebook", description: "Share product on Facebook", status: "done", notes: "SocialShare component with Facebook share URL" },
+      { name: "Share to Twitter/X", description: "Share product on Twitter", status: "done", notes: "Twitter intent URL with product title and link" },
+      { name: "Share to Pinterest", description: "Pin product image on Pinterest", status: "done", notes: "Pinterest pin URL with image, title, description" },
+      { name: "Share via Email", description: "Email product link to friend", status: "done", notes: "mailto: link with product subject and URL" },
+      { name: "Copy Link", description: "Copy product URL to clipboard", status: "done", notes: "navigator.clipboard.writeText with toast confirmation" },
+    ],
+  },
+  {
+    category: "Product Badges & Labels",
+    icon: <Tag className="h-5 w-5" />,
+    features: [
+      { name: "Sale Badge", description: "Show sale badge when promo price is active", status: "done", notes: "ProductBadges component renders SALE when promo_price < price" },
+      { name: "New Badge", description: "Show NEW badge for recently added products", status: "done", notes: "NEW badge based on created_at within configurable days" },
+      { name: "Out of Stock Badge", description: "Show SOLD OUT badge when stock is 0", status: "done", notes: "SOLD OUT badge when stock_on_hand <= 0 and track_inventory is true" },
+      { name: "Low Stock Badge", description: "Show LOW STOCK warning when below threshold", status: "done", notes: "LOW STOCK badge when stock_on_hand <= low_stock_threshold" },
+      { name: "Pre-Order Badge", description: "Show PRE-ORDER badge for preorder products", status: "done", notes: "PRE-ORDER badge when preorder_quantity > 0" },
+      { name: "Custom Label Badge", description: "Show custom_label as badge (e.g., Best Seller, Staff Pick)", status: "done", notes: "Custom label from products.custom_label rendered as colored badge" },
+    ],
+  },
+  {
+    category: "Delivery Estimates",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Estimated Delivery Date", description: "Show estimated delivery on product page", status: "done", notes: "DeliveryEstimate component calculating from shipping_methods.estimated_days_min/max" },
+      { name: "Cut-Off Time Logic", description: "Order by X time for same-day dispatch", status: "done", notes: "Cut-off time logic: orders before cutoff ship today, after ship next day" },
+      { name: "Business Days Calculation", description: "Skip weekends in delivery estimate", status: "done", notes: "Business day calculation excluding Saturday/Sunday" },
+      { name: "Express Shipping Estimate", description: "Show faster option with express shipping", status: "done", notes: "Multiple shipping method estimates displayed" },
+    ],
+  },
+  {
+    category: "Media Library",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Image Upload", description: "Upload images to central media library", status: "done", notes: "Admin /media-library page with drag-drop upload to Supabase storage" },
+      { name: "Image Grid View", description: "Browse uploaded images in grid", status: "done", notes: "Image grid with thumbnail preview, filename, size" },
+      { name: "Image Search", description: "Search media by filename", status: "done", notes: "Search input filtering media items" },
+      { name: "Image Delete", description: "Delete images from library", status: "done", notes: "Delete action with confirmation dialog" },
+      { name: "Copy URL", description: "Copy public URL for use in content", status: "done", notes: "Copy URL button on each media item" },
+      { name: "File Type Support", description: "Support JPG, PNG, GIF, WebP, SVG uploads", status: "done", notes: "Multiple image formats supported with type validation" },
+    ],
+  },
+  {
+    category: "Content Blocks (Reusable)",
+    icon: <FileCode className="h-5 w-5" />,
+    features: [
+      { name: "Content Block CRUD", description: "Create reusable HTML/text content blocks", status: "done", notes: "content_blocks table with name, identifier, content, block_type" },
+      { name: "Block Types", description: "HTML, text, banner block types", status: "done", notes: "block_type column: html, text, banner" },
+      { name: "Placement Zones", description: "Assign blocks to header, footer, sidebar", status: "done", notes: "placement column for positioning" },
+      { name: "Active Toggle", description: "Enable/disable blocks without deleting", status: "done", notes: "is_active boolean on content_blocks" },
+      { name: "Sort Order", description: "Control display order of blocks", status: "done", notes: "sort_order integer column" },
+      { name: "Unique Identifier", description: "Reference blocks by identifier in templates", status: "done", notes: "identifier column for template-level inclusion via [!block:identifier!]" },
+    ],
+  },
+  {
+    category: "URL Redirects",
+    icon: <Link className="h-5 w-5" />,
+    features: [
+      { name: "Redirect CRUD", description: "Create and manage URL redirects", status: "done", notes: "Admin /redirects page with source_url, target_url, redirect_type (301/302)" },
+      { name: "301 Permanent Redirect", description: "Permanent redirect for SEO migration", status: "done", notes: "redirect_type: 301 for permanent moves" },
+      { name: "302 Temporary Redirect", description: "Temporary redirect for campaigns", status: "done", notes: "redirect_type: 302 for temporary moves" },
+      { name: "Hit Counter", description: "Track how many times each redirect is triggered", status: "done", notes: "hit_count column auto-incremented on redirect trigger" },
+      { name: "Active Toggle", description: "Enable/disable redirects", status: "done", notes: "is_active boolean on redirects" },
+    ],
+  },
+  {
+    category: "Layby / Payment Plans",
+    icon: <CreditCard className="h-5 w-5" />,
+    features: [
+      { name: "Layby Plan Creation", description: "Create installment payment plans for orders", status: "done", notes: "layby_plans table with customer_id, order_id, total_amount, installments_count" },
+      { name: "Deposit Amount", description: "Required upfront deposit", status: "done", notes: "deposit_amount column on layby_plans" },
+      { name: "Installment Schedule", description: "Weekly, fortnightly, monthly payment frequency", status: "done", notes: "frequency column with next_due_date tracking" },
+      { name: "Payment Recording", description: "Record individual installment payments", status: "done", notes: "layby_payments table with amount, payment_method per payment" },
+      { name: "Plan Status Workflow", description: "Active → completed or cancelled lifecycle", status: "done", notes: "status column: active, completed, cancelled with completed_at/cancelled_at" },
+      { name: "Admin Layby Dashboard", description: "Overview of all layby plans with KPIs", status: "done", notes: "Admin /layby page with active plans, outstanding balance, completion rate" },
+    ],
+  },
+  {
+    category: "Customer Segmentation Rules",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Segment Rule Builder", description: "Create rules to auto-segment customers", status: "done", notes: "customer_segmentation_rules table with rules JSONB, match_type (all/any)" },
+      { name: "Rule Conditions", description: "Total spent, order count, last order, tags, location", status: "done", notes: "Rules support multiple field types and operators" },
+      { name: "Auto-Segment Assignment", description: "Auto-assign segment labels to matching customers", status: "done", notes: "segment column on customers updated by matching rules" },
+      { name: "Matched Count", description: "Track how many customers match each rule", status: "done", notes: "matched_count column on segmentation rules" },
+      { name: "Active/Inactive Toggle", description: "Enable/disable segmentation rules", status: "done", notes: "is_active boolean with last_run_at tracking" },
+    ],
+  },
+  {
+    category: "Price Rules Engine",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Price Rule CRUD", description: "Create conditional pricing rules", status: "done", notes: "Admin /price-rules page with rule builder" },
+      { name: "Rule Conditions", description: "Based on quantity, customer group, date, product tag", status: "done", notes: "Condition types: min_quantity, customer_group, date_range, product_tag" },
+      { name: "Discount Types", description: "Percentage off, fixed amount off, fixed price", status: "done", notes: "action_type: percentage, fixed_amount, fixed_price" },
+      { name: "Priority Ordering", description: "Rules applied in priority order, first match wins", status: "done", notes: "priority column for rule precedence" },
+      { name: "Active Toggle", description: "Enable/disable rules", status: "done", notes: "is_active boolean" },
+    ],
+  },
+  {
+    category: "Inventory Transfers",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Transfer Request", description: "Request stock transfer between locations", status: "done", notes: "inventory_transfers table with source_location_id, destination_location_id, transfer_number" },
+      { name: "Transfer Items", description: "Specify products and quantities to transfer", status: "done", notes: "inventory_transfer_items with product_id, quantity_requested, quantity_shipped, quantity_received" },
+      { name: "Transfer Status Workflow", description: "Requested → approved → shipped → received lifecycle", status: "done", notes: "status column with shipped_at, received_at timestamps" },
+      { name: "Approval Workflow", description: "Transfers require approval before shipping", status: "done", notes: "approved_by column tracking who approved the transfer" },
+      { name: "Partial Receipt", description: "Receive partial quantities against transfer", status: "done", notes: "quantity_received can differ from quantity_shipped for partial receipts" },
+    ],
+  },
+  {
+    category: "Bulk Edit (Products)",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Bulk Select Products", description: "Select multiple products via checkboxes", status: "done", notes: "Checkbox selection on Products page with select all" },
+      { name: "Bulk Status Update", description: "Change status of multiple products at once", status: "done", notes: "BulkEditDialog with status field applied to all selected" },
+      { name: "Bulk Category Assignment", description: "Assign category to multiple products", status: "done", notes: "Category selector in bulk edit applied to selection" },
+      { name: "Bulk Price Adjustment", description: "Adjust prices by percentage or fixed amount", status: "done", notes: "Price adjustment field in BulkEditDialog" },
+      { name: "Bulk Tag Assignment", description: "Add tags to multiple products", status: "done", notes: "Tag input in bulk edit applied to all selected" },
+      { name: "Bulk Delete", description: "Delete multiple products at once", status: "done", notes: "Delete action on selected products with confirmation" },
+    ],
+  },
+  {
+    category: "Import/Export Templates",
+    icon: <Upload className="h-5 w-5" />,
+    features: [
+      { name: "Import Template CRUD", description: "Create reusable import field mapping templates", status: "done", notes: "import_templates table with name, entity_type, field_mappings JSONB" },
+      { name: "Field Mapping", description: "Map CSV columns to database fields", status: "done", notes: "field_mappings JSONB storing source→destination column mappings" },
+      { name: "Static Values", description: "Set default values for unmapped fields", status: "done", notes: "static_values JSONB for constant field values" },
+      { name: "Custom Delimiter", description: "Support comma, semicolon, tab delimiters", status: "done", notes: "delimiter column on import_templates (default comma)" },
+      { name: "Transformations", description: "Apply transforms during import (trim, lowercase, etc.)", status: "done", notes: "transformations JSONB for field-level data transforms" },
+      { name: "Import History", description: "Track all past imports with success/error counts", status: "done", notes: "import_logs table with total_rows, success_count, error_count, errors JSONB" },
+    ],
+  },
+  {
+    category: "Scheduled Exports",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Export Configuration", description: "Configure automated data exports", status: "done", notes: "Admin Export Wizard with entity type, field selection, format" },
+      { name: "Entity Selection", description: "Export products, orders, customers, inventory", status: "done", notes: "Entity tabs: products, orders, customers, inventory" },
+      { name: "Field Selection", description: "Choose which fields to include in export", status: "done", notes: "Checkbox field picker per entity type" },
+      { name: "Date Range Filter", description: "Filter exported data by date range", status: "done", notes: "Date range picker on export wizard" },
+      { name: "Scheduled Export Email", description: "Email scheduled report to admin", status: "done", notes: "scheduled-export and scheduled-report-email edge functions" },
+    ],
+  },
+  {
+    category: "Report Builder",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Custom Report Creation", description: "Build custom reports with field selection", status: "done", notes: "Admin /report-builder page with entity picker and field selector" },
+      { name: "Report Filters", description: "Filter report data by date, status, category", status: "done", notes: "Dynamic filter inputs based on selected entity fields" },
+      { name: "Report Visualization", description: "Display data as table, chart, or summary", status: "done", notes: "Table view with sortable columns and chart option" },
+      { name: "Report Export", description: "Export report results to CSV", status: "done", notes: "CSV download button on generated report" },
+      { name: "Saved Report Templates", description: "Save and reuse report configurations", status: "done", notes: "Save report config for repeated use" },
+    ],
+  },
+  {
+    category: "Admin Notification System",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Notification Bell", description: "Real-time notification indicator in admin header", status: "done", notes: "NotificationBell component in TopBar with unread count badge" },
+      { name: "Notification Types", description: "New order, low stock, new customer, return request notifications", status: "done", notes: "Multiple notification event types with icon and color coding" },
+      { name: "Mark as Read", description: "Mark individual notifications as read", status: "done", notes: "Read/unread state toggle per notification" },
+      { name: "Notification Dropdown", description: "Preview notifications in dropdown panel", status: "done", notes: "Popover dropdown showing recent notifications" },
+      { name: "Low Stock Alert Emails", description: "Email notification when stock falls below threshold", status: "done", notes: "low-stock-alert edge function sends email to store admin" },
+    ],
+  },
+  {
+    category: "Two-Factor Authentication",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    features: [
+      { name: "2FA Setup", description: "Enable TOTP-based two-factor authentication", status: "done", notes: "TwoFactorSetup component with QR code generation and verification" },
+      { name: "QR Code Display", description: "Display scannable QR code for authenticator apps", status: "done", notes: "QR code generated from TOTP secret for Google Authenticator / Authy" },
+      { name: "Verification Code Entry", description: "Enter 6-digit code from authenticator app", status: "done", notes: "OTP input field with validation" },
+      { name: "Enable/Disable Toggle", description: "Turn 2FA on or off per account", status: "done", notes: "Toggle in account security settings" },
+    ],
+  },
+  {
+    category: "Zip Image Upload",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Bulk Image Upload via ZIP", description: "Upload ZIP file containing product images", status: "done", notes: "ZipImageUpload component on ProductForm, extracts and matches images by filename to SKU" },
+      { name: "SKU-Based Matching", description: "Auto-match images to products by filename→SKU", status: "done", notes: "Images named with SKU (e.g., ABC123.jpg) auto-attached to matching product" },
+      { name: "Progress Indicator", description: "Show upload and extraction progress", status: "done", notes: "Progress bar during ZIP extraction and upload" },
+      { name: "Multiple Format Support", description: "Support JPG, PNG, WebP inside ZIP", status: "done", notes: "Image format validation during extraction" },
+    ],
+  },
+  {
+    category: "Storefront Search",
+    icon: <Search className="h-5 w-5" />,
+    features: [
+      { name: "Product Search", description: "Full-text search across product titles and descriptions", status: "done", notes: "StorefrontSearch component with real-time product query" },
+      { name: "Search Suggestions", description: "Auto-suggest products as user types", status: "done", notes: "Dropdown suggestions with product thumbnails and prices" },
+      { name: "Search Results Page", description: "Dedicated search results page with filters", status: "done", notes: "Search results displayed on StorefrontProducts with query parameter" },
+      { name: "No Results State", description: "Helpful message when no products match search", status: "done", notes: "Empty state with search tips and suggestions" },
+    ],
+  },
+  {
+    category: "Storefront Sidebar & Navigation",
+    icon: <LayoutDashboard className="h-5 w-5" />,
+    features: [
+      { name: "Category Navigation", description: "Browse products by category tree", status: "done", notes: "StorefrontSidebar with hierarchical category links" },
+      { name: "Mobile Hamburger Menu", description: "Responsive mobile navigation", status: "done", notes: "Mobile-friendly sidebar toggle on small screens" },
+      { name: "Cart Icon with Count", description: "Shopping cart icon showing item count", status: "done", notes: "Cart badge in header with live item count from CartContext" },
+      { name: "Account Menu", description: "User account navigation links", status: "done", notes: "Account dropdown with orders, wishlist, settings links" },
+      { name: "Footer Navigation", description: "Footer with links, policies, social media", status: "done", notes: "StorefrontLayout footer with company info, policy links, social icons" },
+    ],
+  },
+  {
+    category: "Admin Table Components",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "Sortable Columns", description: "Click column headers to sort data", status: "done", notes: "Sort state management on admin list pages" },
+      { name: "Search/Filter Bar", description: "Filter table data by text search", status: "done", notes: "Search input on all admin list pages" },
+      { name: "Pagination", description: "Paginate large datasets", status: "done", notes: "TablePagination component with page size and page number controls" },
+      { name: "Row Selection", description: "Select rows for bulk actions", status: "done", notes: "Checkbox selection with select-all on admin tables" },
+      { name: "Status Badges", description: "Color-coded status badges in tables", status: "done", notes: "StatusBadge component with variant colors per status value" },
+      { name: "Action Dropdowns", description: "Per-row action menus (edit, delete, view)", status: "done", notes: "DropdownMenu on each table row with contextual actions" },
+    ],
+  },
+  {
+    category: "Sessions & Security",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Active Sessions View", description: "View all active user sessions", status: "done", notes: "Admin /sessions page listing active sessions" },
+      { name: "Session Device Info", description: "Show device type, browser, OS per session", status: "done", notes: "User agent parsing for device details" },
+      { name: "Force Logout", description: "Terminate specific user sessions", status: "done", notes: "Revoke session action per session" },
+      { name: "Last Active Tracking", description: "Track last activity time per session", status: "done", notes: "last_active_at timestamp per session" },
+    ],
+  },
+  {
+    category: "Staff Activity Log",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Action Logging", description: "Log all admin actions (create, update, delete)", status: "done", notes: "activity_log table with action, entity_type, entity_id, user_id" },
+      { name: "Activity Feed", description: "Chronological feed of staff actions", status: "done", notes: "Admin /staff-activity page with scrollable activity feed" },
+      { name: "Filter by User", description: "Filter activity log by staff member", status: "done", notes: "User filter dropdown on activity log page" },
+      { name: "Filter by Action Type", description: "Filter by entity type or action", status: "done", notes: "Entity type and action filters" },
+      { name: "Activity Details", description: "View detailed metadata per action", status: "done", notes: "details JSONB column with full action context" },
+    ],
+  },
+  {
+    category: "Product Quick View",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Quick View Modal", description: "Preview product details in modal without navigating", status: "done", notes: "ProductQuickView component with image, title, price, description, add-to-cart" },
+      { name: "Variant Selection in Quick View", description: "Select variants from quick view popup", status: "done", notes: "Variant dropdown in quick view modal" },
+      { name: "Add to Cart from Quick View", description: "Add product to cart without visiting full page", status: "done", notes: "Add to Cart button triggers CartContext.addToCart" },
+      { name: "Quick View Image Gallery", description: "Browse product images in quick view", status: "done", notes: "Image thumbnails with click-to-switch in quick view" },
+    ],
+  },
+  {
+    category: "Smart Collections (Rules Engine)",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Rule Builder UI", description: "Visual rule builder for collection conditions", status: "done", notes: "Admin /smart-collections page with condition rows (field, operator, value)" },
+      { name: "12+ Condition Fields", description: "Filter by brand, price, tag, type, category, stock, created date, etc.", status: "done", notes: "12 field types: brand, price_range, tag, product_type, category, in_stock, created_after, weight, supplier, status, custom_label, sku_contains" },
+      { name: "Match Type (All/Any)", description: "Match all conditions or any condition", status: "done", notes: "match_type: all (AND) or any (OR)" },
+      { name: "Live Preview", description: "Preview matching products before saving", status: "done", notes: "Preview Products button shows matched products count and list" },
+      { name: "SEO Fields", description: "SEO title and description per smart collection", status: "done", notes: "seo_title and seo_description columns on smart_collections" },
+      { name: "Auto-Update", description: "Collection auto-updates as products change", status: "done", notes: "Rules evaluated dynamically on storefront page load" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
