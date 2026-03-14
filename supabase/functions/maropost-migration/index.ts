@@ -113,7 +113,7 @@ serve(async (req) => {
     // Maropost API requires specific filter keys per entity type to return data
     // Without these, the API returns empty arrays
     const DEFAULT_FILTERS: Record<string, Record<string, unknown>> = {
-      get_products: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
+      get_products: { IsActive: ["True"] },
       get_categories: { Active: ["True"] },
       get_customers: { DateAddedFrom: "2000-01-01 00:00:00", DateAddedTo: "2030-01-01 00:00:00" },
       get_orders: { DatePlacedFrom: "2000-01-01 00:00:00", DatePlacedTo: "2030-01-01 00:00:00" },
