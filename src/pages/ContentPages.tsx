@@ -141,11 +141,11 @@ export default function ContentPages() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Content Pages</h1>
-            <p className="text-sm text-muted-foreground">{pages.length} pages · {pages.filter((p: any) => p.is_published).length} published</p>
+            <h1 className="text-lg font-semibold">Content Pages</h1>
+            <p className="text-xs text-muted-foreground">{pages.length} pages · {pages.filter((p: any) => p.is_published).length} published</p>
           </div>
           <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(emptyForm); setEditId(null); } }}>
             <DialogTrigger asChild>
