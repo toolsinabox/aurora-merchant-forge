@@ -141,9 +141,10 @@ export default function PickPack() {
                 {s === "pick" && <Package className="h-3 w-3 mr-1" />}
                 {s === "pack" && <CheckCircle className="h-3 w-3 mr-1" />}
                 {s === "ship" && <Truck className="h-3 w-3 mr-1" />}
-                {s}
+                {s === "waves" && <Layers className="h-3 w-3 mr-1" />}
+                {s === "waves" ? "Waves" : s}
                 <Badge variant="secondary" className="ml-1.5 text-[10px]">
-                  {s === "pick" ? pendingOrders.length : s === "pack" ? processingOrders.length : 0}
+                  {s === "pick" ? pendingOrders.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : 0}
                 </Badge>
               </Button>
             </div>
