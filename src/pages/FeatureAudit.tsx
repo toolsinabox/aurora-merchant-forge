@@ -7668,7 +7668,7 @@ const paymentDeepFeatures: FeatureCategory[] = [
       { name: "Refund via Gateway", description: "Issue refunds back through payment gateway automatically", status: "not_started" },
       { name: "Partial Refunds", description: "Refund partial amount of an order", status: "partial" },
       { name: "Payment Retry Logic", description: "Retry failed payments (subscriptions/layby)", status: "not_started" },
-      { name: "Invoice Payment Link", description: "Send payment link via email for outstanding invoices", status: "not_started" },
+      { name: "Invoice Payment Link", description: "Send payment link via email for outstanding invoices", status: "done", notes: "invoice-payment-link edge function generates branded HTML email with amount due, Pay Now button, payment token, and customer details via email_queue" },
     ],
   },
 ];
