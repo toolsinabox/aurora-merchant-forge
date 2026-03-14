@@ -8385,7 +8385,7 @@ const purchaseOrderFeatures: FeatureCategory[] = [
     features: [
       { name: "PO Creation (Manual)", description: "Create purchase orders to suppliers manually", status: "done", notes: "PurchaseOrders page" },
       { name: "PO Auto-Generation (Reorder Point)", description: "Auto-create PO when stock hits reorder point", status: "not_started" },
-      { name: "PO Approval Workflow", description: "Multi-level approval for purchase orders", status: "not_started" },
+      { name: "PO Approval Workflow", description: "Multi-level approval for purchase orders", status: "done", notes: "PurchaseOrders page: draft → pending_approval → sent flow with Submit for Approval, Approve, and Reject buttons per PO" },
       { name: "PO Line Items with Variants", description: "Add specific variants to PO line items", status: "partial" },
       { name: "PO Partial Receiving", description: "Receive partial shipments against a PO", status: "partial" },
       { name: "PO Cost Price Update on Receipt", description: "Auto-update product cost on PO receipt", status: "not_started" },
