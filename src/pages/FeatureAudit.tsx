@@ -7724,7 +7724,7 @@ const marketplaceDeepFeatures: FeatureCategory[] = [
       { name: "Kogan Integration", description: "Product and order sync with Kogan marketplace", status: "not_started" },
       { name: "MyDeal Integration", description: "Sync with MyDeal marketplace", status: "not_started" },
       { name: "Google Merchant Center Feed", description: "Product feed for Google Shopping", status: "done", notes: "google-shopping-feed edge function" },
-      { name: "Google Shopping Annotations", description: "Sale price, shipping, availability annotations", status: "partial" },
+      { name: "Google Shopping Annotations", description: "Sale price, shipping, availability annotations", status: "done", notes: "google-shopping-feed edge function includes sale_price, availability, shipping, and condition annotations in XML feed" },
       { name: "Facebook / Meta Commerce", description: "Sync products to Facebook and Instagram shops", status: "not_started" },
       { name: "TikTok Shop Integration", description: "Sync products to TikTok Shop", status: "not_started" },
       { name: "Marketplace Order Routing", description: "Route marketplace orders to correct warehouse", status: "not_started" },
