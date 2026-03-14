@@ -7812,7 +7812,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
       { name: "Return Analytics", description: "Report on return rates by product/category/reason", status: "done", notes: "Analytics page Return Analytics table with reason breakdown, counts, refund amounts" },
       { name: "Warranty Claim Processing", description: "Separate workflow for warranty claims vs returns", status: "not_started" },
       { name: "Credit Note Generation", description: "Auto-generate credit note on approved return", status: "done", notes: "credit_notes table" },
-      { name: "Return Portal (Self-Service)", description: "Customer self-service portal for initiating returns", status: "not_started" },
+      { name: "Return Portal (Self-Service)", description: "Customer self-service portal for initiating returns", status: "done", notes: "StorefrontAccount Returns tab with return request dialog, order selection, reason codes, notes field, and return tracking progress bar" },
     ],
   },
 ];
