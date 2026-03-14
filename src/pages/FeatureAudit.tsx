@@ -9682,6 +9682,10 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Customer Email Deduplication", description: "Upsert customers by email to prevent duplicates on re-import", status: "done", notes: "Email-based lookup before insert, updates existing records" },
       { name: "Migration Rollback (Full Delete)", description: "Delete all imported data for the current store with confirmation", status: "done", notes: "Clears 22 tables in dependency order with per-table logging" },
       { name: "Export Migration Report (CSV)", description: "Download migration results and logs as CSV file", status: "done", notes: "Exports entity stats + full migration log to timestamped CSV" },
+      { name: "Variant SKU Deduplication", description: "Upsert product variants by SKU to prevent duplicates on re-import", status: "done", notes: "SKU-based lookup in product_variants before insert, updates existing" },
+      { name: "Order Deduplication", description: "Upsert orders by order_number (MP-{OrderID}) to prevent duplicates", status: "done", notes: "Order number lookup before insert, updates existing order data" },
+      { name: "Per-Entity Batch Progress", description: "Show batch X/Y progress bar per entity during import", status: "done", notes: "batchProgress state on EntityCount, Progress bar shown during importing status" },
+      { name: "Dry-Run / Preview Mode", description: "Validate data structure without writing to database", status: "done", notes: "dry_run flag passed to edge function, checkbox in select step UI" },
     ],
   },
 ];

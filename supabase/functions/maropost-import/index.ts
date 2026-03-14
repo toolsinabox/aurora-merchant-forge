@@ -13,6 +13,7 @@ interface ImportRequest {
   store_domain?: string;
   api_key?: string;
   migration_job_id?: string;
+  dry_run?: boolean;
 }
 
 serve(async (req) => {
@@ -25,7 +26,7 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { action, store_id, source_data, migration_job_id }: ImportRequest = await req.json();
+    const { action, store_id, source_data, migration_job_id, dry_run = false }: ImportRequest = await req.json();
 
     if (!store_id) {
       return new Response(JSON.stringify({ error: "store_id is required" }), {
@@ -187,19 +188,32 @@ serve(async (req) => {
             }
           }
 
-          // Import variants
+          // Import variants (with SKU-based dedup)
           if (p.VariantInventory) {
             const variants = Array.isArray(p.VariantInventory) ? p.VariantInventory : [p.VariantInventory];
             for (const v of variants) {
               if (v && v.SKU) {
-                await supabase.from("product_variants").insert({
+                const variantData = {
                   product_id: productId,
                   store_id,
                   sku: v.SKU || null,
                   name: v.VariationName || v.SKU || "Variant",
                   price: parseFloat(v.DefaultPrice) || null,
                   stock: parseInt(v.Quantity) || 0,
-                } as any).catch(() => {});
+                };
+                if (!dry_run) {
+                  const { data: existingVar } = await supabase
+                    .from("product_variants")
+                    .select("id")
+                    .eq("store_id", store_id)
+                    .eq("sku", v.SKU)
+                    .maybeSingle();
+                  if (existingVar) {
+                    await supabase.from("product_variants").update(variantData as any).eq("id", existingVar.id).catch(() => {});
+                  } else {
+                    await supabase.from("product_variants").insert(variantData as any).catch(() => {});
+                  }
+                }
               }
             }
           }
@@ -562,16 +576,36 @@ serve(async (req) => {
             if (cust) orderData.customer_id = cust.id;
           }
 
-          const { data: inserted, error } = await supabase
-            .from("orders").insert(orderData).select("id").single();
-          if (error) throw error;
+          // Dedup: check if order with same order_number exists
+          const orderNumber = `MP-${o.OrderID}`;
+          const { data: existingOrder } = await supabase
+            .from("orders")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("order_number", orderNumber)
+            .maybeSingle();
+
+          let orderId: string;
+          if (existingOrder) {
+            if (!dry_run) {
+              await supabase.from("orders").update(orderData).eq("id", existingOrder.id);
+            }
+            orderId = existingOrder.id;
+          } else if (!dry_run) {
+            const { data: ins, error } = await supabase
+              .from("orders").insert(orderData).select("id").single();
+            if (error) throw error;
+            orderId = ins.id;
+          } else {
+            orderId = "dry-run";
+          }
 
           // Import order line items
-          if (o.OrderLine) {
+          if (o.OrderLine && !dry_run && orderId !== "dry-run") {
             const lines = Array.isArray(o.OrderLine) ? o.OrderLine : [o.OrderLine];
             for (const line of lines) {
               await supabase.from("order_items").insert({
-                order_id: inserted.id,
+                order_id: orderId,
                 store_id,
                 title: line.ProductName || line.ItemDescription || "Item",
                 sku: line.SKU || null,
@@ -583,11 +617,11 @@ serve(async (req) => {
           }
 
           // Import order payments
-          if (o.OrderPayment) {
+          if (o.OrderPayment && !dry_run && orderId !== "dry-run") {
             const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
             for (const pay of payments) {
               await supabase.from("order_payments").insert({
-                order_id: inserted.id,
+                order_id: orderId,
                 store_id,
                 amount: parseFloat(pay.Amount) || 0,
                 payment_method: pay.PaymentMethod || "unknown",
@@ -596,7 +630,7 @@ serve(async (req) => {
             }
           }
 
-          await logEntity("order", o.OrderID, inserted.id);
+          await logEntity("order", o.OrderID, orderId);
           imported++;
         } catch (err: any) {
           failed++;

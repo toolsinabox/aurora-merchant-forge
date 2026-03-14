@@ -32,6 +32,7 @@ interface EntityCount {
   failed: number;
   errors: string[];
   pages: number;
+  batchProgress?: number; // 0-100
 }
 
 const MIGRATION_ENTITIES: Omit<EntityCount, "count" | "selected" | "status" | "imported" | "failed" | "errors" | "pages">[] = [
@@ -94,6 +95,7 @@ export default function MaropostMigration() {
   const [logs, setLogs] = useState<string[]>([]);
   const [themeImporting, setThemeImporting] = useState(false);
   const [themeStatus, setThemeStatus] = useState<Record<string, "pending" | "converting" | "done" | "error">>({});
+  const [dryRun, setDryRun] = useState(false);
 
   // Persist state to sessionStorage for resume
   const persistState = useCallback(() => {
@@ -305,7 +307,13 @@ export default function MaropostMigration() {
 
         for (let i = 0; i < sourceItems.length; i += batchSize) {
           const batch = sourceItems.slice(i, i + batchSize);
-          addLog(`  Processing batch ${Math.floor(i / batchSize) + 1} (${batch.length} items)...`);
+          const batchNum = Math.floor(i / batchSize) + 1;
+          const totalBatches = Math.ceil(sourceItems.length / batchSize);
+          const batchPct = Math.round((batchNum / totalBatches) * 100);
+          addLog(`  Processing batch ${batchNum}/${totalBatches} (${batch.length} items)...`);
+
+          // Update per-entity progress
+          setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, batchProgress: batchPct } : e));
 
           const importAction = IMPORT_ACTION_MAP[entity.entity];
           // Wrap data in expected format
@@ -321,6 +329,7 @@ export default function MaropostMigration() {
               store_id: sid,
               source_data: { [dataKey]: batch },
               migration_job_id: migrationJobId,
+              dry_run: dryRun,
             },
           });
 
@@ -755,11 +764,15 @@ export default function MaropostMigration() {
                 </AlertDescription>
               </Alert>
 
-              <div className="flex gap-3 pt-4">
+              <div className="flex items-center gap-3 pt-4">
                 <Button onClick={startImport} disabled={!entities.some(e => e.selected)}>
                   <Download className="h-4 w-4 mr-2" />
-                  Start Import ({entities.filter(e => e.selected).length} entities)
+                  {dryRun ? "Dry Run" : "Start Import"} ({entities.filter(e => e.selected).length} entities)
                 </Button>
+                <label className="flex items-center gap-2 text-sm cursor-pointer">
+                  <Checkbox checked={dryRun} onCheckedChange={(v) => setDryRun(!!v)} />
+                  <span className="text-muted-foreground">Dry run (validate only, no database writes)</span>
+                </label>
                 <Button variant="outline" onClick={() => setStep("scan")}>Back</Button>
               </div>
             </CardContent>
@@ -806,10 +819,13 @@ export default function MaropostMigration() {
                             {!importing && <Button variant="outline" size="sm" onClick={() => retryEntity(entity.entity)}><RefreshCw className="h-3 w-3 mr-1" />Retry</Button>}
                           </>
                         )}
-                        {entity.status === "importing" && <span>Importing…</span>}
+                        {entity.status === "importing" && <span>Importing… {entity.batchProgress || 0}%</span>}
                         {entity.status === "pending" && <span>Waiting</span>}
                       </div>
                     </div>
+                    {entity.status === "importing" && (
+                      <Progress value={entity.batchProgress || 0} className="h-1.5" />
+                    )}
                     {entity.errors.length > 0 && (
                       <details className="text-xs">
                         <summary className="text-destructive cursor-pointer">{entity.errors.length} error(s) — click to expand</summary>
