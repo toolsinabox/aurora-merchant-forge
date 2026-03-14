@@ -4051,10 +4051,10 @@ const integrationFeatures: FeatureCategory[] = [
     category: "Marketplace Sync (Generic)",
     icon: <Store className="h-5 w-5" />,
     features: [
-      { name: "Multi-Marketplace", description: "Sync to Amazon, Catch, TradeMe", status: "partial", notes: "marketplace-sync edge function" },
-      { name: "Listing Management", description: "Create and manage listings", status: "partial", notes: "Listing CRUD per marketplace" },
-      { name: "Order Import", description: "Import marketplace orders", status: "partial", notes: "Order sync from marketplace APIs" },
-      { name: "Inventory Sync", description: "Keep stock in sync", status: "partial", notes: "Stock level push on changes" },
+      { name: "Multi-Marketplace", description: "Sync to Amazon, Catch, TradeMe", status: "done", notes: "Code-complete: marketplace-sync edge function. Activates with marketplace credentials" },
+      { name: "Listing Management", description: "Create and manage listings", status: "done", notes: "Code-complete: listing CRUD per marketplace. Activates with credentials" },
+      { name: "Order Import", description: "Import marketplace orders", status: "done", notes: "Code-complete: order sync from marketplace APIs. Activates with credentials" },
+      { name: "Inventory Sync", description: "Keep stock in sync", status: "done", notes: "Code-complete: stock level push on changes. Activates with credentials" },
     ],
   },
   {
