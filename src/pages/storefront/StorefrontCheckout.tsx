@@ -635,7 +635,7 @@ export default function StorefrontCheckout() {
                   <div className="space-y-1.5">
                     <Label>City</Label>
                     <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
-                    {form.city && !/^[a-zA-Z\s'-]+$/.test(form.city) && <p className="text-[10px] text-amber-600">City should contain only letters</p>}
+                    {form.city && !/^[a-zA-Z\s'-]+$/.test(form.city) && <p className="text-[10px] text-destructive">City should contain only letters</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label>ZIP / Postcode</Label>
