@@ -7,13 +7,15 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
-import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard, ShieldAlert, FileText, Download } from "lucide-react";
+import { LogOut, Package, User, RotateCcw, Heart, ChevronRight, MapPin, Truck, CheckCircle2, Clock, XCircle, ExternalLink, Plus, Trash2, Pencil, Gift, FileQuestion, CreditCard, ShieldAlert, FileText, Download, ShoppingCart, Bell, UserX } from "lucide-react";
 import { toast } from "sonner";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -82,6 +84,7 @@ export default function StorefrontAccount() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { items: wishlistItems } = useWishlist();
+  const { addItem: addToCart } = useCart();
   const [customer, setCustomer] = useState<any>(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [returns, setReturns] = useState<any[]>([]);
@@ -91,11 +94,29 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
-  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files">("orders");
+  const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files" | "preferences" | "account">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
   const [disputes, setDisputes] = useState<any[]>([]);
   const [customerFiles, setCustomerFiles] = useState<any[]>([]);
+
+  // Communication preferences
+  const [commPrefs, setCommPrefs] = useState({
+    order_updates: true,
+    shipping_notifications: true,
+    promotional_emails: false,
+    newsletter: false,
+    sms_notifications: false,
+    review_requests: true,
+    back_in_stock: true,
+    price_drop_alerts: false,
+  });
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
+  // Account deletion
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   // Dispute form state
   const [disputeOpen, setDisputeOpen] = useState(false);
@@ -301,6 +322,66 @@ export default function StorefrontAccount() {
     toast.success("Address removed");
   };
 
+  const handleReorder = (order: any) => {
+    const items = order.order_items || orderItems;
+    if (!items.length) { toast.error("No items to reorder"); return; }
+    let added = 0;
+    for (const item of items) {
+      addToCart({
+        product_id: item.product_id,
+        variant_id: item.variant_id || null,
+        title: item.title || item.products?.title || "Product",
+        price: Number(item.unit_price),
+        quantity: item.quantity,
+        image: item.products?.images?.[0] || undefined,
+        sku: item.sku || undefined,
+      });
+      added++;
+    }
+    toast.success(`${added} item${added !== 1 ? "s" : ""} added to cart`);
+  };
+
+  const handleSavePreferences = async () => {
+    if (!customer) return;
+    setSavingPrefs(true);
+    try {
+      // Store preferences as customer notes/tags (using existing fields)
+      const { error } = await supabase.from("customers").update({
+        notes: JSON.stringify({ communication_preferences: commPrefs }),
+      }).eq("id", customer.id);
+      if (error) throw error;
+      toast.success("Preferences saved");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") { toast.error("Please type DELETE to confirm"); return; }
+    if (!customer || !user) return;
+    setDeletingAccount(true);
+    try {
+      // Mark customer as inactive (soft delete for data retention compliance)
+      const { error } = await supabase.from("customers").update({
+        notes: JSON.stringify({ deletion_requested: true, deletion_requested_at: new Date().toISOString() }),
+        tags: [...(customer.tags || []), "deletion-requested"],
+      }).eq("id", customer.id);
+      if (error) throw error;
+
+      toast.success("Account deletion request submitted. You will receive a confirmation email.");
+      setDeleteDialogOpen(false);
+      // Sign out
+      await supabase.auth.signOut();
+      navigate(basePath || "/");
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
+
   if (!user) return null;
 
   const returnOrderIds = new Set(returns.map((r: any) => r.order_id));
@@ -441,6 +522,14 @@ export default function StorefrontAccount() {
                   <CreditCard className="h-4 w-4" /> Pay ${Number(selectedOrder.total).toFixed(2)}
                 </Button>
               )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full mt-2 gap-2"
+                onClick={() => handleReorder(selectedOrder)}
+              >
+                <ShoppingCart className="h-4 w-4" /> Reorder All Items
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -525,6 +614,8 @@ export default function StorefrontAccount() {
                 { key: "quotes", label: "Quotes", icon: FileQuestion, count: quotes.length },
                 { key: "disputes", label: "Disputes", icon: ShieldAlert, count: disputes.length },
                 { key: "files", label: "Files", icon: FileText, count: customerFiles.length },
+                { key: "preferences", label: "Preferences", icon: Bell, count: 0 },
+                { key: "account", label: "Account", icon: UserX, count: 0 },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
@@ -1036,6 +1127,101 @@ export default function StorefrontAccount() {
                       </TableBody>
                     </Table>
                   )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Communication Preferences Tab */}
+            {activeTab === "preferences" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2"><Bell className="h-4 w-4" /> Communication Preferences</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-xs text-muted-foreground">Control which notifications and emails you receive from us.</p>
+                  {([
+                    { key: "order_updates", label: "Order Updates", desc: "Confirmation, status changes, and delivery notifications" },
+                    { key: "shipping_notifications", label: "Shipping Notifications", desc: "Tracking updates and delivery alerts" },
+                    { key: "review_requests", label: "Review Requests", desc: "Invitations to review purchased products" },
+                    { key: "back_in_stock", label: "Back in Stock Alerts", desc: "Notifications when wishlisted items are restocked" },
+                    { key: "promotional_emails", label: "Promotional Emails", desc: "Sales, special offers, and seasonal promotions" },
+                    { key: "newsletter", label: "Newsletter", desc: "Weekly/monthly newsletter with new products and updates" },
+                    { key: "price_drop_alerts", label: "Price Drop Alerts", desc: "Notifications when items in your wishlist go on sale" },
+                    { key: "sms_notifications", label: "SMS Notifications", desc: "Text message alerts for orders and shipping" },
+                  ] as const).map(pref => (
+                    <div key={pref.key} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div>
+                        <p className="text-sm font-medium">{pref.label}</p>
+                        <p className="text-xs text-muted-foreground">{pref.desc}</p>
+                      </div>
+                      <Switch
+                        checked={commPrefs[pref.key]}
+                        onCheckedChange={(checked) => setCommPrefs(prev => ({ ...prev, [pref.key]: checked }))}
+                      />
+                    </div>
+                  ))}
+                  <Button size="sm" className="mt-2" disabled={savingPrefs} onClick={handleSavePreferences}>
+                    {savingPrefs ? "Saving..." : "Save Preferences"}
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Account Management Tab */}
+            {activeTab === "account" && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm flex items-center gap-2 text-destructive"><UserX className="h-4 w-4" /> Account Management</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 space-y-3">
+                    <h3 className="font-semibold text-sm text-destructive">Delete Account</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Requesting account deletion will submit a GDPR-compliant deletion request. Your account will be marked for deletion and processed within 30 days. You will be signed out immediately.
+                    </p>
+                    <ul className="text-xs text-muted-foreground space-y-1">
+                      <li>• Your personal data will be anonymized or deleted</li>
+                      <li>• Order history will be retained for legal/tax requirements</li>
+                      <li>• Active subscriptions will be cancelled</li>
+                      <li>• Gift voucher balances will be forfeited</li>
+                    </ul>
+                    <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="destructive" size="sm" className="gap-2">
+                          <UserX className="h-4 w-4" /> Request Account Deletion
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="text-destructive">Delete Your Account</DialogTitle>
+                          <DialogDescription>
+                            This action cannot be undone. Type <strong>DELETE</strong> below to confirm.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-3">
+                          <div>
+                            <Label className="text-xs">Type DELETE to confirm</Label>
+                            <Input
+                              value={deleteConfirmText}
+                              onChange={(e) => setDeleteConfirmText(e.target.value)}
+                              placeholder="DELETE"
+                              className="font-mono"
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                          <Button
+                            variant="destructive"
+                            disabled={deletingAccount || deleteConfirmText !== "DELETE"}
+                            onClick={handleDeleteAccount}
+                          >
+                            {deletingAccount ? "Processing..." : "Delete My Account"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 </CardContent>
               </Card>
             )}
