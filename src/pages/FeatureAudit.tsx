@@ -4643,8 +4643,228 @@ const granularFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 331–350: DEEP GRANULAR FEATURES ═══════
+const deepFeatures: FeatureCategory[] = [
+  {
+    category: "Product Form (Admin)",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "Tabbed Form Layout", description: "Organized tabs for product editing", status: "done", notes: "ProductForm with General, Pricing, Inventory, Images, SEO tabs" },
+      { name: "Variant Management Tab", description: "Manage variants inline", status: "done", notes: "Variants tab with add/edit/delete" },
+      { name: "Kit Components Tab", description: "Manage bundle components", status: "done", notes: "KitComponentsTab component" },
+      { name: "Addons Tab", description: "Manage product add-ons", status: "done", notes: "ProductAddonsTab component" },
+      { name: "SEO Preview", description: "Preview Google search result", status: "done", notes: "SEO tab with title/description preview" },
+      { name: "Slug Auto-Generation", description: "Auto-generate slug from name", status: "done", notes: "Slug auto-populated on name change" },
+      { name: "Save & Continue", description: "Save without leaving form", status: "done", notes: "Save action with success toast" },
+    ],
+  },
+  {
+    category: "Order Detail (Admin)",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Order Summary", description: "Order items, totals, status", status: "done", notes: "OrderDetail summary section" },
+      { name: "Customer Info", description: "Customer details and addresses", status: "done", notes: "Customer card on order detail" },
+      { name: "Payment Tab", description: "Payment history and actions", status: "done", notes: "Payments section with record payment" },
+      { name: "Shipment Tab", description: "Shipments with tracking", status: "done", notes: "Shipments section with create shipment" },
+      { name: "Timeline Tab", description: "Order event timeline", status: "done", notes: "Timeline section with chronological events" },
+      { name: "Notes Tab", description: "Internal order notes", status: "done", notes: "Notes section with add note" },
+      { name: "Print Actions", description: "Print invoice, packing slip, label", status: "done", notes: "Print dropdown with multiple document types" },
+    ],
+  },
+  {
+    category: "Customer Detail (Admin)",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Profile Overview", description: "Customer info, segment, lifetime value", status: "done", notes: "CustomerDetail header with KPIs" },
+      { name: "Orders Tab", description: "Customer order history", status: "done", notes: "Orders list filtered by customer" },
+      { name: "Addresses Tab", description: "Saved addresses", status: "done", notes: "Address list with edit/delete" },
+      { name: "Communications Tab", description: "Communication history", status: "done", notes: "customer_communications filtered view" },
+      { name: "Files Tab", description: "Uploaded customer files", status: "done", notes: "customer_files filtered view" },
+      { name: "Loyalty Tab", description: "Points balance and transactions", status: "done", notes: "Loyalty points summary" },
+    ],
+  },
+  {
+    category: "Storefront Product Detail",
+    icon: <Package className="h-5 w-5" />,
+    features: [
+      { name: "Image Gallery", description: "Product image carousel/gallery", status: "done", notes: "Image gallery with thumbnails" },
+      { name: "Variant Selector", description: "Select product variants", status: "done", notes: "Variant dropdowns/swatches" },
+      { name: "Quantity Input", description: "Quantity selector with +/-", status: "done", notes: "Quantity input with min/max" },
+      { name: "Add to Cart Button", description: "Primary add to cart action", status: "done", notes: "Add to cart with variant selection" },
+      { name: "Wishlist Button", description: "Add to wishlist heart icon", status: "done", notes: "Heart toggle via WishlistContext" },
+      { name: "Compare Button", description: "Add to compare", status: "done", notes: "Compare toggle via CompareContext" },
+      { name: "Share Buttons", description: "Social share buttons", status: "done", notes: "SocialShare component" },
+      { name: "Product Reviews", description: "Customer reviews section", status: "done", notes: "ProductReviews component" },
+      { name: "Related Products", description: "Related product carousel", status: "done", notes: "Related products section" },
+      { name: "Delivery Estimate", description: "Estimated delivery display", status: "done", notes: "DeliveryEstimate component" },
+      { name: "Breadcrumbs", description: "Category breadcrumb navigation", status: "done", notes: "Breadcrumb with category path" },
+    ],
+  },
+  {
+    category: "Storefront Home Page",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Hero Banner", description: "Full-width hero banner/carousel", status: "done", notes: "StorefrontHome hero section" },
+      { name: "Featured Products", description: "Featured product grid", status: "done", notes: "Featured products section" },
+      { name: "Category Grid", description: "Category cards with images", status: "done", notes: "Category grid section" },
+      { name: "Promo Banners", description: "Promotional banner adverts", status: "done", notes: "AdvertBanner with homepage placement" },
+      { name: "Newsletter Signup", description: "Email signup in footer", status: "done", notes: "NewsletterSignup component" },
+      { name: "Recently Viewed", description: "Recently viewed products", status: "done", notes: "Recently viewed section" },
+    ],
+  },
+  {
+    category: "Storefront Track Order",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Order Lookup", description: "Look up order by number and email", status: "done", notes: "StorefrontTrackOrder page" },
+      { name: "Order Status Display", description: "Show current order status", status: "done", notes: "Status badge and timeline" },
+      { name: "Tracking Link", description: "Link to carrier tracking page", status: "done", notes: "External tracking URL link" },
+    ],
+  },
+  {
+    category: "Storefront Gift Vouchers",
+    icon: <Gift className="h-5 w-5" />,
+    features: [
+      { name: "Purchase Gift Voucher", description: "Buy gift vouchers on storefront", status: "done", notes: "StorefrontGiftVouchers page" },
+      { name: "Custom Value", description: "Choose voucher value", status: "done", notes: "Value selection input" },
+      { name: "Recipient Details", description: "Enter recipient info", status: "done", notes: "Name, email, message fields" },
+      { name: "Check Balance", description: "Check gift voucher balance", status: "done", notes: "Balance check by code" },
+    ],
+  },
+  {
+    category: "Storefront Contact Page",
+    icon: <Headphones className="h-5 w-5" />,
+    features: [
+      { name: "Contact Form", description: "Name, email, subject, message form", status: "done", notes: "StorefrontContact page" },
+      { name: "Form Validation", description: "Required field validation", status: "done", notes: "Client-side validation" },
+      { name: "Success Confirmation", description: "Confirmation on submit", status: "done", notes: "Success toast/message" },
+      { name: "Email to Merchant", description: "Email notification to store", status: "done", notes: "contact-email edge function" },
+    ],
+  },
+  {
+    category: "Email Templates",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Template CRUD", description: "Create and edit email templates", status: "done", notes: "email_templates table" },
+      { name: "Template Key", description: "Unique key per template type", status: "done", notes: "template_key column" },
+      { name: "HTML Editor", description: "HTML body editor for templates", status: "done", notes: "Rich text/HTML editor for template body" },
+      { name: "Subject Line", description: "Customizable subject per template", status: "done", notes: "subject column" },
+      { name: "Active Toggle", description: "Enable/disable templates", status: "done", notes: "is_active column" },
+      { name: "Variable Placeholders", description: "{{order_number}}, {{customer_name}} etc.", status: "done", notes: "Variable substitution in templates" },
+    ],
+  },
+  {
+    category: "Store Themes",
+    icon: <Palette className="h-5 w-5" />,
+    features: [
+      { name: "Theme CRUD", description: "Create and manage store themes", status: "done", notes: "store_themes table" },
+      { name: "Primary Color", description: "Customizable primary color", status: "done", notes: "primary_color in theme config" },
+      { name: "Font Selection", description: "Choose heading and body fonts", status: "done", notes: "heading_font, body_font in config" },
+      { name: "Layout Options", description: "Full-width, boxed, sidebar layouts", status: "done", notes: "layout_type in theme config" },
+      { name: "Header Style", description: "Header layout options", status: "done", notes: "header_style in config" },
+      { name: "Footer Style", description: "Footer layout options", status: "done", notes: "footer_style in config" },
+      { name: "Custom CSS", description: "Custom CSS injection", status: "done", notes: "custom_css in theme config" },
+    ],
+  },
+  {
+    category: "Storefront Templates (B@SE)",
+    icon: <FileCode className="h-5 w-5" />,
+    features: [
+      { name: "Template CRUD", description: "Create and manage storefront templates", status: "done", notes: "storefront_templates table" },
+      { name: "Page Templates", description: "Templates for home, product, category, etc.", status: "done", notes: "template_type column" },
+      { name: "Template Engine", description: "B@SE engine processing", status: "done", notes: "base-template-engine.ts" },
+      { name: "RenderedTemplate", description: "Component rendering processed templates", status: "done", notes: "RenderedTemplate component" },
+      { name: "Admin Editor", description: "Template editor in admin", status: "done", notes: "Admin /templates page" },
+    ],
+  },
+  {
+    category: "Reviews & Ratings",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Product Reviews", description: "Customer product reviews", status: "done", notes: "product_reviews table" },
+      { name: "Star Rating", description: "1-5 star rating system", status: "done", notes: "rating column" },
+      { name: "Review Moderation", description: "Approve/reject reviews", status: "done", notes: "is_approved moderation flag" },
+      { name: "Verified Purchase", description: "Badge for verified buyers", status: "done", notes: "is_verified_purchase boolean" },
+      { name: "Average Rating", description: "Aggregate rating display", status: "done", notes: "Calculated average on product" },
+      { name: "Admin Review Page", description: "Manage all reviews", status: "done", notes: "Admin /reviews page" },
+    ],
+  },
+  {
+    category: "Storefront Blog",
+    icon: <BookOpen className="h-5 w-5" />,
+    features: [
+      { name: "Blog Listing", description: "Blog post listing page", status: "done", notes: "StorefrontBlog page" },
+      { name: "Blog Detail", description: "Individual blog post page", status: "done", notes: "StorefrontContentPage for blog type" },
+      { name: "Featured Image", description: "Hero image on blog posts", status: "done", notes: "featured_image column" },
+      { name: "Publish Date", description: "Published date display", status: "done", notes: "published_at column" },
+      { name: "Blog Reviews", description: "Comments/reviews on blog posts", status: "done", notes: "content_reviews table" },
+    ],
+  },
+  {
+    category: "API Rate Limiting",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Rate Limit Table", description: "Track API request counts", status: "done", notes: "api_rate_limits table with 15-min windows" },
+      { name: "Per-Key Limits", description: "Different limits per API key", status: "done", notes: "rate_limit column on api_keys" },
+      { name: "Window Tracking", description: "Rolling 15-minute windows", status: "done", notes: "window_start with request_count" },
+      { name: "429 Response", description: "Return 429 when limit exceeded", status: "done", notes: "Rate limit check in rest-api function" },
+    ],
+  },
+  {
+    category: "Batch API",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Batch Requests", description: "Multiple API calls in single request", status: "done", notes: "batch-api edge function" },
+      { name: "Parallel Execution", description: "Execute batch items in parallel", status: "done", notes: "Promise.all for batch operations" },
+      { name: "Individual Results", description: "Return results per batch item", status: "done", notes: "Array of results with status per item" },
+      { name: "Error Isolation", description: "One failure doesn't fail batch", status: "done", notes: "Try-catch per batch item" },
+    ],
+  },
+  {
+    category: "Scheduled Reports",
+    icon: <Clock className="h-5 w-5" />,
+    features: [
+      { name: "Report Scheduling", description: "Schedule reports for auto-delivery", status: "done", notes: "scheduled_reports table" },
+      { name: "Frequency Options", description: "Daily, weekly, monthly", status: "done", notes: "frequency column" },
+      { name: "Recipient List", description: "Email recipients for reports", status: "done", notes: "recipients array column" },
+      { name: "Report Type", description: "Sales, inventory, customer reports", status: "done", notes: "report_type column" },
+      { name: "Email Delivery", description: "Auto-email report on schedule", status: "done", notes: "scheduled-report-email edge function" },
+    ],
+  },
+  {
+    category: "Storefront Content Pages",
+    icon: <BookOpen className="h-5 w-5" />,
+    features: [
+      { name: "Static Pages", description: "About, Terms, Privacy pages", status: "done", notes: "StorefrontContentPage for static pages" },
+      { name: "Dynamic Slug Routing", description: "Route by page slug", status: "done", notes: "/page/:slug route" },
+      { name: "Rich Content Display", description: "Render HTML content", status: "done", notes: "dangerouslySetInnerHTML for content" },
+      { name: "Page Navigation", description: "Link to content pages in nav", status: "done", notes: "Footer links to content pages" },
+    ],
+  },
+  {
+    category: "Digital Downloads Page",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "Admin Downloads Page", description: "Manage digital downloads", status: "done", notes: "Admin /digital-downloads page" },
+      { name: "Download List", description: "View all product download files", status: "done", notes: "List with product, file name, download count" },
+      { name: "Customer Download Management", description: "View customer download access", status: "done", notes: "customer_downloads filtered view" },
+      { name: "Download Link Generation", description: "Generate secure download links", status: "done", notes: "Token-based download URLs" },
+    ],
+  },
+  {
+    category: "Accounting Integration Page",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Xero Connection", description: "Connect to Xero accounting", status: "partial", notes: "Admin /accounting page with Xero config" },
+      { name: "Sync Settings", description: "Configure what to sync", status: "done", notes: "Sync toggles for invoices, payments, customers" },
+      { name: "Sync History", description: "View sync log", status: "done", notes: "Recent sync events with status" },
+      { name: "Manual Sync", description: "Trigger manual sync", status: "done", notes: "Sync Now button" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
