@@ -414,7 +414,7 @@ function OrderExportTab() {
       </div>
       <div className="space-y-4">
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-lg">Filters & Options</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Filters & Options</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
               <Label className="text-xs">Status Filter</Label>
