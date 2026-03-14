@@ -21,7 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft, Trash2, Package, CreditCard, Truck, User,
   Clock, Plus, ExternalLink, MessageSquare, Send, Tag, X, DollarSign, Printer,
-  Scissors, Merge, AlertTriangle, ShieldCheck,
+  Scissors, Merge, AlertTriangle, ShieldCheck, RefreshCw,
 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
