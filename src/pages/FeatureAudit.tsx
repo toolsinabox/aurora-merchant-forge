@@ -9277,7 +9277,7 @@ const adminDashboardFeatures: FeatureCategory[] = [
       { name: "Pending Reviews Widget", description: "Reviews awaiting moderation", status: "done", notes: "Dashboard pending reviews count from reviews table where is_approved = false" },
       { name: "Pending Returns Widget", description: "Returns awaiting processing", status: "done", notes: "Dashboard pending returns count from returns table where status = pending" },
       { name: "Dashboard Date Range Selector", description: "Filter dashboard by date range", status: "done", notes: "Dashboard date range picker with Today, 7d, 30d, 90d, YTD, Custom presets" },
-      { name: "Dashboard Comparison Mode", description: "Compare periods (this week vs last)", status: "not_started" },
+      { name: "Dashboard Comparison Mode", description: "Compare periods (this week vs last)", status: "done", notes: "Analytics page comparison period selector (vs Prior Period / vs Year Ago) with percentage change indicators on KPI cards" },
     ],
   },
 ];
