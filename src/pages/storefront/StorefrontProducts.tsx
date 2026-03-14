@@ -201,8 +201,7 @@ export default function StorefrontProducts() {
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
   const [showFilters, setShowFilters] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
+  const [pageSize] = useState(PAGE_SIZES[1]); // 24 items per batch
 
   // Price range
   const maxPrice = useMemo(() => Math.ceil(Math.max(...products.map(p => Number(p.price)), 0)), [products]);
