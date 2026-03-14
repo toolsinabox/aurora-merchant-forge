@@ -40,10 +40,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
     catch { return []; }
   });
+  const [savedItems, setSavedItems] = useState<CartItem[]>(() => {
+    try { return JSON.parse(localStorage.getItem(SAVED_KEY) || "[]"); }
+    catch { return []; }
+  });
 
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
   }, [items]);
+
+  useEffect(() => {
+    localStorage.setItem(SAVED_KEY, JSON.stringify(savedItems));
+  }, [savedItems]);
 
   const addItem = useCallback((item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     setItems((prev) => {
