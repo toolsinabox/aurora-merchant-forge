@@ -8848,7 +8848,7 @@ const printDocumentDeepFeatures: FeatureCategory[] = [
       { name: "Customer Statement PDF", description: "Account statement with balance", status: "done", notes: "PrintCustomerStatement" },
       { name: "Payment Receipt PDF", description: "Payment receipt for customer", status: "done", notes: "PrintPaymentReceipt" },
       { name: "Batch Invoice Print", description: "Print multiple invoices at once", status: "done", notes: "BatchInvoicePrint page with order selection checkboxes, date range filter, select all, batch print opening staggered tabs" },
-      { name: "Custom Document Templates", description: "Customize PDF layouts with branding", status: "partial" },
+      { name: "Custom Document Templates", description: "Customize PDF layouts with branding", status: "done", notes: "All print pages include store logo, name, address, and customizable header/footer via Settings" },
       { name: "Thermal Printer Support (Label)", description: "Format labels for thermal printers", status: "not_started" },
     ],
   },
