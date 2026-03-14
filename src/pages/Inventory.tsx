@@ -229,6 +229,42 @@ export default function Inventory() {
           <div className="flex items-center justify-end gap-2">
             <Button
               size="sm"
+              variant="outline"
+              className="h-8 text-xs gap-1"
+              onClick={async () => {
+                if (!currentStore) return;
+                // Find low-stock items and auto-create POs
+                const lowStockProducts = products.filter((p: any) => {
+                  const stock = getVariantStock(p);
+                  return stock > 0 && stock <= 10;
+                });
+                if (lowStockProducts.length === 0) {
+                  toast.info("No low-stock products to reorder");
+                  return;
+                }
+                let created = 0;
+                for (const p of lowStockProducts) {
+                  // Check if supplier exists
+                  const supplierId = (p as any).supplier_id;
+                  const poNum = `PO-AUTO-${Date.now().toString(36).toUpperCase()}-${created}`;
+                  const { error } = await supabase.from("purchase_orders").insert({
+                    store_id: currentStore.id,
+                    po_number: poNum,
+                    supplier_id: supplierId || null,
+                    status: "draft",
+                    notes: `Auto-generated for low stock: ${p.title} (${getVariantStock(p)} remaining)`,
+                    total: Number((p as any).cost_price || 0) * 20,
+                  } as any);
+                  if (!error) created++;
+                }
+                toast.success(`Created ${created} draft PO(s) for ${lowStockProducts.length} low-stock products`);
+                qc.invalidateQueries({ queryKey: ["purchase_orders"] });
+              }}
+            >
+              <Zap className="h-3.5 w-3.5" /> Auto-Generate POs
+            </Button>
+            <Button
+              size="sm"
               variant={showHistory ? "default" : "outline"}
               className="h-8 text-xs gap-1"
               onClick={() => setShowHistory(!showHistory)}

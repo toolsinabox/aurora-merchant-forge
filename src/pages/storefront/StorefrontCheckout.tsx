@@ -586,6 +586,35 @@ export default function StorefrontCheckout() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-bold mb-6">Checkout</h1>
 
+        {/* Express Checkout for returning customers */}
+        {hasSavedDetails && user && !expressCheckout && (
+          <div className="border rounded-lg p-4 mb-6 bg-muted/30 flex items-center justify-between">
+            <div>
+              <p className="font-medium text-sm">⚡ Express Checkout</p>
+              <p className="text-xs text-muted-foreground">Use your saved details to checkout in one click</p>
+            </div>
+            <Button size="sm" className="gap-1" onClick={() => setExpressCheckout(true)}>
+              <Sparkles className="h-3.5 w-3.5" /> One-Click Checkout
+            </Button>
+          </div>
+        )}
+        {expressCheckout && (
+          <div className="border rounded-lg p-5 mb-6 bg-muted/20 space-y-3">
+            <h2 className="font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Express Checkout</h2>
+            <div className="text-sm space-y-1">
+              <p><span className="text-muted-foreground">Name:</span> {form.name}</p>
+              <p><span className="text-muted-foreground">Email:</span> {form.email}</p>
+              <p><span className="text-muted-foreground">Ship to:</span> {form.address}, {form.city} {form.zip}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" disabled={submitting} onClick={handleSubmit}>
+                {submitting ? <><Loader2 className="h-4 w-4 animate-spin mr-1" /> Placing Order...</> : "Place Order Now"}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => setExpressCheckout(false)}>Edit Details</Button>
+            </div>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Form */}
