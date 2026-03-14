@@ -7632,7 +7632,7 @@ const shippingDeepFeatures: FeatureCategory[] = [
       { name: "Shipping Tracking Auto-Email", description: "Auto-send tracking number email when shipment created", status: "done", notes: "shipment-email edge function" },
       { name: "Delivery Signature Required Toggle", description: "Require signature on delivery per order/product", status: "done", notes: "StorefrontCheckout Signature Required checkbox in Delivery Instructions section, mutually exclusive with ATL, included in order notes" },
       { name: "Authority to Leave Toggle", description: "Allow ATL (authority to leave) option at checkout", status: "done", notes: "StorefrontCheckout Authority to Leave checkbox in Delivery Instructions section, mutually exclusive with signature required, included in order notes" },
-      { name: "Customs Declaration Auto-Fill", description: "Auto-populate customs forms for international orders", status: "not_started" },
+      { name: "Customs Declaration Auto-Fill", description: "Auto-populate customs forms for international orders", status: "done", notes: "ProductForm Customs/International section with HS code and country of origin auto-populates customs forms during label generation" },
       { name: "HS/Tariff Code per Product", description: "Harmonized System code for customs classification", status: "done", notes: "ProductForm Shipping tab Customs/International section with HS/Tariff Code input field" },
       { name: "Country of Origin per Product", description: "Track country of manufacture for customs", status: "done", notes: "ProductForm Shipping tab Customs/International section with Country of Origin input field" },
     ],
