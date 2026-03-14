@@ -1046,6 +1046,7 @@ export default function SettingsPage() {
             <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
             <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
             <TabsTrigger value="fulfillment" className="text-xs h-7">Fulfillment</TabsTrigger>
+            <TabsTrigger value="security" className="text-xs h-7">Security</TabsTrigger>
             <TabsTrigger value="scripts" className="text-xs h-7">Scripts</TabsTrigger>
             <TabsTrigger value="config" className="text-xs h-7">Config</TabsTrigger>
           </TabsList>
