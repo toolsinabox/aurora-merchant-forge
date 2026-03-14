@@ -192,7 +192,7 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
       <div>
         <Label className="text-xs">Rate Type</Label>
         <Select value={form.rate_type} onValueChange={(v) => setForm({ ...form, rate_type: v })}>
-          <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="flat" className="text-xs">Flat Rate</SelectItem>
             <SelectItem value="weight" className="text-xs">Weight-Based (per kg)</SelectItem>

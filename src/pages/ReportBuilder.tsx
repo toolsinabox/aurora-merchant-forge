@@ -92,7 +92,7 @@ export default function ReportBuilder() {
           <p className="text-xs text-muted-foreground">Build custom reports with filters and date ranges</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
           <Card className="lg:col-span-1">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center gap-2"><Filter className="h-4 w-4" /> Config</CardTitle>
@@ -101,7 +101,7 @@ export default function ReportBuilder() {
               <div>
                 <Label className="text-xs">Entity</Label>
                 <Select value={entity} onValueChange={(v) => { setEntity(v); setSelectedFields([]); setResults(null); }}>
-                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {ENTITY_OPTIONS.map(e => <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>)}
                   </SelectContent>
