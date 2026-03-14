@@ -9516,7 +9516,7 @@ const currencyDeepFeatures: FeatureCategory[] = [
       { name: "Currency CRUD", description: "Add/edit/remove supported currencies", status: "done", notes: "Currencies page" },
       { name: "Exchange Rate Manual Entry", description: "Manually set exchange rates", status: "done" },
       { name: "Exchange Rate Auto-Fetch", description: "Auto-fetch rates from API (ECB, Open Exchange)", status: "not_started" },
-      { name: "Currency Display Format", description: "Configure symbol position, decimals", status: "partial" },
+      { name: "Currency Display Format", description: "Configure symbol position, decimals", status: "done", notes: "Currencies page with symbol, decimal_places, symbol_position (before/after) per currency" },
       { name: "Currency Rounding Rules", description: "Round to nearest 5c, 10c, etc.", status: "not_started" },
       { name: "Base Currency Lock", description: "All pricing stored in base currency", status: "done" },
       { name: "Multi-Currency Cart", description: "Cart displays in selected currency", status: "done", notes: "CurrencySwitcher" },
