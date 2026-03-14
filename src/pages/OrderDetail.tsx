@@ -904,10 +904,10 @@ export default function OrderDetail() {
                           await updateOrder.mutateAsync({ id: order.id, payment_status: "paid" } as any);
                           createTimelineEvent.mutate({
                             order_id: order.id,
-                            store_id: order.store_id,
                             event_type: "payment",
+                            title: "Payment Retry",
                             description: "Payment retried and marked as paid",
-                          });
+                          } as any);
                           toast.success("Payment retry successful");
                         } catch {
                           toast.error("Payment retry failed");
