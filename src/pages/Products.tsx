@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProducts, useDeleteProducts, useUpdateProduct, useCategories } from "@/hooks/use-data";
-import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil, Columns3, Save, BookmarkCheck } from "lucide-react";
+import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil, Columns3, Save, BookmarkCheck, ArrowUp, ArrowDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
