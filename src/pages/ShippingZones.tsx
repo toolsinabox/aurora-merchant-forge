@@ -87,6 +87,8 @@ export default function ShippingZones() {
       flat_rate: Number(form.flat_rate) || 0,
       free_above: form.free_above ? Number(form.free_above) : null,
       rate_type: form.rate_type, per_kg_rate: Number(form.per_kg_rate) || 0,
+      surcharge_postcodes: form.surcharge_postcodes, surcharge_amount: Number(form.surcharge_amount) || 0,
+      surcharge_label: form.surcharge_label,
     } as any);
     resetForm();
     setCreateOpen(false);
