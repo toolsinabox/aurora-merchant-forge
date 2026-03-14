@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
@@ -99,6 +99,26 @@ export default function StorefrontContentPage() {
     toast.success("Review submitted! It will appear after moderation.");
     setReviewForm({ rating: 5, title: "", body: "" });
   };
+  // Extract FAQ pairs from content for JSON-LD
+  const faqItems = useMemo(() => {
+    if (!page?.content) return [];
+    const doc = new DOMParser().parseFromString(page.content, "text/html");
+    const items: { question: string; answer: string }[] = [];
+    const headings = doc.querySelectorAll("h2, h3");
+    headings.forEach((h) => {
+      const text = h.textContent?.trim();
+      if (text && text.endsWith("?")) {
+        let answer = "";
+        let sibling = h.nextElementSibling;
+        while (sibling && !["H2", "H3"].includes(sibling.tagName)) {
+          answer += sibling.textContent?.trim() + " ";
+          sibling = sibling.nextElementSibling;
+        }
+        if (answer.trim()) items.push({ question: text, answer: answer.trim() });
+      }
+    });
+    return items;
+  }, [page?.content]);
 
   if (loading) {
     return (
@@ -125,6 +145,17 @@ export default function StorefrontContentPage() {
   return (
     <StorefrontLayout storeName={store?.name}>
       {page.seo_title && <title>{page.seo_title}</title>}
+      {faqItems.length > 0 && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqItems.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: { "@type": "Answer", text: faq.answer },
+          })),
+        })}} />
+      )}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {page.featured_image && (
           <img src={page.featured_image} alt={page.title} className="w-full rounded-xl mb-8 max-h-[400px] object-cover" />

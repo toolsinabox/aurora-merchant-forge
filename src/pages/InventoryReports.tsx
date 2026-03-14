@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { BarChart3, TrendingDown, Package, DollarSign, AlertTriangle } from "lucide-react";
+import { BarChart3, TrendingDown, Package, DollarSign, AlertTriangle, Percent } from "lucide-react";
 
 interface ProductStock {
   id: string;
@@ -135,6 +135,7 @@ export default function InventoryReports() {
             <TabsTrigger value="dead" className="text-xs gap-1"><TrendingDown className="h-3 w-3" /> Dead Stock</TabsTrigger>
             <TabsTrigger value="velocity" className="text-xs gap-1"><Package className="h-3 w-3" /> Velocity</TabsTrigger>
             <TabsTrigger value="abc" className="text-xs gap-1"><BarChart3 className="h-3 w-3" /> ABC</TabsTrigger>
+            <TabsTrigger value="sellthrough" className="text-xs gap-1"><Percent className="h-3 w-3" /> Sell-Through</TabsTrigger>
           </TabsList>
 
           <TabsContent value="valuation">
@@ -304,6 +305,54 @@ export default function InventoryReports() {
                       </TableBody>
                     </Table>
                   </>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="sellthrough">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">Sell-Through Rate</CardTitle>
+                <p className="text-xs text-muted-foreground">Units sold ÷ (units sold + units on hand) — higher is better</p>
+              </CardHeader>
+              <CardContent className="p-0">
+                {loading ? <Skeleton className="h-40 m-4" /> : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="text-xs h-8">Product</TableHead>
+                        <TableHead className="text-xs h-8">SKU</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Units Sold</TableHead>
+                        <TableHead className="text-xs h-8 text-right">On Hand</TableHead>
+                        <TableHead className="text-xs h-8 text-right">Sell-Through %</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {[...products]
+                        .map((p) => {
+                          const totalAvailable = p.total_sold + p.stock_quantity;
+                          const sellThrough = totalAvailable > 0 ? (p.total_sold / totalAvailable) * 100 : 0;
+                          return { ...p, sellThrough };
+                        })
+                        .filter((p) => p.total_sold > 0 || p.stock_quantity > 0)
+                        .sort((a, b) => b.sellThrough - a.sellThrough)
+                        .slice(0, 50)
+                        .map((p) => (
+                          <TableRow key={p.id} className="text-xs">
+                            <TableCell className="py-2 max-w-[200px] truncate">{p.title}</TableCell>
+                            <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
+                            <TableCell className="py-2 text-right">{p.total_sold}</TableCell>
+                            <TableCell className="py-2 text-right">{p.stock_quantity}</TableCell>
+                            <TableCell className="py-2 text-right">
+                              <span className={p.sellThrough >= 70 ? "text-primary font-medium" : p.sellThrough >= 40 ? "text-amber-600" : "text-destructive"}>
+                                {p.sellThrough.toFixed(1)}%
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
