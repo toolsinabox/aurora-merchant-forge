@@ -91,6 +91,7 @@ export default function StorefrontCheckout() {
   const [canPayOnAccount, setCanPayOnAccount] = useState(false);
   const [payOnAccount, setPayOnAccount] = useState(false);
   const [creditTerms, setCreditTerms] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [allTaxRates, setAllTaxRates] = useState<any[]>([]);
 
   useEffect(() => {
