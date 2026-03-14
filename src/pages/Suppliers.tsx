@@ -281,13 +281,13 @@ export default function Suppliers() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Lead Time</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="w-20"></TableHead>
+                  <TableHead className="text-xs h-8">Supplier</TableHead>
+                  <TableHead className="text-xs h-8">Contact</TableHead>
+                  <TableHead className="text-xs h-8">Email</TableHead>
+                  <TableHead className="text-xs h-8">Lead Time</TableHead>
+                  <TableHead className="text-xs h-8">Type</TableHead>
+                  <TableHead className="text-xs h-8">Status</TableHead>
+                  <TableHead className="text-xs h-8 w-20"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
