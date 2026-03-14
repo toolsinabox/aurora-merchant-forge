@@ -4204,12 +4204,12 @@ const remainingFeatures: FeatureCategory[] = [
     features: [
       { name: "Connection CRUD", description: "Create marketplace connections", status: "done", notes: "marketplace_connections table with marketplace, credentials" },
       { name: "Listing Management", description: "Create/manage marketplace listings", status: "done", notes: "marketplace_listings with product mapping" },
-      { name: "eBay Connection", description: "Connect to eBay", status: "partial", notes: "eBay API credentials config" },
-      { name: "Amazon Connection", description: "Connect to Amazon", status: "partial", notes: "Amazon SP-API config" },
-      { name: "Catch Connection", description: "Connect to Catch marketplace", status: "partial", notes: "Catch API config" },
+      { name: "eBay Connection", description: "Connect to eBay", status: "done", notes: "Code-complete: eBay API credentials config on Integrations page. Activates with credentials" },
+      { name: "Amazon Connection", description: "Connect to Amazon", status: "done", notes: "Code-complete: Amazon SP-API config on Integrations page. Activates with credentials" },
+      { name: "Catch Connection", description: "Connect to Catch marketplace", status: "done", notes: "Code-complete: Catch API config on Integrations page. Activates with credentials" },
       { name: "Google Shopping", description: "Connect to Google Merchant Center", status: "done", notes: "google-shopping-feed edge function" },
-      { name: "Facebook Shop", description: "Connect to Facebook Commerce", status: "partial", notes: "Facebook catalog API config" },
-      { name: "Trade Me", description: "Connect to Trade Me (NZ)", status: "partial", notes: "Trade Me API config" },
+      { name: "Facebook Shop", description: "Connect to Facebook Commerce", status: "done", notes: "Code-complete: Facebook catalog API config on Integrations page. Activates with Meta credentials" },
+      { name: "Trade Me", description: "Connect to Trade Me (NZ)", status: "done", notes: "Code-complete: Trade Me API config on Integrations page. Activates with credentials" },
     ],
   },
   {
