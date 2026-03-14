@@ -101,7 +101,7 @@ export default function MaropostMigration() {
   }, [step, storeDomain, apiKey, connected, entities]);
 
   // Auto-persist on state changes
-  useState(() => { persistState(); });
+  useEffect(() => { persistState(); }, [persistState]);
 
   const addLog = useCallback((msg: string) => {
     const ts = new Date().toLocaleTimeString();
