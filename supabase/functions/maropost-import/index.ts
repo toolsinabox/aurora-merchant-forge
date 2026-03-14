@@ -532,6 +532,18 @@ serve(async (req) => {
           if (o.ShipAddress) orderData.shipping_address = o.ShipAddress;
           if (o.BillAddress) orderData.billing_address = o.BillAddress;
 
+          // Link to existing customer by email
+          const orderEmail = o.Email || o.Username;
+          if (orderEmail) {
+            const { data: cust } = await supabase
+              .from("customers")
+              .select("id")
+              .eq("store_id", store_id)
+              .eq("email", orderEmail)
+              .maybeSingle();
+            if (cust) orderData.customer_id = cust.id;
+          }
+
           const { data: inserted, error } = await supabase
             .from("orders").insert(orderData).select("id").single();
           if (error) throw error;
