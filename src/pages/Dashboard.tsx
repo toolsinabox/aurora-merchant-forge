@@ -10,7 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, TrendingDown,
-  Users, Plus, ExternalLink, ArrowRight, Settings2,
+  Users, Plus, ExternalLink, ArrowRight, Settings2, Smartphone, Truck, 
+  ClipboardList, Tag, FileText, RotateCcw, Layers,
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
