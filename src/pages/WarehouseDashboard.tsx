@@ -136,8 +136,8 @@ export default function WarehouseDashboard() {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+              <div className="h-9 w-9 rounded-lg bg-success/10 flex items-center justify-center">
+                <CheckCircle className="h-4 w-4 text-success" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Shipped</p>
