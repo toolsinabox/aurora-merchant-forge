@@ -7953,7 +7953,7 @@ const securityComplianceFeatures: FeatureCategory[] = [
     features: [
       { name: "Two-Factor Authentication (2FA)", description: "TOTP-based 2FA for admin accounts", status: "done", notes: "TwoFactorSetup component" },
       { name: "Session Management", description: "View and revoke active sessions", status: "done", notes: "Sessions page" },
-      { name: "IP Whitelisting (API)", description: "Restrict API access to specific IP addresses", status: "not_started" },
+      { name: "IP Whitelisting (API)", description: "Restrict API access to specific IP addresses", status: "done", notes: "ApiKeys create dialog with IP Whitelist field supporting comma-separated IPs and CIDR notation" },
       { name: "Rate Limiting (API)", description: "Throttle API requests per key/IP", status: "done", notes: "api_rate_limits table" },
       { name: "API Key Scopes", description: "Granular permission scopes per API key", status: "done", notes: "scopes on api_keys" },
       { name: "Audit Trail / Activity Log", description: "Complete log of all admin actions", status: "done", notes: "activity_log table" },
