@@ -8886,7 +8886,7 @@ const backupMigrationFeatures: FeatureCategory[] = [
       { name: "Shopify Migration Tool", description: "Import products/orders from Shopify", status: "not_started" },
       { name: "WooCommerce Migration Tool", description: "Import from WooCommerce", status: "not_started" },
       { name: "BigCommerce Migration Tool", description: "Import from BigCommerce", status: "not_started" },
-      { name: "Media File Backup", description: "Backup all uploaded media files", status: "partial" },
+      { name: "Media File Backup", description: "Backup all uploaded media files", status: "done", notes: "Supabase Storage managed backups, MediaLibrary export functionality" },
       { name: "Configuration Export/Import", description: "Export store settings for cloning", status: "done", notes: "Settings Config tab with JSON export/import for scripts, quote templates, scheduled prices, cycle counts, inventory snapshots" },
     ],
   },
