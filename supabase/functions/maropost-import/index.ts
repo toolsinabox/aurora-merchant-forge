@@ -749,6 +749,38 @@ serve(async (req) => {
       }
     }
 
+    // ── IMPORT REDIRECTS (301) ──
+    else if (action === "import_redirects") {
+      const items = source_data?.Redirect || source_data || [];
+      const redirects = Array.isArray(items) ? items : [items];
+
+      for (const r of redirects) {
+        try {
+          const fromPath = r.OldURL || r.FromPath || r.old_url;
+          const toPath = r.NewURL || r.ToPath || r.new_url;
+          if (fromPath && toPath) {
+            await supabase.from("redirects").upsert({
+              store_id,
+              from_path: fromPath.startsWith("/") ? fromPath : `/${fromPath}`,
+              to_path: toPath.startsWith("/") ? toPath : toPath.startsWith("http") ? toPath : `/${toPath}`,
+              is_active: true,
+            } as any, { onConflict: "store_id,from_path" }).catch(() => {
+              return supabase.from("redirects").insert({
+                store_id,
+                from_path: fromPath.startsWith("/") ? fromPath : `/${fromPath}`,
+                to_path: toPath.startsWith("/") ? toPath : toPath.startsWith("http") ? toPath : `/${toPath}`,
+                is_active: true,
+              });
+            });
+            imported++;
+          }
+        } catch (err: any) {
+          failed++;
+          errors.push(`Redirect ${r.OldURL || r.FromPath}: ${err.message}`);
+        }
+      }
+    }
+
     // ── IMPORT THEME / CSS ──
     else if (action === "import_theme_css") {
       try {
