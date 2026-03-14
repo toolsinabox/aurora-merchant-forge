@@ -159,6 +159,7 @@ const App = () => (
                   <Route path="/_cpanel/products/new" element={<RequireAuth><ProductForm /></RequireAuth>} />
                   <Route path="/_cpanel/products/:id" element={<RequireAuth><ProductForm /></RequireAuth>} />
                   <Route path="/_cpanel/categories" element={<RequireAuth><Categories /></RequireAuth>} />
+                  <Route path="/_cpanel/smart-collections" element={<RequireAuth><SmartCollections /></RequireAuth>} />
                   <Route path="/_cpanel/inventory" element={<RequireAuth><Inventory /></RequireAuth>} />
                   <Route path="/_cpanel/orders" element={<RequireAuth><Orders /></RequireAuth>} />
                   <Route path="/_cpanel/orders/:id" element={<RequireAuth><OrderDetail /></RequireAuth>} />
