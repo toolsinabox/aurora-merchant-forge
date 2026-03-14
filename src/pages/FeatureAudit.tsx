@@ -8909,7 +8909,176 @@ const testingQaFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures]);
+// ═══════ WAVE 10 — ABSOLUTE FINAL REMAINING ═══════
+
+const netoTemplateFeatures: FeatureCategory[] = [
+  {
+    category: "Neto/Maropost Template System",
+    icon: <PenTool className="h-5 w-5" />,
+    features: [
+      { name: "B@SE Template Engine", description: "Custom template engine with [%tag%] syntax", status: "done", notes: "base-template-engine.ts" },
+      { name: "Template Theme Switching", description: "Switch between installed themes", status: "done", notes: "Templates page" },
+      { name: "Template File Editor", description: "Edit template files from admin", status: "partial" },
+      { name: "Template Version Control", description: "Track template file changes", status: "not_started" },
+      { name: "Template Preview Mode", description: "Preview template changes before publish", status: "partial" },
+      { name: "Custom Header / Footer", description: "Store-specific header/footer templates", status: "done" },
+      { name: "Category Page Template", description: "Template for category listing pages", status: "done" },
+      { name: "Product Page Template", description: "Template for product detail pages", status: "done" },
+      { name: "Cart Page Template", description: "Template for shopping cart page", status: "done" },
+      { name: "Checkout Page Template", description: "Template for checkout flow", status: "done" },
+      { name: "Account Page Templates", description: "Templates for customer account pages", status: "done" },
+      { name: "Blog Page Template", description: "Template for blog listing and detail", status: "done" },
+      { name: "Contact Page Template", description: "Template for contact/enquiry page", status: "done" },
+      { name: "Error Page Templates (404/500)", description: "Custom error page templates", status: "done" },
+      { name: "Snippet / Partial Includes", description: "Reusable template snippets", status: "partial" },
+      { name: "Template Conditional Logic", description: "If/else logic in templates", status: "done" },
+      { name: "Template Loop / Iterator", description: "Loop over product lists, cart items", status: "done" },
+      { name: "Template Global Variables", description: "Global variables (store name, year, etc.)", status: "done" },
+    ],
+  },
+];
+
+const customerAccountFeatures: FeatureCategory[] = [
+  {
+    category: "Customer Account — Full Portal",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Account Dashboard", description: "Customer account overview with recent orders", status: "done", notes: "StorefrontAccount" },
+      { name: "Order History List", description: "Paginated order history with search", status: "done" },
+      { name: "Order Detail View", description: "Full order detail with line items, tracking", status: "done" },
+      { name: "Reorder from Past Order", description: "Add all items from past order to cart", status: "not_started" },
+      { name: "Track Order Page", description: "Track order status with timeline", status: "done", notes: "StorefrontTrackOrder" },
+      { name: "Address Book Management", description: "Add/edit/delete shipping addresses", status: "partial" },
+      { name: "Profile Edit (Name/Email/Phone)", description: "Edit personal details", status: "done" },
+      { name: "Password Change", description: "Change password from account", status: "done" },
+      { name: "Wishlist Management", description: "View and manage wishlist", status: "done", notes: "StorefrontWishlist" },
+      { name: "Digital Downloads Access", description: "Access purchased digital downloads", status: "partial" },
+      { name: "Subscription Management", description: "View/pause/cancel subscriptions", status: "partial" },
+      { name: "Loyalty Points Balance", description: "View loyalty points and history", status: "partial" },
+      { name: "Saved Payment Methods", description: "View/delete saved payment methods", status: "not_started" },
+      { name: "Communication Preferences", description: "Manage email/SMS preferences", status: "not_started" },
+      { name: "Account Deletion Request", description: "Request account deletion (GDPR)", status: "not_started" },
+    ],
+  },
+];
+
+const inventoryCountingFeatures: FeatureCategory[] = [
+  {
+    category: "Stocktake & Counting — Deep",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "Full Stocktake (All Products)", description: "Count all products in warehouse", status: "done", notes: "Stocktake page" },
+      { name: "Partial Stocktake (Category)", description: "Count products in specific category", status: "partial" },
+      { name: "Partial Stocktake (Location/Bin)", description: "Count products in specific bin/zone", status: "partial" },
+      { name: "Barcode Scan Counting", description: "Scan barcodes to count stock", status: "done", notes: "BarcodeScanner" },
+      { name: "Stocktake Variance Report", description: "Report showing expected vs counted", status: "partial" },
+      { name: "Stocktake Approval", description: "Manager approval before adjustments applied", status: "not_started" },
+      { name: "Stocktake History", description: "History of past stocktakes with results", status: "partial" },
+      { name: "Blind Count Mode", description: "Count without seeing expected quantities", status: "not_started" },
+      { name: "Multi-User Stocktake", description: "Multiple staff counting simultaneously", status: "not_started" },
+      { name: "Stocktake Export", description: "Export stocktake results to CSV", status: "not_started" },
+    ],
+  },
+];
+
+const dropshipFeatures: FeatureCategory[] = [
+  {
+    category: "Drop Shipping — Full",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Drop Ship Product Flag", description: "Mark products as drop-shipped", status: "done", notes: "is_dropship on products" },
+      { name: "Drop Ship Supplier Assignment", description: "Assign supplier per drop-ship product", status: "done", notes: "supplier_id on products" },
+      { name: "Auto-Notify Supplier on Order", description: "Auto-email supplier when order placed", status: "done", notes: "dropship-notification function" },
+      { name: "Supplier Order Portal", description: "Supplier can view and fulfill assigned orders", status: "not_started" },
+      { name: "Drop Ship Tracking Update", description: "Supplier updates tracking number", status: "not_started" },
+      { name: "Drop Ship Margin Calculation", description: "Calculate margin on drop-ship products", status: "partial" },
+      { name: "Drop Ship PO Auto-Generation", description: "Auto-create PO to supplier for drop-ship orders", status: "not_started" },
+      { name: "Blind Drop Ship (No Branding)", description: "Ship without supplier branding", status: "not_started" },
+    ],
+  },
+];
+
+const socialCommerceFeatures: FeatureCategory[] = [
+  {
+    category: "Social Commerce",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Social Share Buttons (Product)", description: "Share product on social media", status: "done", notes: "SocialShare component" },
+      { name: "Instagram Shopping Feed", description: "Product feed for Instagram Shopping", status: "not_started" },
+      { name: "Facebook Shop Integration", description: "Sync products to Facebook Shop", status: "not_started" },
+      { name: "Pinterest Rich Pins", description: "Product rich pins for Pinterest", status: "not_started" },
+      { name: "TikTok Shop Integration", description: "List products on TikTok Shop", status: "not_started" },
+      { name: "Social Login (Google)", description: "Login with Google account", status: "not_started" },
+      { name: "Social Login (Facebook)", description: "Login with Facebook account", status: "not_started" },
+      { name: "Social Login (Apple)", description: "Login with Apple ID", status: "not_started" },
+      { name: "User-Generated Content (UGC)", description: "Display customer photos/videos on product", status: "not_started" },
+      { name: "Social Proof (Review Count Badge)", description: "Show review count/rating on listings", status: "done", notes: "ProductBadges" },
+    ],
+  },
+];
+
+const b2bPortalFeatures: FeatureCategory[] = [
+  {
+    category: "B2B Portal — Complete",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Wholesale Registration Form", description: "Dedicated B2B account application", status: "partial" },
+      { name: "Wholesale Price Display", description: "Show wholesale prices to approved accounts", status: "done", notes: "customer_groups pricing" },
+      { name: "Wholesale Quick Order Form", description: "SKU + quantity rapid entry form", status: "done", notes: "StorefrontQuickOrder" },
+      { name: "Wholesale Minimum Order Qty", description: "Minimum quantity per product for B2B", status: "partial" },
+      { name: "Wholesale Minimum Order Value", description: "Minimum cart value for B2B orders", status: "partial" },
+      { name: "Wholesale Catalog (Restricted)", description: "Hide certain products from retail customers", status: "partial" },
+      { name: "Net Payment Terms (Net 7/14/30/60)", description: "Deferred payment for approved B2B accounts", status: "not_started" },
+      { name: "Purchase Order Number (Customer PO)", description: "Customer enters their PO number at checkout", status: "partial" },
+      { name: "B2B Invoice on Account", description: "Place orders on account without immediate payment", status: "not_started" },
+      { name: "B2B Credit Application", description: "Credit application form for trade accounts", status: "not_started" },
+      { name: "B2B Price List Export", description: "Export price lists for offline distribution", status: "not_started" },
+      { name: "B2B Volume Tiered Pricing", description: "Automatic volume discounts for wholesale", status: "done" },
+    ],
+  },
+];
+
+const advancedCouponFeatures: FeatureCategory[] = [
+  {
+    category: "Coupons — Advanced Rules",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Percentage Discount Coupon", description: "X% off cart/products", status: "done" },
+      { name: "Fixed Amount Discount Coupon", description: "$X off cart/products", status: "done" },
+      { name: "Free Shipping Coupon", description: "Coupon for free shipping", status: "done", notes: "free_shipping on coupons" },
+      { name: "Coupon Usage Limit (Total)", description: "Max total uses across all customers", status: "done", notes: "max_uses" },
+      { name: "Coupon Usage Limit (Per Customer)", description: "Max uses per individual customer", status: "done", notes: "per_customer_limit" },
+      { name: "Coupon Minimum Cart Value", description: "Minimum order to apply coupon", status: "done", notes: "min_order_amount" },
+      { name: "Coupon Expiry Date", description: "Auto-expire coupon after date", status: "done", notes: "expires_at" },
+      { name: "Coupon Start Date", description: "Coupon active from future date", status: "done", notes: "starts_at" },
+      { name: "Coupon Product Restrictions", description: "Limit coupon to specific products", status: "done", notes: "product_ids" },
+      { name: "Coupon Category Restrictions", description: "Limit coupon to specific categories", status: "done", notes: "category_ids" },
+      { name: "Coupon Customer Group Restriction", description: "Limit coupon to specific customer groups", status: "partial" },
+      { name: "Auto-Generate Unique Codes", description: "Bulk generate unique coupon codes", status: "not_started" },
+      { name: "Coupon Stacking Rules", description: "Allow/disallow stacking multiple coupons", status: "not_started" },
+      { name: "Coupon Analytics / Usage Report", description: "Track coupon usage and revenue impact", status: "partial" },
+    ],
+  },
+];
+
+const auditComplianceFeatures: FeatureCategory[] = [
+  {
+    category: "Audit & Compliance — Complete",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Full Activity Audit Trail", description: "Every admin action logged with timestamp and user", status: "done", notes: "activity_log table" },
+      { name: "Login Audit Log", description: "Track all login attempts (success/fail)", status: "partial" },
+      { name: "Data Change History", description: "Track changes to critical data (prices, stock)", status: "partial" },
+      { name: "Export Audit Logs", description: "Export audit logs for compliance review", status: "not_started" },
+      { name: "Regulatory Report (Tax)", description: "Tax-specific reports for BAS/GST filing", status: "not_started" },
+      { name: "Fraud Detection Rules", description: "Configurable fraud detection rules", status: "not_started" },
+      { name: "PCI Compliance Checklist", description: "Self-assessment checklist for PCI compliance", status: "not_started" },
+      { name: "SOC 2 Compliance", description: "Security controls for SOC 2 readiness", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
