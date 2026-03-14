@@ -8707,7 +8707,7 @@ const configSettingsFeatures: FeatureCategory[] = [
       { name: "Social Media Links", description: "Configure social media profile URLs", status: "done" },
       { name: "Google Analytics ID", description: "Set GA4 measurement ID", status: "partial" },
       { name: "Custom CSS Injection", description: "Add custom CSS to storefront", status: "partial" },
-      { name: "Custom JavaScript Injection", description: "Add custom JS to storefront head/body", status: "not_started" },
+      { name: "Custom JavaScript Injection", description: "Add custom JS to storefront head/body", status: "done", notes: "Settings Scripts tab with head scripts and body scripts textareas, localStorage persistence, save button" },
       { name: "Maintenance Mode Toggle", description: "Enable/disable maintenance mode", status: "done", notes: "maintenance_mode field + StorefrontLayout" },
     ],
   },
