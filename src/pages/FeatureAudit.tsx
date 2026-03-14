@@ -8713,7 +8713,203 @@ const configSettingsFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures]);
+// ═══════ WAVE 9 — EDGE CASE & NICHE FEATURES ═══════
+
+const productVariantDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Product Variants — Deep",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Variant-Level Images", description: "Unique images per variant (color swatch → image)", status: "done" },
+      { name: "Variant-Level Pricing", description: "Different price per variant", status: "done" },
+      { name: "Variant-Level SKU", description: "Unique SKU per variant", status: "done" },
+      { name: "Variant-Level Barcode", description: "Unique barcode/EAN per variant", status: "done" },
+      { name: "Variant-Level Weight", description: "Different weight per variant for shipping", status: "done" },
+      { name: "Variant-Level Dimensions", description: "Different L×W×H per variant", status: "partial" },
+      { name: "Variant-Level Stock Tracking", description: "Independent inventory per variant per location", status: "done", notes: "inventory_stock variant_id" },
+      { name: "Variant Option Types (Size/Color/Material)", description: "Define option types with values", status: "done" },
+      { name: "Variant Matrix Generator", description: "Auto-generate all combinations from options", status: "partial" },
+      { name: "Variant Bulk Price Update", description: "Update prices for all variants at once", status: "partial" },
+      { name: "Variant Discontinue (Soft Delete)", description: "Discontinue variant without deleting", status: "partial" },
+      { name: "Variant Display Order", description: "Control sort order of variants on product page", status: "partial" },
+    ],
+  },
+];
+
+const searchMerchandisingFeatures: FeatureCategory[] = [
+  {
+    category: "Search & Merchandising — Advanced",
+    icon: <Search className="h-5 w-5" />,
+    features: [
+      { name: "Full-Text Search (Products)", description: "Search across title, description, SKU, tags", status: "done", notes: "StorefrontSearch" },
+      { name: "Search Synonyms", description: "Configure synonym mappings (sneakers = trainers)", status: "not_started" },
+      { name: "Search Redirect Rules", description: "Redirect specific search terms to pages", status: "not_started" },
+      { name: "Search Boost / Bury Rules", description: "Boost or bury products in search results", status: "not_started" },
+      { name: "Search Analytics (Top Queries)", description: "Track most popular search terms", status: "not_started" },
+      { name: "Search Analytics (Zero Results)", description: "Track searches with no results", status: "not_started" },
+      { name: "Faceted Search by Price", description: "Price range slider filter", status: "done" },
+      { name: "Faceted Search by Brand", description: "Filter by brand", status: "done" },
+      { name: "Faceted Search by Rating", description: "Filter by review rating", status: "partial" },
+      { name: "Faceted Search by Availability", description: "Filter in-stock vs out-of-stock", status: "partial" },
+      { name: "Faceted Search by Custom Attributes", description: "Filter by product-specific attributes", status: "partial" },
+      { name: "Product Sorting (Multiple Options)", description: "Sort by price, name, newest, popularity, rating", status: "done" },
+      { name: "Collection Landing Pages", description: "Custom landing pages for curated collections", status: "done" },
+      { name: "Featured Products Section", description: "Manually curated featured products", status: "done" },
+      { name: "New Arrivals Auto-Section", description: "Auto-display recently added products", status: "done" },
+    ],
+  },
+];
+
+const shippingRulesDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Shipping Rules — Granular",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Free Shipping Threshold", description: "Free shipping above cart value", status: "done" },
+      { name: "Flat Rate Shipping", description: "Fixed rate per order or per item", status: "done" },
+      { name: "Weight-Based Shipping Rates", description: "Rates calculated by total weight", status: "done", notes: "shipping_zones" },
+      { name: "Price-Based Shipping Tiers", description: "Shipping rate by cart subtotal tiers", status: "done" },
+      { name: "Quantity-Based Shipping", description: "Rate per item in cart", status: "partial" },
+      { name: "Dimension-Based Shipping", description: "Volumetric weight calculation", status: "partial" },
+      { name: "Shipping Exclusion Rules", description: "Exclude products/categories from certain methods", status: "not_started" },
+      { name: "Shipping by Product Tag", description: "Different rates based on product tags", status: "not_started" },
+      { name: "Shipping Surcharge (Rural/Remote)", description: "Extra charge for remote postcodes", status: "not_started" },
+      { name: "Shipping Insurance Option", description: "Optional shipping insurance at checkout", status: "not_started" },
+      { name: "Estimated Delivery Date Display", description: "Show estimated delivery on product/cart", status: "done", notes: "DeliveryEstimate component" },
+      { name: "Same-Day / Express Cutoff Time", description: "Express shipping cutoff time logic", status: "not_started" },
+      { name: "Local Delivery Zone", description: "Define local delivery radius with own rates", status: "not_started" },
+      { name: "Pickup Location Selection", description: "Customer selects pickup location at checkout", status: "partial" },
+    ],
+  },
+];
+
+const taxDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Tax — Advanced",
+    icon: <Receipt className="h-5 w-5" />,
+    features: [
+      { name: "Tax-Inclusive Pricing", description: "Display prices including tax", status: "done" },
+      { name: "Tax-Exclusive Pricing", description: "Display prices excluding tax", status: "done" },
+      { name: "Multiple Tax Rates", description: "Different tax rates per product/category", status: "done", notes: "tax_rates table" },
+      { name: "Tax by Destination", description: "Apply tax based on shipping destination", status: "partial" },
+      { name: "Tax by Origin", description: "Apply tax based on seller location", status: "not_started" },
+      { name: "Tax Exemption per Customer", description: "Mark customers as tax exempt", status: "done", notes: "customer_groups is_tax_exempt" },
+      { name: "Tax Exemption Certificate Upload", description: "Store tax exemption documents", status: "not_started" },
+      { name: "GST / VAT Registration Display", description: "Show GST/VAT number on invoices", status: "partial" },
+      { name: "Tax Summary on Invoice", description: "Itemized tax breakdown on invoices", status: "done" },
+      { name: "US State Tax Nexus Rules", description: "Configure tax nexus for US states", status: "not_started" },
+      { name: "EU VAT MOSS Compliance", description: "VAT based on customer location for EU digital", status: "not_started" },
+      { name: "Auto Tax Rate Updates", description: "Auto-update tax rates from authority", status: "not_started" },
+    ],
+  },
+];
+
+const emailTemplateDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Email Templates — Comprehensive",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Order Confirmation Email", description: "Auto-email on order placed", status: "done", notes: "order-email-trigger" },
+      { name: "Order Shipped Email", description: "Auto-email with tracking on shipment", status: "done", notes: "shipment-email" },
+      { name: "Order Delivered Email", description: "Auto-email when marked delivered", status: "done", notes: "order-delivered-email" },
+      { name: "Payment Received Email", description: "Email on payment confirmation", status: "done", notes: "payment-email" },
+      { name: "Refund Processed Email", description: "Email when refund issued", status: "partial" },
+      { name: "Welcome Email (New Account)", description: "Welcome email on registration", status: "done", notes: "welcome-email" },
+      { name: "Password Reset Email", description: "Password reset link email", status: "done" },
+      { name: "Abandoned Cart Recovery Email", description: "Recover abandoned carts via email", status: "done", notes: "abandoned-cart-email" },
+      { name: "Back-In-Stock Email", description: "Notify when product restocked", status: "done", notes: "back-in-stock-email" },
+      { name: "Gift Voucher Email", description: "Send gift voucher to recipient", status: "done", notes: "gift-voucher-email" },
+      { name: "Review Request Email", description: "Ask for review after delivery", status: "done", notes: "order-follow-up" },
+      { name: "Wishlist Reminder Email", description: "Remind about wishlisted items", status: "done", notes: "wishlist-reminder" },
+      { name: "Customer Statement Email", description: "Email account statement", status: "done", notes: "customer-statement-email" },
+      { name: "Contact Form Confirmation", description: "Auto-reply to contact form submission", status: "done", notes: "contact-email" },
+      { name: "Email Template Visual Editor", description: "Drag-and-drop email template builder", status: "partial", notes: "EmailTemplates page" },
+      { name: "Email Template Variables", description: "Dynamic merge tags in emails ({{order_number}}, etc.)", status: "done" },
+      { name: "Email Preview / Test Send", description: "Preview and send test emails", status: "partial" },
+      { name: "Email Unsubscribe Management", description: "Unsubscribe link and preference center", status: "not_started" },
+    ],
+  },
+];
+
+const printDocumentDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Print Documents — All Types",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Invoice PDF", description: "Generate invoice with line items, tax, totals", status: "done", notes: "PrintInvoice" },
+      { name: "Packing Slip PDF", description: "Packing slip without prices", status: "done", notes: "PrintPackingSlip" },
+      { name: "Shipping Label PDF", description: "Shipping label with address and barcode", status: "done", notes: "PrintShippingLabel" },
+      { name: "Pick List PDF", description: "Warehouse pick list grouped by location", status: "done", notes: "PrintPickList" },
+      { name: "Purchase Order PDF", description: "PO document for suppliers", status: "done", notes: "PrintPurchaseOrder" },
+      { name: "Quote PDF", description: "Customer quote document", status: "done", notes: "PrintQuote" },
+      { name: "Return Label PDF", description: "Pre-paid return shipping label", status: "done", notes: "PrintReturnLabel" },
+      { name: "Barcode Labels PDF", description: "Product barcode labels for shelf/bin", status: "done", notes: "PrintBarcodeLabels" },
+      { name: "Gift Voucher PDF", description: "Printable gift voucher design", status: "done", notes: "PrintGiftVoucher" },
+      { name: "Customer Statement PDF", description: "Account statement with balance", status: "done", notes: "PrintCustomerStatement" },
+      { name: "Payment Receipt PDF", description: "Payment receipt for customer", status: "done", notes: "PrintPaymentReceipt" },
+      { name: "Batch Invoice Print", description: "Print multiple invoices at once", status: "not_started" },
+      { name: "Custom Document Templates", description: "Customize PDF layouts with branding", status: "partial" },
+      { name: "Thermal Printer Support (Label)", description: "Format labels for thermal printers", status: "not_started" },
+    ],
+  },
+];
+
+const addonEcosystemFeatures: FeatureCategory[] = [
+  {
+    category: "Addon / Plugin Ecosystem",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Addon Catalog (Marketplace)", description: "Browse and install addons from catalog", status: "done", notes: "Addons page + addon_catalog" },
+      { name: "Addon Install / Uninstall", description: "One-click install and uninstall", status: "done", notes: "store_addons table" },
+      { name: "Addon Configuration UI", description: "Per-addon settings panel", status: "done" },
+      { name: "Addon Versioning", description: "Track addon versions with update capability", status: "partial" },
+      { name: "Addon Categories", description: "Categorize addons (shipping, marketing, etc.)", status: "done" },
+      { name: "Addon Pricing (Free/Paid)", description: "Free and paid addon tiers", status: "done", notes: "is_free, price fields" },
+      { name: "Addon Usage Count", description: "Track how many stores use each addon", status: "done", notes: "install_count" },
+      { name: "Addon Dependency Check", description: "Check addon dependencies before install", status: "not_started" },
+      { name: "Custom Addon Development", description: "SDK/documentation for building custom addons", status: "not_started" },
+      { name: "Addon Webhooks / Events", description: "Addons can subscribe to platform events", status: "partial" },
+    ],
+  },
+];
+
+const backupMigrationFeatures: FeatureCategory[] = [
+  {
+    category: "Backup & Migration",
+    icon: <HardDrive className="h-5 w-5" />,
+    features: [
+      { name: "Database Auto-Backup", description: "Automated daily database backups", status: "done", notes: "Supabase managed" },
+      { name: "Point-in-Time Recovery", description: "Restore database to specific timestamp", status: "done" },
+      { name: "Store Data Export (Full)", description: "Export all store data for migration", status: "partial" },
+      { name: "Store Data Import (Migration)", description: "Import data from another platform", status: "partial", notes: "ImportWizard" },
+      { name: "Maropost / Neto Migration Tool", description: "Dedicated migration from Maropost/Neto", status: "not_started" },
+      { name: "Shopify Migration Tool", description: "Import products/orders from Shopify", status: "not_started" },
+      { name: "WooCommerce Migration Tool", description: "Import from WooCommerce", status: "not_started" },
+      { name: "BigCommerce Migration Tool", description: "Import from BigCommerce", status: "not_started" },
+      { name: "Media File Backup", description: "Backup all uploaded media files", status: "partial" },
+      { name: "Configuration Export/Import", description: "Export store settings for cloning", status: "not_started" },
+    ],
+  },
+];
+
+const testingQaFeatures: FeatureCategory[] = [
+  {
+    category: "Testing & QA",
+    icon: <ListChecks className="h-5 w-5" />,
+    features: [
+      { name: "Unit Test Suite", description: "Vitest unit tests for core logic", status: "partial", notes: "vitest.config.ts" },
+      { name: "E2E Test Suite", description: "Playwright end-to-end tests", status: "partial", notes: "playwright.config.ts" },
+      { name: "Test Order Placement", description: "Place test orders without processing payment", status: "not_started" },
+      { name: "Sandbox / Test Mode", description: "Payment gateway sandbox mode", status: "partial" },
+      { name: "Data Seeding (Demo Data)", description: "Seed demo products, orders, customers", status: "partial", notes: "mock-data.ts" },
+      { name: "Performance Benchmarks", description: "Automated page load benchmarks", status: "not_started" },
+      { name: "Lighthouse CI Integration", description: "Automated Lighthouse scores in CI", status: "not_started" },
+      { name: "Visual Regression Testing", description: "Screenshot comparison for UI changes", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
