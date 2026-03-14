@@ -8097,7 +8097,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
     icon: <BarChart3 className="h-5 w-5" />,
     features: [
       { name: "Sales by Channel Report", description: "Revenue breakdown by channel (web, eBay, POS, etc.)", status: "partial", notes: "Dashboard analytics" },
-      { name: "Sales by Category Report", description: "Revenue and units by product category", status: "partial" },
+      { name: "Sales by Category Report", description: "Revenue and units by product category", status: "done", notes: "Analytics page Sales by Category section with pie chart and detailed table showing category name, units sold, and revenue per category" },
       { name: "Sales by Brand Report", description: "Revenue and units by brand", status: "done", notes: "Analytics page Sales by Brand table with revenue and units per brand" },
       { name: "Sales by Customer Group Report", description: "Revenue by customer segment/group", status: "done", notes: "Analytics page Sales by Customer Group table" },
       { name: "Sales by Geography Report", description: "Revenue by state/country", status: "done", notes: "Analytics page Sales by Region table with region, orders, revenue from shipping address parsing" },
