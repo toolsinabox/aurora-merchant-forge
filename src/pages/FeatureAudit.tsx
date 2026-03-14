@@ -8084,7 +8084,7 @@ const inventoryAdvancedFeatures: FeatureCategory[] = [
       { name: "Purchase Order Auto-Generation", description: "Auto-create PO when stock below threshold", status: "done", notes: "Inventory page Auto-Generate POs button creates draft POs for all low-stock products with cost-based totals" },
       { name: "Supplier Lead Time per Product", description: "Track supplier-specific lead times for forecasting", status: "done", notes: "lead_time_days on inventory_forecasts, suppliers lead_time_days field, used in reorder_date calculation" },
       { name: "Inventory Transfer Between Locations", description: "Transfer stock between warehouses with approval", status: "done", notes: "inventory_transfers table" },
-      { name: "Goods Receipt Note (GRN)", description: "Record received goods against purchase orders", status: "partial" },
+      { name: "Goods Receipt Note (GRN)", description: "Record received goods against purchase orders", status: "done", notes: "PO receiving dialog on PurchaseOrders page with per-item quantity input, barcode scan, auto-updates inventory_stock and PO status" },
       { name: "Consignment Stock", description: "Track supplier-owned stock in your warehouse", status: "not_started" },
       { name: "Drop Ship Auto-Notify Supplier", description: "Auto-email supplier on drop ship order", status: "done", notes: "dropship-notification function" },
     ],
