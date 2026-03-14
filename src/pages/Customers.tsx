@@ -310,6 +310,36 @@ export default function Customers() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Merge Dialog */}
+        <Dialog open={showMerge} onOpenChange={setShowMerge}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Merge Customers</DialogTitle></DialogHeader>
+            <p className="text-xs text-muted-foreground">Select the primary record. Orders and data from the others will be merged into it, and duplicates will be deleted.</p>
+            <div className="space-y-2 my-2">
+              {selectedForMerge.map(id => {
+                const c = customers.find(x => x.id === id);
+                if (!c) return null;
+                return (
+                  <label key={id} className="flex items-center gap-2 p-2 rounded border text-xs cursor-pointer hover:bg-muted/50">
+                    <input type="radio" name="primaryCustomer" checked={primaryId === id} onChange={() => setPrimaryId(id)} className="accent-primary" />
+                    <span className="font-medium">{c.name}</span>
+                    <span className="text-muted-foreground">{c.email || "No email"}</span>
+                    <span className="ml-auto text-muted-foreground">{c.total_orders} orders · ${Number(c.total_spent).toLocaleString()}</span>
+                    {primaryId === id && <span className="text-primary text-[10px] font-semibold">PRIMARY</span>}
+                  </label>
+                );
+              })}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowMerge(false)}>Cancel</Button>
+              <Button onClick={handleMerge} disabled={!primaryId || merging} className="gap-1">
+                {merging ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Merge className="h-3.5 w-3.5" />}
+                Merge Customers
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
