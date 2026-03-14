@@ -131,37 +131,107 @@ export default function MaropostTransferAudit() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [dbCounts, setDbCounts] = useState<Record<string, number>>({});
+  const [sourceCounts, setSourceCounts] = useState<Record<string, number>>(() => {
+    try { const s = sessionStorage.getItem("maropost_source_counts"); return s ? JSON.parse(s) : {}; } catch { return {}; }
+  });
+  const [integrityIssues, setIntegrityIssues] = useState<string[]>([]);
+  const [autoRefresh, setAutoRefresh] = useState(false);
+
+  // Load source counts from migration wizard session
+  useEffect(() => {
+    try {
+      const entities = sessionStorage.getItem("maropost_entities");
+      if (entities) {
+        const parsed = JSON.parse(entities);
+        const counts: Record<string, number> = {};
+        for (const e of parsed) {
+          counts[e.entity] = e.count || 0;
+        }
+        setSourceCounts(counts);
+        sessionStorage.setItem("maropost_source_counts", JSON.stringify(counts));
+      }
+    } catch {}
+  }, []);
 
   // Fetch live record counts from the database
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const tables = [
-        { key: "products", table: "products" },
-        { key: "categories", table: "categories" },
-        { key: "customers", table: "customers" },
-        { key: "orders", table: "orders" },
-        { key: "content_pages", table: "content_pages" },
-        { key: "gift_vouchers", table: "gift_vouchers" },
-        { key: "suppliers", table: "suppliers" },
-        { key: "inventory_locations", table: "inventory_locations" },
-        { key: "shipping_zones", table: "shipping_zones" },
-        { key: "product_variants", table: "product_variants" },
-        { key: "product_relations", table: "product_relations" },
-        { key: "customer_addresses", table: "customer_addresses" },
-        { key: "order_items", table: "order_items" },
-        { key: "product_specifics", table: "product_specifics" },
-        { key: "inventory_stock", table: "inventory_stock" },
-      ] as const;
+  const fetchCounts = async () => {
+    const tables = [
+      { key: "products", table: "products" },
+      { key: "categories", table: "categories" },
+      { key: "customers", table: "customers" },
+      { key: "orders", table: "orders" },
+      { key: "content_pages", table: "content_pages" },
+      { key: "gift_vouchers", table: "gift_vouchers" },
+      { key: "suppliers", table: "suppliers" },
+      { key: "inventory_locations", table: "inventory_locations" },
+      { key: "shipping_zones", table: "shipping_zones" },
+      { key: "product_variants", table: "product_variants" },
+      { key: "product_relations", table: "product_relations" },
+      { key: "customer_addresses", table: "customer_addresses" },
+      { key: "order_items", table: "order_items" },
+      { key: "product_specifics", table: "product_specifics" },
+      { key: "inventory_stock", table: "inventory_stock" },
+      { key: "currencies", table: "currencies" },
+      { key: "redirects", table: "redirects" },
+      { key: "returns", table: "returns" },
+    ] as const;
 
-      const counts: Record<string, number> = {};
-      await Promise.all(tables.map(async ({ key, table }) => {
-        const { count } = await supabase.from(table).select("id", { count: "exact", head: true }) as any;
-        counts[key] = count || 0;
-      }));
-      setDbCounts(counts);
-    };
-    fetchCounts();
-  }, []);
+    const counts: Record<string, number> = {};
+    await Promise.all(tables.map(async ({ key, table }) => {
+      const { count } = await supabase.from(table).select("id", { count: "exact", head: true }) as any;
+      counts[key] = count || 0;
+    }));
+    setDbCounts(counts);
+
+    // Run integrity checks
+    const issues: string[] = [];
+    // Check for orphan order_items (orders without customer)
+    const { count: orphanOrders } = await supabase.from("orders").select("id", { count: "exact", head: true }).is("customer_id", null) as any;
+    if (orphanOrders > 0) issues.push(`${orphanOrders} orders have no linked customer`);
+    // Check products without category
+    const { count: noCatProducts } = await supabase.from("products").select("id", { count: "exact", head: true }).is("category_id", null) as any;
+    if (noCatProducts > 0) issues.push(`${noCatProducts} products have no category assigned`);
+    // Check products without images
+    const { data: noImgProducts } = await supabase.from("products").select("id, images").limit(500) as any;
+    const emptyImgCount = (noImgProducts || []).filter((p: any) => !p.images || (Array.isArray(p.images) && p.images.length === 0)).length;
+    if (emptyImgCount > 0) issues.push(`${emptyImgCount} products have no images`);
+    setIntegrityIssues(issues);
+  };
+
+  useEffect(() => { fetchCounts(); }, []);
+
+  // Auto-refresh every 10 seconds
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(fetchCounts, 10000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
+
+  // Export audit as CSV
+  const exportAuditCSV = () => {
+    const rows = [["Feature", "Maropost API", "Celora Table", "Status", "Category", "Notes"]];
+    for (const item of TRANSFER_ITEMS) {
+      rows.push([item.feature, item.maropostName, item.celoraEquivalent, STATUS_CONFIG[item.status].label, item.category, item.notes]);
+    }
+    rows.push([]);
+    rows.push(["--- Live Database Counts ---"]);
+    for (const [key, val] of Object.entries(dbCounts)) {
+      rows.push([key, String(val)]);
+    }
+    if (integrityIssues.length > 0) {
+      rows.push([]);
+      rows.push(["--- Integrity Issues ---"]);
+      for (const issue of integrityIssues) rows.push([issue]);
+    }
+    const csv = rows.map(r => r.map(c => `"${(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `transfer-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const filtered = useMemo(() => {
     return TRANSFER_ITEMS.filter(item => {
