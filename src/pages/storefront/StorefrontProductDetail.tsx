@@ -160,9 +160,13 @@ export default function StorefrontProductDetail() {
     setQuantity(1);
   }, [storeSlug, productId]);
 
-  // Track recently viewed
+  // Track recently viewed + set MOQ
   useEffect(() => {
-    if (product) trackView(product);
+    if (product) {
+      trackView(product);
+      const moqVal = product.min_order_quantity || 1;
+      if (moqVal > 1) setQuantity(moqVal);
+    }
   }, [product?.id]);
 
   const currentVariant = variants.find((v) => v.id === selectedVariant);
