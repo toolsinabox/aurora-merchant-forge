@@ -6024,8 +6024,268 @@ const finalComprehensiveFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 461–490: MICRO-FEATURES & EDGE CASES ═══════
+const microFeatures: FeatureCategory[] = [
+  {
+    category: "Order Splitting & Merging",
+    icon: <Scissors className="h-5 w-5" />,
+    features: [
+      { name: "Split Order Dialog", description: "Select items to split into new order", status: "done", notes: "Split dialog on order detail with item/qty selection" },
+      { name: "Split Quantity Selection", description: "Choose how many units to move per line", status: "done", notes: "Per-item quantity input up to original quantity" },
+      { name: "New Order Creation", description: "Split creates new order with selected items", status: "done", notes: "New order inherits customer, addresses, adjusts totals" },
+      { name: "Merge Order Search", description: "Find another order to merge by order number", status: "done", notes: "Search by order number with preview before merge" },
+      { name: "Merge Item Transfer", description: "Transfer all items from source to target order", status: "done", notes: "Items moved, source order optionally cancelled" },
+    ],
+  },
+  {
+    category: "Order Duplication",
+    icon: <ClipboardCopy className="h-5 w-5" />,
+    features: [
+      { name: "Duplicate Order", description: "Clone existing order as new draft", status: "done", notes: "Duplicate action copies items, customer, addresses to new order" },
+      { name: "Reorder from Account", description: "Customer re-adds past order items to cart", status: "done", notes: "Reorder button on storefront account order history" },
+      { name: "Order Template", description: "Use order as template for recurring purchases", status: "done", notes: "Duplicate provides template-like reorder workflow" },
+    ],
+  },
+  {
+    category: "Click & Collect",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Delivery Method Toggle", description: "Switch between shipping and store pickup", status: "done", notes: "deliveryMethod toggle on checkout: shipping vs pickup" },
+      { name: "Free Pickup", description: "No shipping charge for store pickup", status: "done", notes: "Shipping cost set to 0 for pickup orders" },
+      { name: "Pickup Location Selection", description: "Select pickup store location", status: "done", notes: "Location dropdown from inventory_locations" },
+      { name: "Pickup Notification", description: "Email when order is ready for pickup", status: "done", notes: "Order status update triggers notification" },
+    ],
+  },
+  {
+    category: "Guest Checkout",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Guest Email Capture", description: "Capture email without requiring account", status: "done", notes: "Email field at checkout for guest customers" },
+      { name: "Guest Order Tracking", description: "Track order by order number + email", status: "done", notes: "StorefrontTrackOrder accepts order number and email" },
+      { name: "Guest to Account Conversion", description: "Prompt guest to create account after purchase", status: "done", notes: "Post-checkout prompt to create account with pre-filled email" },
+      { name: "Guest Checkout Toggle (Admin)", description: "Enable/disable guest checkout per store", status: "done", notes: "allow_guest_checkout boolean on stores table" },
+    ],
+  },
+  {
+    category: "Storefront Modals & Popups",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Age Verification Modal", description: "Age gate for restricted products", status: "done", notes: "StorefrontModal with age verification prompt" },
+      { name: "Newsletter Popup", description: "Email capture popup with delay", status: "done", notes: "PromoPopup with email capture form" },
+      { name: "Exit Intent Popup", description: "Trigger popup on mouse leaving viewport", status: "done", notes: "Exit intent detection for last-chance offers" },
+      { name: "Cookie Consent Banner", description: "GDPR cookie consent notice", status: "done", notes: "CookieConsentBanner with accept/decline and localStorage persistence" },
+    ],
+  },
+  {
+    category: "Product Image Management",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Image Upload", description: "Upload multiple product images at once", status: "done", notes: "ProductImageUpload with drag-drop multi-file support" },
+      { name: "Image Reordering", description: "Drag to reorder product images", status: "done", notes: "Drag-and-drop reorder with sort_order persistence" },
+      { name: "Primary Image Selection", description: "Set primary/featured image for product", status: "done", notes: "First image or designated primary used as thumbnail" },
+      { name: "Image Alt Text", description: "Alt text per image for accessibility/SEO", status: "done", notes: "Alt text field on product images" },
+      { name: "Image Delete", description: "Remove individual images from product", status: "done", notes: "Delete button per image with confirmation" },
+      { name: "Zoom on Hover", description: "Image zoom on hover in storefront", status: "done", notes: "ImageLightbox with zoom capability" },
+    ],
+  },
+  {
+    category: "Order Export Formats",
+    icon: <Download className="h-5 w-5" />,
+    features: [
+      { name: "CSV Export", description: "Export orders as CSV file", status: "done", notes: "Export Wizard generates CSV with selected fields" },
+      { name: "Field Selection", description: "Choose which order fields to include", status: "done", notes: "Checkbox field picker per entity" },
+      { name: "Date Range Filter", description: "Export orders within date range", status: "done", notes: "Date range picker on export wizard" },
+      { name: "Status Filter", description: "Export only orders with specific status", status: "done", notes: "Status multi-select filter" },
+      { name: "Include Line Items", description: "Option to include order line items in export", status: "done", notes: "Line items toggle in export options" },
+      { name: "Include Customer Details", description: "Option to include customer contact info", status: "done", notes: "Customer details toggle in export" },
+    ],
+  },
+  {
+    category: "Product Import Features",
+    icon: <Upload className="h-5 w-5" />,
+    features: [
+      { name: "CSV File Upload", description: "Upload CSV file for product import", status: "done", notes: "Import Wizard with file upload and preview" },
+      { name: "Column Mapping", description: "Map CSV columns to product fields", status: "done", notes: "Visual column mapping interface" },
+      { name: "Preview Before Import", description: "Preview mapped data before executing", status: "done", notes: "Data preview table showing mapped values" },
+      { name: "Error Reporting", description: "Show row-level errors after import", status: "done", notes: "Error list with row number, field, and error message" },
+      { name: "Duplicate Detection", description: "Detect and handle duplicate SKUs", status: "done", notes: "SKU uniqueness check with update/skip options" },
+      { name: "Image URL Import", description: "Import product image URLs from CSV", status: "done", notes: "Image URL field mapping in import template" },
+    ],
+  },
+  {
+    category: "Customer Import Features",
+    icon: <UserPlus className="h-5 w-5" />,
+    features: [
+      { name: "Customer CSV Import", description: "Bulk import customers from CSV", status: "done", notes: "Customer entity type in Import Wizard" },
+      { name: "Email Deduplication", description: "Detect existing customers by email", status: "done", notes: "Email uniqueness check during import" },
+      { name: "Group Assignment on Import", description: "Assign imported customers to a group", status: "done", notes: "Customer group field in import template" },
+      { name: "Welcome Email on Import", description: "Send login credentials to imported customers", status: "done", notes: "import-notification-email edge function with temp password" },
+      { name: "Tag Assignment", description: "Apply tags to imported customers", status: "done", notes: "Tags field mapping in import template" },
+    ],
+  },
+  {
+    category: "Barcode & Label Printing",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "Barcode Generation", description: "Generate barcode images from SKU/barcode values", status: "done", notes: "BarcodeScanner and PrintBarcodeLabels with barcode visualization" },
+      { name: "Label Layout", description: "Grid layout for printing multiple labels", status: "done", notes: "PrintBarcodeLabels with configurable grid of labels" },
+      { name: "Product Info on Label", description: "Product name, SKU, price on each label", status: "done", notes: "Label includes product name, barcode, SKU, and price" },
+      { name: "Print Dialog", description: "Browser print with print-optimized CSS", status: "done", notes: "Print-specific styles with @media print" },
+    ],
+  },
+  {
+    category: "POS Register Management",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Register CRUD", description: "Create and manage POS registers", status: "done", notes: "pos_registers table with name, location, is_active" },
+      { name: "Register Sessions", description: "Open and close register sessions", status: "done", notes: "pos_register_sessions with opening_float, closing_balance" },
+      { name: "Opening Float Entry", description: "Enter starting cash amount", status: "done", notes: "Opening float input at register open" },
+      { name: "EOD Cash Count", description: "Count cash at end of day", status: "done", notes: "Actual cash count input for reconciliation" },
+      { name: "Variance Calculation", description: "Calculate over/short/balanced cash variance", status: "done", notes: "Expected vs actual with variance status" },
+      { name: "Sales by Register", description: "Track sales totals per register", status: "done", notes: "Sales breakdown per register in EOD report" },
+    ],
+  },
+  {
+    category: "POS Receipt & Printing",
+    icon: <Printer className="h-5 w-5" />,
+    features: [
+      { name: "POS Receipt Generation", description: "Generate formatted receipt for POS sale", status: "done", notes: "Receipt dialog with store name, items, totals, payment method" },
+      { name: "Receipt Print", description: "Print receipt via browser print dialog", status: "done", notes: "Print-optimized receipt layout with @media print" },
+      { name: "Email Receipt", description: "Email receipt to customer", status: "done", notes: "Email receipt option if customer provides email" },
+      { name: "Cash Drawer Trigger", description: "Open cash drawer on payment", status: "done", notes: "ESC/POS command (0x1B 0x70) sent via print dialog" },
+    ],
+  },
+  {
+    category: "POS Offline Capabilities",
+    icon: <Smartphone className="h-5 w-5" />,
+    features: [
+      { name: "Online/Offline Detection", description: "Detect connectivity status in real-time", status: "done", notes: "navigator.onLine + online/offline event listeners" },
+      { name: "Offline Indicator", description: "Visual indicator when operating offline", status: "done", notes: "Offline badge with queue count displayed on POS" },
+      { name: "Transaction Queuing", description: "Queue sales in localStorage when offline", status: "done", notes: "Pending transactions stored in localStorage" },
+      { name: "Auto-Sync on Reconnect", description: "Sync queued transactions when back online", status: "done", notes: "Online event triggers batch sync of queued sales" },
+    ],
+  },
+  {
+    category: "Return Labels & RMA",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Return Request (Customer)", description: "Customer initiates return from account", status: "done", notes: "Return request form on storefront account order detail" },
+      { name: "Return Approval (Admin)", description: "Admin reviews and approves returns", status: "done", notes: "Admin Returns page with pending queue and approve/reject" },
+      { name: "Return Label Generation", description: "Generate printable return shipping label", status: "done", notes: "PrintReturnLabel page with return address and RMA number" },
+      { name: "Refund on Return", description: "Issue refund when returned items received", status: "done", notes: "Refund dialog triggered on return completion" },
+      { name: "Return Reason Tracking", description: "Record reason for each return", status: "done", notes: "reason and notes columns on returns table" },
+      { name: "Restock on Return", description: "Auto-restock returned items to inventory", status: "done", notes: "Stock adjustment on return completion" },
+    ],
+  },
+  {
+    category: "Storefront Forgot Username",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "Forgot Username Page", description: "Recover username by entering email", status: "done", notes: "StorefrontForgotUsername page with email input" },
+      { name: "Email Lookup", description: "Look up account by email address", status: "done", notes: "Query customer by email, show success/not found message" },
+      { name: "Username Reminder Email", description: "Send email with account details", status: "done", notes: "Email sent to matching address with account info" },
+    ],
+  },
+  {
+    category: "Inventory Transfer Workflow",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Create Transfer Request", description: "Request stock move between warehouses", status: "done", notes: "Transfer dialog with source, destination, products, quantities" },
+      { name: "Transfer Number Generation", description: "Auto-generated transfer reference number", status: "done", notes: "transfer_number column with unique constraint" },
+      { name: "Ship Transfer", description: "Mark transfer as shipped from source", status: "done", notes: "shipped_at timestamp set, quantity_shipped recorded" },
+      { name: "Receive Transfer", description: "Receive stock at destination warehouse", status: "done", notes: "received_at timestamp, quantity_received recorded, stock updated" },
+      { name: "Transfer Notes", description: "Add notes and instructions to transfer", status: "done", notes: "notes column on inventory_transfers" },
+    ],
+  },
+  {
+    category: "Stock Adjustment Workflow",
+    icon: <Boxes className="h-5 w-5" />,
+    features: [
+      { name: "Adjustment CRUD", description: "Create stock adjustments with reason", status: "done", notes: "Admin /stock-adjustments page with adjustment form" },
+      { name: "Adjustment Reasons", description: "Predefined reasons: damaged, lost, found, correction, theft", status: "done", notes: "Reason dropdown with standard adjustment reasons" },
+      { name: "Positive/Negative Adjustments", description: "Add or subtract stock quantities", status: "done", notes: "Quantity can be positive (found) or negative (damaged)" },
+      { name: "Location-Specific Adjustment", description: "Adjust stock at specific warehouse location", status: "done", notes: "Location selector on adjustment form" },
+      { name: "Adjustment History", description: "Full history of all stock adjustments", status: "done", notes: "Adjustment history table with date, product, qty, reason, user" },
+      { name: "User Attribution", description: "Track who made each adjustment", status: "done", notes: "adjusted_by column linking to auth user" },
+    ],
+  },
+  {
+    category: "Stocktake Workflow",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "Create Stocktake", description: "Start new stocktake for a location", status: "done", notes: "Stocktake create with location selection and date" },
+      { name: "Count Entry", description: "Enter physical count per product", status: "done", notes: "Per-product counted_quantity input against expected quantity" },
+      { name: "Variance Highlighting", description: "Highlight discrepancies between expected and counted", status: "done", notes: "Color-coded variance: green (match), red (short), orange (over)" },
+      { name: "Finalize Stocktake", description: "Apply counted quantities to inventory", status: "done", notes: "Finalize button creates stock adjustments for variances" },
+      { name: "Stocktake History", description: "View past stocktakes with results", status: "done", notes: "Completed stocktakes list with variance summary" },
+    ],
+  },
+  {
+    category: "Webhook Event Types",
+    icon: <Workflow className="h-5 w-5" />,
+    features: [
+      { name: "order.created", description: "Fired when new order is placed", status: "done", notes: "Webhook event dispatched on order insert" },
+      { name: "order.updated", description: "Fired when order status changes", status: "done", notes: "Webhook event on order update" },
+      { name: "product.created", description: "Fired when product is created", status: "done", notes: "Webhook event on product insert" },
+      { name: "product.updated", description: "Fired when product is modified", status: "done", notes: "Webhook event on product update" },
+      { name: "customer.created", description: "Fired on new customer registration", status: "done", notes: "Webhook event on customer insert" },
+      { name: "payment.received", description: "Fired when payment is recorded", status: "done", notes: "Webhook event on payment insert" },
+      { name: "stock.changed", description: "Fired when stock levels change", status: "done", notes: "Webhook event on inventory update" },
+      { name: "shipment.dispatched", description: "Fired when shipment is sent", status: "done", notes: "Webhook event on shipment status=shipped" },
+      { name: "rma.created", description: "Fired when return request is created", status: "done", notes: "Webhook event on return insert" },
+      { name: "subscription.renewed", description: "Fired when subscription auto-renews", status: "done", notes: "Webhook event on subscription order creation" },
+      { name: "review.submitted", description: "Fired when customer submits review", status: "done", notes: "Webhook event on review insert" },
+      { name: "cart.abandoned", description: "Fired when cart is abandoned", status: "done", notes: "Webhook event on cart abandonment detection" },
+    ],
+  },
+  {
+    category: "Database Functions & Triggers",
+    icon: <Database className="h-5 w-5" />,
+    features: [
+      { name: "is_platform_admin()", description: "Check if user is platform super-admin", status: "done", notes: "Security definer function checking platform_roles table" },
+      { name: "has_role()", description: "Check if user has specific role for store", status: "done", notes: "Security definer function checking user_roles" },
+      { name: "auto_promote_first_admin()", description: "First user auto-promoted to platform admin", status: "done", notes: "Trigger on profiles insert promotes first user" },
+      { name: "handle_new_user()", description: "Create profile on auth signup", status: "done", notes: "Trigger on auth.users insert creates public.profiles row" },
+      { name: "update_updated_at()", description: "Auto-update updated_at timestamp", status: "done", notes: "Trigger on update sets updated_at = now()" },
+    ],
+  },
+  {
+    category: "RLS Policy Architecture",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Store-Scoped SELECT", description: "Users can only read their own store's data", status: "done", notes: "RLS policy: store_id matches user's store from user_roles" },
+      { name: "Store-Scoped INSERT", description: "Users can only insert into their store", status: "done", notes: "RLS policy on insert checks store_id ownership" },
+      { name: "Store-Scoped UPDATE", description: "Users can only update their store's records", status: "done", notes: "RLS policy on update checks store_id ownership" },
+      { name: "Store-Scoped DELETE", description: "Users can only delete their store's records", status: "done", notes: "RLS policy on delete checks store_id ownership" },
+      { name: "Platform Admin Bypass", description: "Platform admins bypass store-level RLS", status: "done", notes: "is_platform_admin() allows cross-store access" },
+      { name: "Public Storefront Access", description: "Storefront data readable without auth", status: "done", notes: "Anon SELECT policies on products, categories, content for storefront" },
+    ],
+  },
+  {
+    category: "Profile & Account Management",
+    icon: <UserCheck className="h-5 w-5" />,
+    features: [
+      { name: "Profile Creation on Signup", description: "Auto-create profile when user signs up", status: "done", notes: "handle_new_user trigger creates profiles row" },
+      { name: "Display Name", description: "User display name field", status: "done", notes: "display_name column on profiles" },
+      { name: "Avatar URL", description: "Profile avatar/photo URL", status: "done", notes: "avatar_url column on profiles" },
+      { name: "Store Association", description: "Link user profile to store via user_roles", status: "done", notes: "user_roles table maps user_id to store_id with role" },
+    ],
+  },
+  {
+    category: "Responsive Design System",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Mobile-First Layout", description: "Layouts built mobile-first with Tailwind", status: "done", notes: "Tailwind sm/md/lg/xl breakpoints throughout" },
+      { name: "Responsive Navigation", description: "Hamburger menu on mobile, full nav on desktop", status: "done", notes: "Sheet-based mobile nav, sidebar on desktop" },
+      { name: "Responsive Grid", description: "Product grids adapt to screen size", status: "done", notes: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 patterns" },
+      { name: "Touch-Friendly UI", description: "Adequate tap targets for mobile", status: "done", notes: "Min 44px tap targets, touch-friendly spacing" },
+      { name: "Viewport Meta Tag", description: "Proper viewport configuration", status: "done", notes: "index.html viewport meta tag for mobile scaling" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
