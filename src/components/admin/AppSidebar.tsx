@@ -38,6 +38,7 @@ const catalogNav = [
 
 const salesNav = [
   { title: "Orders", url: `${prefix}/orders`, icon: Package },
+  { title: "POS", url: `${prefix}/pos`, icon: Smartphone },
   { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
