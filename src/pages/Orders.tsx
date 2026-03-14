@@ -246,6 +246,7 @@ export default function Orders() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
