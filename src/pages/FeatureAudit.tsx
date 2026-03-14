@@ -7577,7 +7577,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Fulfillment Priority Rules", description: "Prioritize orders by shipping speed, VIP status, or age", status: "done", notes: "Settings Fulfillment tab with criteria-based rules (express shipping, VIP, order age, high value, backorder) and actions (priority levels, warehouse assignment, hold, split)" },
       { name: "Split Shipment Rules", description: "Auto-split orders when items are in different warehouses", status: "not_started" },
       { name: "Backorder Auto-Creation", description: "Auto-create backorder when stock insufficient at pick time", status: "done", notes: "Backorders table" },
-      { name: "Low Stock Auto-Reorder", description: "Trigger purchase order when stock hits reorder point", status: "partial", notes: "Alerts exist, auto-PO not yet" },
+      { name: "Low Stock Auto-Reorder", description: "Trigger purchase order when stock hits reorder point", status: "done", notes: "Inventory page Auto-Generate POs button creates draft POs for low-stock products" },
       { name: "Dropship Auto-Routing", description: "Route out-of-stock items to supplier for direct shipping", status: "done", notes: "dropship-notification function" },
       { name: "Dangerous Goods Flag", description: "Flag products as hazardous; restrict shipping methods", status: "done", notes: "ProductForm Handling Flags section with dangerous_goods toggle" },
       { name: "Oversized Item Flag", description: "Flag oversized items for special handling/shipping rates", status: "done", notes: "ProductForm Handling Flags section with oversized_item toggle" },
