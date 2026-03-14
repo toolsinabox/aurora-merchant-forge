@@ -162,10 +162,10 @@ export default function Products() {
 
   return (
     <AdminLayout>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-semibold">Products</h1>
+            <h1 className="text-lg font-bold tracking-tight">Products</h1>
             <p className="text-xs text-muted-foreground">{products.length} products in catalog</p>
           </div>
           <div className="flex gap-2">
@@ -176,7 +176,7 @@ export default function Products() {
             <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/export")}>
               <Download className="h-3.5 w-3.5" /> Export
             </Button>
-            <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => navigate("/products/import")}>
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/import")}>
               <Upload className="h-3.5 w-3.5" /> Import
             </Button>
             <Button size="sm" className="h-8 text-xs gap-1" onClick={() => navigate("/products/new")}>
