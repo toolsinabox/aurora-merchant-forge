@@ -7804,7 +7804,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
       { name: "Return Shipping Label Generation", description: "Auto-generate prepaid return shipping label", status: "done", notes: "PrintReturnLabel page" },
       { name: "Return Tracking", description: "Track return shipment status", status: "done", notes: "StorefrontAccount Returns tab shows return progress bar (requested → approved → processing → refunded) with visual step indicator" },
       { name: "Refund to Original Payment", description: "Process refund back to original payment method", status: "not_started" },
-      { name: "Refund to Store Credit", description: "Issue return refund as store credit instead of cash", status: "partial", notes: "Credit notes exist" },
+      { name: "Refund to Store Credit", description: "Issue return refund as store credit instead of cash", status: "done", notes: "Returns detail dialog 'Refund to Credit' button creates store_credit_transaction credit entry with return reference, marks return as refunded" },
       { name: "Exchange Workflow", description: "Exchange returned item for different size/color", status: "done", notes: "Allow Exchanges toggle in Settings Returns tab + replacement order creation on Returns page" },
       { name: "Restocking Fee", description: "Apply configurable restocking fee on returns", status: "done", notes: "Configurable restocking fee percentage in Settings Returns tab" },
       { name: "Return Window Configuration", description: "Set days allowed for returns per category/product", status: "done", notes: "Settings Returns tab with return window days, restocking fee %, require reason, allow exchanges, auto-approve, non-returnable categories" },
