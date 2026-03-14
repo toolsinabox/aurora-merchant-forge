@@ -249,6 +249,41 @@ export default function MaropostTransferAudit() {
           </CardContent>
         </Card>
 
+        {/* Live Database Counts */}
+        {Object.keys(dbCounts).length > 0 && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">Imported Records (Live)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                {[
+                  { key: "products", label: "Products" },
+                  { key: "product_variants", label: "Variants" },
+                  { key: "categories", label: "Categories" },
+                  { key: "customers", label: "Customers" },
+                  { key: "customer_addresses", label: "Addresses" },
+                  { key: "orders", label: "Orders" },
+                  { key: "order_items", label: "Line Items" },
+                  { key: "content_pages", label: "Pages" },
+                  { key: "gift_vouchers", label: "Vouchers" },
+                  { key: "suppliers", label: "Suppliers" },
+                  { key: "inventory_locations", label: "Warehouses" },
+                  { key: "inventory_stock", label: "Stock Records" },
+                  { key: "shipping_zones", label: "Shipping" },
+                  { key: "product_relations", label: "Relations" },
+                  { key: "product_specifics", label: "Specifics" },
+                ].map(({ key, label }) => (
+                  <div key={key} className="text-center p-2 rounded-lg bg-muted/50">
+                    <p className="text-lg font-bold text-foreground">{dbCounts[key] || 0}</p>
+                    <p className="text-2xs text-muted-foreground">{label}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Filters */}
         <div className="flex gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[200px]">
