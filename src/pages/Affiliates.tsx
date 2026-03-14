@@ -220,12 +220,12 @@ export default function Affiliates() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Revenue</TableHead>
-                <TableHead>Commission</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead />
+                <TableHead className="text-xs h-8">Date</TableHead>
+                <TableHead className="text-xs h-8">Order</TableHead>
+                <TableHead className="text-xs h-8">Revenue</TableHead>
+                <TableHead className="text-xs h-8">Commission</TableHead>
+                <TableHead className="text-xs h-8">Status</TableHead>
+                <TableHead className="text-xs h-8" />
               </TableRow>
             </TableHeader>
             <TableBody>

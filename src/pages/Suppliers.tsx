@@ -64,12 +64,12 @@ function SupplierPerformance({ suppliers, storeId }: { suppliers: any[]; storeId
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Supplier</TableHead>
-          <TableHead className="text-right">POs</TableHead>
-          <TableHead className="text-right">Total Spend</TableHead>
-          <TableHead className="text-right">Received</TableHead>
-          <TableHead className="text-right">On-Time %</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead className="text-xs h-8">Supplier</TableHead>
+          <TableHead className="text-xs h-8 text-right">POs</TableHead>
+          <TableHead className="text-xs h-8 text-right">Total Spend</TableHead>
+          <TableHead className="text-xs h-8 text-right">Received</TableHead>
+          <TableHead className="text-xs h-8 text-right">On-Time %</TableHead>
+          <TableHead className="text-xs h-8">Status</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -360,12 +360,12 @@ export default function Suppliers() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Supplier</TableHead>
-                      <TableHead>Product</TableHead>
-                      <TableHead>SKU</TableHead>
-                      <TableHead>Supplier Cost</TableHead>
-                      <TableHead>Preferred</TableHead>
-                      <TableHead className="w-12"></TableHead>
+                      <TableHead className="text-xs h-8">Supplier</TableHead>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8">SKU</TableHead>
+                      <TableHead className="text-xs h-8">Supplier Cost</TableHead>
+                      <TableHead className="text-xs h-8">Preferred</TableHead>
+                      <TableHead className="text-xs h-8 w-12"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

@@ -1066,11 +1066,11 @@ export default function FeatureAudit() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead className="w-8"></TableHead>
-                            <TableHead>Feature</TableHead>
-                            <TableHead className="hidden md:table-cell">Description</TableHead>
-                            <TableHead className="w-28">Status</TableHead>
-                            <TableHead className="hidden lg:table-cell">Notes</TableHead>
+                            <TableHead className="text-xs h-8 w-8"></TableHead>
+                            <TableHead className="text-xs h-8">Feature</TableHead>
+                            <TableHead className="text-xs h-8 hidden md:table-cell">Description</TableHead>
+                            <TableHead className="text-xs h-8 w-28">Status</TableHead>
+                            <TableHead className="text-xs h-8 hidden lg:table-cell">Notes</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
