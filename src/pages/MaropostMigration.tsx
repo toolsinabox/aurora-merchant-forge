@@ -71,20 +71,37 @@ const ITEMS_PER_PAGE = 20; // Maropost API has response size limits, products es
 const SCAN_PAGE_SIZE = 500; // Scan mode uses minimal fields, can handle larger pages
 
 export default function MaropostMigration() {
-  const [step, setStep] = useState<MigrationStep>("connect");
-  const [storeDomain, setStoreDomain] = useState("");
-  const [apiKey, setApiKey] = useState("");
+  const [step, setStep] = useState<MigrationStep>(() => {
+    const saved = sessionStorage.getItem("maropost_step");
+    return (saved as MigrationStep) || "connect";
+  });
+  const [storeDomain, setStoreDomain] = useState(() => sessionStorage.getItem("maropost_domain") || "");
+  const [apiKey, setApiKey] = useState(() => sessionStorage.getItem("maropost_key") || "");
   const [storeId, setStoreId] = useState("");
   const [connecting, setConnecting] = useState(false);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(() => !!sessionStorage.getItem("maropost_connected"));
   const [scanning, setScanning] = useState(false);
   const [importing, setImporting] = useState(false);
   const [connectionError, setConnectionError] = useState("");
-  const [entities, setEntities] = useState<EntityCount[]>([]);
+  const [entities, setEntities] = useState<EntityCount[]>(() => {
+    try { const s = sessionStorage.getItem("maropost_entities"); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
   const [overallProgress, setOverallProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [themeImporting, setThemeImporting] = useState(false);
   const [themeStatus, setThemeStatus] = useState<Record<string, "pending" | "converting" | "done" | "error">>({});
+
+  // Persist state to sessionStorage for resume
+  const persistState = useCallback(() => {
+    sessionStorage.setItem("maropost_step", step);
+    sessionStorage.setItem("maropost_domain", storeDomain);
+    sessionStorage.setItem("maropost_key", apiKey);
+    sessionStorage.setItem("maropost_connected", connected ? "1" : "");
+    sessionStorage.setItem("maropost_entities", JSON.stringify(entities));
+  }, [step, storeDomain, apiKey, connected, entities]);
+
+  // Auto-persist on state changes
+  useState(() => { persistState(); });
 
   const addLog = useCallback((msg: string) => {
     const ts = new Date().toLocaleTimeString();
