@@ -183,6 +183,45 @@ export default function POS() {
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
   const [voucherLoading, setVoucherLoading] = useState(false);
 
+  // Sell gift card state
+  const [showSellGiftCard, setShowSellGiftCard] = useState(false);
+  const [giftCardValue, setGiftCardValue] = useState("50");
+  const [giftCardRecipient, setGiftCardRecipient] = useState("");
+  const [giftCardSelling, setGiftCardSelling] = useState(false);
+
+  const sellGiftCard = async () => {
+    if (!storeId) return;
+    const value = parseFloat(giftCardValue);
+    if (isNaN(value) || value <= 0) { toast.error("Enter a valid amount"); return; }
+    setGiftCardSelling(true);
+    try {
+      const code = `GC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+      await supabase.from("gift_vouchers").insert({
+        store_id: storeId,
+        code,
+        initial_value: value,
+        balance: value,
+        is_active: true,
+        recipient_name: giftCardRecipient || null,
+        recipient_email: null,
+        sender_name: currentStaff || "POS",
+      });
+      // Add as cart item so it goes through normal POS sale flow
+      setCart(prev => [...prev, {
+        product_id: `giftcard-${Date.now()}`,
+        title: `Gift Card (${code})`,
+        sku: code,
+        price: value,
+        quantity: 1,
+      }]);
+      setShowSellGiftCard(false);
+      setGiftCardValue("50");
+      setGiftCardRecipient("");
+      toast.success(`Gift card ${code} created — $${value.toFixed(2)}`);
+    } catch (err: any) { toast.error(err.message); }
+    finally { setGiftCardSelling(false); }
+  };
+
   // Layby state
   const [showLayby, setShowLayby] = useState(false);
   const [laybyDeposit, setLaybyDeposit] = useState("20");

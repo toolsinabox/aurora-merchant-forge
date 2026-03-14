@@ -375,6 +375,41 @@ export default function Quotes() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Counter-Offer Dialog */}
+      <Dialog open={!!counterOpen} onOpenChange={(o) => { if (!o) setCounterOpen(null); }}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Counter-Offer</DialogTitle></DialogHeader>
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Adjust pricing or quantities and send back to customer.</p>
+            <div className="space-y-2">
+              {counterItems.map((item: any, i: number) => (
+                <div key={item.id} className="grid grid-cols-[1fr_60px_80px] gap-2 items-center">
+                  <p className="text-xs font-medium truncate">{item.title}</p>
+                  <Input className="h-7 text-xs" type="number" value={item.new_qty} onChange={e => {
+                    const updated = [...counterItems];
+                    updated[i] = { ...updated[i], new_qty: parseInt(e.target.value) || 1 };
+                    setCounterItems(updated);
+                  }} />
+                  <Input className="h-7 text-xs" type="number" step="0.01" value={item.new_price} onChange={e => {
+                    const updated = [...counterItems];
+                    updated[i] = { ...updated[i], new_price: parseFloat(e.target.value) || 0 };
+                    setCounterItems(updated);
+                  }} />
+                </div>
+              ))}
+              <p className="text-xs text-right font-medium">New Total: ${counterItems.reduce((s: number, i: any) => s + i.new_price * i.new_qty, 0).toFixed(2)}</p>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Negotiation Note</Label>
+              <Textarea className="text-xs" rows={2} value={counterNote} onChange={e => setCounterNote(e.target.value)} placeholder="e.g. Best price we can offer with volume discount..." />
+            </div>
+            <Button onClick={submitCounterOffer} disabled={counterSaving} className="w-full">
+              {counterSaving ? "Sending..." : "Send Counter-Offer"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
