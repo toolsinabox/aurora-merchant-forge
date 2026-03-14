@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { BarChart3, TrendingDown, Package, DollarSign, AlertTriangle, Percent } from "lucide-react";
+import { BarChart3, TrendingDown, Package, DollarSign, AlertTriangle, Percent, Camera, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface ProductStock {
   id: string;
