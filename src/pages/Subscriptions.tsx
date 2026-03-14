@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Repeat, Pause, Play, Trash2, CalendarDays, Package } from "lucide-react";
+import { Plus, Repeat, Pause, Play, Trash2, CalendarDays, Package, TrendingUp, TrendingDown, DollarSign, Users } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -119,6 +119,19 @@ export default function Subscriptions() {
 
   const activeSubs = subs.filter((s: any) => s.status === "active").length;
   const pausedSubs = subs.filter((s: any) => s.status === "paused").length;
+  const cancelledSubs = subs.filter((s: any) => s.status === "cancelled").length;
+  const churnRate = subs.length > 0 ? ((cancelledSubs / subs.length) * 100).toFixed(1) : "0.0";
+
+  // Calculate MRR — normalize all frequencies to monthly
+  const freqMultiplier: Record<string, number> = {
+    weekly: 4.33, fortnightly: 2.17, monthly: 1, bimonthly: 0.5, quarterly: 0.33, biannual: 0.167, annual: 0.083,
+  };
+  const mrr = subs.filter((s: any) => s.status === "active").reduce((sum: number, s: any) => {
+    const price = Number(s.unit_price) * Number(s.quantity) * (1 - Number(s.discount_percent) / 100);
+    const mult = freqMultiplier[s.frequency] || 1;
+    return sum + price * mult;
+  }, 0);
+  const arr = mrr * 12;
   const monthlyRevenue = subs.filter((s: any) => s.status === "active").reduce((sum: number, s: any) => {
     const price = Number(s.unit_price) * Number(s.quantity) * (1 - Number(s.discount_percent) / 100);
     return sum + price;
@@ -214,6 +227,42 @@ export default function Subscriptions() {
               </div>
             </DialogContent>
           </Dialog>
+        </div>
+
+        {/* Subscription Analytics KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><DollarSign className="h-3 w-3" />MRR</div>
+              <p className="text-lg font-bold">${mrr.toFixed(2)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><TrendingUp className="h-3 w-3" />ARR</div>
+              <p className="text-lg font-bold">${arr.toFixed(0)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><Users className="h-3 w-3" />Active</div>
+              <p className="text-lg font-bold">{activeSubs}</p>
+              <p className="text-[10px] text-muted-foreground">{pausedSubs} paused</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><TrendingDown className="h-3 w-3" />Churn Rate</div>
+              <p className="text-lg font-bold">{churnRate}%</p>
+              <p className="text-[10px] text-muted-foreground">{cancelledSubs} cancelled</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1"><Repeat className="h-3 w-3" />Total</div>
+              <p className="text-lg font-bold">{subs.length}</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* KPIs */}

@@ -81,11 +81,27 @@ export default function WarehouseDashboard() {
     const processing = orders.filter((o: any) => o.status === "processing");
     const shipped = orders.filter((o: any) => o.fulfillment_status === "fulfilled");
     const itemsToPick = pending.reduce((s: number, o: any) => s + (o.items_count || 0), 0);
+
+    // SLA: average hours from order creation to first shipment (for fulfilled orders)
+    const fulfilledWithDates = orders.filter((o: any) => o.fulfillment_status === "fulfilled" && o.created_at && o.shipped_at);
+    const slaHours = fulfilledWithDates.map((o: any) => {
+      const created = new Date(o.created_at).getTime();
+      const shipped = new Date(o.shipped_at).getTime();
+      return (shipped - created) / 3600000;
+    });
+    const avgSlaHours = slaHours.length > 0 ? slaHours.reduce((s, h) => s + h, 0) / slaHours.length : 0;
+    const slaTarget = 48; // 48-hour target
+    const withinSla = slaHours.filter(h => h <= slaTarget).length;
+    const slaPercent = slaHours.length > 0 ? (withinSla / slaHours.length) * 100 : 0;
+
     return {
       pendingOrders: pending.length,
       processingOrders: processing.length,
       shippedOrders: shipped.length,
       itemsToPick,
+      avgSlaHours,
+      slaPercent,
+      slaTarget,
     };
   }, [orders]);
 
@@ -143,6 +159,34 @@ export default function WarehouseDashboard() {
                 <p className="text-xs text-muted-foreground">Shipped</p>
                 {isFullLoading ? <Skeleton className="h-5 w-10 mt-0.5" /> : <p className="text-lg font-bold">{orderStats.shippedOrders}</p>}
               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Fulfillment SLA */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Avg Fulfillment Time</p>
+              {isFullLoading ? <Skeleton className="h-5 w-20" /> : (
+                <p className="text-lg font-bold">{orderStats.avgSlaHours > 0 ? `${orderStats.avgSlaHours.toFixed(1)}h` : "—"}</p>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">SLA Target</p>
+              <p className="text-lg font-bold">{orderStats.slaTarget}h</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-muted-foreground mb-1">Within SLA</p>
+              {isFullLoading ? <Skeleton className="h-5 w-20" /> : (
+                <p className={`text-lg font-bold ${orderStats.slaPercent >= 90 ? "text-green-600" : orderStats.slaPercent >= 70 ? "text-yellow-600" : "text-red-600"}`}>
+                  {orderStats.slaPercent > 0 ? `${orderStats.slaPercent.toFixed(0)}%` : "—"}
+                </p>
+              )}
             </CardContent>
           </Card>
         </div>

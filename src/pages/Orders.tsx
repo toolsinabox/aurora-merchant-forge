@@ -218,9 +218,13 @@ export default function Orders() {
                 </Button>
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
-                  ids.forEach(id => window.open(`/orders/${id}/invoice`, "_blank"));
+                  // Open all invoices in new tabs for batch printing
+                  ids.forEach((id, i) => {
+                    setTimeout(() => window.open(`/orders/${id}/invoice`, "_blank"), i * 300);
+                  });
+                  toast.success(`Opening ${ids.length} invoices for batch printing`);
                 }}>
-                  <Printer className="h-3 w-3" /> <span className="btn-label">Invoices</span>
+                  <Printer className="h-3 w-3" /> <span className="btn-label">Batch Invoices ({selected.size})</span>
                 </Button>
               </div>
             </CardContent>
