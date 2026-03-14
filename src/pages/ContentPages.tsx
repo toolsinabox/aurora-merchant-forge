@@ -15,7 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff, History, RotateCcw } from "lucide-react";
+import { Plus, FileText, Trash2, Pencil, Search, Eye, EyeOff, History, RotateCcw, AlertTriangle, CheckCircle } from "lucide-react";
 import { format } from "date-fns";
 
 interface ContentVersion {
