@@ -8120,7 +8120,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Custom Report Builder", description: "Drag-and-drop report builder with saved reports", status: "done", notes: "ReportBuilder page" },
       { name: "Scheduled Report Emails", description: "Auto-email reports on schedule", status: "done", notes: "scheduled-report-email function" },
       { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "partial" },
-      { name: "Dashboard Widget Customization", description: "Rearrange/add dashboard widgets", status: "partial" },
+      { name: "Dashboard Widget Customization", description: "Rearrange/add dashboard widgets", status: "done", notes: "Dashboard Widgets popover" },
     ],
   },
 ];
