@@ -217,6 +217,22 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="page-header-actions">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+                  <Settings2 className="h-3.5 w-3.5" /> <span className="btn-label">Widgets</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-52 p-2" align="end">
+                <p className="text-xs font-medium mb-2 px-1">Show/Hide Widgets</p>
+                {WIDGET_KEYS.map(key => (
+                  <label key={key} className="flex items-center gap-2 px-1 py-1 text-xs cursor-pointer hover:bg-muted rounded">
+                    <Checkbox checked={w(key)} onCheckedChange={() => toggleWidget(key)} />
+                    {WIDGET_LABELS[key]}
+                  </label>
+                ))}
+              </PopoverContent>
+            </Popover>
             <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate("/products/new")}>
               <Plus className="h-3.5 w-3.5" /> <span className="btn-label">Product</span>
             </Button>
