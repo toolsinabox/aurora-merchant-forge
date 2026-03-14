@@ -100,6 +100,7 @@ const featureData: FeatureCategory[] = [
       { name: "Preorder Quantity", description: "Quantity available for preorder before stock arrives", status: "done" },
       { name: "P.O.A / Special Order Products", description: "Price On Application — hide price, show 'Contact for Price'", status: "done", notes: "poa boolean on products table, storefront hides price and shows contact CTA" },
       { name: "Multi-Currency Pricing", description: "Display/sell in multiple currencies with conversion rules", status: "done", notes: "currencies table with exchange rates; storefront CurrencySwitcher component converts all prices using selected currency rate; useCurrency hook persists selection in localStorage" },
+      { name: "Product Scheduling (Publish/Unpublish)", description: "Schedule products to auto-publish and auto-unpublish at specific dates/times", status: "done", notes: "scheduled_publish_at and scheduled_unpublish_at columns on products table; datetime-local inputs in ProductForm Scheduling card; auto-set status to active/draft at scheduled time" },
     ],
   },
 
