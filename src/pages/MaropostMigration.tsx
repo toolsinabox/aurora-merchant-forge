@@ -201,7 +201,8 @@ export default function MaropostMigration() {
         body: {
           action: FETCH_ACTION_MAP[entity] || "test_connection",
           store_domain: storeDomain, api_key: apiKey,
-          filter: {}, page, limit: ITEMS_PER_PAGE,
+          page, limit: ITEMS_PER_PAGE,
+          // Don't pass scan_mode - we want full data for import
         },
       });
 
@@ -209,12 +210,13 @@ export default function MaropostMigration() {
 
       const responseData = data?.data;
       if (responseData) {
-        const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime");
+        const keys = Object.keys(responseData).filter(k => k !== "Messages" && k !== "CurrentTime" && k !== "Ack");
         if (keys.length > 0) {
           const items = responseData[keys[0]];
           if (Array.isArray(items) && items.length > 0) {
             allItems = [...allItems, ...items];
             addLog(`  Fetched page ${page + 1}: ${items.length} ${entity}`);
+            // If we got fewer items than the page size, we've reached the end
             if (items.length < ITEMS_PER_PAGE) hasMore = false;
           } else {
             hasMore = false;
@@ -226,8 +228,8 @@ export default function MaropostMigration() {
         hasMore = false;
       }
       page++;
-      // Safety: max 50 pages (5000 items)
-      if (page >= 50) { addLog(`  ⚠ Reached 50-page limit for ${entity}`); break; }
+      // Safety: max 200 pages
+      if (page >= 200) { addLog(`  ⚠ Reached 200-page limit for ${entity}`); break; }
     }
 
     return allItems;
