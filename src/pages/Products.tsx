@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,10 +8,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useProducts, useDeleteProducts, useUpdateProduct, useCategories } from "@/hooks/use-data";
-import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil } from "lucide-react";
+import { Plus, Search, Download, Upload, MoreHorizontal, Trash2, Eye, Loader2, Pencil, Columns3, Save, BookmarkCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent,
+  DropdownMenuCheckboxItem, DropdownMenuSeparator, DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +21,7 @@ import { toast } from "sonner";
 import { BulkEditDialog } from "@/components/products/BulkEditDialog";
 import { ZipImageUpload } from "@/components/products/ZipImageUpload";
 import { TablePagination } from "@/components/admin/TablePagination";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
