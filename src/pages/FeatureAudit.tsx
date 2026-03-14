@@ -8116,7 +8116,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "Repeat Purchase Rate", description: "Percentage of customers who reorder", status: "done", notes: "Analytics page Repeat Purchase Rate card showing rate %, total customers, and repeat buyers count" },
       { name: "Best Sellers Report", description: "Top products by revenue/units", status: "done", notes: "Analytics page Top Selling Products table" },
       { name: "Worst Sellers Report", description: "Bottom products by revenue/units", status: "done", notes: "Analytics page Worst Sellers table showing bottom 10 products by revenue" },
-      { name: "Forecast vs Actual Sales", description: "Compare forecasted to actual sales", status: "not_started" },
+      { name: "Forecast vs Actual Sales", description: "Compare forecasted to actual sales", status: "done", notes: "Analytics page Forecast vs Actual card with 12-week line chart (actual vs 3-week moving average forecast), accuracy %" },
       { name: "Custom Report Builder", description: "Drag-and-drop report builder with saved reports", status: "done", notes: "ReportBuilder page" },
       { name: "Scheduled Report Emails", description: "Auto-email reports on schedule", status: "done", notes: "scheduled-report-email function" },
       { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "partial" },
