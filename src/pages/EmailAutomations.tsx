@@ -110,13 +110,13 @@ export default function EmailAutomations() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Email Automations</h1>
-            <p className="text-sm text-muted-foreground">Automated email workflows triggered by customer actions</p>
+            <h1 className="text-lg font-semibold">Email Automations</h1>
+            <p className="text-xs text-muted-foreground">Automated email workflows triggered by customer actions</p>
           </div>
-          <Button size="sm" onClick={() => setShowForm(true)}><Plus className="h-4 w-4 mr-1" /> New Automation</Button>
+          <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowForm(true)}><Plus className="h-3.5 w-3.5" /> New Automation</Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
