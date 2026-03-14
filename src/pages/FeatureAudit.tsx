@@ -8269,7 +8269,7 @@ const storefrontAdvancedFeatures: FeatureCategory[] = [
       { name: "Product Tabs (Custom)", description: "Customizable tabs on product page (specs, reviews, etc.)", status: "done" },
       { name: "Recently Viewed Products", description: "Show recently viewed products across pages", status: "done", notes: "use-recently-viewed hook" },
       { name: "Product Comparison Table", description: "Side-by-side product comparison", status: "done", notes: "StorefrontCompare + CompareContext" },
-      { name: "Infinite Scroll (Product List)", description: "Load more products on scroll vs pagination", status: "not_started" },
+      { name: "Infinite Scroll (Product List)", description: "Load more products on scroll vs pagination", status: "done", notes: "IntersectionObserver-based infinite scroll on StorefrontProducts replacing pagination" },
       { name: "Faceted Search / Filter Sidebar", description: "Multi-attribute filtering (price, brand, size, color)", status: "done", notes: "StorefrontSidebar" },
       { name: "Search Autocomplete (Instant)", description: "Instant search suggestions as user types", status: "done", notes: "StorefrontSearch" },
       { name: "Search Results Page", description: "Dedicated search results with filters", status: "done" },
