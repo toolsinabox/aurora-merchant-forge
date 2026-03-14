@@ -66,6 +66,14 @@ export function ProductImageUpload({ storeId, productId, images, onImagesChange 
     onImagesChange(images.filter((_, i) => i !== index));
   }, [images, onImagesChange]);
 
+  const moveImage = useCallback((index: number, direction: "up" | "down") => {
+    const newIdx = direction === "up" ? index - 1 : index + 1;
+    if (newIdx < 0 || newIdx >= images.length) return;
+    const newImages = [...images];
+    [newImages[index], newImages[newIdx]] = [newImages[newIdx], newImages[index]];
+    onImagesChange(newImages);
+  }, [images, onImagesChange]);
+
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
