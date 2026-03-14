@@ -8038,7 +8038,7 @@ const customerAdvancedFeatures: FeatureCategory[] = [
     category: "Customer Management — Advanced",
     icon: <UserPlus className="h-5 w-5" />,
     features: [
-      { name: "Customer Merge (Deduplication)", description: "Merge duplicate customer records", status: "not_started" },
+      { name: "Customer Merge (Deduplication)", description: "Merge duplicate customer records", status: "done", notes: "Customers page — select 2+ customers with checkboxes, click Merge, pick primary record, orders reassigned and duplicates deleted" },
       { name: "Customer Import from CSV", description: "Bulk import customers from CSV file", status: "done", notes: "ImportWizard" },
       { name: "Customer Export to CSV", description: "Export customer list to CSV", status: "done", notes: "ExportWizard" },
       { name: "Customer Address Book (Multiple)", description: "Store multiple addresses per customer", status: "partial" },
