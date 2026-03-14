@@ -276,6 +276,7 @@ export default function ContentPages() {
                     <TableCell className="py-2">
                       <div className="flex gap-1">
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => openEdit(p)}><Pencil className="h-3 w-3" /></Button>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => { setVersionPageId(p.id); setVersions(getVersions(p.id)); }}><History className="h-3 w-3" /></Button>
                         <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteMutation.mutate(p.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
                     </TableCell>
