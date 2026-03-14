@@ -265,10 +265,11 @@ export default function MaropostTransferAudit() {
               Complete mapping of Maropost Commerce Cloud features and their transfer status to our platform
             </p>
           </div>
-          <Button onClick={() => window.location.href = window.location.pathname.replace("maropost-transfer-audit", "maropost-migration")}>
-            <ArrowRight className="h-4 w-4 mr-2" />
-            Start Migration
+          <Button variant="outline" onClick={fetchCounts}><RefreshCw className="h-4 w-4 mr-2" />Refresh Counts</Button>
+          <Button variant="outline" onClick={() => setAutoRefresh(!autoRefresh)}>
+            {autoRefresh ? <><Activity className="h-4 w-4 mr-2 animate-pulse" />Auto-Refresh ON</> : <><Clock className="h-4 w-4 mr-2" />Auto-Refresh OFF</>}
           </Button>
+          <Button variant="outline" onClick={exportAuditCSV}><Archive className="h-4 w-4 mr-2" />Export CSV</Button>
         </div>
 
         {/* Stats Cards */}
