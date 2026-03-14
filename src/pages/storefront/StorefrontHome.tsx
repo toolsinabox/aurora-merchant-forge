@@ -104,17 +104,19 @@ export default function StorefrontHome() {
         </section>
 
         {/* Trust Badges */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-8 sm:my-10">
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-4 my-8 sm:my-10 stagger-children">
           {[
             { icon: Truck, label: "Free Shipping", desc: "On qualifying orders" },
             { icon: ShieldCheck, label: "Secure Checkout", desc: "100% encrypted" },
             { icon: RotateCcw, label: "Easy Returns", desc: "Hassle-free process" },
             { icon: Star, label: "Quality Promise", desc: "Curated products" },
           ].map((badge) => (
-            <div key={badge.label} className="flex flex-col items-center text-center p-4 rounded-xl bg-card border hover:shadow-sm transition-shadow">
-              <badge.icon className="h-6 w-6 text-primary mb-2" />
+            <div key={badge.label} className="card-hover flex flex-col items-center text-center p-5 rounded-xl bg-card border group cursor-default">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                <badge.icon className="h-5 w-5 text-primary" />
+              </div>
               <p className="text-sm font-semibold">{badge.label}</p>
-              <p className="text-xs text-muted-foreground">{badge.desc}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{badge.desc}</p>
             </div>
           ))}
         </section>
