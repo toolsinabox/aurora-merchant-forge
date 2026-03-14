@@ -93,7 +93,7 @@ export default function MaropostMigration() {
   // Get current store ID
   const resolveStoreId = useCallback(async () => {
     if (storeId) return storeId;
-    const { data } = await supabase.from("stores").select("id").limit(1).single();
+    const { data } = await supabase.from("stores").select("id").limit(1).single() as any;
     if (data?.id) { setStoreId(data.id); return data.id; }
     return null;
   }, [storeId]);
