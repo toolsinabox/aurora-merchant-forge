@@ -251,12 +251,12 @@ export default function Dashboard() {
           <EmptyDashboard navigate={navigate} />
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {w("kpis") && <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <KPICard title="Total Revenue" value={totalRevenue.toFixed(2)} icon={DollarSign} prefix="$" loading={loadingOrders} change={revenueChange} />
               <KPICard title="Total Orders" value={orders.length} icon={ShoppingCart} loading={loadingOrders} />
               <KPICard title="Avg Order Value" value={avgOrderValue.toFixed(2)} icon={TrendingUp} prefix="$" loading={loadingOrders} />
               <KPICard title="Active Products" value={activeProducts} icon={Package} loading={loadingProducts} suffix={lowStockProducts > 0 ? ` (${lowStockProducts} low stock)` : ""} />
-            </div>
+            </div>}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <Card className="lg:col-span-2">
