@@ -7971,7 +7971,381 @@ const securityComplianceFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures]);
+// ═══════ WAVE 6 — FINAL REMAINING FEATURES ═══════
+
+const carrierIntegrationFeatures: FeatureCategory[] = [
+  {
+    category: "Carrier Integrations — Deep",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Australia Post API (eParcel)", description: "Create consignments, print labels, track parcels via AusPost eParcel", status: "partial", notes: "carrier-rates function" },
+      { name: "Australia Post MyPost Business", description: "MyPost Business integration for discounted rates", status: "not_started" },
+      { name: "StarTrack API", description: "StarTrack consignment creation and label printing", status: "partial", notes: "starshipit-sync covers some" },
+      { name: "Aramex (Fastway) API", description: "Aramex/Fastway courier integration for AU/NZ", status: "not_started" },
+      { name: "DHL Express API", description: "DHL Express shipment creation and tracking", status: "not_started" },
+      { name: "FedEx API", description: "FedEx shipping rates, labels, and tracking", status: "not_started" },
+      { name: "UPS API", description: "UPS rate quotes, shipment creation, tracking", status: "not_started" },
+      { name: "TNT/FedEx Express API", description: "TNT Express integration (now FedEx)", status: "not_started" },
+      { name: "Sendle API", description: "Sendle parcel delivery for small business", status: "not_started" },
+      { name: "CouriersPlease API", description: "CouriersPlease integration for domestic AU", status: "not_started" },
+      { name: "Toll IPEC API", description: "Toll freight and parcel delivery", status: "not_started" },
+      { name: "Hunter Express API", description: "Hunter Express courier integration", status: "not_started" },
+      { name: "Allied Express API", description: "Allied Express same-day/next-day courier", status: "not_started" },
+      { name: "Click & Collect Carrier", description: "Pseudo-carrier for in-store pickup orders", status: "partial" },
+      { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifests", status: "not_started" },
+      { name: "Carrier Label Batch Print", description: "Batch print shipping labels for multiple orders", status: "not_started" },
+      { name: "Carrier Rate Caching", description: "Cache carrier rate lookups to reduce API calls", status: "not_started" },
+      { name: "Carrier Fallback Logic", description: "Fallback to secondary carrier if primary fails", status: "not_started" },
+      { name: "Carrier Account Switching", description: "Use different carrier accounts per warehouse", status: "not_started" },
+      { name: "Dangerous Goods Declaration", description: "DG flags and documentation for hazmat shipments", status: "not_started" },
+      { name: "Authority To Leave (ATL)", description: "ATL flag on shipments for unattended delivery", status: "not_started" },
+      { name: "Delivery Instructions Pass-Through", description: "Pass customer delivery notes to carrier API", status: "not_started" },
+    ],
+  },
+];
+
+const orderWorkflowFeatures: FeatureCategory[] = [
+  {
+    category: "Order Workflows — Advanced",
+    icon: <Workflow className="h-5 w-5" />,
+    features: [
+      { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "partial", notes: "Status-based hold" },
+      { name: "Order Auto-Allocation Rules", description: "Auto-assign orders to warehouse by region/stock", status: "not_started" },
+      { name: "Split Shipment (Partial Fulfillment)", description: "Ship part of an order, hold remainder", status: "partial" },
+      { name: "Backorder Auto-Creation", description: "Auto-create backorders when stock insufficient", status: "done", notes: "backorders table" },
+      { name: "Order Merge", description: "Merge multiple orders from same customer", status: "not_started" },
+      { name: "Order Clone / Reorder", description: "Clone existing order as new draft", status: "not_started" },
+      { name: "Recurring Order (Subscription)", description: "Auto-repeat orders on schedule", status: "done", notes: "subscriptions table" },
+      { name: "Order Priority Flag", description: "Mark orders as urgent/priority for fulfillment", status: "not_started" },
+      { name: "Order Tags / Labels", description: "Custom tags on orders for filtering", status: "partial" },
+      { name: "Order Internal Notes (Timeline)", description: "Chronological internal notes log per order", status: "done", notes: "order_notes table" },
+      { name: "Order Custom Fields", description: "Custom metadata fields on orders", status: "partial" },
+      { name: "Order Status Webhook Triggers", description: "Fire webhooks on order status changes", status: "done", notes: "webhook-dispatcher function" },
+      { name: "Order Archive / Purge", description: "Archive old orders, purge test orders", status: "not_started" },
+      { name: "Draft Orders / Quotes Conversion", description: "Convert draft/quote to live order with one click", status: "done", notes: "Quotes page" },
+      { name: "Order Fraud Scoring", description: "Risk score based on IP, email, address signals", status: "not_started" },
+      { name: "Order Batch Status Update", description: "Bulk change status of multiple orders", status: "partial" },
+      { name: "Order Batch Invoice Generation", description: "Generate invoices for selected orders in bulk", status: "not_started" },
+      { name: "Order Payment Retry", description: "Retry failed payment on existing order", status: "not_started" },
+      { name: "Order Refund (Partial / Full)", description: "Process partial or full refunds from order detail", status: "done", notes: "credit_notes table" },
+      { name: "Order Exchange Workflow", description: "Replace items without full return/reorder flow", status: "not_started" },
+    ],
+  },
+];
+
+const customerAdvancedFeatures: FeatureCategory[] = [
+  {
+    category: "Customer Management — Advanced",
+    icon: <UserPlus className="h-5 w-5" />,
+    features: [
+      { name: "Customer Merge (Deduplication)", description: "Merge duplicate customer records", status: "not_started" },
+      { name: "Customer Import from CSV", description: "Bulk import customers from CSV file", status: "done", notes: "ImportWizard" },
+      { name: "Customer Export to CSV", description: "Export customer list to CSV", status: "done", notes: "ExportWizard" },
+      { name: "Customer Address Book (Multiple)", description: "Store multiple addresses per customer", status: "partial" },
+      { name: "Customer Credit Balance", description: "Store credit / account balance per customer", status: "not_started" },
+      { name: "Customer Price Lists", description: "Assign custom price lists to customer groups", status: "partial", notes: "customer_groups discount" },
+      { name: "Customer Tax Exemption Certificate", description: "Upload and manage tax exemption documents", status: "not_started" },
+      { name: "Customer ABN / VAT Number", description: "Store ABN/VAT/GST registration numbers", status: "not_started" },
+      { name: "Customer Communication Log", description: "Log all emails/SMS sent to customer", status: "done", notes: "customer_communications table" },
+      { name: "Customer Lifetime Value (CLV)", description: "Calculate and display CLV per customer", status: "partial" },
+      { name: "Customer Purchase History", description: "Full order history on customer profile", status: "done" },
+      { name: "Customer Wishlist (Backend)", description: "Server-side wishlist storage", status: "partial", notes: "Client-side context" },
+      { name: "Customer Saved Carts", description: "Save cart for later retrieval", status: "done", notes: "SavedCarts page" },
+      { name: "Customer Referral Tracking", description: "Track customer referrals and attribute sales", status: "not_started" },
+      { name: "Customer Birthday Auto-Email", description: "Automated birthday greeting email", status: "not_started" },
+      { name: "Customer Win-Back Campaigns", description: "Auto-email lapsed customers after X days", status: "not_started" },
+      { name: "Customer Account Approval", description: "Require admin approval for new B2B accounts", status: "not_started" },
+      { name: "Customer Payment Terms (Net 30/60)", description: "Assign payment terms to B2B customers", status: "not_started" },
+      { name: "Customer Credit Limit", description: "Set maximum outstanding credit per customer", status: "not_started" },
+      { name: "Customer Statement Generation", description: "Generate and email customer account statements", status: "done", notes: "PrintCustomerStatement + customer-statement-email" },
+    ],
+  },
+];
+
+const inventoryAdvancedFeatures: FeatureCategory[] = [
+  {
+    category: "Inventory — Granular Operations",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Stocktake (Full Count)", description: "Full warehouse stock count with variance report", status: "done", notes: "Stocktake page" },
+      { name: "Cycle Count", description: "Partial/rolling stock counts by location or category", status: "partial" },
+      { name: "Stock Adjustment Reasons", description: "Predefined reasons for stock adjustments (damage, theft, etc.)", status: "done", notes: "StockAdjustments" },
+      { name: "Inventory Valuation Report (FIFO/AVG)", description: "Stock valuation using FIFO or weighted average", status: "not_started" },
+      { name: "Dead Stock Report", description: "Identify products with no sales in X days", status: "not_started" },
+      { name: "Stock Velocity Report", description: "Products ranked by sales velocity/turns", status: "not_started" },
+      { name: "Inventory Snapshot / History", description: "Point-in-time inventory snapshots for auditing", status: "not_started" },
+      { name: "Putaway Rules", description: "Suggest bin locations for received stock", status: "not_started" },
+      { name: "Pick Face Replenishment", description: "Auto-suggest bulk-to-pick replenishment", status: "not_started" },
+      { name: "Serial Number Tracking", description: "Track individual serial numbers per unit sold", status: "not_started" },
+      { name: "Expiry Date Tracking (FEFO)", description: "First-expiry-first-out picking logic", status: "partial", notes: "expiry_date on inventory_stock" },
+      { name: "Lot/Batch Traceability", description: "Full lot traceability from receipt to customer", status: "partial", notes: "lot_number, batch_number fields" },
+      { name: "Minimum / Maximum Stock Levels", description: "Set min/max stock per product per location", status: "partial", notes: "low_stock_threshold" },
+      { name: "Reorder Point Alerts", description: "Auto-alert when stock hits reorder point", status: "done", notes: "inventory_alerts + low-stock-alert" },
+      { name: "Purchase Order Auto-Generation", description: "Auto-create PO when stock below threshold", status: "not_started" },
+      { name: "Supplier Lead Time per Product", description: "Track supplier-specific lead times for forecasting", status: "partial", notes: "lead_time_days on forecasts" },
+      { name: "Inventory Transfer Between Locations", description: "Transfer stock between warehouses with approval", status: "done", notes: "inventory_transfers table" },
+      { name: "Goods Receipt Note (GRN)", description: "Record received goods against purchase orders", status: "partial" },
+      { name: "Consignment Stock", description: "Track supplier-owned stock in your warehouse", status: "not_started" },
+      { name: "Drop Ship Auto-Notify Supplier", description: "Auto-email supplier on drop ship order", status: "done", notes: "dropship-notification function" },
+    ],
+  },
+];
+
+const analyticsDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Analytics & Reporting — Deep",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Sales by Channel Report", description: "Revenue breakdown by channel (web, eBay, POS, etc.)", status: "partial", notes: "Dashboard analytics" },
+      { name: "Sales by Category Report", description: "Revenue and units by product category", status: "partial" },
+      { name: "Sales by Brand Report", description: "Revenue and units by brand", status: "not_started" },
+      { name: "Sales by Customer Group Report", description: "Revenue by customer segment/group", status: "not_started" },
+      { name: "Sales by Geography Report", description: "Revenue by state/country", status: "not_started" },
+      { name: "Sales by Payment Method Report", description: "Payment method usage breakdown", status: "not_started" },
+      { name: "Sales Tax Report", description: "Tax collected breakdown by jurisdiction", status: "not_started" },
+      { name: "Profit & Loss by Product", description: "Per-product P&L using cost price", status: "not_started" },
+      { name: "COGS Report", description: "Cost of goods sold over period", status: "not_started" },
+      { name: "Gross Margin Report", description: "Gross margin by product/category/brand", status: "not_started" },
+      { name: "ABC Analysis (Inventory)", description: "Classify products as A/B/C by sales contribution", status: "not_started" },
+      { name: "Customer Cohort Analysis", description: "Retention analysis by signup cohort", status: "not_started" },
+      { name: "Customer RFM Segmentation", description: "Recency/Frequency/Monetary analysis", status: "not_started" },
+      { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel", status: "not_started" },
+      { name: "Cart Abandonment Rate Report", description: "Abandonment rate trends over time", status: "done", notes: "AbandonedCarts page" },
+      { name: "Average Order Value (AOV) Trend", description: "AOV trending over time", status: "partial" },
+      { name: "Customer Acquisition Cost", description: "Track cost to acquire each customer", status: "not_started" },
+      { name: "Repeat Purchase Rate", description: "Percentage of customers who reorder", status: "not_started" },
+      { name: "Best Sellers Report", description: "Top products by revenue/units", status: "partial" },
+      { name: "Worst Sellers Report", description: "Bottom products by revenue/units", status: "not_started" },
+      { name: "Forecast vs Actual Sales", description: "Compare forecasted to actual sales", status: "not_started" },
+      { name: "Custom Report Builder", description: "Drag-and-drop report builder with saved reports", status: "done", notes: "ReportBuilder page" },
+      { name: "Scheduled Report Emails", description: "Auto-email reports on schedule", status: "done", notes: "scheduled-report-email function" },
+      { name: "Report Export (CSV/PDF/Excel)", description: "Export reports in multiple formats", status: "partial" },
+      { name: "Dashboard Widget Customization", description: "Rearrange/add dashboard widgets", status: "partial" },
+    ],
+  },
+];
+
+const promotionFeatures: FeatureCategory[] = [
+  {
+    category: "Promotions & Price Rules — Deep",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Buy X Get Y Free", description: "BOGO promotions (buy 2 get 1 free, etc.)", status: "done", notes: "price_rules table" },
+      { name: "Buy X Get Y Discounted", description: "Buy 2 get 3rd at 50% off", status: "done" },
+      { name: "Spend $X Get $Y Off", description: "Threshold-based cart discount", status: "done" },
+      { name: "Spend $X Get Free Shipping", description: "Free shipping above cart value", status: "done" },
+      { name: "Category-Wide Discount", description: "Apply discount to entire category", status: "done" },
+      { name: "Brand-Wide Discount", description: "Apply discount to all products of a brand", status: "partial" },
+      { name: "Customer Group Discount", description: "Auto-apply discount for customer group members", status: "done" },
+      { name: "Stackable vs Non-Stackable Promos", description: "Control whether discounts stack", status: "not_started" },
+      { name: "Coupon + Auto Promo Interaction", description: "Rules for coupon + automatic promo stacking", status: "not_started" },
+      { name: "Flash Sale Timer", description: "Countdown timer on promo products", status: "partial" },
+      { name: "Volume Discount Tiers", description: "Quantity-based price breaks", status: "done" },
+      { name: "Loyalty Points Earn Rules", description: "Configure points earned per $ spent", status: "done", notes: "loyalty_points" },
+      { name: "Loyalty Points Redemption", description: "Redeem points as discount at checkout", status: "partial" },
+      { name: "Gift With Purchase", description: "Auto-add free gift when conditions met", status: "not_started" },
+      { name: "First Order Discount", description: "Auto-discount for new customer's first order", status: "not_started" },
+      { name: "Clearance Auto-Tag", description: "Auto-tag products below margin threshold", status: "not_started" },
+    ],
+  },
+];
+
+const notificationFeatures: FeatureCategory[] = [
+  {
+    category: "Notifications & Alerts — Comprehensive",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Low Stock Alert (Email)", description: "Email admin when product hits low stock", status: "done", notes: "low-stock-alert function" },
+      { name: "Low Stock Alert (In-App)", description: "Dashboard notification for low stock", status: "done", notes: "NotificationBell" },
+      { name: "New Order Alert (Email)", description: "Email notification on new order", status: "done", notes: "order-email-trigger" },
+      { name: "New Order Alert (Browser Push)", description: "Browser push notification for new orders", status: "not_started" },
+      { name: "New Order Alert (SMS)", description: "SMS notification on new order", status: "partial", notes: "sms-gateway function" },
+      { name: "Abandoned Cart Alert", description: "Notify admin of new abandoned carts", status: "done" },
+      { name: "Return Request Alert", description: "Notify admin of new return requests", status: "partial" },
+      { name: "New Customer Registration Alert", description: "Notify admin of new signups", status: "done", notes: "auto-registration-email" },
+      { name: "Payment Failed Alert", description: "Notify admin of failed payment attempts", status: "not_started" },
+      { name: "Dispute/Chargeback Alert", description: "Notify admin of payment disputes", status: "done", notes: "dispute-email function" },
+      { name: "Import Complete Notification", description: "Notify when CSV import finishes", status: "done", notes: "import-notification-email" },
+      { name: "Scheduled Export Ready", description: "Notify when scheduled export is ready", status: "done", notes: "scheduled-export function" },
+      { name: "Stock Received Alert", description: "Notify when PO stock received at warehouse", status: "not_started" },
+      { name: "Review Submitted Alert", description: "Notify admin of new product reviews", status: "not_started" },
+      { name: "Back-In-Stock Customer Notification", description: "Auto-notify customers when product restocked", status: "done", notes: "back-in-stock-email function" },
+      { name: "Wishlist Price Drop Notification", description: "Notify customers when wishlisted item drops in price", status: "partial", notes: "wishlist-reminder function" },
+      { name: "Subscription Renewal Reminder", description: "Remind customers of upcoming subscription renewal", status: "not_started" },
+      { name: "Delivery Confirmation to Customer", description: "Email customer when order marked delivered", status: "done", notes: "order-delivered-email function" },
+    ],
+  },
+];
+
+const platformMultiTenantFeatures: FeatureCategory[] = [
+  {
+    category: "Platform & Multi-Tenancy",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Store Management", description: "Manage multiple stores from single login", status: "done", notes: "stores table + store_id FK" },
+      { name: "Platform Admin Dashboard", description: "Super-admin view across all stores", status: "done", notes: "PlatformDashboard page" },
+      { name: "Platform Merchant List", description: "View/manage all merchant accounts", status: "done", notes: "PlatformMerchants page" },
+      { name: "Platform Analytics (Cross-Store)", description: "Aggregate analytics across all stores", status: "done", notes: "PlatformAnalytics page" },
+      { name: "Store Provisioning Wizard", description: "Automated store creation with defaults", status: "done", notes: "Onboarding page" },
+      { name: "Store Suspension / Deactivation", description: "Suspend merchant store for violations", status: "partial" },
+      { name: "Store Plan / Tier Management", description: "Assign feature tiers (Free/Pro/Enterprise)", status: "partial" },
+      { name: "Per-Store Billing", description: "Track and bill per merchant store", status: "not_started" },
+      { name: "White-Label Admin Panel", description: "Custom branding per tenant on admin", status: "partial" },
+      { name: "Subdomain Routing", description: "Route subdomains to correct store", status: "done", notes: "subdomain.ts utility" },
+      { name: "Custom Domain per Store", description: "Map custom domains to stores", status: "partial" },
+      { name: "Data Isolation (RLS)", description: "Row-level security isolating store data", status: "done", notes: "RLS on all tables" },
+      { name: "Cross-Store Product Sharing", description: "Share product catalog across stores", status: "not_started" },
+      { name: "Platform-Level Addon Management", description: "Enable/disable addons globally", status: "done", notes: "addon_catalog + store_addons" },
+    ],
+  },
+];
+
+const importExportFeatures: FeatureCategory[] = [
+  {
+    category: "Import / Export — Full",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Product Import (CSV)", description: "Bulk import products from CSV", status: "done", notes: "ImportWizard" },
+      { name: "Product Export (CSV)", description: "Export products to CSV", status: "done", notes: "ExportWizard" },
+      { name: "Customer Import (CSV)", description: "Bulk import customers", status: "done" },
+      { name: "Customer Export (CSV)", description: "Export customers to CSV", status: "done" },
+      { name: "Order Export (CSV)", description: "Export orders to CSV", status: "done" },
+      { name: "Order Import (CSV)", description: "Import historical orders", status: "partial" },
+      { name: "Inventory Import (CSV)", description: "Bulk update stock levels from CSV", status: "done" },
+      { name: "Price List Import (CSV)", description: "Bulk update prices from CSV", status: "partial" },
+      { name: "Category Import", description: "Import category tree from CSV", status: "partial" },
+      { name: "Image Bulk Upload (ZIP)", description: "Upload images in ZIP matched by SKU", status: "done", notes: "ZipImageUpload component" },
+      { name: "Import Field Mapping Templates", description: "Save and reuse CSV column mappings", status: "done", notes: "import_templates table" },
+      { name: "Import Validation Preview", description: "Preview and validate data before import", status: "done" },
+      { name: "Import Error Report", description: "Downloadable error report for failed rows", status: "done", notes: "import_logs" },
+      { name: "Scheduled Auto-Export", description: "Auto-export data on schedule (daily/weekly)", status: "done", notes: "scheduled-export function" },
+      { name: "FTP/SFTP Export Destination", description: "Send exports to FTP server", status: "not_started" },
+      { name: "Google Merchant Feed Export", description: "Google Shopping product feed XML", status: "done", notes: "google-shopping-feed function" },
+      { name: "Facebook Catalog Feed", description: "Facebook/Instagram product feed", status: "not_started" },
+    ],
+  },
+];
+
+const apiWebhookFeatures: FeatureCategory[] = [
+  {
+    category: "API & Webhooks — Full",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "REST API (Products)", description: "Full CRUD API for products", status: "done", notes: "rest-api function" },
+      { name: "REST API (Orders)", description: "Full CRUD API for orders", status: "done" },
+      { name: "REST API (Customers)", description: "Full CRUD API for customers", status: "done" },
+      { name: "REST API (Categories)", description: "Full CRUD API for categories", status: "done" },
+      { name: "REST API (Inventory)", description: "Stock level read/update API", status: "done" },
+      { name: "REST API (Shipping)", description: "Shipping zone and rate API", status: "done" },
+      { name: "REST API (Coupons)", description: "Coupon CRUD API", status: "done" },
+      { name: "Batch API Endpoint", description: "Execute multiple API calls in one request", status: "done", notes: "batch-api function" },
+      { name: "API Rate Limiting", description: "Per-key rate limiting with configurable thresholds", status: "done", notes: "api_rate_limits table" },
+      { name: "API Key Management UI", description: "Create/revoke API keys from admin", status: "done", notes: "ApiKeys page" },
+      { name: "API Documentation (Interactive)", description: "Interactive API docs with try-it-now", status: "done", notes: "ApiDocs page" },
+      { name: "Webhook Event Types (Order)", description: "order.created, order.updated, order.shipped, etc.", status: "done", notes: "Webhooks page" },
+      { name: "Webhook Event Types (Product)", description: "product.created, product.updated, product.deleted", status: "done" },
+      { name: "Webhook Event Types (Customer)", description: "customer.created, customer.updated", status: "done" },
+      { name: "Webhook Event Types (Inventory)", description: "stock.updated, stock.low", status: "done" },
+      { name: "Webhook Retry Logic", description: "Auto-retry failed webhook deliveries", status: "partial" },
+      { name: "Webhook Signature Verification", description: "HMAC signature on webhook payloads", status: "partial" },
+      { name: "Webhook Delivery Logs", description: "View webhook delivery history and responses", status: "partial" },
+    ],
+  },
+];
+
+const storefrontAdvancedFeatures: FeatureCategory[] = [
+  {
+    category: "Storefront — Advanced UX",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "Mega Menu Navigation", description: "Multi-column dropdown navigation with images", status: "partial" },
+      { name: "Sticky Header", description: "Header stays visible on scroll", status: "partial" },
+      { name: "Back-to-Top Button", description: "Scroll-to-top floating button", status: "not_started" },
+      { name: "Product Image Zoom (Hover)", description: "Magnify product image on hover", status: "done", notes: "ImageLightbox" },
+      { name: "Product Image 360° View", description: "360-degree product image viewer", status: "not_started" },
+      { name: "Product Video Embed", description: "Embed YouTube/Vimeo on product page", status: "not_started" },
+      { name: "Size Guide / Fit Calculator", description: "Product-level size guide with calculator", status: "not_started" },
+      { name: "Color Swatch Selector", description: "Visual color swatches for variant selection", status: "partial" },
+      { name: "Product Tabs (Custom)", description: "Customizable tabs on product page (specs, reviews, etc.)", status: "done" },
+      { name: "Recently Viewed Products", description: "Show recently viewed products across pages", status: "done", notes: "use-recently-viewed hook" },
+      { name: "Product Comparison Table", description: "Side-by-side product comparison", status: "done", notes: "StorefrontCompare + CompareContext" },
+      { name: "Infinite Scroll (Product List)", description: "Load more products on scroll vs pagination", status: "not_started" },
+      { name: "Faceted Search / Filter Sidebar", description: "Multi-attribute filtering (price, brand, size, color)", status: "done", notes: "StorefrontSidebar" },
+      { name: "Search Autocomplete (Instant)", description: "Instant search suggestions as user types", status: "done", notes: "StorefrontSearch" },
+      { name: "Search Results Page", description: "Dedicated search results with filters", status: "done" },
+      { name: "Store Finder / Store Locator", description: "Map-based store/warehouse locator", status: "done", notes: "StorefrontStoreFinder page" },
+      { name: "Custom 404 Page", description: "Branded 404 not found page", status: "done", notes: "NotFound page" },
+      { name: "Maintenance Mode Page", description: "Show maintenance page when store offline", status: "not_started" },
+      { name: "PWA / Add to Home Screen", description: "Progressive Web App manifest for mobile", status: "not_started" },
+      { name: "Mobile Bottom Navigation", description: "Fixed bottom nav bar on mobile storefront", status: "not_started" },
+    ],
+  },
+];
+
+const accountingIntFeatures: FeatureCategory[] = [
+  {
+    category: "Accounting & ERP Integrations",
+    icon: <Banknote className="h-5 w-5" />,
+    features: [
+      { name: "Xero Integration (Invoices)", description: "Push invoices to Xero automatically", status: "done", notes: "xero-sync function" },
+      { name: "Xero Integration (Payments)", description: "Sync payment receipts to Xero", status: "partial" },
+      { name: "Xero Integration (Inventory)", description: "Sync inventory levels with Xero", status: "not_started" },
+      { name: "Xero Integration (Contacts)", description: "Sync customers as Xero contacts", status: "partial" },
+      { name: "MYOB Integration", description: "Sync orders/invoices to MYOB", status: "not_started" },
+      { name: "QuickBooks Integration", description: "Sync with QuickBooks Online", status: "not_started" },
+      { name: "Sage Integration", description: "Sync with Sage accounting", status: "not_started" },
+      { name: "General Ledger Mapping", description: "Map product categories to GL codes", status: "not_started" },
+      { name: "Chart of Accounts Sync", description: "Import/sync chart of accounts", status: "not_started" },
+      { name: "Multi-Currency Accounting", description: "Handle multi-currency in accounting sync", status: "not_started" },
+    ],
+  },
+];
+
+const marketingAutomationFeatures: FeatureCategory[] = [
+  {
+    category: "Marketing Automation — Deep",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Klaviyo Integration", description: "Sync customers and events to Klaviyo", status: "done", notes: "klaviyo-sync function" },
+      { name: "Mailchimp Integration", description: "Sync email lists to Mailchimp", status: "done", notes: "mailchimp-sync function" },
+      { name: "Google Analytics 4 Integration", description: "GA4 event tracking (purchase, add_to_cart)", status: "partial" },
+      { name: "Google Ads Conversion Tracking", description: "Track purchases as Google Ads conversions", status: "not_started" },
+      { name: "Facebook Pixel Integration", description: "Facebook/Meta pixel for retargeting", status: "not_started" },
+      { name: "TikTok Pixel Integration", description: "TikTok event tracking for ads", status: "not_started" },
+      { name: "SMS Marketing (Bulk)", description: "Send bulk promotional SMS to segments", status: "partial", notes: "sms-gateway function" },
+      { name: "Affiliate / Referral Program", description: "Track affiliate signups, clicks, commissions", status: "done", notes: "Affiliates page + affiliates table" },
+      { name: "Newsletter Signup Widget", description: "Configurable newsletter signup form", status: "done", notes: "NewsletterSignup component" },
+      { name: "Exit-Intent Popup", description: "Show popup when user is about to leave", status: "done", notes: "PromoPopup component" },
+      { name: "Social Proof Notifications", description: "Show 'X just purchased' live notifications", status: "not_started" },
+      { name: "Product Bundle Recommendations (AI)", description: "AI-powered frequently bought together", status: "not_started" },
+      { name: "Personalized Product Recommendations", description: "Show products based on browsing/purchase history", status: "not_started" },
+      { name: "UTM Tracking / Source Attribution", description: "Track marketing source on orders via UTM params", status: "not_started" },
+    ],
+  },
+];
+
+const multimarketDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Multimarket & i18n — Deep",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Multi-Currency Storefront", description: "Display prices in customer's currency", status: "done", notes: "CurrencySwitcher component" },
+      { name: "Currency Conversion Rates (Auto)", description: "Auto-update exchange rates from API", status: "partial" },
+      { name: "Regional Pricing Override", description: "Set different prices per market/region", status: "done", notes: "multimarket_settings" },
+      { name: "Multi-Language Storefront", description: "Translate storefront UI into multiple languages", status: "done", notes: "LanguageSwitcher component" },
+      { name: "RTL Language Support", description: "Right-to-left layout for Arabic, Hebrew, etc.", status: "not_started" },
+      { name: "Regional Tax Rules", description: "Different tax rates per region/market", status: "done", notes: "tax_rates table" },
+      { name: "Regional Shipping Zones", description: "Different shipping zones per market", status: "done", notes: "shipping_zones table" },
+      { name: "Country-Based Redirects", description: "Auto-redirect visitors to regional store", status: "not_started" },
+      { name: "Geolocation-Based Currency", description: "Auto-select currency based on visitor IP", status: "not_started" },
+      { name: "Multi-Domain / Subdomain per Market", description: "Separate domain per regional market", status: "partial" },
+      { name: "Hreflang Tags (SEO)", description: "Hreflang tags for multi-language SEO", status: "not_started" },
+      { name: "Regional Product Availability", description: "Show/hide products per market region", status: "partial" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
