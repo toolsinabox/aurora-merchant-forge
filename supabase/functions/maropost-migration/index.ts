@@ -31,6 +31,17 @@ const ACTION_MAP: Record<string, string> = {
   get_warehouses: 'GetWarehouse',
 };
 
+// Minimal selectors for scanning/counting (fast, small response)
+const SCAN_SELECTORS: Record<string, string[]> = {
+  get_products: ["ID", "Name", "ParentSKU"],
+  get_categories: ["CategoryID", "CategoryName"],
+  get_customers: ["Username", "EmailAddress"],
+  get_orders: ["OrderID", "GrandTotal"],
+  get_content: ["ContentID", "ContentName"],
+  test_connection: ["ID", "Name", "Model"],
+};
+
+// Full selectors for actual data import
 const OUTPUT_SELECTORS: Record<string, string[]> = {
   get_products: [
     "ParentSKU", "ID", "Brand", "Model", "Name", "PrimarySupplier",
@@ -84,6 +95,22 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "DatePosted", "DateUpdated"
   ],
   test_connection: ["ID", "Name", "Model"],
+};
+
+// Max page sizes per entity (Maropost has response size limits with large OutputSelectors)
+const MAX_PAGE_SIZE: Record<string, number> = {
+  get_products: 20,    // Products have 60+ fields, must keep small
+  get_categories: 200,
+  get_customers: 100,
+  get_orders: 50,      // Orders include line items, medium size
+  get_content: 100,
+  get_vouchers: 100,
+  get_suppliers: 100,
+  get_rma: 100,
+  get_payments: 100,
+  get_warehouses: 100,
+  get_shipping: 100,
+  get_currency: 100,
 };
 
 serve(async (req) => {
