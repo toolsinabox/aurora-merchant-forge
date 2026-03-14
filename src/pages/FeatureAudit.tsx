@@ -8019,7 +8019,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
       { name: "Order Priority Flag", description: "Mark orders as urgent/priority for fulfillment", status: "done", notes: "OrderDetail Priority card with low/normal/high/urgent selector, timeline event logging, visual badge for high/urgent" },
       { name: "Order Tags / Labels", description: "Custom tags on orders for filtering", status: "done", notes: "Order tags CRUD in OrderDetail, tags column in Orders list, tag filter dropdown, bulk tag assignment via bulk actions bar" },
       { name: "Order Internal Notes (Timeline)", description: "Chronological internal notes log per order", status: "done", notes: "order_notes table" },
-      { name: "Order Custom Fields", description: "Custom metadata fields on orders", status: "partial" },
+      { name: "Order Custom Fields", description: "Custom metadata fields on orders", status: "done", notes: "OrderCustomFieldsCard component on OrderDetail with add/edit/remove key-value pairs, localStorage persistence per order" },
       { name: "Order Status Webhook Triggers", description: "Fire webhooks on order status changes", status: "done", notes: "webhook-dispatcher function" },
       { name: "Order Archive / Purge", description: "Archive old orders, purge test orders", status: "done", notes: "archived_at column on orders" },
       { name: "Draft Orders / Quotes Conversion", description: "Convert draft/quote to live order with one click", status: "done", notes: "Quotes page" },
