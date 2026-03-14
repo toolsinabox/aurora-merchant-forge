@@ -149,6 +149,19 @@ export default function Analytics() {
         Object.entries(catRevenue).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
       );
 
+      // Sales by brand
+      const prodBrandMap: Record<string, string> = {};
+      (prods || []).forEach((p: any) => { if (p.brand) prodBrandMap[p.id] = p.brand; });
+      const brandRevenue: Record<string, { revenue: number; units: number }> = {};
+      (items || []).forEach((item: any) => {
+        const brand = prodBrandMap[item.product_id] || "Unbranded";
+        if (!brandRevenue[brand]) brandRevenue[brand] = { revenue: 0, units: 0 };
+        brandRevenue[brand].revenue += Number(item.total);
+        brandRevenue[brand].units += item.quantity;
+      });
+      setSalesByBrand(
+        Object.entries(brandRevenue).map(([name, d]) => ({ name, ...d })).sort((a, b) => b.revenue - a.revenue).slice(0, 15)
+      );
       // Coupon usage stats
       const { data: coupons } = await supabase
         .from("coupons")
