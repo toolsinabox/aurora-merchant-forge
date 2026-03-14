@@ -8340,7 +8340,7 @@ const multimarketDeepFeatures: FeatureCategory[] = [
       { name: "Geolocation-Based Currency", description: "Auto-select currency based on visitor IP", status: "not_started" },
       { name: "Multi-Domain / Subdomain per Market", description: "Separate domain per regional market", status: "done", notes: "subdomain.ts routing with per-store custom_domain support, multimarket_settings per region" },
       { name: "Hreflang Tags (SEO)", description: "Hreflang tags for multi-language SEO", status: "not_started" },
-      { name: "Regional Product Availability", description: "Show/hide products per market region", status: "partial" },
+      { name: "Regional Product Availability", description: "Show/hide products per market region", status: "done", notes: "multimarket_settings with product visibility rules per region" },
     ],
   },
 ];
