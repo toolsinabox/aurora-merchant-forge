@@ -115,6 +115,38 @@ export default function Quotes() {
     fetchQuotes();
   };
 
+  const openCounterOffer = async (quoteId: string) => {
+    const { data: items } = await supabase.from("order_quote_items" as any).select("*").eq("quote_id", quoteId);
+    setCounterItems((items || []).map((i: any) => ({ ...i, new_price: i.unit_price, new_qty: i.quantity })));
+    setCounterNote("");
+    setCounterOpen(quoteId);
+  };
+
+  const submitCounterOffer = async () => {
+    if (!counterOpen || !currentStore) return;
+    setCounterSaving(true);
+    try {
+      for (const item of counterItems) {
+        await supabase.from("order_quote_items" as any).update({
+          unit_price: item.new_price,
+          quantity: item.new_qty,
+          total: item.new_price * item.new_qty,
+        }).eq("id", item.id);
+      }
+      const newTotal = counterItems.reduce((s: number, i: any) => s + i.new_price * i.new_qty, 0);
+      await supabase.from("order_quotes" as any).update({
+        subtotal: newTotal, total: newTotal,
+        status: "sent",
+        notes: counterNote ? `[Counter-offer] ${counterNote}` : undefined,
+        updated_at: new Date().toISOString(),
+      }).eq("id", counterOpen);
+      toast.success("Counter-offer sent to customer");
+      setCounterOpen(null);
+      fetchQuotes();
+    } catch (err: any) { toast.error(err.message); }
+    finally { setCounterSaving(false); }
+  };
+
   const convertToOrder = async (quote: any) => {
     if (!currentStore || !user) return;
     const { data: items } = await supabase.from("order_quote_items" as any).select("*").eq("quote_id", quote.id);
