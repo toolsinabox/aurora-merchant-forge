@@ -135,6 +135,7 @@ export default function InventoryReports() {
             <TabsTrigger value="dead" className="text-xs gap-1"><TrendingDown className="h-3 w-3" /> Dead Stock</TabsTrigger>
             <TabsTrigger value="velocity" className="text-xs gap-1"><Package className="h-3 w-3" /> Velocity</TabsTrigger>
             <TabsTrigger value="abc" className="text-xs gap-1"><BarChart3 className="h-3 w-3" /> ABC</TabsTrigger>
+            <TabsTrigger value="sellthrough" className="text-xs gap-1"><Percent className="h-3 w-3" /> Sell-Through</TabsTrigger>
           </TabsList>
 
           <TabsContent value="valuation">
