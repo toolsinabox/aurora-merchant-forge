@@ -42,7 +42,7 @@ export default function ShippingZones() {
   const [createOpen, setCreateOpen] = useState(false);
   const [editZone, setEditZone] = useState<any>(null);
   const [search, setSearch] = useState("");
-  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
+  const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge" });
   const [activeTab, setActiveTab] = useState("zones");
 
   // Shipping services
@@ -73,7 +73,7 @@ export default function ShippingZones() {
   const [rateOpen, setRateOpen] = useState(false);
   const [rateForm, setRateForm] = useState({ service_id: "", min_weight: "0", max_weight: "99999", min_order_total: "0", max_order_total: "99999", rate: "0", rate_type: "flat" });
 
-  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
+  const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0", surcharge_postcodes: "", surcharge_amount: "0", surcharge_label: "Remote area surcharge" });
 
   const filtered = (zones as any[]).filter((z) =>
     z.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -87,6 +87,8 @@ export default function ShippingZones() {
       flat_rate: Number(form.flat_rate) || 0,
       free_above: form.free_above ? Number(form.free_above) : null,
       rate_type: form.rate_type, per_kg_rate: Number(form.per_kg_rate) || 0,
+      surcharge_postcodes: form.surcharge_postcodes, surcharge_amount: Number(form.surcharge_amount) || 0,
+      surcharge_label: form.surcharge_label,
     } as any);
     resetForm();
     setCreateOpen(false);
@@ -99,6 +101,8 @@ export default function ShippingZones() {
       flat_rate: Number(form.flat_rate) || 0,
       free_above: form.free_above ? Number(form.free_above) : null,
       rate_type: form.rate_type, per_kg_rate: Number(form.per_kg_rate) || 0,
+      surcharge_postcodes: form.surcharge_postcodes, surcharge_amount: Number(form.surcharge_amount) || 0,
+      surcharge_label: form.surcharge_label,
     } as any);
     setEditZone(null);
     resetForm();
@@ -109,6 +113,8 @@ export default function ShippingZones() {
       name: z.name, regions: z.regions, flat_rate: String(z.flat_rate),
       free_above: z.free_above ? String(z.free_above) : "",
       rate_type: z.rate_type || "flat", per_kg_rate: String(z.per_kg_rate || 0),
+      surcharge_postcodes: z.surcharge_postcodes || "", surcharge_amount: String(z.surcharge_amount || 0),
+      surcharge_label: z.surcharge_label || "Remote area surcharge",
     });
     setEditZone(z);
   };
@@ -491,7 +497,7 @@ export default function ShippingZones() {
 }
 
 function ZoneForm({ form, setForm, onSubmit, loading, label }: {
-  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string };
+  form: { name: string; regions: string; flat_rate: string; free_above: string; rate_type: string; per_kg_rate: string; surcharge_postcodes: string; surcharge_amount: string; surcharge_label: string };
   setForm: (f: any) => void;
   onSubmit: () => void;
   loading: boolean;
@@ -540,6 +546,23 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
         </div>
       )}
+      <div className="border-t pt-3 mt-1 space-y-2">
+        <p className="text-xs font-medium">Rural / Remote Surcharge</p>
+        <div>
+          <Label className="text-xs">Surcharge Postcodes <span className="text-muted-foreground">(comma-separated ranges e.g. 0800-0899,4000-4999)</span></Label>
+          <Input placeholder="e.g. 0800-0899, 6700-6799" value={form.surcharge_postcodes} onChange={(e) => setForm({ ...form, surcharge_postcodes: e.target.value })} className="text-xs" />
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs">Surcharge Amount ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.surcharge_amount} onChange={(e) => setForm({ ...form, surcharge_amount: e.target.value })} />
+          </div>
+          <div>
+            <Label className="text-xs">Surcharge Label</Label>
+            <Input value={form.surcharge_label} onChange={(e) => setForm({ ...form, surcharge_label: e.target.value })} />
+          </div>
+        </div>
+      </div>
       <Button onClick={onSubmit} disabled={loading} className="w-full">{label}</Button>
     </div>
   );

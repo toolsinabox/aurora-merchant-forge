@@ -86,6 +86,8 @@ export default function StorefrontCheckout() {
   const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
   const [shippingServices, setShippingServices] = useState<any[]>([]);
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
+  const [pickupLocations, setPickupLocations] = useState<any[]>([]);
+  const [selectedPickupLocation, setSelectedPickupLocation] = useState<string>("");
   const [autoAppliedCoupon, setAutoAppliedCoupon] = useState(false);
   const [storeCreditBalance, setStoreCreditBalance] = useState(0);
   const [useStoreCredit, setUseStoreCredit] = useState(false);
@@ -130,7 +132,10 @@ export default function StorefrontCheckout() {
       const { data: svcData } = await supabase.from("shipping_services").select("*").eq("is_active", true).order("sort_order");
       if (svcData) setShippingServices(svcData);
 
-      // Load default tax rate and tax mode
+      // Load pickup locations (stores/warehouses)
+      const { data: locData } = await supabase.from("inventory_locations").select("id, name, address, type").order("name");
+      if (locData) setPickupLocations(locData);
+
       const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default, is_compound, is_inclusive, priority, applies_to").order("priority", { ascending: false });
       if (taxRates && taxRates.length > 0) {
         setAllTaxRates(taxRates as any[]);
@@ -834,6 +839,27 @@ export default function StorefrontCheckout() {
                       <p className="text-xs text-muted-foreground">Pick up in store — Free</p>
                     </div>
                   </label>
+
+                  {/* Click & Collect Location Picker */}
+                  {deliveryMethod === "pickup" && pickupLocations.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <Label className="text-xs font-medium">Select Pickup Location</Label>
+                      {pickupLocations.map((loc: any) => (
+                        <label
+                          key={loc.id}
+                          className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                            selectedPickupLocation === loc.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                          }`}
+                        >
+                          <input type="radio" name="pickup_location" value={loc.id} checked={selectedPickupLocation === loc.id} onChange={() => setSelectedPickupLocation(loc.id)} className="accent-primary" />
+                          <div>
+                            <p className="text-sm font-medium">{loc.name}</p>
+                            <p className="text-2xs text-muted-foreground">{loc.address || "Address not specified"} · {loc.type}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Split Shipping / Multi-Address */}

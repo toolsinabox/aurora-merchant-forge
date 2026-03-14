@@ -2995,6 +2995,9 @@ export type Database = {
           order_channel: string
           order_number: string
           payment_status: string
+          pickup_collected_at: string | null
+          pickup_location_id: string | null
+          pickup_ready_at: string | null
           shipping: number
           shipping_address: string | null
           status: string
@@ -3019,6 +3022,9 @@ export type Database = {
           order_channel?: string
           order_number: string
           payment_status?: string
+          pickup_collected_at?: string | null
+          pickup_location_id?: string | null
+          pickup_ready_at?: string | null
           shipping?: number
           shipping_address?: string | null
           status?: string
@@ -3043,6 +3049,9 @@ export type Database = {
           order_channel?: string
           order_number?: string
           payment_status?: string
+          pickup_collected_at?: string | null
+          pickup_location_id?: string | null
+          pickup_ready_at?: string | null
           shipping?: number
           shipping_address?: string | null
           status?: string
@@ -3066,6 +3075,13 @@ export type Database = {
             columns: ["customer_id"]
             isOneToOne: false
             referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_pickup_location_id_fkey"
+            columns: ["pickup_location_id"]
+            isOneToOne: false
+            referencedRelation: "inventory_locations"
             referencedColumns: ["id"]
           },
           {
@@ -5247,6 +5263,9 @@ export type Database = {
           rate_type: string
           regions: string
           store_id: string
+          surcharge_amount: number | null
+          surcharge_label: string | null
+          surcharge_postcodes: string | null
         }
         Insert: {
           created_at?: string
@@ -5259,6 +5278,9 @@ export type Database = {
           rate_type?: string
           regions: string
           store_id: string
+          surcharge_amount?: number | null
+          surcharge_label?: string | null
+          surcharge_postcodes?: string | null
         }
         Update: {
           created_at?: string
@@ -5271,6 +5293,9 @@ export type Database = {
           rate_type?: string
           regions?: string
           store_id?: string
+          surcharge_amount?: number | null
+          surcharge_label?: string | null
+          surcharge_postcodes?: string | null
         }
         Relationships: [
           {

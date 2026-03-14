@@ -16,7 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   Search, Plus, Minus, Trash2, User, CreditCard, Banknote,
   Receipt, ShoppingBag, X, Gift, Clock, DollarSign, CheckCircle, WifiOff, Wifi, PauseCircle, Play,
-  RotateCcw, KeyRound,
+  RotateCcw, KeyRound, Percent,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,6 +27,9 @@ interface CartItem {
   price: number;
   quantity: number;
   image_url?: string;
+  discount?: number; // percentage discount
+  discount_type?: "percent" | "fixed";
+  discount_value?: number;
 }
 
 export default function POS() {
@@ -43,6 +46,9 @@ export default function POS() {
   const [processing, setProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState("sale");
   const [selectedRegister, setSelectedRegister] = useState<string>("");
+  const [discountDialogItem, setDiscountDialogItem] = useState<string | null>(null);
+  const [discountType, setDiscountType] = useState<"percent" | "fixed">("percent");
+  const [discountVal, setDiscountVal] = useState("");
 
   // Parked orders state
   const [parkedOrders, setParkedOrders] = useState<Array<{ id: string; items: CartItem[]; customer: any; parkedAt: string; note: string }>>(() => {
@@ -297,12 +303,31 @@ export default function POS() {
     setCart(prev => prev.filter(i => i.product_id !== productId));
   };
 
-  const subtotal = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+  const applyItemDiscount = (productId: string) => {
+    const val = Number(discountVal);
+    if (!val || val <= 0) { toast.error("Enter a valid discount"); return; }
+    setCart(prev => prev.map(i => {
+      if (i.product_id !== productId) return i;
+      return { ...i, discount_type: discountType, discount_value: val };
+    }));
+    setDiscountDialogItem(null);
+    setDiscountVal("");
+    toast.success("Discount applied");
+  };
+
+  const getItemTotal = (item: CartItem) => {
+    const base = item.price * item.quantity;
+    if (!item.discount_value) return base;
+    if (item.discount_type === "percent") return base * (1 - item.discount_value / 100);
+    return Math.max(0, base - item.discount_value);
+  };
+
+  const subtotal = cart.reduce((s, i) => s + getItemTotal(i), 0);
+  const totalDiscount = cart.reduce((s, i) => s + (i.price * i.quantity - getItemTotal(i)), 0);
   const tax = subtotal * 0.1;
   const voucherDiscount = appliedVoucher?.amountUsed ?? 0;
   const total = Math.max(0, subtotal + tax - voucherDiscount);
   const itemCount = cart.reduce((s, i) => s + i.quantity, 0);
-
   // Gift voucher redemption
   const applyVoucher = async () => {
     if (!voucherCode.trim() || !storeId) return;
@@ -330,7 +355,7 @@ export default function POS() {
         store_id: storeId,
         order_number: orderNumber,
         customer_id: selectedCustomer?.id || null,
-        subtotal, tax, total, discount: voucherDiscount, shipping: 0,
+        subtotal, tax, total, discount: voucherDiscount + totalDiscount, shipping: 0,
         items_count: itemCount,
         status: "completed",
         payment_status: "paid",
@@ -599,18 +624,32 @@ export default function POS() {
                 {cart.length === 0 ? (
                   <p className="text-xs text-muted-foreground text-center py-8">Tap a product to add</p>
                 ) : cart.map(item => (
-                  <div key={item.product_id} className="flex items-center gap-2 p-2 bg-muted/50 rounded-md">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium truncate">{item.title}</p>
-                      <p className="text-[10px] text-muted-foreground">${item.price.toFixed(2)} each</p>
+                  <div key={item.product_id} className="p-2 bg-muted/50 rounded-md space-y-1">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium truncate">{item.title}</p>
+                        <p className="text-[10px] text-muted-foreground">${item.price.toFixed(2)} each</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, -1)}><Minus className="h-3 w-3" /></Button>
+                        <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, 1)}><Plus className="h-3 w-3" /></Button>
+                        <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={() => removeItem(item.product_id)}><Trash2 className="h-3 w-3" /></Button>
+                      </div>
+                      <span className="text-xs font-bold w-14 text-right">${getItemTotal(item).toFixed(2)}</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, -1)}><Minus className="h-3 w-3" /></Button>
-                      <span className="text-xs font-medium w-6 text-center">{item.quantity}</span>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0" onClick={() => updateQty(item.product_id, 1)}><Plus className="h-3 w-3" /></Button>
-                      <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-destructive" onClick={() => removeItem(item.product_id)}><Trash2 className="h-3 w-3" /></Button>
+                      {item.discount_value ? (
+                        <Badge variant="secondary" className="text-2xs gap-0.5 cursor-pointer" onClick={() => setCart(prev => prev.map(i => i.product_id === item.product_id ? { ...i, discount_value: undefined, discount_type: undefined } : i))}>
+                          {item.discount_type === "percent" ? `${item.discount_value}% off` : `$${item.discount_value} off`}
+                          <X className="h-2.5 w-2.5 ml-0.5" />
+                        </Badge>
+                      ) : (
+                        <Button variant="ghost" size="sm" className="h-5 text-[10px] px-1.5 text-muted-foreground" onClick={() => { setDiscountDialogItem(item.product_id); setDiscountType("percent"); setDiscountVal(""); }}>
+                          + Discount
+                        </Button>
+                      )}
                     </div>
-                    <span className="text-xs font-bold w-14 text-right">${(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -634,7 +673,8 @@ export default function POS() {
 
               {/* Totals & Pay */}
               <div className="p-3 border-t space-y-2">
-                <div className="flex justify-between text-xs"><span className="text-muted-foreground">Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between text-xs"><span className="text-muted-foreground">Subtotal</span><span>${cart.reduce((s, i) => s + i.price * i.quantity, 0).toFixed(2)}</span></div>
+                {totalDiscount > 0 && <div className="flex justify-between text-xs text-primary"><span>Discounts</span><span>-${totalDiscount.toFixed(2)}</span></div>}
                 <div className="flex justify-between text-xs"><span className="text-muted-foreground">GST (10%)</span><span>${tax.toFixed(2)}</span></div>
                 {appliedVoucher && <div className="flex justify-between text-xs text-primary"><span>Voucher</span><span>-${voucherDiscount.toFixed(2)}</span></div>}
                 <Separator />
@@ -1084,6 +1124,25 @@ export default function POS() {
               <CheckCircle className="h-4 w-4" /> {laybyProcessing ? "Processing..." : `Take Deposit $${((Number(laybyDeposit) / 100) * total).toFixed(2)}`}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Line Item Discount Dialog */}
+      <Dialog open={!!discountDialogItem} onOpenChange={(o) => { if (!o) setDiscountDialogItem(null); }}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader><DialogTitle className="text-sm">Apply Discount</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <Button variant={discountType === "percent" ? "default" : "outline"} size="sm" className="flex-1 gap-1" onClick={() => setDiscountType("percent")}>
+                <Percent className="h-3.5 w-3.5" /> Percentage
+              </Button>
+              <Button variant={discountType === "fixed" ? "default" : "outline"} size="sm" className="flex-1 gap-1" onClick={() => setDiscountType("fixed")}>
+                <DollarSign className="h-3.5 w-3.5" /> Fixed
+              </Button>
+            </div>
+            <Input type="number" min="0" step="0.01" placeholder={discountType === "percent" ? "e.g. 10" : "e.g. 5.00"} value={discountVal} onChange={e => setDiscountVal(e.target.value)} className="h-9" autoFocus />
+            <Button className="w-full" onClick={() => discountDialogItem && applyItemDiscount(discountDialogItem)}>Apply Discount</Button>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
