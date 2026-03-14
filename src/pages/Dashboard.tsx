@@ -258,7 +258,7 @@ export default function Dashboard() {
               <KPICard title="Active Products" value={activeProducts} icon={Package} loading={loadingProducts} suffix={lowStockProducts > 0 ? ` (${lowStockProducts} low stock)` : ""} />
             </div>}
 
-            {(w("revenue") || w("dailyOrders")) && <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               {w("revenue") && <Card className="lg:col-span-2">
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium">Revenue (Last 30 Days)</CardTitle>
@@ -282,9 +282,9 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
 
-              <Card>
+              {w("dailyOrders") && <Card>
                 <CardHeader className="p-4 pb-2">
                   <CardTitle className="text-sm font-medium">Daily Orders (30 Days)</CardTitle>
                 </CardHeader>
@@ -301,7 +301,7 @@ export default function Dashboard() {
                     </ResponsiveContainer>
                   )}
                 </CardContent>
-              </Card>
+              </Card>}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
