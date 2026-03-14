@@ -8109,7 +8109,7 @@ const analyticsDeepFeatures: FeatureCategory[] = [
       { name: "ABC Analysis (Inventory)", description: "Classify products as A/B/C by sales contribution", status: "done", notes: "InventoryReports ABC tab" },
       { name: "Customer Cohort Analysis", description: "Retention analysis by signup cohort", status: "not_started" },
       { name: "Customer RFM Segmentation", description: "Recency/Frequency/Monetary analysis", status: "not_started" },
-      { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel", status: "not_started" },
+      { name: "Conversion Funnel Report", description: "Visitor → Cart → Checkout → Purchase funnel", status: "done", notes: "Analytics page Conversion Funnel with percentage visualization" },
       { name: "Cart Abandonment Rate Report", description: "Abandonment rate trends over time", status: "done", notes: "AbandonedCarts page" },
       { name: "Average Order Value (AOV) Trend", description: "AOV trending over time", status: "partial" },
       { name: "Customer Acquisition Cost", description: "Track cost to acquire each customer", status: "not_started" },
