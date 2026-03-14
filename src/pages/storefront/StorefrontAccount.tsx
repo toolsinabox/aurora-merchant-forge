@@ -644,13 +644,12 @@ export default function StorefrontAccount() {
                     </div>
                   ) : (
                     <div className="divide-y">
-                      {orders.map((o) => (
-                        <button
-                          key={o.id}
-                          onClick={() => viewOrderDetail(o)}
-                          className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors text-left"
-                        >
-                          <div className="flex-1 min-w-0">
+                    {orders.map((o) => (
+                        <div key={o.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
+                          <button
+                            onClick={() => viewOrderDetail(o)}
+                            className="flex-1 min-w-0 text-left"
+                          >
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-sm font-semibold">{o.order_number}</span>
                               <StatusBadge status={o.status} />
@@ -658,12 +657,19 @@ export default function StorefrontAccount() {
                             <p className="text-xs text-muted-foreground">
                               {new Date(o.created_at).toLocaleDateString()} · {o.items_count} item{o.items_count !== 1 ? "s" : ""}
                             </p>
-                          </div>
+                          </button>
                           <div className="flex items-center gap-2">
+                            {["delivered", "shipped"].includes(o.status) && (
+                              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); handleReorder(o); }}>
+                                <RotateCcw className="h-3 w-3" /> Reorder
+                              </Button>
+                            )}
                             <span className="text-sm font-bold">${Number(o.total).toFixed(2)}</span>
-                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            <button onClick={() => viewOrderDetail(o)}>
+                              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            </button>
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   )}

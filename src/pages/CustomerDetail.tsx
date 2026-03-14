@@ -663,31 +663,43 @@ export default function CustomerDetail() {
               </CardContent>
             </Card>
 
-            {/* Stats */}
+            {/* Stats & CLV */}
             <Card>
-              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Stats</CardTitle></CardHeader>
+              <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Stats & Lifetime Value</CardTitle></CardHeader>
               <CardContent className="p-4 pt-2 space-y-2 text-xs">
                 <div className="flex justify-between"><span className="text-muted-foreground">Total Orders</span><span className="font-medium">{customer.total_orders}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Total Spent</span><span className="font-medium">${Number(customer.total_spent).toLocaleString()}</span></div>
                 {customer.total_orders > 0 && (
-                  <div className="flex justify-between"><span className="text-muted-foreground">Avg. Order</span><span className="font-medium">${(Number(customer.total_spent) / customer.total_orders).toFixed(2)}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">Avg. Order Value</span><span className="font-medium">${(Number(customer.total_spent) / customer.total_orders).toFixed(2)}</span></div>
                 )}
-                {customer.total_orders > 0 && (
+                {customerOrders.length >= 2 && (() => {
+                  const dates = customerOrders.map((o: any) => new Date(o.created_at).getTime()).sort();
+                  const gaps = dates.slice(1).map((d: number, i: number) => (d - dates[i]) / (1000 * 60 * 60 * 24));
+                  const avgGap = gaps.reduce((s: number, g: number) => s + g, 0) / gaps.length;
+                  const purchaseFrequencyPerYear = avgGap > 0 ? 365 / avgGap : 1;
+                  const avgOrderValue = Number(customer.total_spent) / customer.total_orders;
+                  const customerAge = (Date.now() - new Date(customer.created_at).getTime()) / (1000 * 60 * 60 * 24 * 365);
+                  const estimatedLifespan = Math.max(customerAge * 1.5, 2); // estimate 1.5× current age or 2 years minimum
+                  const predictedCLV = avgOrderValue * purchaseFrequencyPerYear * estimatedLifespan;
+                  return (
+                    <>
+                      <div className="flex justify-between"><span className="text-muted-foreground">Avg. Days Between Orders</span><span className="font-medium">{Math.round(avgGap)}</span></div>
+                      <div className="flex justify-between"><span className="text-muted-foreground">Purchase Frequency</span><span className="font-medium">{purchaseFrequencyPerYear.toFixed(1)}×/yr</span></div>
+                      <div className="border-t pt-2 mt-1">
+                        <div className="flex justify-between"><span className="text-muted-foreground">Historic CLV</span><span className="font-medium">${Number(customer.total_spent).toLocaleString()}</span></div>
+                        <div className="flex justify-between mt-1">
+                          <span className="text-muted-foreground">Predicted CLV</span>
+                          <span className="font-bold text-primary">${Math.round(predictedCLV).toLocaleString()}</span>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground mt-1">Based on avg order × {purchaseFrequencyPerYear.toFixed(1)} orders/yr × {estimatedLifespan.toFixed(1)}yr est. lifespan</p>
+                      </div>
+                    </>
+                  );
+                })()}
+                {customer.total_orders > 0 && customerOrders.length < 2 && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Customer Lifetime Value</span>
                     <span className="font-medium text-primary">${Number(customer.total_spent).toLocaleString()}</span>
-                  </div>
-                )}
-                {customerOrders.length >= 2 && (
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Avg. Days Between Orders</span>
-                    <span className="font-medium">
-                      {(() => {
-                        const dates = customerOrders.map((o: any) => new Date(o.created_at).getTime()).sort();
-                        const gaps = dates.slice(1).map((d: number, i: number) => (d - dates[i]) / (1000 * 60 * 60 * 24));
-                        return Math.round(gaps.reduce((s: number, g: number) => s + g, 0) / gaps.length);
-                      })()}
-                    </span>
                   </div>
                 )}
               </CardContent>

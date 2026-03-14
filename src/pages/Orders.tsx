@@ -9,7 +9,8 @@ import { useOrders } from "@/hooks/use-data";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Download, Copy, CheckSquare, Printer } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Search, Download, Copy, CheckSquare, Printer, Tag } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CreateOrderDialog } from "@/components/orders/CreateOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -44,6 +45,8 @@ export default function Orders() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkStatus, setBulkStatus] = useState("");
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [bulkTagInput, setBulkTagInput] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const navigate = useNavigate();
@@ -52,8 +55,31 @@ export default function Orders() {
   const filtered = orders.filter((o: any) => {
     const matchSearch = o.order_number.includes(search) || (o.customers?.name || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = statusFilter === "all" || o.status === statusFilter;
-    return matchSearch && matchStatus;
+    const matchTag = !tagFilter || ((o.tags as string[]) || []).some((t: string) => t.toLowerCase().includes(tagFilter.toLowerCase()));
+    return matchSearch && matchStatus && matchTag;
   });
+
+  // Collect unique tags for filtering
+  const allTags = Array.from(new Set(orders.flatMap((o: any) => (o.tags as string[]) || [])));
+
+  const handleBulkAddTag = async () => {
+    if (!bulkTagInput.trim() || selected.size === 0) return;
+    setBulkProcessing(true);
+    try {
+      const ids = Array.from(selected);
+      for (const id of ids) {
+        const order = orders.find((o: any) => o.id === id);
+        const existingTags: string[] = (order as any)?.tags || [];
+        if (!existingTags.includes(bulkTagInput.trim())) {
+          await supabase.from("orders").update({ tags: [...existingTags, bulkTagInput.trim()] } as any).eq("id", id);
+        }
+      }
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      toast.success(`Tag "${bulkTagInput.trim()}" added to ${ids.length} orders`);
+      setBulkTagInput("");
+    } catch (err: any) { toast.error(err.message); }
+    finally { setBulkProcessing(false); }
+  };
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
@@ -202,6 +228,12 @@ export default function Orders() {
                 {bulkProcessing ? "Updating..." : "Apply"}
               </Button>
               <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setSelected(new Set())}>Clear</Button>
+              <div className="flex items-center gap-1">
+                <Input className="h-7 w-28 text-xs" placeholder="Add tag..." value={bulkTagInput} onChange={e => setBulkTagInput(e.target.value)} onKeyDown={e => e.key === "Enter" && handleBulkAddTag()} />
+                <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={handleBulkAddTag} disabled={!bulkTagInput.trim() || bulkProcessing}>
+                  <Tag className="h-3 w-3" /> Tag
+                </Button>
+              </div>
               <div className="w-full sm:w-auto sm:ml-auto flex flex-wrap gap-1">
                 <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={() => {
                   const ids = Array.from(selected);
@@ -249,6 +281,17 @@ export default function Orders() {
                   <SelectItem value="cancelled" className="text-xs">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
+              {allTags.length > 0 && (
+                <Select value={tagFilter} onValueChange={setTagFilter}>
+                  <SelectTrigger className="h-8 w-32 text-xs">
+                    <SelectValue placeholder="Filter by tag..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="" className="text-xs">All Tags</SelectItem>
+                    {allTags.map(t => <SelectItem key={t} value={t} className="text-xs">{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             <div className="table-scroll">
             <Table>
@@ -261,9 +304,10 @@ export default function Orders() {
                       className="h-3.5 w-3.5"
                     />
                   </TableHead>
-                  <TableHead className="text-xs h-8">Order</TableHead>
+                   <TableHead className="text-xs h-8">Order</TableHead>
                   <TableHead className="text-xs h-8">Customer</TableHead>
                   <TableHead className="text-xs h-8">Items</TableHead>
+                  <TableHead className="text-xs h-8">Tags</TableHead>
                   <TableHead className="text-xs h-8">Status</TableHead>
                   <TableHead className="text-xs h-8">Payment</TableHead>
                   <TableHead className="text-xs h-8">Fulfillment</TableHead>
@@ -274,9 +318,9 @@ export default function Orders() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={10}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 5 }).map((_, i) => <TableRow key={i}><TableCell colSpan={11}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={11} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
                 ) : (
                   filtered.slice((page - 1) * pageSize, page * pageSize).map((o: any) => (
                     <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${o.id}`)}>
@@ -290,6 +334,16 @@ export default function Orders() {
                       <TableCell className="py-2 font-medium">{o.order_number}</TableCell>
                       <TableCell className="py-2">{o.customers?.name || "—"}</TableCell>
                       <TableCell className="py-2">{o.items_count}</TableCell>
+                      <TableCell className="py-2">
+                        {o.tags && (o.tags as string[]).length > 0 && (
+                          <div className="flex gap-0.5 flex-wrap">
+                            {(o.tags as string[]).slice(0, 2).map((t: string) => (
+                              <Badge key={t} variant="secondary" className="text-[10px] px-1 py-0">{t}</Badge>
+                            ))}
+                            {(o.tags as string[]).length > 2 && <span className="text-[10px] text-muted-foreground">+{(o.tags as string[]).length - 2}</span>}
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.status} /></TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.payment_status} /></TableCell>
                       <TableCell className="py-2"><StatusBadge status={o.fulfillment_status || "unfulfilled"} /></TableCell>
