@@ -431,6 +431,53 @@ export default function Analytics() {
         repeatCustomers: repeatBuyers,
       });
 
+      // RFM Segmentation
+      const now = new Date();
+      const customerRfm: Record<string, { lastOrder: Date; frequency: number; monetary: number }> = {};
+      (orders as any[]).forEach((o: any) => {
+        if (!o.customer_id) return;
+        const d = new Date(o.created_at);
+        if (!customerRfm[o.customer_id]) customerRfm[o.customer_id] = { lastOrder: d, frequency: 0, monetary: 0 };
+        const entry = customerRfm[o.customer_id];
+        if (d > entry.lastOrder) entry.lastOrder = d;
+        entry.frequency++;
+        entry.monetary += Number(o.total || 0);
+      });
+      const rfmEntries = Object.values(customerRfm);
+      const getRScore = (days: number) => days <= 30 ? 5 : days <= 60 ? 4 : days <= 90 ? 3 : days <= 180 ? 2 : 1;
+      const getFScore = (f: number) => f >= 10 ? 5 : f >= 5 ? 4 : f >= 3 ? 3 : f >= 2 ? 2 : 1;
+      const getMScore = (m: number, avg: number) => m >= avg * 3 ? 5 : m >= avg * 1.5 ? 4 : m >= avg ? 3 : m >= avg * 0.5 ? 2 : 1;
+      const avgM = rfmEntries.length > 0 ? rfmEntries.reduce((s, e) => s + e.monetary, 0) / rfmEntries.length : 1;
+      const segmentMap: Record<string, { count: number; totalM: number }> = {};
+      rfmEntries.forEach(e => {
+        const daysSince = Math.floor((now.getTime() - e.lastOrder.getTime()) / 86400000);
+        const r = getRScore(daysSince);
+        const f = getFScore(e.frequency);
+        const m = getMScore(e.monetary, avgM);
+        const avg = (r + f + m) / 3;
+        const seg = avg >= 4 ? "Champions" : avg >= 3 ? "Loyal" : avg >= 2.3 ? "Potential" : avg >= 1.5 ? "At Risk" : "Lost";
+        if (!segmentMap[seg]) segmentMap[seg] = { count: 0, totalM: 0 };
+        segmentMap[seg].count++;
+        segmentMap[seg].totalM += e.monetary;
+      });
+      setRfmData(Object.entries(segmentMap).map(([segment, d]) => ({ segment, count: d.count, avgMonetary: d.count > 0 ? d.totalM / d.count : 0 })).sort((a, b) => b.count - a.count));
+
+      // Sales by Customer Group
+      const { data: custData } = await supabase.from("customers").select("id, segment, customer_group_id").eq("store_id", currentStore.id);
+      const { data: groupsData } = await supabase.from("customer_groups").select("id, name").eq("store_id", currentStore.id);
+      const groupNameMap: Record<string, string> = {};
+      (groupsData || []).forEach((g: any) => { groupNameMap[g.id] = g.name; });
+      const custGroupMap: Record<string, string> = {};
+      (custData || []).forEach((c: any) => { custGroupMap[c.id] = c.customer_group_id ? (groupNameMap[c.customer_group_id] || "Unknown Group") : (c.segment || "No Group"); });
+      const groupSales: Record<string, { orders: number; revenue: number }> = {};
+      (orders as any[]).forEach((o: any) => {
+        const grp = o.customer_id ? (custGroupMap[o.customer_id] || "No Group") : "Guest";
+        if (!groupSales[grp]) groupSales[grp] = { orders: 0, revenue: 0 };
+        groupSales[grp].orders++;
+        groupSales[grp].revenue += Number(o.total || 0);
+      });
+      setSalesByGroup(Object.entries(groupSales).map(([group, d]) => ({ group, ...d })).sort((a, b) => b.revenue - a.revenue));
+
       setLoadingTopProducts(false);
     };
     fetchData();
