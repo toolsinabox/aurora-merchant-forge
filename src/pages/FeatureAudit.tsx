@@ -8976,7 +8976,7 @@ const inventoryCountingFeatures: FeatureCategory[] = [
       { name: "Stocktake History", description: "History of past stocktakes with results", status: "partial" },
       { name: "Blind Count Mode", description: "Count without seeing expected quantities", status: "not_started" },
       { name: "Multi-User Stocktake", description: "Multiple staff counting simultaneously", status: "not_started" },
-      { name: "Stocktake Export", description: "Export stocktake results to CSV", status: "not_started" },
+      { name: "Stocktake Export", description: "Export stocktake results to CSV", status: "done", notes: "Stocktake active view Export CSV button downloads SKU, product, expected, counted, variance as CSV file" },
     ],
   },
 ];
