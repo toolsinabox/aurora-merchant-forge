@@ -248,6 +248,53 @@ export default function PickPack() {
           </Card>
         )}
 
+        {/* Batch Pick Step */}
+        {step === "batch" && (
+          <Card>
+            <CardHeader className="p-4 pb-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Copy className="h-4 w-4" />
+                Batch Pick — {batchPickItems.length} unique SKUs across {pendingOrders.length} orders
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs h-8">SKU</TableHead>
+                    <TableHead className="text-xs h-8">Product</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Total Qty</TableHead>
+                    <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                    <TableHead className="text-xs h-8">Order #s</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {batchPickItems.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-8">No items to batch pick</TableCell>
+                    </TableRow>
+                  ) : batchPickItems.map((item, idx) => (
+                    <TableRow key={idx} className="text-xs">
+                      <TableCell className="py-1.5 font-mono text-muted-foreground">{item.sku}</TableCell>
+                      <TableCell className="py-1.5 font-medium max-w-[200px] truncate">{item.title}</TableCell>
+                      <TableCell className="py-1.5 text-right font-bold text-primary">{item.totalQty}</TableCell>
+                      <TableCell className="py-1.5 text-right">{item.orderCount}</TableCell>
+                      <TableCell className="py-1.5">
+                        <div className="flex flex-wrap gap-1">
+                          {item.orders.slice(0, 5).map(o => (
+                            <Badge key={o} variant="outline" className="text-[10px]">{o}</Badge>
+                          ))}
+                          {item.orders.length > 5 && <Badge variant="secondary" className="text-[10px]">+{item.orders.length - 5}</Badge>}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Pack Step */}
         {step === "pack" && (
           <Card>

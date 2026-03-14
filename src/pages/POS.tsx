@@ -445,6 +445,9 @@ export default function POS() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search products or scan barcode..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-10" />
                 </div>
+                <Button variant="outline" size="sm" className="h-10 gap-1 text-xs" onClick={() => setShowCustomSale(true)}>
+                  <Plus className="h-4 w-4" /> Custom
+                </Button>
               </div>
               <div className="flex-1 overflow-y-auto">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
