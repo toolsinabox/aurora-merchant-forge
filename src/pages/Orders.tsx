@@ -273,7 +273,7 @@ export default function Orders() {
                 ) : filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
                 ) : (
-                  filtered.map((o: any) => (
+                  filtered.slice((page - 1) * pageSize, page * pageSize).map((o: any) => (
                     <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${o.id}`)}>
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
                         <Checkbox
