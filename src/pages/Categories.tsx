@@ -234,8 +234,13 @@ export default function Categories() {
             ) : categories.length === 0 ? (
               <p className="text-xs text-muted-foreground text-center py-6">No categories yet. Create your first category.</p>
             ) : (
-              tree.map((cat) => (
-                <CategoryItem key={cat.id} category={cat} children={cat.children} onDelete={(id) => deleteCategory.mutate(id)} onEdit={openEdit} />
+              tree.map((cat, idx) => (
+                <CategoryItem key={cat.id} category={cat} children={cat.children}
+                  onDelete={(id) => deleteCategory.mutate(id)} onEdit={openEdit}
+                  isFirst={idx === 0} isLast={idx === tree.length - 1}
+                  onMoveUp={idx > 0 ? () => swapSortOrder(cat, tree[idx - 1]) : undefined}
+                  onMoveDown={idx < tree.length - 1 ? () => swapSortOrder(cat, tree[idx + 1]) : undefined}
+                />
               ))
             )}
           </CardContent>
