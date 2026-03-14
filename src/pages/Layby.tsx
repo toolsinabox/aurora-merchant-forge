@@ -92,6 +92,24 @@ export default function Layby() {
     onError: (e: any) => toast.error(e.message),
   });
 
+  const sendReminder = useMutation({
+    mutationFn: async (plan: any) => {
+      if (!plan.customer?.email || !currentStore) throw new Error("No customer email");
+      const remaining = Number(plan.total_amount) - Number(plan.amount_paid);
+      const { error } = await supabase.functions.invoke("send-email", {
+        body: {
+          store_id: currentStore.id,
+          to: plan.customer.email,
+          subject: `Layby Payment Reminder — ${plan.order?.order_number || "Your Plan"}`,
+          html: `<p>Hi ${plan.customer.name},</p><p>This is a friendly reminder that your next layby installment of <strong>$${plan.installment_amount?.toFixed(2)}</strong> is due soon.</p><p>Outstanding balance: <strong>$${remaining.toFixed(2)}</strong></p><p>Installments completed: ${plan.installments_paid} of ${plan.installments_count}</p><p>Thank you for your continued payments.</p>`,
+        },
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => toast.success("Payment reminder sent"),
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const filtered = (plans as any[]).filter((p) => {
     if (statusFilter !== "all" && p.status !== statusFilter) return false;
     if (search) {
