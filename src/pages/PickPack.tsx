@@ -198,7 +198,7 @@ export default function PickPack() {
 
         {/* Step indicator */}
         <div className="flex items-center gap-2 flex-wrap">
-          {(["pick", "batch", "pack", "ship", "waves"] as WorkflowStep[]).map((s, i) => (
+          {(["pick", "batch", "pack", "ship", "waves", "zones", "cartons"] as WorkflowStep[]).map((s, i) => (
             <div key={s} className="flex items-center gap-2">
               {i > 0 && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
               <Button
@@ -212,9 +212,11 @@ export default function PickPack() {
                 {s === "pack" && <CheckCircle className="h-3 w-3 mr-1" />}
                 {s === "ship" && <Truck className="h-3 w-3 mr-1" />}
                 {s === "waves" && <Layers className="h-3 w-3 mr-1" />}
-                {s === "batch" ? "Batch Pick" : s === "waves" ? "Waves" : s}
+                {s === "zones" && <MapPin className="h-3 w-3 mr-1" />}
+                {s === "cartons" && <BoxIcon className="h-3 w-3 mr-1" />}
+                {s === "batch" ? "Batch Pick" : s === "waves" ? "Waves" : s === "zones" ? "Zones" : s === "cartons" ? "Cartons" : s}
                 <Badge variant="secondary" className="ml-1.5 text-[10px]">
-                  {s === "pick" ? pendingOrders.length : s === "batch" ? batchPickItems.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : 0}
+                  {s === "pick" ? pendingOrders.length : s === "batch" ? batchPickItems.length : s === "pack" ? processingOrders.length : s === "waves" ? waves.filter(w => w.status !== "completed").length : s === "zones" ? zones.length : s === "cartons" ? cartons.length : 0}
                 </Badge>
               </Button>
             </div>
