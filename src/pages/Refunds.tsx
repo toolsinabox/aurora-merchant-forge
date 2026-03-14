@@ -12,6 +12,13 @@ import { Label } from "@/components/ui/label";
 import { Plus, Search, DollarSign, Clock, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
+interface RefundLineItem {
+  title: string;
+  quantity: number;
+  unit_price: number;
+  refund_amount: number;
+}
+
 interface Refund {
   id: string;
   refund_number: string;
@@ -25,6 +32,8 @@ interface Refund {
   processed_by: string | null;
   processed_at: string | null;
   created_at: string;
+  refund_type: "full" | "partial";
+  line_items?: RefundLineItem[];
 }
 
 const mockRefunds: Refund[] = [
