@@ -175,6 +175,7 @@ export default function Customers() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="table-scroll">
             <Table>
               <TableHeader>
                 <TableRow>
