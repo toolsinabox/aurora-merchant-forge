@@ -8139,7 +8139,7 @@ const promotionFeatures: FeatureCategory[] = [
       { name: "Customer Group Discount", description: "Auto-apply discount for customer group members", status: "done" },
       { name: "Stackable vs Non-Stackable Promos", description: "Control whether discounts stack", status: "done", notes: "PriceRules is_stackable toggle per rule with Switch control and description" },
       { name: "Coupon + Auto Promo Interaction", description: "Rules for coupon + automatic promo stacking", status: "done", notes: "PriceRules is_stackable field controls whether promos combine with other active rules" },
-      { name: "Flash Sale Timer", description: "Countdown timer on promo products", status: "partial" },
+      { name: "Flash Sale Timer", description: "Countdown timer on promo products", status: "done", notes: "FlashSaleTimer component on StorefrontProductDetail shows live d/h/m/s countdown when product has active promo_end date" },
       { name: "Volume Discount Tiers", description: "Quantity-based price breaks", status: "done" },
       { name: "Loyalty Points Earn Rules", description: "Configure points earned per $ spent", status: "done", notes: "loyalty_points" },
       { name: "Loyalty Points Redemption", description: "Redeem points as discount at checkout", status: "partial" },
