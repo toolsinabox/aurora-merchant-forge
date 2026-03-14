@@ -132,13 +132,13 @@ export default function PriceRules() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Automatic Discounts</h1>
-            <p className="text-sm text-muted-foreground">Price rules that apply automatically at checkout without a coupon code</p>
+            <h1 className="text-lg font-semibold">Automatic Discounts</h1>
+            <p className="text-xs text-muted-foreground">Price rules that apply automatically at checkout without a coupon code</p>
           </div>
-          <Button size="sm" onClick={() => setShowForm(true)}><Plus className="h-4 w-4 mr-1" /> New Rule</Button>
+          <Button size="sm" className="h-8 text-xs gap-1" onClick={() => setShowForm(true)}><Plus className="h-3.5 w-3.5" /> New Rule</Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

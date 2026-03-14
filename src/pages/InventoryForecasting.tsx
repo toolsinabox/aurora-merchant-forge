@@ -96,10 +96,10 @@ export default function InventoryForecasting() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-xl font-bold text-foreground">Inventory Forecasting</h1>
-          <p className="text-sm text-muted-foreground">Demand prediction & reorder suggestions based on 30-day sales velocity</p>
+          <h1 className="text-lg font-semibold">Inventory Forecasting</h1>
+          <p className="text-xs text-muted-foreground">Demand prediction & reorder suggestions based on 30-day sales velocity</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
