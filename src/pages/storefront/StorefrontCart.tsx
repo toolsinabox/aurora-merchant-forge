@@ -85,7 +85,7 @@ export default function StorefrontCart() {
     setCouponCode("");
   };
 
-  if (items.length === 0) {
+  if (items.length === 0 && savedItems.length === 0) {
     return (
       <StorefrontLayout>
         <div className="max-w-2xl mx-auto px-4 py-24 text-center animate-fade-in">
