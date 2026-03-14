@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { BarChart3, Download, Play, Filter, Calendar } from "lucide-react";
+import { BarChart3, Download, Play, Filter, Calendar, Plus, Trash2, Calculator } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const ENTITY_OPTIONS = [
   { value: "orders", label: "Orders", fields: ["id", "order_number", "status", "payment_status", "fulfillment_status", "total", "subtotal", "tax", "shipping", "discount", "items_count", "order_channel", "created_at"] },
@@ -20,6 +21,39 @@ const ENTITY_OPTIONS = [
   { value: "categories", label: "Categories", fields: ["id", "name", "slug", "sort_order", "created_at"] },
   { value: "coupons", label: "Coupons", fields: ["id", "code", "discount_type", "discount_value", "used_count", "max_uses", "is_active", "created_at"] },
 ];
+
+type FormulaCol = { name: string; formula: string; sourceField: string; operation: "sum" | "avg" | "min" | "max" | "count" | "percent" | "multiply" | "divide"; param?: string };
+
+const FORMULA_OPS = [
+  { value: "sum", label: "Sum (running)" },
+  { value: "avg", label: "Average" },
+  { value: "min", label: "Min" },
+  { value: "max", label: "Max" },
+  { value: "count", label: "Count Non-Null" },
+  { value: "percent", label: "% of Total" },
+  { value: "multiply", label: "Multiply by Field" },
+  { value: "divide", label: "Divide by Field" },
+];
+
+function computeFormula(results: any[], col: FormulaCol): (string | number)[] {
+  const vals = results.map(r => Number(r[col.sourceField]) || 0);
+  const total = vals.reduce((a, b) => a + b, 0);
+  const avg = vals.length ? total / vals.length : 0;
+  const min = vals.length ? Math.min(...vals) : 0;
+  const max = vals.length ? Math.max(...vals) : 0;
+
+  switch (col.operation) {
+    case "sum": { let running = 0; return vals.map(v => { running += v; return Math.round(running * 100) / 100; }); }
+    case "avg": return vals.map(() => Math.round(avg * 100) / 100);
+    case "min": return vals.map(() => min);
+    case "max": return vals.map(() => max);
+    case "count": return results.map(() => results.filter(r => r[col.sourceField] != null && r[col.sourceField] !== "").length);
+    case "percent": return vals.map(v => total ? Math.round((v / total) * 10000) / 100 : 0);
+    case "multiply": return results.map(r => Math.round((Number(r[col.sourceField]) || 0) * (Number(r[col.param]) || 0) * 100) / 100);
+    case "divide": return results.map(r => { const d = Number(r[col.param]) || 0; return d ? Math.round(((Number(r[col.sourceField]) || 0) / d) * 100) / 100 : 0; });
+    default: return vals;
+  }
+}
 
 export default function ReportBuilder() {
   const { currentStore } = useAuth();
@@ -31,8 +65,32 @@ export default function ReportBuilder() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [results, setResults] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [formulaCols, setFormulaCols] = useState<FormulaCol[]>([]);
+  const [formulaOpen, setFormulaOpen] = useState(false);
+  const [newFormula, setNewFormula] = useState<FormulaCol>({ name: "", formula: "", sourceField: "", operation: "sum" });
 
   const entityConfig = ENTITY_OPTIONS.find(e => e.value === entity);
+
+  const numericFields = useMemo(() => {
+    if (!results || results.length === 0) return [];
+    return Object.keys(results[0]).filter(k => typeof results[0][k] === "number" || !isNaN(Number(results[0][k])));
+  }, [results]);
+
+  const computedFormulas = useMemo(() => {
+    if (!results || results.length === 0) return {};
+    const map: Record<string, (string | number)[]> = {};
+    formulaCols.forEach(fc => { map[fc.name] = computeFormula(results, fc); });
+    return map;
+  }, [results, formulaCols]);
+
+  const addFormula = () => {
+    if (!newFormula.name || !newFormula.sourceField) { toast.error("Name and source field required"); return; }
+    if (formulaCols.some(f => f.name === newFormula.name)) { toast.error("Column name already exists"); return; }
+    setFormulaCols([...formulaCols, { ...newFormula }]);
+    setNewFormula({ name: "", formula: "", sourceField: "", operation: "sum" });
+    setFormulaOpen(false);
+    toast.success(`Calculated column "${newFormula.name}" added`);
+  };
 
   const runReport = async () => {
     if (!storeId) return;
@@ -57,12 +115,12 @@ export default function ReportBuilder() {
 
   const exportCsv = () => {
     if (!results || results.length === 0) return;
-    const headers = Object.keys(results[0]);
+    const headers = [...Object.keys(results[0]), ...formulaCols.map(f => f.name)];
     const csv = [
       headers.join(","),
-      ...results.map(row =>
+      ...results.map((row, i) =>
         headers.map(h => {
-          const val = row[h];
+          const val = computedFormulas[h] ? computedFormulas[h][i] : row[h];
           if (val === null || val === undefined) return "";
           const str = typeof val === "object" ? JSON.stringify(val) : String(val);
           return str.includes(",") || str.includes('"') ? `"${str.replace(/"/g, '""')}"` : str;
@@ -80,7 +138,12 @@ export default function ReportBuilder() {
 
   const exportJson = () => {
     if (!results || results.length === 0) return;
-    const blob = new Blob([JSON.stringify(results, null, 2)], { type: "application/json" });
+    const enriched = results.map((row, i) => {
+      const r = { ...row };
+      formulaCols.forEach(fc => { r[fc.name] = computedFormulas[fc.name]?.[i]; });
+      return r;
+    });
+    const blob = new Blob([JSON.stringify(enriched, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -91,13 +154,12 @@ export default function ReportBuilder() {
 
   const exportExcel = () => {
     if (!results || results.length === 0) return;
-    // Generate TSV (Excel-compatible) with BOM for UTF-8
-    const headers = Object.keys(results[0]);
+    const headers = [...Object.keys(results[0]), ...formulaCols.map(f => f.name)];
     const tsv = "\uFEFF" + [
       headers.join("\t"),
-      ...results.map(row =>
+      ...results.map((row, i) =>
         headers.map(h => {
-          const val = row[h];
+          const val = computedFormulas[h] ? computedFormulas[h][i] : row[h];
           if (val === null || val === undefined) return "";
           return typeof val === "object" ? JSON.stringify(val) : String(val).replace(/\t/g, " ");
         }).join("\t")
@@ -116,14 +178,14 @@ export default function ReportBuilder() {
     setSelectedFields(prev => prev.includes(field) ? prev.filter(f => f !== field) : [...prev, field]);
   };
 
-  const columns = results && results.length > 0 ? Object.keys(results[0]) : [];
+  const columns = results && results.length > 0 ? [...Object.keys(results[0]), ...formulaCols.map(f => f.name)] : [];
 
   return (
     <AdminLayout>
       <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Report Builder</h1>
-          <p className="text-xs text-muted-foreground">Build custom reports with filters and date ranges</p>
+          <p className="text-xs text-muted-foreground">Build custom reports with filters, date ranges, and calculated columns</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
@@ -134,7 +196,7 @@ export default function ReportBuilder() {
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-xs">Entity</Label>
-                <Select value={entity} onValueChange={(v) => { setEntity(v); setSelectedFields([]); setResults(null); }}>
+                <Select value={entity} onValueChange={(v) => { setEntity(v); setSelectedFields([]); setResults(null); setFormulaCols([]); }}>
                   <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {ENTITY_OPTIONS.map(e => <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>)}
@@ -161,6 +223,72 @@ export default function ReportBuilder() {
                   ))}
                 </div>
               </div>
+
+              {/* Calculated Columns */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <Label className="text-xs flex items-center gap-1"><Calculator className="h-3 w-3" /> Formulas ({formulaCols.length})</Label>
+                  <Dialog open={formulaOpen} onOpenChange={setFormulaOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-5 w-5"><Plus className="h-3 w-3" /></Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader><DialogTitle className="text-sm">Add Calculated Column</DialogTitle></DialogHeader>
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-xs">Column Name</Label>
+                          <Input className="h-8 text-xs" value={newFormula.name} onChange={e => setNewFormula({ ...newFormula, name: e.target.value })} placeholder="e.g. Running Total" />
+                        </div>
+                        <div>
+                          <Label className="text-xs">Source Field</Label>
+                          <Select value={newFormula.sourceField} onValueChange={v => setNewFormula({ ...newFormula, sourceField: v })}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select field" /></SelectTrigger>
+                            <SelectContent>
+                              {(results && results.length > 0 ? Object.keys(results[0]) : entityConfig?.fields || []).map(f => (
+                                <SelectItem key={f} value={f} className="text-xs">{f}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Operation</Label>
+                          <Select value={newFormula.operation} onValueChange={v => setNewFormula({ ...newFormula, operation: v as any })}>
+                            <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              {FORMULA_OPS.map(o => <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {(newFormula.operation === "multiply" || newFormula.operation === "divide") && (
+                          <div>
+                            <Label className="text-xs">Second Field</Label>
+                            <Select value={newFormula.param || ""} onValueChange={v => setNewFormula({ ...newFormula, param: v })}>
+                              <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select field" /></SelectTrigger>
+                              <SelectContent>
+                                {(results && results.length > 0 ? Object.keys(results[0]) : entityConfig?.fields || []).map(f => (
+                                  <SelectItem key={f} value={f} className="text-xs">{f}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        <Button size="sm" className="w-full" onClick={addFormula}>Add Column</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                {formulaCols.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {formulaCols.map(fc => (
+                      <Badge key={fc.name} variant="secondary" className="text-[10px] gap-1">
+                        {fc.name}
+                        <Trash2 className="h-2.5 w-2.5 cursor-pointer opacity-60 hover:opacity-100" onClick={() => setFormulaCols(formulaCols.filter(f => f.name !== fc.name))} />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <Button onClick={runReport} disabled={loading} className="w-full gap-2">
                 <Play className="h-4 w-4" /> {loading ? "Running..." : "Run Report"}
               </Button>
@@ -199,17 +327,23 @@ export default function ReportBuilder() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        {columns.map(col => <TableHead key={col} className="text-xs whitespace-nowrap">{col}</TableHead>)}
+                        {columns.map(col => (
+                          <TableHead key={col} className={`text-xs whitespace-nowrap ${computedFormulas[col] ? "bg-primary/5 text-primary font-semibold" : ""}`}>
+                            {col} {computedFormulas[col] && <Calculator className="h-3 w-3 inline ml-0.5" />}
+                          </TableHead>
+                        ))}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {results.slice(0, 100).map((row, i) => (
                         <TableRow key={i}>
                           {columns.map(col => (
-                            <TableCell key={col} className="text-xs max-w-[200px] truncate">
-                              {row[col] === null ? <span className="text-muted-foreground italic">null</span> :
-                               typeof row[col] === "object" ? JSON.stringify(row[col]).slice(0, 60) :
-                               String(row[col]).slice(0, 60)}
+                            <TableCell key={col} className={`text-xs max-w-[200px] truncate ${computedFormulas[col] ? "bg-primary/5 font-mono" : ""}`}>
+                              {computedFormulas[col] != null
+                                ? (computedFormulas[col][i] != null ? String(computedFormulas[col][i]) : "—")
+                                : row[col] === null ? <span className="text-muted-foreground italic">null</span>
+                                : typeof row[col] === "object" ? JSON.stringify(row[col]).slice(0, 60)
+                                : String(row[col]).slice(0, 60)}
                             </TableCell>
                           ))}
                         </TableRow>

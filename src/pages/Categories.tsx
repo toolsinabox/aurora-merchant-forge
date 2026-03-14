@@ -33,8 +33,9 @@ function buildTree(cats: Cat[]): (Cat & { children: Cat[] })[] {
   }));
 }
 
-function CategoryItem({ category, children, onDelete, onEdit }: {
+function CategoryItem({ category, children, onDelete, onEdit, onMoveUp, onMoveDown, isFirst, isLast }: {
   category: Cat; children: Cat[]; onDelete: (id: string) => void; onEdit: (cat: Cat) => void;
+  onMoveUp?: () => void; onMoveDown?: () => void; isFirst?: boolean; isLast?: boolean;
 }) {
   const hasChildren = children.length > 0;
 
@@ -47,6 +48,8 @@ function CategoryItem({ category, children, onDelete, onEdit }: {
           <span className="text-2xs text-muted-foreground">/{category.slug}</span>
         </div>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100">
+          {onMoveUp && !isFirst && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveUp}><ArrowUp className="h-3 w-3" /></Button>}
+          {onMoveDown && !isLast && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveDown}><ArrowDown className="h-3 w-3" /></Button>}
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(category)}><Edit className="h-3 w-3" /></Button>
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onDelete(category.id)}><Trash2 className="h-3 w-3" /></Button>
         </div>
@@ -66,12 +69,16 @@ function CategoryItem({ category, children, onDelete, onEdit }: {
           </div>
         </CollapsibleTrigger>
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 pr-2">
+          {onMoveUp && !isFirst && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveUp}><ArrowUp className="h-3 w-3" /></Button>}
+          {onMoveDown && !isLast && <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onMoveDown}><ArrowDown className="h-3 w-3" /></Button>}
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onEdit(category)}><Edit className="h-3 w-3" /></Button>
         </div>
       </div>
       <CollapsibleContent className="pl-5">
-        {children.map((child) => (
-          <CategoryItem key={child.id} category={child} children={[]} onDelete={onDelete} onEdit={onEdit} />
+        {children.map((child, idx) => (
+          <CategoryItem key={child.id} category={child} children={[]} onDelete={onDelete} onEdit={onEdit}
+            isFirst={idx === 0} isLast={idx === children.length - 1}
+            onMoveUp={() => onEdit(child)} onMoveDown={() => onEdit(child)} />
         ))}
       </CollapsibleContent>
     </Collapsible>
