@@ -84,15 +84,22 @@ export default function Refunds() {
   };
 
   const handleCreate = () => {
-    if (!form.order_number || !form.amount) { toast.error("Order number and amount required"); return; }
+    const finalAmount = form.refund_type === "partial" ? lineItemTotal : parseFloat(form.amount);
+    if (!form.order_number || (!form.amount && form.refund_type === "full") || (form.refund_type === "partial" && lineItemTotal <= 0)) {
+      toast.error("Order number and amount required");
+      return;
+    }
     const newRefund: Refund = {
       id: crypto.randomUUID(), refund_number: `RFD-${String(refunds.length + 1).padStart(3, "0")}`,
       order_id: "new", order_number: form.order_number, customer_name: "Customer",
-      amount: parseFloat(form.amount), reason: form.reason, refund_method: form.refund_method,
+      amount: finalAmount, reason: form.reason, refund_method: form.refund_method,
       status: "pending", processed_by: null, processed_at: null, created_at: new Date().toISOString(),
+      refund_type: form.refund_type,
+      line_items: form.refund_type === "partial" ? lineItems.filter(i => i.title && i.refund_amount > 0) : undefined,
     };
     setRefunds(prev => [newRefund, ...prev]);
     setDialogOpen(false);
+    setLineItems([{ title: "", quantity: 1, unit_price: 0, refund_amount: 0 }]);
     toast.success("Refund created");
   };
 
