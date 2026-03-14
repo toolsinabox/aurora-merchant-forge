@@ -48,7 +48,7 @@ interface SEOHeadProps {
   breadcrumbs?: BreadcrumbItem[];
 }
 
-export function SEOHead({ title, description, image, url, type = "website", price, currency = "USD", canonicalUrl, product }: SEOHeadProps) {
+export function SEOHead({ title, description, image, url, type = "website", price, currency = "USD", canonicalUrl, product, organization, breadcrumbs }: SEOHeadProps) {
   useEffect(() => {
     if (title) document.title = title;
 
