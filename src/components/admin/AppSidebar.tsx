@@ -4,7 +4,7 @@ import {
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
-  FileDown, TrendingUp, Save,
+  FileDown, TrendingUp, Save, Zap,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -90,6 +90,7 @@ const systemNav = [
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
   { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
+  { title: "Email Automations", url: `${prefix}/email-automations`, icon: Zap },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
   { title: "Settings", url: `${prefix}/settings`, icon: Settings },

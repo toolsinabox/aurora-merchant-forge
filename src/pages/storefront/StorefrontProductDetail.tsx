@@ -21,6 +21,9 @@ import { RenderedTemplate } from "@/components/storefront/RenderedTemplate";
 import { SEOHead } from "@/components/storefront/SEOHead";
 import { useRecentlyViewed } from "@/hooks/use-recently-viewed";
 import { AddToCartPopup } from "@/components/storefront/AddToCartPopup";
+import { SocialShare } from "@/components/storefront/SocialShare";
+import { ProductBadges } from "@/components/storefront/ProductBadges";
+import { DeliveryEstimate } from "@/components/storefront/DeliveryEstimate";
 import type { TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -310,6 +313,7 @@ export default function StorefrontProductDetail() {
           <div className="space-y-5">
             <div>
               {product.brand && <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide mb-1">{product.brand}</p>}
+              <ProductBadges product={product} className="mb-1" />
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{product.title}</h1>
               {product.subtitle && <p className="text-muted-foreground mt-1">{product.subtitle}</p>}
               
@@ -575,6 +579,16 @@ export default function StorefrontProductDetail() {
                 Contact Us for Pricing
               </Button>
             )}
+
+            {/* Delivery Estimate */}
+            <DeliveryEstimate shippingDays={shipping?.estimated_days || 5} />
+
+            {/* Social Share */}
+            <SocialShare
+              url={typeof window !== "undefined" ? window.location.href : ""}
+              title={product.title}
+              image={images[0] ? getImageUrl(images[0]) : undefined}
+            />
 
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 pt-2">
