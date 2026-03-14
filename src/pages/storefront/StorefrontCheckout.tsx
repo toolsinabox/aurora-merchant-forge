@@ -106,6 +106,17 @@ export default function StorefrontCheckout() {
   const [checkoutStep, setCheckoutStep] = useState(1);
   const [signatureRequired, setSignatureRequired] = useState(false);
   const [authorityToLeave, setAuthorityToLeave] = useState(false);
+
+  // Same-day delivery
+  const [sameDayAvailable, setSameDayAvailable] = useState(false);
+  const [sameDaySelected, setSameDaySelected] = useState(false);
+  const SAME_DAY_CUTOFF_HOUR = 14; // 2 PM local time
+  const SAME_DAY_FEE = 14.95;
+
+  // Shipping insurance
+  const [shippingInsurance, setShippingInsurance] = useState(false);
+  const INSURANCE_RATE = 0.03; // 3% of subtotal
+  const insurancePremium = Math.max(2.95, Math.round(subtotalAfterDiscount * INSURANCE_RATE * 100) / 100);
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
