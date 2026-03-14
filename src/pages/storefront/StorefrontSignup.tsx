@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 
 export default function StorefrontSignup() {
@@ -32,7 +33,6 @@ export default function StorefrontSignup() {
 
     if (error) { toast.error(error.message); setLoading(false); return; }
 
-    // Create a customer record linked to this user for the store
     if (data.user && storeSlug) {
       const store = await resolveStoreBySlug(storeSlug, supabase);
       if (store) {
@@ -42,7 +42,6 @@ export default function StorefrontSignup() {
           email,
           user_id: data.user.id,
         } as any);
-        // Send welcome email
         supabase.functions.invoke("welcome-email", {
           body: { store_id: store.id, customer_name: name, customer_email: email },
         }).catch(() => {});
@@ -55,33 +54,43 @@ export default function StorefrontSignup() {
 
   return (
     <StorefrontLayout>
-      <div className="max-w-md mx-auto px-4 py-16">
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl">Create Account</CardTitle>
+      <div className="max-w-md mx-auto px-4 py-16 animate-fade-in">
+        <Card className="border shadow-sm">
+          <CardHeader className="text-center pb-2">
+            <CardTitle className="text-xl font-bold">Create Account</CardTitle>
             <p className="text-sm text-muted-foreground">Track orders and checkout faster</p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <Label>Full Name</Label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} required className="h-10" />
+                <Label className="text-xs font-medium">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} required className="h-10 pl-9" placeholder="John Doe" />
+                </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Email</Label>
-                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-10" />
+                <Label className="text-xs font-medium">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-10 pl-9" placeholder="you@example.com" />
+                </div>
               </div>
               <div className="space-y-1.5">
-                <Label>Password</Label>
-                <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-10" placeholder="Min 6 characters" />
+                <Label className="text-xs font-medium">Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-10 pl-9" placeholder="Min 6 characters" />
+                </div>
               </div>
-              <Button type="submit" className="w-full h-10" disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
+              <Button type="submit" className="w-full h-10 gap-2" disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <>Create Account <ArrowRight className="h-4 w-4" /></>}
               </Button>
             </form>
-            <p className="text-center text-sm text-muted-foreground mt-4">
+            <Separator className="my-6" />
+            <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to={`${basePath}/login`} className="text-primary hover:underline">Sign in</Link>
+              <Link to={`${basePath}/login`} className="text-primary font-medium hover:underline">Sign in</Link>
             </p>
           </CardContent>
         </Card>
