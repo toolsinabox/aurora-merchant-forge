@@ -987,7 +987,7 @@ export default function FeatureAudit() {
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Partial</p>
-              <p className="text-2xl font-bold text-accent-foreground">{stats.partial}</p>
+              <p className="text-lg font-bold text-accent-foreground">{stats.partial}</p>
             </CardContent>
           </Card>
           <Card>
