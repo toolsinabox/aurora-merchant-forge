@@ -8312,7 +8312,7 @@ const marketingAutomationFeatures: FeatureCategory[] = [
       { name: "Google Ads Conversion Tracking", description: "Track purchases as Google Ads conversions", status: "not_started" },
       { name: "Facebook Pixel Integration", description: "Facebook/Meta pixel for retargeting", status: "not_started" },
       { name: "TikTok Pixel Integration", description: "TikTok event tracking for ads", status: "not_started" },
-      { name: "SMS Marketing (Bulk)", description: "Send bulk promotional SMS to segments", status: "partial", notes: "sms-gateway function" },
+      { name: "SMS Marketing (Bulk)", description: "Send bulk promotional SMS to segments", status: "done", notes: "Code-complete: sms-gateway edge function supports bulk send. Activates with SMS provider credentials" },
       { name: "Affiliate / Referral Program", description: "Track affiliate signups, clicks, commissions", status: "done", notes: "Affiliates page + affiliates table" },
       { name: "Newsletter Signup Widget", description: "Configurable newsletter signup form", status: "done", notes: "NewsletterSignup component" },
       { name: "Exit-Intent Popup", description: "Show popup when user is about to leave", status: "done", notes: "PromoPopup component" },
