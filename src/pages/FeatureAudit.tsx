@@ -7861,7 +7861,7 @@ const adminUxFeatures: FeatureCategory[] = [
       { name: "Mass Price Update", description: "Bulk update prices by percentage or fixed amount", status: "partial", notes: "BulkEditDialog exists" },
       { name: "Mass Category Assignment", description: "Bulk assign products to categories", status: "partial" },
       { name: "Undo/Redo in Forms", description: "Ctrl+Z/Y support in admin forms", status: "not_started" },
-      { name: "Autosave Drafts", description: "Auto-save form progress as draft", status: "not_started" },
+      { name: "Autosave Drafts", description: "Auto-save form progress as draft", status: "done", notes: "ProductForm auto-saves new product drafts to localStorage every 2 seconds, restores on page load, clears on successful save" },
       { name: "Form Dirty State Warning", description: "Warn before navigating away from unsaved changes", status: "done", notes: "Admin form patterns" },
       { name: "Recent Activity Feed", description: "Global activity feed showing recent changes across store", status: "done", notes: "ActivityLog page" },
       { name: "Staff @Mentions in Notes", description: "Tag staff members in order/customer notes", status: "not_started" },

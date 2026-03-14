@@ -287,6 +287,7 @@ export default function ProductForm() {
           cartons: parseInt(shipping.cartons) || 0,
         });
       }
+      if (!isEdit) localStorage.removeItem(draftKey);
       navigate("/products");
     };
 
