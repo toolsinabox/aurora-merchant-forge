@@ -1980,6 +1980,372 @@ const featureData: FeatureCategory[] = [
       { name: "Tax Mode", description: "Configure tax-inclusive or tax-exclusive pricing display", status: "done", notes: "tax_mode column on stores table" },
     ],
   },
+  // ═══════ 119. PICK & PACK / WAREHOUSE OPERATIONS ═══════
+  {
+    category: "Pick & Pack / Warehouse Operations",
+    icon: <Warehouse className="h-5 w-5" />,
+    features: [
+      { name: "Pick & Pack Queue", description: "Queue of orders ready for warehouse picking and packing", status: "done", notes: "Admin /pick-pack page with orders in processing status, batch selection, and status workflow" },
+      { name: "Batch Pick Mode", description: "Pick multiple orders at once with consolidated item list", status: "done", notes: "Batch pick dialog aggregates items across selected orders for efficient warehouse picking" },
+      { name: "Pack & Ship Workflow", description: "Mark items as packed and create shipments", status: "done", notes: "Pack action creates shipment records with carrier and tracking info" },
+      { name: "Barcode Scanning", description: "Scan product barcodes during pick/pack for verification", status: "done", notes: "BarcodeScanner component with camera-based barcode detection for pick verification" },
+      { name: "Warehouse Dashboard", description: "Overview of warehouse operations, pending orders, low stock", status: "done", notes: "Admin /warehouse page with KPI cards (pending picks, packed today, shipped today, low stock), recent activity feed" },
+      { name: "Packing Slip Auto-Print", description: "Auto-generate packing slips when packing orders", status: "done", notes: "Print packing slip action on pick-pack page opens PrintPackingSlip with order data" },
+    ],
+  },
+
+  // ═══════ 120. GIFT VOUCHERS / GIFT CARDS ═══════
+  {
+    category: "Gift Vouchers / Gift Cards",
+    icon: <Gift className="h-5 w-5" />,
+    features: [
+      { name: "Gift Voucher CRUD", description: "Create, manage, and track gift vouchers/cards", status: "done", notes: "gift_vouchers table with CRUD, admin /gift-vouchers page with KPI cards, search, and status filters" },
+      { name: "Unique Voucher Codes", description: "Auto-generated unique alphanumeric codes per voucher", status: "done", notes: "code column with unique constraint, auto-generated 12-char codes" },
+      { name: "Balance Tracking", description: "Track remaining balance vs initial value", status: "done", notes: "balance and initial_value columns on gift_vouchers with progress display" },
+      { name: "Voucher Expiry", description: "Set expiry dates on gift vouchers", status: "done", notes: "expires_at column with date validation and expired status display" },
+      { name: "Recipient Details", description: "Capture recipient name, email, and personal message", status: "done", notes: "recipient_name, recipient_email, message columns on gift_vouchers" },
+      { name: "Gift Voucher Email Delivery", description: "Email voucher details to recipient", status: "done", notes: "gift-voucher-email edge function sends branded email with code, value, and message" },
+      { name: "Redeem at Checkout", description: "Apply gift voucher code during checkout to reduce total", status: "done", notes: "Checkout voucher field validates code, checks balance, deducts from total" },
+      { name: "Printable Gift Voucher", description: "Generate printable gift card/voucher", status: "done", notes: "PrintGiftVoucher page with styled card layout, code, value, and message" },
+      { name: "Storefront Purchase", description: "Customers can buy gift vouchers from the storefront", status: "done", notes: "StorefrontGiftVouchers page with denomination selection and recipient form" },
+    ],
+  },
+
+  // ═══════ 121. ADVERTS & BANNER MANAGEMENT ═══════
+  {
+    category: "Adverts & Banner Management",
+    icon: <Megaphone className="h-5 w-5" />,
+    features: [
+      { name: "Advert CRUD", description: "Create and manage promotional adverts/banners", status: "done", notes: "adverts table with CRUD, admin /adverts page with grid and list views" },
+      { name: "Advert Types", description: "Support banner, popup, sidebar, and inline advert types", status: "done", notes: "advert_type column: banner, popup, sidebar, inline" },
+      { name: "Placement Zones", description: "Target adverts to specific page locations", status: "done", notes: "placement column: homepage_hero, homepage_mid, sidebar, header, footer, product_page" },
+      { name: "Schedule Start/End", description: "Schedule adverts with start and end dates", status: "done", notes: "starts_at and ends_at columns for time-bounded campaigns" },
+      { name: "Sort Order", description: "Control display priority of adverts", status: "done", notes: "sort_order integer for ordering within placement zone" },
+      { name: "Active Toggle", description: "Enable/disable adverts without deletion", status: "done", notes: "is_active boolean toggle on adverts" },
+      { name: "Click-Through URL", description: "Link adverts to products, categories, or external URLs", status: "done", notes: "link_url column for click destination" },
+      { name: "HTML Custom Content", description: "Support custom HTML content in adverts", status: "done", notes: "html_content column for rich advert content" },
+      { name: "Storefront Banner Display", description: "Render active banners on storefront pages", status: "done", notes: "AdvertBanner component renders active adverts by placement with image, title, subtitle, CTA button" },
+    ],
+  },
+
+  // ═══════ 122. MULTIMARKET / MULTI-STORE ═══════
+  {
+    category: "Multimarket / Multi-Store",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Market Region CRUD", description: "Create and manage regional market configurations", status: "done", notes: "store_markets table with market_name, country_code, currency, language, domain, is_active" },
+      { name: "Regional Pricing", description: "Set market-specific pricing per product", status: "done", notes: "market_product_prices table with market_id, product_id, price override" },
+      { name: "Regional Currency", description: "Assign default currency per market region", status: "done", notes: "currency column on store_markets linked to currencies table" },
+      { name: "Regional Language", description: "Set default language per market", status: "done", notes: "language column on store_markets" },
+      { name: "Custom Domain per Market", description: "Assign unique domain/subdomain per market", status: "done", notes: "domain column on store_markets for regional storefronts" },
+      { name: "Market Active Toggle", description: "Enable/disable individual markets", status: "done", notes: "is_active boolean on store_markets" },
+      { name: "Admin Multimarket Dashboard", description: "Overview of all market regions with KPI stats", status: "done", notes: "Admin /multimarket page with market grid, product count, order stats per region" },
+    ],
+  },
+
+  // ═══════ 123. CURRENCY MANAGEMENT ═══════
+  {
+    category: "Currency Management",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Currency CRUD", description: "Create and manage supported currencies", status: "done", notes: "currencies table with code, name, symbol, exchange_rate, is_default, is_active" },
+      { name: "Exchange Rates", description: "Set exchange rates relative to base currency", status: "done", notes: "exchange_rate column on currencies table for conversion" },
+      { name: "Default Currency", description: "Designate one currency as the store default", status: "done", notes: "is_default boolean, only one per store" },
+      { name: "Currency Active Toggle", description: "Enable/disable currencies for storefront display", status: "done", notes: "is_active boolean on currencies" },
+      { name: "Storefront Currency Switcher", description: "Customer-facing currency selector on storefront", status: "done", notes: "CurrencySwitcher component in storefront header, persists selection in localStorage" },
+      { name: "Auto-Conversion Display", description: "All prices auto-converted using selected currency rate", status: "done", notes: "useCurrency hook converts prices on all storefront pages" },
+    ],
+  },
+
+  // ═══════ 124. TAX RATES & RULES ═══════
+  {
+    category: "Tax Rates & Rules",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Tax Rate CRUD", description: "Create and manage tax rates per region", status: "done", notes: "tax_rates table with name, rate, country, state, is_compound, is_active" },
+      { name: "Compound Tax", description: "Support compound taxes calculated on top of other taxes", status: "done", notes: "is_compound boolean on tax_rates" },
+      { name: "Region-Based Tax", description: "Apply different tax rates by country/state", status: "done", notes: "country and state columns for geographic tax targeting" },
+      { name: "Tax Priority", description: "Set tax calculation priority/order", status: "done", notes: "priority integer for tax stacking order" },
+      { name: "Tax Active Toggle", description: "Enable/disable tax rates", status: "done", notes: "is_active boolean on tax_rates" },
+      { name: "Tax Exemption Certificates", description: "B2B customers upload tax exemption certificates", status: "done", notes: "tax_exemption_certificates table with certificate_number, issuing_authority, valid_from/until, verification workflow" },
+      { name: "Certificate Verification", description: "Admin verifies uploaded tax exemption documents", status: "done", notes: "is_verified, verified_by, verified_at columns on tax_exemption_certificates" },
+    ],
+  },
+
+  // ═══════ 125. SHIPPING ZONES ═══════
+  {
+    category: "Shipping Zones",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Shipping Zone CRUD", description: "Create zones with country/state coverage", status: "done", notes: "shipping_zones table with name, countries array, states array, is_active" },
+      { name: "Zone-Based Rates", description: "Set shipping rates per zone", status: "done", notes: "Rates linked to zones via shipping_methods table" },
+      { name: "Free Shipping Threshold", description: "Free shipping above a minimum order amount per zone", status: "done", notes: "free_above column on shipping_zones for auto free-shipping calculation" },
+      { name: "Flat Rate per Zone", description: "Fixed shipping rate per zone", status: "done", notes: "flat_rate column on shipping_zones" },
+      { name: "Zone Active Toggle", description: "Enable/disable shipping zones", status: "done", notes: "is_active boolean on shipping_zones" },
+      { name: "Admin Shipping Zones Page", description: "Full zone management interface", status: "done", notes: "Admin /shipping-zones page with zone grid, country chips, rate display" },
+    ],
+  },
+
+  // ═══════ 126. SUBSCRIPTIONS & RECURRING ORDERS ═══════
+  {
+    category: "Subscriptions & Recurring Orders",
+    icon: <Repeat className="h-5 w-5" />,
+    features: [
+      { name: "Subscription Plan CRUD", description: "Create and manage subscription plans", status: "done", notes: "subscriptions table with frequency, next_billing_date, status, items JSONB" },
+      { name: "Frequency Options", description: "Weekly, monthly, bi-monthly, quarterly subscription intervals", status: "done", notes: "frequency column with configurable billing intervals" },
+      { name: "Subscription Status Workflow", description: "Active → paused → cancelled → expired lifecycle", status: "done", notes: "status column with full subscription lifecycle" },
+      { name: "Next Billing Date", description: "Track and display next billing date per subscription", status: "done", notes: "next_billing_date column on subscriptions" },
+      { name: "Subscription Items", description: "Products and quantities included in subscription", status: "done", notes: "items JSONB array on subscriptions table with product_id, quantity, price" },
+      { name: "Admin Subscription Dashboard", description: "Overview of active subscriptions with KPIs", status: "done", notes: "Admin /subscriptions page with KPI cards (active, paused, MRR), subscription list with status badges" },
+      { name: "Subscription Discount", description: "Percentage discount for subscription vs one-time purchase", status: "done", notes: "discount_percent column on subscriptions for recurring savings" },
+      { name: "Auto-Order Generation", description: "Auto-create orders from active subscriptions on billing date", status: "done", notes: "Subscription processing creates order with subscription items on billing cycle" },
+    ],
+  },
+
+  // ═══════ 127. STAFF ACTIVITY & AUDIT LOG ═══════
+  {
+    category: "Staff Activity & Audit Log",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Activity Log", description: "Track all admin actions with user, entity, and timestamp", status: "done", notes: "activity_log table with user_id, action, entity_type, entity_id, details JSONB" },
+      { name: "Entity Tracking", description: "Log actions across all entity types (orders, products, customers)", status: "done", notes: "entity_type column for filtering by affected entity" },
+      { name: "Action Types", description: "Track create, update, delete, login, export actions", status: "done", notes: "action column categorizing the type of change" },
+      { name: "Details JSONB", description: "Store before/after values for change auditing", status: "done", notes: "details JSONB column for rich audit data" },
+      { name: "Staff Activity Dashboard", description: "View staff member actions with filtering", status: "done", notes: "Admin /staff-activity page with user filter, entity filter, and chronological event list" },
+      { name: "Session Management", description: "View and manage active user sessions", status: "done", notes: "Admin /sessions page with active sessions, device info, and force-logout capability" },
+    ],
+  },
+
+  // ═══════ 128. ROLE & PERMISSION MANAGEMENT ═══════
+  {
+    category: "Role & Permission Management",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Role-Based Access Control", description: "Assign roles (owner, admin, staff, viewer) per store", status: "done", notes: "user_roles table with user_id, store_id, role (app_role enum)" },
+      { name: "Permission Matrix", description: "Define granular permissions per role", status: "done", notes: "Admin /role-permissions page with module-level permission grid" },
+      { name: "Store-Scoped Roles", description: "Roles are per-store, not global", status: "done", notes: "store_id on user_roles ensures multi-tenant role isolation" },
+      { name: "Role Assignment", description: "Assign/change roles for team members", status: "done", notes: "Role management on Settings > Team tab" },
+      { name: "Security Definer Functions", description: "Role checks bypass RLS for security", status: "done", notes: "has_store_role() SECURITY DEFINER function for safe role checks" },
+    ],
+  },
+
+  // ═══════ 129. WEBHOOK MANAGEMENT ═══════
+  {
+    category: "Webhook Management",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Webhook CRUD", description: "Create and manage webhook endpoints", status: "done", notes: "webhooks table with url, events array, secret, is_active; admin /webhooks page" },
+      { name: "Event Types", description: "Subscribe to order, product, customer, inventory events", status: "done", notes: "events array column with order.created, product.updated, customer.created, etc." },
+      { name: "Webhook Secret", description: "HMAC signing secret for payload verification", status: "done", notes: "secret column on webhooks table for payload signing" },
+      { name: "Delivery Log", description: "Track webhook delivery attempts and responses", status: "done", notes: "Webhook dispatch logging with status codes and response times" },
+      { name: "Active Toggle", description: "Enable/disable webhooks without deletion", status: "done", notes: "is_active boolean on webhooks table" },
+      { name: "Webhook Dispatcher", description: "Server-side webhook delivery engine", status: "done", notes: "webhook-dispatcher edge function sends signed payloads to all matching webhook endpoints" },
+    ],
+  },
+
+  // ═══════ 130. API KEYS & RATE LIMITING ═══════
+  {
+    category: "API Keys & Rate Limiting",
+    icon: <Key className="h-5 w-5" />,
+    features: [
+      { name: "API Key Generation", description: "Generate API keys with scoped permissions", status: "done", notes: "api_keys table with key_hash, key_prefix, scopes array, created_by; admin /api-keys page" },
+      { name: "Key Scopes", description: "Granular scope control (products:read, orders:write, etc.)", status: "done", notes: "scopes text array on api_keys with per-resource read/write permissions" },
+      { name: "Key Expiry", description: "Set expiration dates on API keys", status: "done", notes: "expires_at column on api_keys" },
+      { name: "Rate Limiting", description: "Per-key request rate limits", status: "done", notes: "api_rate_limits table tracking request counts per time window per key" },
+      { name: "Last Used Tracking", description: "Track when each key was last used", status: "done", notes: "last_used_at column on api_keys" },
+      { name: "Key Active Toggle", description: "Revoke or re-enable API keys", status: "done", notes: "is_active boolean on api_keys" },
+      { name: "REST API Edge Function", description: "Full REST API for products, orders, customers", status: "done", notes: "rest-api edge function with CRUD endpoints authenticated via API keys" },
+      { name: "Batch API", description: "Batch multiple API operations in a single request", status: "done", notes: "batch-api edge function for bulk operations with atomic commit support" },
+      { name: "API Documentation", description: "Interactive API documentation page", status: "done", notes: "Admin /api-docs page with endpoint reference, request/response examples, and authentication guide" },
+    ],
+  },
+
+  // ═══════ 131. REPORT BUILDER ═══════
+  {
+    category: "Report Builder",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Custom Report Creation", description: "Build custom reports with selected metrics and dimensions", status: "done", notes: "Admin /report-builder page with report type selection, date range, grouping, and metric configuration" },
+      { name: "Report Types", description: "Sales, products, customers, inventory, marketing report categories", status: "done", notes: "5 report categories with category-specific metric options" },
+      { name: "Date Range Filtering", description: "Filter reports by custom date ranges", status: "done", notes: "Date range picker with preset options (today, 7d, 30d, 90d, custom)" },
+      { name: "Report Export", description: "Export reports to CSV", status: "done", notes: "CSV export button on generated reports" },
+      { name: "Scheduled Reports", description: "Schedule automated report delivery via email", status: "done", notes: "scheduled-report-email edge function sends reports on configured schedule" },
+    ],
+  },
+
+  // ═══════ 132. IMPORT & EXPORT WIZARD ═══════
+  {
+    category: "Import & Export Wizard",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Product Import", description: "Bulk import products from CSV with field mapping", status: "done", notes: "Import Wizard with CSV upload, column mapping, preview, and validation" },
+      { name: "Customer Import", description: "Bulk import customers with email duplicate detection", status: "done", notes: "Customer import with name, email, phone, segment, tags mapping" },
+      { name: "Order Import", description: "Bulk import historical orders", status: "done", notes: "Order import with order number, status, financials, customer lookup" },
+      { name: "Import Templates", description: "Save reusable field mapping templates", status: "done", notes: "import_templates table with saved field_mappings JSONB, template selection on import" },
+      { name: "Import Logging", description: "Track import history with success/error counts", status: "done", notes: "import_logs table with entity_type, total_rows, success_count, error_count, errors JSONB" },
+      { name: "Product Export", description: "Export products with field selection", status: "done", notes: "Export Wizard with entity type, field checkboxes, date range filters" },
+      { name: "Customer Export", description: "Export customer data to CSV", status: "done", notes: "Customer export with segment and tag filtering" },
+      { name: "Order Export", description: "Export orders with status and date filtering", status: "done", notes: "Order export with line items, customer details, and financial breakdown" },
+      { name: "Review Export", description: "Export product reviews", status: "done", notes: "Review export with product, rating, and approval status" },
+      { name: "Scheduled Exports", description: "Automated recurring data exports", status: "done", notes: "scheduled-export edge function with configurable entity type and schedule" },
+    ],
+  },
+
+  // ═══════ 133. ONBOARDING WIZARD ═══════
+  {
+    category: "Onboarding Wizard",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Step-by-Step Setup", description: "Guided onboarding flow for new store setup", status: "done", notes: "Admin /onboarding page with multi-step wizard (store info, products, shipping, payments, launch)" },
+      { name: "Store Info Collection", description: "Collect store name, contact email, currency, timezone", status: "done", notes: "Step 1 with store_name, contact_email, currency, timezone fields" },
+      { name: "First Product Setup", description: "Guide merchant to create their first product", status: "done", notes: "Step 2 with basic product creation (title, price, description, image)" },
+      { name: "Shipping Configuration", description: "Set up first shipping zone and rates", status: "done", notes: "Step 3 with shipping zone creation and rate configuration" },
+      { name: "Payment Gateway Setup", description: "Configure first payment method", status: "done", notes: "Step 4 with payment gateway selection and credential input" },
+      { name: "Launch Checklist", description: "Pre-launch checklist with completion tracking", status: "done", notes: "Step 5 with store readiness checks and publish action" },
+    ],
+  },
+
+  // ═══════ 134. ORDER HOLD & RELEASE ═══════
+  {
+    category: "Order Hold & Release",
+    icon: <AlertTriangle className="h-5 w-5" />,
+    features: [
+      { name: "Place Order on Hold", description: "Prevent order from proceeding through fulfillment", status: "done", notes: "order_holds table with hold_reason, held_by, held_at, is_active; hold action on order detail page" },
+      { name: "Hold Reason Tracking", description: "Record reason for holding an order", status: "done", notes: "hold_reason column (fraud_review, payment_pending, stock_issue, customer_request, manual)" },
+      { name: "Release from Hold", description: "Remove hold and resume order processing", status: "done", notes: "released_at and released_by columns, release action sets is_active=false" },
+      { name: "Hold Notes", description: "Internal notes for hold context", status: "done", notes: "notes text field on order_holds" },
+      { name: "Hold History", description: "Track all holds/releases per order", status: "done", notes: "Multiple order_holds records per order for full hold history" },
+    ],
+  },
+
+  // ═══════ 135. SHIPPING MANIFESTS ═══════
+  {
+    category: "Shipping Manifests",
+    icon: <ClipboardCheck className="h-5 w-5" />,
+    features: [
+      { name: "Manifest CRUD", description: "Create shipping manifests grouping multiple shipments", status: "done", notes: "shipping_manifests table with manifest_number, carrier, status, shipment_count" },
+      { name: "Add Shipments to Manifest", description: "Group shipments into a manifest for carrier pickup", status: "done", notes: "shipping_manifest_items linking shipments to manifests" },
+      { name: "Manifest Status Workflow", description: "Open → closed → collected lifecycle", status: "done", notes: "status column: open, closed, collected" },
+      { name: "Total Weight Tracking", description: "Sum weight of all shipments in manifest", status: "done", notes: "total_weight column calculated from shipment weights" },
+      { name: "Close & Print Manifest", description: "Close manifest and generate printable manifest document", status: "done", notes: "closed_at and closed_by columns, print action" },
+    ],
+  },
+
+  // ═══════ 136. CUSTOMER SEGMENTATION RULES ═══════
+  {
+    category: "Customer Segmentation Rules",
+    icon: <Users className="h-5 w-5" />,
+    features: [
+      { name: "Segmentation Rule CRUD", description: "Define automatic customer segmentation rules", status: "done", notes: "customer_segmentation_rules table with name, segment, rules JSONB, match_type" },
+      { name: "Rule Conditions", description: "Segment by total_spent, total_orders, last_order_date, tags, created_at", status: "done", notes: "rules JSONB array with field, operator, value conditions" },
+      { name: "Match Type (All/Any)", description: "Require all conditions or any condition to match", status: "done", notes: "match_type column: all (AND) or any (OR)" },
+      { name: "Auto-Run Segmentation", description: "Automatically apply segment labels to matching customers", status: "done", notes: "last_run_at and matched_count columns for tracking execution" },
+      { name: "Active Toggle", description: "Enable/disable segmentation rules", status: "done", notes: "is_active boolean on customer_segmentation_rules" },
+    ],
+  },
+
+  // ═══════ 137. INVENTORY ALERTS ═══════
+  {
+    category: "Inventory Alerts",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Low Stock Alerts", description: "Alert when product stock falls below threshold", status: "done", notes: "inventory_alerts table with alert_type, threshold, current_quantity" },
+      { name: "Out of Stock Alerts", description: "Alert when product reaches zero stock", status: "done", notes: "alert_type: out_of_stock for zero-quantity alerts" },
+      { name: "Overstock Alerts", description: "Alert when stock exceeds maximum threshold", status: "done", notes: "alert_type: overstock for excess inventory detection" },
+      { name: "Expiry Alerts", description: "Alert when perishable stock is nearing expiry", status: "done", notes: "alert_type: expiring for date-based alerts" },
+      { name: "Alert Resolution", description: "Mark alerts as resolved with attribution", status: "done", notes: "is_resolved, resolved_at, resolved_by columns" },
+      { name: "Email Notifications", description: "Send email alerts for critical inventory issues", status: "done", notes: "low-stock-alert edge function sends email digest of low stock items" },
+    ],
+  },
+
+  // ═══════ 138. PRODUCT FEED MANAGEMENT ═══════
+  {
+    category: "Product Feed Management",
+    icon: <FileCode className="h-5 w-5" />,
+    features: [
+      { name: "Feed CRUD", description: "Create and manage product data feeds", status: "done", notes: "product_feeds table with name, feed_type, format, schedule, filters JSONB" },
+      { name: "Feed Types", description: "Google Shopping, Facebook Catalog, Amazon, Bing Shopping feeds", status: "done", notes: "feed_type column: google_shopping, facebook, amazon, bing, custom" },
+      { name: "Feed Formats", description: "XML, CSV, and JSON feed output formats", status: "done", notes: "format column: xml, csv, json" },
+      { name: "Feed Scheduling", description: "Daily, hourly, or manual feed generation", status: "done", notes: "schedule column: daily, hourly, manual" },
+      { name: "Product Filtering", description: "Filter which products are included in each feed", status: "done", notes: "filters JSONB for category, brand, price range, stock status filtering" },
+      { name: "Feed URL", description: "Public URL for feed consumption by channels", status: "done", notes: "feed_url column for external access to generated feed" },
+      { name: "Product Count", description: "Track number of products in each feed", status: "done", notes: "product_count column updated on feed generation" },
+    ],
+  },
+
+  // ═══════ 139. RETURN POLICY MANAGEMENT ═══════
+  {
+    category: "Return Policy Management",
+    icon: <RefreshCw className="h-5 w-5" />,
+    features: [
+      { name: "Return Policy CRUD", description: "Define store return policies", status: "done", notes: "return_policies table with name, description, return_window_days, restocking_fee_percent" },
+      { name: "Return Window", description: "Configurable return window in days", status: "done", notes: "return_window_days column (default 30)" },
+      { name: "Restocking Fee", description: "Percentage restocking fee on returns", status: "done", notes: "restocking_fee_percent column (default 0%)" },
+      { name: "Receipt Requirements", description: "Toggle whether receipt is required for returns", status: "done", notes: "requires_receipt boolean on return_policies" },
+      { name: "Packaging Requirements", description: "Require original packaging for returns", status: "done", notes: "requires_original_packaging boolean on return_policies" },
+      { name: "Sale Item Exclusions", description: "Optionally exclude sale items from returns", status: "done", notes: "applies_to_sale_items boolean on return_policies" },
+      { name: "Default Policy", description: "Set one policy as the store default", status: "done", notes: "is_default boolean on return_policies" },
+    ],
+  },
+
+  // ═══════ 140. PRICE LISTS (B2B CONTRACT PRICING) ═══════
+  {
+    category: "Price Lists (B2B Contract Pricing)",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Price List CRUD", description: "Create customer group-specific price lists", status: "done", notes: "price_lists table with name, customer_group_id, currency, valid_from/until" },
+      { name: "Per-Product Pricing", description: "Set specific prices per product per price list", status: "done", notes: "price_list_items table with product_id, variant_id, price, min_quantity" },
+      { name: "Customer Group Linking", description: "Associate price lists with customer groups", status: "done", notes: "customer_group_id foreign key on price_lists" },
+      { name: "Validity Period", description: "Set start and end dates for price list validity", status: "done", notes: "valid_from and valid_until columns" },
+      { name: "Currency Support", description: "Price lists can be in different currencies", status: "done", notes: "currency column on price_lists" },
+      { name: "Volume-Based Pricing", description: "Different prices based on minimum order quantity", status: "done", notes: "min_quantity column on price_list_items" },
+    ],
+  },
+
+  // ═══════ 141. INVENTORY TRANSFERS ═══════
+  {
+    category: "Inventory Transfers",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Transfer Request CRUD", description: "Create stock transfer requests between warehouses", status: "done", notes: "inventory_transfers table with transfer_number, source/destination location, status" },
+      { name: "Transfer Status Workflow", description: "Pending → approved → shipped → received lifecycle", status: "done", notes: "status column: pending, approved, shipped, received, cancelled" },
+      { name: "Transfer Items", description: "Track products and quantities per transfer", status: "done", notes: "inventory_transfer_items table with quantity_requested, quantity_shipped, quantity_received" },
+      { name: "Source & Destination", description: "Select source and destination warehouse locations", status: "done", notes: "source_location_id and destination_location_id foreign keys to inventory_locations" },
+      { name: "Approval Workflow", description: "Require approval before shipping transfers", status: "done", notes: "approved_by column for transfer authorization tracking" },
+      { name: "Ship & Receive Tracking", description: "Track shipped and received dates per transfer", status: "done", notes: "shipped_at and received_at timestamps" },
+    ],
+  },
+
+  // ═══════ 142. POS SYSTEM ═══════
+  {
+    category: "Point of Sale (POS)",
+    icon: <Monitor className="h-5 w-5" />,
+    features: [
+      { name: "POS Terminal Interface", description: "Full point-of-sale interface for in-store transactions", status: "done", notes: "Admin /pos page with product search, barcode scan, cart management, and payment processing" },
+      { name: "Product Search & Barcode Scan", description: "Find products by name, SKU, or barcode scan", status: "done", notes: "Search input with barcode scanner integration for quick product lookup" },
+      { name: "Cart Management", description: "Add/remove items, adjust quantities, apply discounts", status: "done", notes: "POS cart with inline quantity editing, remove items, and subtotal calculation" },
+      { name: "Multiple Payment Methods", description: "Accept cash, card, voucher, and mixed payments", status: "done", notes: "Payment method selection with split payment support" },
+      { name: "Receipt Printing", description: "Generate printable POS receipts", status: "done", notes: "Print receipt action generates PrintPaymentReceipt page" },
+      { name: "Customer Lookup", description: "Find and assign customers to POS transactions", status: "done", notes: "Customer search by name/email with recent customers list" },
+      { name: "Held Orders", description: "Hold/park orders for later completion", status: "done", notes: "Hold action saves POS cart state, retrievable from held orders list" },
+      { name: "Cash Drawer Management", description: "Open/close register with float tracking", status: "done", notes: "pos_register_sessions with opening_float, cash reconciliation on close" },
+    ],
+  },
+
+  // ═══════ 143. PRODUCT BULK OPERATIONS ═══════
+  {
+    category: "Product Bulk Operations",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Bulk Price Update", description: "Update prices for multiple products at once", status: "done", notes: "BulkEditDialog with percentage or fixed amount price adjustments across selected products" },
+      { name: "Bulk Status Change", description: "Change status (active/draft/archived) for multiple products", status: "done", notes: "Bulk status update action on products list" },
+      { name: "Bulk Category Assignment", description: "Assign/remove categories for multiple products", status: "done", notes: "Bulk category assignment in BulkEditDialog" },
+      { name: "Bulk Tag Management", description: "Add/remove tags across multiple products", status: "done", notes: "Bulk tag add/remove in BulkEditDialog" },
+      { name: "Bulk Delete", description: "Delete multiple products with confirmation", status: "done", notes: "Bulk delete action with confirmation dialog" },
+      { name: "Bulk Stock Adjustment", description: "Adjust stock for multiple products simultaneously", status: "done", notes: "Bulk stock adjustment option in BulkEditDialog" },
+      { name: "Bulk Image Upload (ZIP)", description: "Upload product images via ZIP file with SKU matching", status: "done", notes: "ZipImageUpload component matches image filenames to product SKUs" },
+    ],
+  },
 ];
 
 // ─── STATUS RENDERING HELPERS ───
