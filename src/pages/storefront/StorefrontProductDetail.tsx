@@ -580,6 +580,16 @@ export default function StorefrontProductDetail() {
               </Button>
             )}
 
+            {/* Delivery Estimate */}
+            <DeliveryEstimate shippingDays={shipping?.estimated_days || 5} />
+
+            {/* Social Share */}
+            <SocialShare
+              url={typeof window !== "undefined" ? window.location.href : ""}
+              title={product.title}
+              image={images[0] ? getImageUrl(images[0]) : undefined}
+            />
+
             {/* Trust badges */}
             <div className="grid grid-cols-3 gap-2 pt-2">
               <div className="flex flex-col items-center text-center p-2 rounded-lg bg-muted/50">
