@@ -632,6 +632,7 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
             <SelectItem value="flat" className="text-xs">Flat Rate</SelectItem>
             <SelectItem value="weight" className="text-xs">Weight-Based (per kg)</SelectItem>
             <SelectItem value="cubic" className="text-xs">Dimension / Cubic Weight</SelectItem>
+            <SelectItem value="per_item" className="text-xs">Per Item (quantity-based)</SelectItem>
           </SelectContent>
         </Select>
       </div>
