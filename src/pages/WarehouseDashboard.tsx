@@ -3,11 +3,18 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrders } from "@/hooks/use-data";
-import { Package, Truck, CheckCircle, Clock, AlertTriangle, Box } from "lucide-react";
+import { Package, Truck, CheckCircle, Clock, AlertTriangle, Box, Plus, Trash2, MapPin } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 import { format } from "date-fns";
 
 interface WarehouseStats {
