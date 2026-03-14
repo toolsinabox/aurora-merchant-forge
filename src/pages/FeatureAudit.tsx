@@ -7550,7 +7550,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Pack Slip Auto-Print", description: "Automatically print packing slip when order is scanned at station", status: "not_started" },
       { name: "Shipping Label Auto-Print", description: "Auto-generate and print carrier label at pack station", status: "not_started" },
       { name: "Carton Management", description: "Track carton sizes, auto-suggest best carton for items", status: "done", notes: "PickPack Cartons tab with carton type CRUD, dimensions, volume calc, max weight, localStorage persistence" },
-      { name: "Multi-Carton Shipments", description: "Split single order across multiple cartons/packages", status: "not_started" },
+      { name: "Multi-Carton Shipments", description: "Split single order across multiple cartons/packages", status: "done", notes: "PickPack pack step with per-order multi-carton UI: add/remove cartons, assign carton type and weight per carton, assign items to specific cartons via toggle badges, weight validation against carton max weight" },
       { name: "Bin Location Management", description: "Assign and manage bin/shelf locations per SKU", status: "done", notes: "bin_location field on inventory_stock" },
       { name: "Putaway Rules", description: "Auto-suggest bin locations for incoming inventory", status: "not_started" },
       { name: "Cycle Count Scheduling", description: "Schedule regular cycle counts by zone/category", status: "partial", notes: "Manual stocktake exists" },
