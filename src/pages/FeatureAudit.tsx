@@ -9666,6 +9666,11 @@ const maropostMigrationFeatures: FeatureCategory[] = [
       { name: "Customer Password Reset Flow", description: "Cannot migrate hashed passwords; customers must use reset flow", status: "done", notes: "Documented as manual-only in transfer audit" },
       { name: "Digital Download File References", description: "Import ContentFileIdentifier references for digital products", status: "partial", notes: "File references stored; actual files need manual re-upload" },
       { name: "eBay Listing Re-connection", description: "Store eBay product IDs for marketplace reconnection", status: "partial", notes: "eBayProductIDs field captured during import" },
+      { name: "Product-Category Linking", description: "Link products to imported categories during product import", status: "done", notes: "Matches by slug generated from CategoryName" },
+      { name: "Product Relations Import (Cross-sell/Upsell)", description: "Import cross-sell, upsell, and free gift relationships between products", status: "done", notes: "Maps CrossSellProducts, UpsellProducts, FreeGifts to product_relations" },
+      { name: "Currency Import", description: "Import store currencies with exchange rates and default currency flag", status: "done", notes: "import_currencies action maps to currencies table" },
+      { name: "Retry Failed Entities", description: "Retry button for individually failed entities during import", status: "done", notes: "Per-entity retry with full re-fetch and re-import" },
+      { name: "Expandable Error Details", description: "Click-to-expand error lists per entity in import progress view", status: "done", notes: "HTML details/summary for collapsible error log" },
     ],
   },
 ];

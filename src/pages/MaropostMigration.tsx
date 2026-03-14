@@ -64,7 +64,8 @@ const IMPORT_ACTION_MAP: Record<string, string> = {
   content: "import_content", vouchers: "import_vouchers",
   suppliers: "import_suppliers", warehouses: "import_warehouses",
   shipping: "import_shipping", rma: "import_rma",
-  templates: "import_theme_css", payments: "import_orders", // payments attached to orders
+  templates: "import_theme_css", payments: "import_orders",
+  currency: "import_currencies",
 };
 
 const ITEMS_PER_PAGE = 20; // Maropost API has response size limits, products especially need small pages
@@ -355,6 +356,61 @@ export default function MaropostMigration() {
     toast.success("Migration complete!");
   };
 
+  const retryEntity = async (entityName: string) => {
+    const entity = entities.find(e => e.entity === entityName);
+    if (!entity) return;
+    const sid = await resolveStoreId();
+    if (!sid) return;
+
+    setImporting(true);
+    setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, status: "importing", imported: 0, failed: 0, errors: [] } : e));
+    addLog(`▶ Retrying ${entity.label}...`);
+
+    try {
+      const sourceItems = await fetchAllPages(entity.entity);
+      addLog(`  Fetched ${sourceItems.length} total ${entity.entity} from Maropost`);
+
+      if (sourceItems.length === 0) {
+        setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, status: "success", imported: 0 } : e));
+        setImporting(false);
+        return;
+      }
+
+      let totalImported = 0;
+      let totalFailed = 0;
+      const allErrors: string[] = [];
+      const batchSize = 50;
+
+      for (let i = 0; i < sourceItems.length; i += batchSize) {
+        const batch = sourceItems.slice(i, i + batchSize);
+        const importAction = IMPORT_ACTION_MAP[entity.entity];
+        const dataKey = entity.entity === "products" ? "Item" : entity.entity === "categories" ? "Category" :
+          entity.entity === "customers" ? "Customer" : entity.entity === "orders" ? "Order" :
+          entity.entity === "content" ? "Content" : entity.entity === "vouchers" ? "Voucher" :
+          entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
+          entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
+
+        const { data: result, error } = await supabase.functions.invoke("maropost-import", {
+          body: { action: importAction, store_id: sid, source_data: { [dataKey]: batch } },
+        });
+        if (error) throw error;
+        totalImported += result?.imported || 0;
+        totalFailed += result?.failed || 0;
+        if (result?.errors) allErrors.push(...result.errors);
+      }
+
+      setEntities(prev => prev.map(e =>
+        e.entity === entityName ? { ...e, status: totalFailed > 0 && totalImported === 0 ? "failed" : "success", imported: totalImported, failed: totalFailed, errors: allErrors } : e
+      ));
+      addLog(`  ✓ ${entity.label}: ${totalImported} imported, ${totalFailed} failed`);
+    } catch (err: any) {
+      setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, status: "failed", errors: [err.message] } : e));
+      addLog(`  ✗ ${entity.label} FAILED: ${err.message}`);
+    }
+
+    setImporting(false);
+  };
+
   const startThemeMigration = async () => {
     setThemeImporting(true);
     setStep("theme");
@@ -638,24 +694,36 @@ export default function MaropostMigration() {
               </div>
 
               <div className="space-y-2">
-                {entities.filter(e => e.selected).map(entity => (
-                  <div key={entity.entity} className="flex items-center gap-3 p-3 rounded-lg border">
-                    {statusIcon(entity.status)}
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        {entity.icon}
-                        <span className="font-medium text-sm">{entity.label}</span>
+               {entities.filter(e => e.selected).map(entity => (
+                  <div key={entity.entity} className="p-3 rounded-lg border space-y-2">
+                    <div className="flex items-center gap-3">
+                      {statusIcon(entity.status)}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          {entity.icon}
+                          <span className="font-medium text-sm">{entity.label}</span>
+                        </div>
                       </div>
-                      {entity.errors.length > 0 && (
-                        <p className="text-xs text-destructive mt-1">{entity.errors[0]}{entity.errors.length > 1 ? ` (+${entity.errors.length - 1} more)` : ""}</p>
-                      )}
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {entity.status === "success" && <span className="text-green-600">{entity.imported} imported{entity.failed > 0 && <span className="text-destructive ml-1">({entity.failed} failed)</span>}</span>}
+                        {entity.status === "failed" && (
+                          <>
+                            <span className="text-destructive">Failed</span>
+                            {!importing && <Button variant="outline" size="sm" onClick={() => retryEntity(entity.entity)}><RefreshCw className="h-3 w-3 mr-1" />Retry</Button>}
+                          </>
+                        )}
+                        {entity.status === "importing" && <span>Importing…</span>}
+                        {entity.status === "pending" && <span>Waiting</span>}
+                      </div>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {entity.status === "success" && <span className="text-green-600">{entity.imported} imported{entity.failed > 0 && <span className="text-destructive ml-1">({entity.failed} failed)</span>}</span>}
-                      {entity.status === "failed" && <span className="text-destructive">Failed</span>}
-                      {entity.status === "importing" && <span>Importing…</span>}
-                      {entity.status === "pending" && <span>Waiting</span>}
-                    </div>
+                    {entity.errors.length > 0 && (
+                      <details className="text-xs">
+                        <summary className="text-destructive cursor-pointer">{entity.errors.length} error(s) — click to expand</summary>
+                        <div className="mt-1 space-y-0.5 max-h-32 overflow-y-auto pl-4 text-muted-foreground">
+                          {entity.errors.map((err, i) => <div key={i}>• {err}</div>)}
+                        </div>
+                      </details>
+                    )}
                   </div>
                 ))}
               </div>

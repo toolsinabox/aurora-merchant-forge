@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 interface ImportRequest {
@@ -216,6 +216,63 @@ serve(async (req) => {
                   name: spec.Name || spec.Label || "Spec",
                   value: spec.Value || "",
                 } as any).catch(() => {});
+              }
+            }
+          }
+
+          // Link product to categories
+          if (p.Categories) {
+            const cats = Array.isArray(p.Categories) ? p.Categories : [p.Categories];
+            for (const catItem of cats) {
+              const catId = catItem?.CategoryID || catItem?.Category?.CategoryID || (typeof catItem === "string" ? catItem : null);
+              if (catId) {
+                // Try to find the category by matching source CategoryID stored during category import
+                // We search by name or slug that would have been generated from the CategoryName
+                const catName = catItem?.CategoryName || catItem?.Category?.CategoryName;
+                if (catName) {
+                  const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const { data: foundCat } = await supabase
+                    .from("categories")
+                    .select("id")
+                    .eq("store_id", store_id)
+                    .eq("slug", slug)
+                    .maybeSingle();
+                  if (foundCat) {
+                    // Update product's category_id (first category becomes primary)
+                    await supabase.from("products").update({ category_id: foundCat.id }).eq("id", productId).catch(() => {});
+                  }
+                }
+              }
+            }
+          }
+
+          // Import product relations (cross-sell, upsell, free gifts)
+          const relationTypes: { field: string; type: string }[] = [
+            { field: "CrossSellProducts", type: "cross_sell" },
+            { field: "UpsellProducts", type: "upsell" },
+            { field: "FreeGifts", type: "free_gift" },
+          ];
+          for (const rel of relationTypes) {
+            if (p[rel.field]) {
+              const relItems = Array.isArray(p[rel.field]) ? p[rel.field] : [p[rel.field]];
+              for (const relItem of relItems) {
+                const relSku = typeof relItem === "string" ? relItem : relItem?.SKU || relItem?.ParentSKU;
+                if (relSku) {
+                  const { data: relProduct } = await supabase
+                    .from("products")
+                    .select("id")
+                    .eq("store_id", store_id)
+                    .eq("sku", relSku)
+                    .maybeSingle();
+                  if (relProduct) {
+                    await supabase.from("product_relations").insert({
+                      product_id: productId,
+                      related_product_id: relProduct.id,
+                      store_id,
+                      relation_type: rel.type,
+                    }).catch(() => {});
+                  }
+                }
               }
             }
           }
@@ -629,7 +686,6 @@ serve(async (req) => {
               custom_css: tpl.custom_css || null,
               is_active: true,
             } as any, { onConflict: "store_id,slug" }).catch(() => {
-              // If upsert fails, try insert
               return supabase.from("store_templates").insert({
                 store_id,
                 slug: tpl.slug,
@@ -646,6 +702,46 @@ serve(async (req) => {
       } catch (err: any) {
         failed++;
         errors.push(`Theme: ${err.message}`);
+      }
+    }
+
+    // ── IMPORT CURRENCIES ──
+    else if (action === "import_currencies") {
+      const items = source_data?.Currency || source_data || [];
+      const currencies = Array.isArray(items) ? items : [items];
+
+      for (const c of currencies) {
+        try {
+          const currCode = c.CurrencyCode || c.Code || "AUD";
+          // Store currencies in the store settings or currencies table
+          const { data: existing } = await supabase
+            .from("currencies")
+            .select("id")
+            .eq("store_id", store_id)
+            .eq("code", currCode)
+            .maybeSingle();
+
+          const currData = {
+            store_id,
+            code: currCode,
+            name: c.CurrencyName || c.Name || currCode,
+            symbol: c.CurrencySymbol || c.Symbol || "$",
+            exchange_rate: parseFloat(c.ExchangeRate) || 1,
+            is_default: c.IsDefault === "True" || c.DefaultCurrency === "True",
+            is_active: c.Active !== "False",
+          };
+
+          if (existing) {
+            await supabase.from("currencies").update(currData).eq("id", existing.id);
+          } else {
+            const { error } = await supabase.from("currencies").insert(currData);
+            if (error) throw error;
+          }
+          imported++;
+        } catch (err: any) {
+          failed++;
+          errors.push(`Currency ${c.CurrencyCode || c.Code}: ${err.message}`);
+        }
       }
     }
 
