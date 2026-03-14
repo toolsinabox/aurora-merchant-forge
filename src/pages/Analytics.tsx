@@ -63,7 +63,7 @@ function getCustomerSegments(customers: any[]) {
   return Object.entries(map).map(([name, value]) => ({ name, value }));
 }
 
-function MetricCard({ title, value, icon: Icon, loading }: { title: string; value: string; icon: any; loading: boolean }) {
+function MetricCard({ title, value, icon: Icon, loading, change, compLabel }: { title: string; value: string; icon: any; loading: boolean; change?: number; compLabel?: string }) {
   return (
     <Card>
       <CardContent className="p-4 flex items-center gap-3">
@@ -73,6 +73,11 @@ function MetricCard({ title, value, icon: Icon, loading }: { title: string; valu
         <div>
           <p className="text-xs text-muted-foreground">{title}</p>
           {loading ? <Skeleton className="h-5 w-16 mt-0.5" /> : <p className="text-lg font-bold">{value}</p>}
+          {change !== undefined && !loading && (
+            <p className={`text-[10px] ${change >= 0 ? "text-green-600" : "text-red-500"}`}>
+              {change >= 0 ? "↑" : "↓"} {Math.abs(change).toFixed(1)}% vs {compLabel || "prior"}
+            </p>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -85,6 +90,7 @@ export default function Analytics() {
   const { data: customers = [], isLoading: lc } = useCustomers();
   const { currentStore } = useAuth();
   const [range, setRange] = useState("30");
+  const [compPeriod, setCompPeriod] = useState<"prior" | "yoy">("prior");
   const loading = lo || lp || lc;
 
   // Top selling products from order_items
