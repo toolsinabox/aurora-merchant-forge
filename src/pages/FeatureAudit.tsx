@@ -7738,8 +7738,8 @@ const reportingDeepFeatures: FeatureCategory[] = [
     category: "Reporting & Analytics — Advanced",
     icon: <BarChart3 className="h-5 w-5" />,
     features: [
-      { name: "COGS Report", description: "Cost of Goods Sold report using product cost prices", status: "not_started" },
-      { name: "Gross Profit Report", description: "Revenue minus COGS per product/category/period", status: "not_started" },
+      { name: "COGS Report", description: "Cost of Goods Sold report using product cost prices", status: "done", notes: "Analytics page Profit Margin by Product section shows COGS per product using cost_price × quantity" },
+      { name: "Gross Profit Report", description: "Revenue minus COGS per product/category/period", status: "done", notes: "Analytics page Profit Margin table with revenue, cost, profit, and margin % per product" },
       { name: "Sell-Through Rate Report", description: "Percentage of inventory sold in a period", status: "not_started" },
       { name: "ABC Analysis (Inventory)", description: "Classify products by revenue contribution (A/B/C tiers)", status: "done", notes: "InventoryReports ABC tab" },
       { name: "Dead Stock Report", description: "Products with zero sales in configurable period", status: "done", notes: "InventoryReports dead stock tab" },
