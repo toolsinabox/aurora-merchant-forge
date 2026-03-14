@@ -43,6 +43,48 @@ export default function POS() {
   const [activeTab, setActiveTab] = useState("sale");
   const [selectedRegister, setSelectedRegister] = useState<string>("");
 
+  // Parked orders state
+  const [parkedOrders, setParkedOrders] = useState<Array<{ id: string; items: CartItem[]; customer: any; parkedAt: string; note: string }>>(() => {
+    try { return JSON.parse(localStorage.getItem("pos_parked_orders") || "[]"); } catch { return []; }
+  });
+  const [parkNote, setParkNote] = useState("");
+  const [showParkDialog, setShowParkDialog] = useState(false);
+
+  const saveParked = (updated: typeof parkedOrders) => {
+    setParkedOrders(updated);
+    localStorage.setItem("pos_parked_orders", JSON.stringify(updated));
+  };
+
+  const parkCurrentOrder = () => {
+    if (cart.length === 0) { toast.error("Cart is empty"); return; }
+    const parked = { id: crypto.randomUUID(), items: [...cart], customer: selectedCustomer, parkedAt: new Date().toISOString(), note: parkNote };
+    saveParked([...parkedOrders, parked]);
+    setCart([]);
+    setSelectedCustomer(null);
+    setParkNote("");
+    setShowParkDialog(false);
+    toast.success("Order parked");
+  };
+
+  const resumeParkedOrder = (parkedId: string) => {
+    const parked = parkedOrders.find(p => p.id === parkedId);
+    if (!parked) return;
+    if (cart.length > 0) {
+      // Merge into existing cart or park current first
+      toast.error("Clear or park current cart first");
+      return;
+    }
+    setCart(parked.items);
+    setSelectedCustomer(parked.customer);
+    saveParked(parkedOrders.filter(p => p.id !== parkedId));
+    toast.success("Order resumed");
+  };
+
+  const deleteParkedOrder = (parkedId: string) => {
+    saveParked(parkedOrders.filter(p => p.id !== parkedId));
+    toast.success("Parked order deleted");
+  };
+
   // Gift voucher state
   const [voucherCode, setVoucherCode] = useState("");
   const [appliedVoucher, setAppliedVoucher] = useState<{ id: string; code: string; balance: number; amountUsed: number } | null>(null);
