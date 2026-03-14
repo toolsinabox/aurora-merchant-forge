@@ -88,7 +88,7 @@ export default function StaffActivity() {
         {/* KPI Cards */}
         <div className="grid grid-cols-4 gap-3">
           <Card><CardContent className="p-4">
-            <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{(members as any[]).length}</p><p className="text-[10px] text-muted-foreground">Team Members</p></div></div>
+            <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /><div><p className="text-lg font-bold">{(members as any[]).length}</p><p className="text-[10px] text-muted-foreground">Team Members</p></div></div>
           </CardContent></Card>
           <Card><CardContent className="p-4">
             <div className="flex items-center gap-2"><Activity className="h-4 w-4 text-muted-foreground" /><div><p className="text-2xl font-bold">{totalActions}</p><p className="text-[10px] text-muted-foreground">Actions (30d)</p></div></div>
