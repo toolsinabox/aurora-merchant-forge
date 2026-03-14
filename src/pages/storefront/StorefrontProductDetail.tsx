@@ -181,8 +181,14 @@ export default function StorefrontProductDetail() {
   const applicableTier = pricingTiers.filter(t => quantity >= t.min_quantity).sort((a, b) => b.min_quantity - a.min_quantity)[0];
   const finalPrice = applicableTier ? applicableTier.price : displayPrice;
 
+  const moq = product?.min_order_quantity || 1;
+
   const handleAddToCart = () => {
     if (!product) return;
+    if (quantity < moq) {
+      toast.error(`Minimum order quantity is ${moq}`);
+      return;
+    }
     const itemData = {
       product_id: product.id,
       variant_id: currentVariant?.id || null,
