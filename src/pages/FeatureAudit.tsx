@@ -3017,6 +3017,273 @@ const featureData: FeatureCategory[] = [
       { name: "Stock Availability", description: "Show in-stock/out-of-stock status", status: "done", notes: "Stock status badge with quantity display when low" },
     ],
   },
+
+  // ═══════ 191. CART MANAGEMENT ═══════
+  {
+    category: "Cart Management",
+    icon: <ShoppingCart className="h-5 w-5" />,
+    features: [
+      { name: "Add to Cart (AJAX)", description: "Add products without page reload", status: "done", notes: "CartContext with addItem action, toast confirmation" },
+      { name: "Cart Quantity Update", description: "Update item quantities in cart", status: "done", notes: "Inline quantity +/- on cart page and mini-cart" },
+      { name: "Remove Item", description: "Remove individual items from cart", status: "done", notes: "Remove button per item with confirmation" },
+      { name: "Cart Persistence", description: "Cart survives browser refresh", status: "done", notes: "CartContext persists to localStorage" },
+      { name: "Cart Totals", description: "Real-time subtotal, tax, shipping, grand total", status: "done", notes: "Dynamic total calculation in CartContext" },
+      { name: "Mini Cart Preview", description: "Quick cart preview in header", status: "done", notes: "Cart icon with dropdown showing items and total" },
+      { name: "Empty Cart State", description: "Display when cart has no items", status: "done", notes: "Empty cart illustration with continue shopping link" },
+    ],
+  },
+
+  // ═══════ 192. PRODUCT VARIANT MANAGEMENT ═══════
+  {
+    category: "Product Variant Management",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Variant CRUD", description: "Create and manage product variants", status: "done", notes: "product_variants table with name, sku, price, stock_quantity" },
+      { name: "Variant Options", description: "Define option names and values (size, color)", status: "done", notes: "option_name and option_value columns on product_variants" },
+      { name: "Variant-Level Pricing", description: "Different prices per variant", status: "done", notes: "price column overrides parent product price" },
+      { name: "Variant-Level Stock", description: "Track stock per variant independently", status: "done", notes: "stock_quantity column on product_variants" },
+      { name: "Variant SKU & Barcode", description: "Unique SKU and barcode per variant", status: "done", notes: "sku and barcode columns on product_variants" },
+      { name: "Variant Weight", description: "Different weight per variant for shipping", status: "done", notes: "weight column on product_variants" },
+      { name: "Variant Images", description: "Associate specific images with variants", status: "done", notes: "image_url column on product_variants" },
+    ],
+  },
+
+  // ═══════ 193. ORDER TIMELINE & AUDIT ═══════
+  {
+    category: "Order Timeline & Audit",
+    icon: <Clock className="h-5 w-5" />,
+    features: [
+      { name: "Order Event Timeline", description: "Chronological log of all order events", status: "done", notes: "order_timeline table with event_type, description, user_id" },
+      { name: "Status Change Logging", description: "Log every status change with user attribution", status: "done", notes: "Auto-log entries on status, payment, and fulfillment changes" },
+      { name: "Shipment Events", description: "Log shipment creation, dispatch, delivery", status: "done", notes: "shipment_created, shipment_dispatched events in timeline" },
+      { name: "Payment Events", description: "Log payment received, refund issued events", status: "done", notes: "payment_received, refund_issued events in timeline" },
+      { name: "Staff Attribution", description: "Track which staff performed each action", status: "done", notes: "user_id on order_timeline for attribution" },
+    ],
+  },
+
+  // ═══════ 194. CUSTOMER WISHLIST ═══════
+  {
+    category: "Customer Wishlist",
+    icon: <Heart className="h-5 w-5" />,
+    features: [
+      { name: "Add to Wishlist", description: "Save products to personal wishlist", status: "done", notes: "WishlistContext with add/remove, heart icon on product cards" },
+      { name: "Wishlist Page", description: "View all wishlisted products", status: "done", notes: "StorefrontWishlist page with product grid and remove" },
+      { name: "Move to Cart", description: "Move wishlist items directly to cart", status: "done", notes: "Add to Cart button on wishlist items" },
+      { name: "Wishlist Reminder Email", description: "Email reminders about wishlisted items", status: "done", notes: "wishlist-reminder edge function" },
+      { name: "Share Wishlist", description: "Share wishlist via link", status: "done", notes: "Copy link action on wishlist page" },
+    ],
+  },
+
+  // ═══════ 195. PRODUCT COMPARE ═══════
+  {
+    category: "Product Compare",
+    icon: <ArrowLeftRight className="h-5 w-5" />,
+    features: [
+      { name: "Add to Compare", description: "Add products to comparison (max 4)", status: "done", notes: "CompareContext with add/remove, max 4" },
+      { name: "Compare Page", description: "Side-by-side comparison table", status: "done", notes: "StorefrontCompare page with attribute grid" },
+      { name: "Feature Comparison", description: "Compare price, brand, specs, stock, rating", status: "done", notes: "All product attributes shown side by side" },
+      { name: "Compare Floating Bar", description: "Floating bar showing compare count", status: "done", notes: "Floating compare indicator when products selected" },
+    ],
+  },
+
+  // ═══════ 196. BACK IN STOCK NOTIFICATIONS ═══════
+  {
+    category: "Back in Stock Notifications",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "Request Notification", description: "Sign up for back-in-stock alerts", status: "done", notes: "back_in_stock_requests table with email, product_id" },
+      { name: "Email When Restocked", description: "Auto-email when product restocked", status: "done", notes: "back-in-stock-email edge function" },
+      { name: "Notified Tracking", description: "Track which requests were fulfilled", status: "done", notes: "notified_at timestamp on requests" },
+    ],
+  },
+
+  // ═══════ 197. STORE ONBOARDING ═══════
+  {
+    category: "Store Onboarding",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Onboarding Wizard", description: "Guided store setup for new merchants", status: "done", notes: "Admin /onboarding page with step-by-step flow" },
+      { name: "Store Details Step", description: "Name, email, phone, timezone", status: "done", notes: "General settings form in onboarding" },
+      { name: "First Product Step", description: "Guide to create first product", status: "done", notes: "Product creation guidance" },
+      { name: "Shipping Setup Step", description: "Configure shipping zones and rates", status: "done", notes: "Shipping zone configuration" },
+      { name: "Payment Setup Step", description: "Connect first payment gateway", status: "done", notes: "Payment gateway selection" },
+      { name: "Theme Selection Step", description: "Choose initial store theme", status: "done", notes: "Theme preset selection with preview" },
+    ],
+  },
+
+  // ═══════ 198. SESSION & SECURITY ═══════
+  {
+    category: "Session & Security",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "Active Sessions View", description: "View and manage active login sessions", status: "done", notes: "Admin /sessions page" },
+      { name: "Two-Factor Authentication", description: "TOTP-based 2FA for admin accounts", status: "done", notes: "TwoFactorSetup component with QR code" },
+      { name: "Password Reset Flow", description: "Secure reset via email link", status: "done", notes: "ForgotPassword and ResetPassword pages" },
+      { name: "Row-Level Security", description: "Database-level access control per store", status: "done", notes: "RLS policies on all tables" },
+      { name: "API Key Hashing", description: "SHA-256 hashed API keys", status: "done", notes: "key_hash column, only prefix stored in plaintext" },
+      { name: "HMAC Webhook Signatures", description: "Sign payloads with HMAC-SHA256", status: "done", notes: "webhook-dispatcher uses per-webhook signing_secret" },
+      { name: "CORS Configuration", description: "Proper CORS headers on all edge functions", status: "done", notes: "corsHeaders on all functions" },
+    ],
+  },
+
+  // ═══════ 199. REPORTING & ANALYTICS (EXTENDED) ═══════
+  {
+    category: "Reporting & Analytics (Extended)",
+    icon: <BarChart3 className="h-5 w-5" />,
+    features: [
+      { name: "Sales Report", description: "Revenue and orders with date filtering", status: "done", notes: "Analytics page with charts and date range" },
+      { name: "Product Performance", description: "Top products by revenue and units", status: "done", notes: "Top products table on analytics" },
+      { name: "Customer Report", description: "Acquisition and retention metrics", status: "done", notes: "Customer KPIs with growth trend" },
+      { name: "Inventory Report", description: "Stock levels, valuation, turnover", status: "done", notes: "Inventory valuation report" },
+      { name: "Custom Report Builder", description: "Build custom reports with metrics", status: "done", notes: "Admin /report-builder page" },
+      { name: "Scheduled Reports", description: "Auto-email reports on schedule", status: "done", notes: "scheduled-report-email edge function" },
+      { name: "Export to CSV", description: "Download report data as CSV", status: "done", notes: "CSV export on analytics pages" },
+    ],
+  },
+
+  // ═══════ 200. SMART COLLECTIONS (EXTENDED) ═══════
+  {
+    category: "Smart Collections (Extended)",
+    icon: <Sparkles className="h-5 w-5" />,
+    features: [
+      { name: "Rule-Based Collections", description: "Auto-populate based on product rules", status: "done", notes: "smart_collections with rules JSONB, match_type" },
+      { name: "12 Rule Fields", description: "Brand, price, tags, type, status, category, stock, etc.", status: "done", notes: "Comprehensive rule field and operator set" },
+      { name: "Live Preview", description: "Preview matched products before saving", status: "done", notes: "Live product preview in admin" },
+      { name: "SEO Fields", description: "Meta title and description per collection", status: "done", notes: "seo_title, seo_description columns" },
+    ],
+  },
+
+  // ═══════ 201. ACTIVITY LOG (EXTENDED) ═══════
+  {
+    category: "Activity Log (Extended)",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Action Logging", description: "Log all admin actions for audit", status: "done", notes: "activity_log table with action, entity_type, entity_id" },
+      { name: "Entity Tracking", description: "Track affected entity per action", status: "done", notes: "entity_type and entity_id columns" },
+      { name: "User Attribution", description: "Track which user performed action", status: "done", notes: "user_id column on activity_log" },
+      { name: "Activity Details", description: "Store additional action details", status: "done", notes: "details JSONB column" },
+      { name: "Staff Activity Report", description: "Per-user action breakdown", status: "done", notes: "Admin /staff-activity page" },
+    ],
+  },
+
+  // ═══════ 202. INTEGRATION HUB ═══════
+  {
+    category: "Integration Hub",
+    icon: <Puzzle className="h-5 w-5" />,
+    features: [
+      { name: "Centralized Integrations Page", description: "Manage all connections from one place", status: "done", notes: "Admin /integrations page with 16+ cards" },
+      { name: "Integration Categories", description: "Organize by shipping, marketing, accounting", status: "done", notes: "Category tabs for filtering" },
+      { name: "Connection Status", description: "Show connected/disconnected per integration", status: "done", notes: "Status badges showing state" },
+      { name: "Zapier Integration", description: "Connect to 5000+ apps via Zapier", status: "done", notes: "Zapier webhook URL in store_addons" },
+      { name: "Make Integration", description: "Connect to Make automation workflows", status: "done", notes: "Make webhook URL in store_addons" },
+      { name: "Webhook Dispatcher", description: "Centralized webhook delivery", status: "done", notes: "webhook-dispatcher edge function" },
+    ],
+  },
+
+  // ═══════ 203. STORE THEME PRESETS ═══════
+  {
+    category: "Store Theme Presets",
+    icon: <Palette className="h-5 w-5" />,
+    features: [
+      { name: "Built-In Presets", description: "5 pre-built theme presets", status: "done", notes: "theme_presets table with system presets" },
+      { name: "One-Click Apply", description: "Apply preset with single click", status: "done", notes: "Apply maps theme_config to store_themes" },
+      { name: "Custom Preset Creation", description: "Save current theme as preset", status: "done", notes: "Save as Preset action" },
+      { name: "Preset Preview", description: "Preview before applying", status: "done", notes: "Preview card with colors and layout" },
+    ],
+  },
+
+  // ═══════ 204. CATEGORIES (EXTENDED) ═══════
+  {
+    category: "Product Categories (Extended)",
+    icon: <Layers className="h-5 w-5" />,
+    features: [
+      { name: "Unlimited Nesting", description: "Nested categories with parent/child", status: "done", notes: "parent_id self-reference for unlimited depth" },
+      { name: "Category Image", description: "Image per category for navigation", status: "done", notes: "image_url column on categories" },
+      { name: "Category SEO", description: "SEO title and description per category", status: "done", notes: "seo_title and seo_description" },
+      { name: "Auto-Populate Rules", description: "Auto-assign products via rules", status: "done", notes: "auto_rules JSONB column" },
+      { name: "Category Slug", description: "URL-friendly slug per category", status: "done", notes: "slug with unique constraint" },
+    ],
+  },
+
+  // ═══════ 205. LANDING PAGE ═══════
+  {
+    category: "Landing Page",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Platform Landing Page", description: "Marketing page for the platform", status: "done", notes: "LandingPage with hero, features, pricing, CTA" },
+      { name: "Feature Highlights", description: "Showcase platform capabilities", status: "done", notes: "Feature cards grid" },
+      { name: "Pricing Section", description: "Display pricing plans", status: "done", notes: "Pricing cards with comparison" },
+      { name: "CTA / Signup Flow", description: "Direct to merchant signup", status: "done", notes: "CTA buttons linking to signup" },
+      { name: "Responsive Design", description: "Mobile-optimized layout", status: "done", notes: "Fully responsive mobile-first" },
+    ],
+  },
+
+  // ═══════ 206. RBAC & PERMISSIONS ═══════
+  {
+    category: "RBAC & Permissions",
+    icon: <Shield className="h-5 w-5" />,
+    features: [
+      { name: "User Roles", description: "Owner, admin, manager, staff roles per store", status: "done", notes: "user_roles table with role column" },
+      { name: "Role Permissions", description: "Granular permissions per role", status: "done", notes: "Admin /role-permissions page" },
+      { name: "Multi-Store Roles", description: "Different roles across stores", status: "done", notes: "Per store_id role assignment" },
+      { name: "Platform Admin", description: "Super-admin for multi-tenant management", status: "done", notes: "platform_roles table with RequirePlatformAdmin guard" },
+      { name: "Auto-First-Admin", description: "First user becomes platform admin", status: "done", notes: "auto_promote_first_admin() trigger" },
+    ],
+  },
+
+  // ═══════ 207. PLATFORM ADMIN ═══════
+  {
+    category: "Platform Admin (Multi-Tenant)",
+    icon: <Building className="h-5 w-5" />,
+    features: [
+      { name: "Platform Dashboard", description: "Overview of all merchants and KPIs", status: "done", notes: "PlatformDashboard with aggregate metrics" },
+      { name: "Merchant Management", description: "View and manage merchant stores", status: "done", notes: "PlatformMerchants page" },
+      { name: "Platform Analytics", description: "Cross-merchant analytics", status: "done", notes: "PlatformAnalytics page" },
+      { name: "Platform Customers", description: "View customers across stores", status: "done", notes: "PlatformCustomers page" },
+      { name: "Platform Settings", description: "Global platform configuration", status: "done", notes: "PlatformSettings page" },
+    ],
+  },
+
+  // ═══════ 208. DROPSHIP MANAGEMENT ═══════
+  {
+    category: "Dropship Management",
+    icon: <Truck className="h-5 w-5" />,
+    features: [
+      { name: "Dropship Supplier Setup", description: "Configure suppliers as dropship vendors", status: "done", notes: "Suppliers with type 'dropship'" },
+      { name: "Dropship Order Notification", description: "Auto-notify supplier on dropship order", status: "done", notes: "dropship-notification edge function" },
+      { name: "Supplier PO Auto-Generation", description: "Auto-create PO for dropship items", status: "done", notes: "PO with dropship flag linking to customer order" },
+      { name: "Tracking Integration", description: "Supplier tracking flows to customer", status: "done", notes: "Tracking updates from supplier PO to customer order" },
+      { name: "Branded Packing Slips", description: "Packing slips with merchant branding", status: "done", notes: "PrintPackingSlip uses store name/logo" },
+    ],
+  },
+
+  // ═══════ 209. API & DEVELOPER TOOLS ═══════
+  {
+    category: "API & Developer Tools",
+    icon: <Code className="h-5 w-5" />,
+    features: [
+      { name: "REST API", description: "Full REST API for products, orders, customers, inventory", status: "done", notes: "rest-api edge function with CRUD endpoints" },
+      { name: "API Key Management", description: "Create keys with scopes and rate limits", status: "done", notes: "api_keys table with key_hash, scopes, rate_limit" },
+      { name: "API Rate Limiting", description: "Rate limit requests per key", status: "done", notes: "api_rate_limits table with 15-min windows" },
+      { name: "Batch API", description: "Multiple requests in single call", status: "done", notes: "batch-api edge function" },
+      { name: "API Documentation", description: "Interactive docs with try-it sandbox", status: "done", notes: "Admin /api-docs page" },
+      { name: "Webhook Testing", description: "Test endpoints from admin panel", status: "done", notes: "Test button on Webhooks page" },
+    ],
+  },
+
+  // ═══════ 210. DATA VALIDATION ═══════
+  {
+    category: "Data Validation & Integrity",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    features: [
+      { name: "Required Field Validation", description: "Enforce required fields on all forms", status: "done", notes: "react-hook-form with zod schemas" },
+      { name: "Email Validation", description: "Validate email format across forms", status: "done", notes: "Email regex on signup, checkout, customer forms" },
+      { name: "SKU Uniqueness", description: "Prevent duplicate SKUs per store", status: "done", notes: "Unique constraint on (sku, store_id)" },
+      { name: "Slug Uniqueness", description: "Prevent duplicate URL slugs", status: "done", notes: "Unique constraint on slugs per store" },
+      { name: "Cascade Deletes", description: "Properly cascade deletions", status: "done", notes: "ON DELETE CASCADE on all child tables" },
+      { name: "Auto-Timestamps", description: "Auto-update updated_at on changes", status: "done", notes: "update_updated_at_column() trigger" },
+    ],
+  },
 ];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
