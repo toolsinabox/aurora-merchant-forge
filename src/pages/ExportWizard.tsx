@@ -251,7 +251,7 @@ function ProductExportTab() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Select Fields</CardTitle>
+              <CardTitle className="text-base">Select Fields</CardTitle>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={() => setSelectedFields(new Set(ALL_PRODUCT_FIELDS.map(f => f.key)))}>All</Button>
                 <Button variant="outline" size="sm" onClick={() => setSelectedFields(new Set())}>None</Button>
