@@ -380,7 +380,7 @@ export default function Integrations() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Integrations</h1>
           <p className="text-xs text-muted-foreground">Connect third-party services for shipping, marketing, marketplaces, and automation</p>

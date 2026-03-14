@@ -93,7 +93,7 @@ export default function WarehouseDashboard() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Warehouse Dashboard</h1>
           <p className="text-xs text-muted-foreground">Overview of pending picks, packs, and dispatches</p>

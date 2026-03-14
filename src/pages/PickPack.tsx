@@ -80,7 +80,7 @@ export default function PickPack() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div>
           <h1 className="text-lg font-semibold">Pick & Pack</h1>
           <p className="text-xs text-muted-foreground">Guided workflow: Pick → Pack → Ship</p>

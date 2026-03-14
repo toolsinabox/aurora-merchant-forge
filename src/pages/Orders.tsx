@@ -165,7 +165,7 @@ export default function Orders() {
 
   return (
     <AdminLayout>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold tracking-tight">Orders</h1>
