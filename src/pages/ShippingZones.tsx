@@ -1,44 +1,77 @@
 import { useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useShippingZones, useCreateShippingZone, useDeleteShippingZone } from "@/hooks/use-data";
-import { Plus, Trash2, Truck, Search } from "lucide-react";
+import { Plus, Trash2, Truck, Search, Package, ChevronRight, Settings2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { Switch } from "@/components/ui/switch";
 
 function useUpdateShippingZone() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; name?: string; regions?: string; flat_rate?: number; free_above?: number | null }) => {
+    mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
       const { data, error } = await supabase.from("shipping_zones").update(updates).eq("id", id).select().single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["shipping_zones"] });
-      toast.success("Shipping zone updated");
-    },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["shipping_zones"] }); toast.success("Zone updated"); },
     onError: (e: any) => toast.error(e.message),
   });
 }
 
 export default function ShippingZones() {
+  const { currentStore } = useAuth();
+  const storeId = currentStore?.id;
   const { data: zones = [], isLoading } = useShippingZones();
   const createZone = useCreateShippingZone();
   const deleteZone = useDeleteShippingZone();
   const updateZone = useUpdateShippingZone();
+  const qc = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
   const [editZone, setEditZone] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [form, setForm] = useState({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
+  const [activeTab, setActiveTab] = useState("zones");
+
+  // Shipping services
+  const { data: services = [] } = useQuery({
+    queryKey: ["shipping_services", storeId],
+    queryFn: async () => {
+      if (!storeId) return [];
+      const { data } = await supabase.from("shipping_services").select("*").eq("store_id", storeId).order("sort_order");
+      return data || [];
+    },
+    enabled: !!storeId,
+  });
+
+  // Shipping rates
+  const { data: rates = [] } = useQuery({
+    queryKey: ["shipping_rates", storeId],
+    queryFn: async () => {
+      if (!storeId) return [];
+      const { data } = await supabase.from("shipping_rates").select("*").eq("store_id", storeId).order("min_weight");
+      return data || [];
+    },
+    enabled: !!storeId,
+  });
+
+  // Service CRUD
+  const [serviceOpen, setServiceOpen] = useState(false);
+  const [serviceForm, setServiceForm] = useState({ zone_id: "", name: "", carrier: "", estimated_days_min: "1", estimated_days_max: "5" });
+  const [rateOpen, setRateOpen] = useState(false);
+  const [rateForm, setRateForm] = useState({ service_id: "", min_weight: "0", max_weight: "99999", min_order_total: "0", max_order_total: "99999", rate: "0", rate_type: "flat" });
 
   const resetForm = () => setForm({ name: "", regions: "", flat_rate: "0", free_above: "", rate_type: "flat", per_kg_rate: "0" });
 
@@ -50,12 +83,10 @@ export default function ShippingZones() {
   const handleCreate = async () => {
     if (!form.name.trim()) { toast.error("Name required"); return; }
     await createZone.mutateAsync({
-      name: form.name,
-      regions: form.regions,
+      name: form.name, regions: form.regions,
       flat_rate: Number(form.flat_rate) || 0,
       free_above: form.free_above ? Number(form.free_above) : null,
-      rate_type: form.rate_type,
-      per_kg_rate: Number(form.per_kg_rate) || 0,
+      rate_type: form.rate_type, per_kg_rate: Number(form.per_kg_rate) || 0,
     } as any);
     resetForm();
     setCreateOpen(false);
@@ -64,13 +95,10 @@ export default function ShippingZones() {
   const handleUpdate = async () => {
     if (!editZone) return;
     await updateZone.mutateAsync({
-      id: editZone.id,
-      name: form.name,
-      regions: form.regions,
+      id: editZone.id, name: form.name, regions: form.regions,
       flat_rate: Number(form.flat_rate) || 0,
       free_above: form.free_above ? Number(form.free_above) : null,
-      rate_type: form.rate_type,
-      per_kg_rate: Number(form.per_kg_rate) || 0,
+      rate_type: form.rate_type, per_kg_rate: Number(form.per_kg_rate) || 0,
     } as any);
     setEditZone(null);
     resetForm();
@@ -78,90 +106,380 @@ export default function ShippingZones() {
 
   const openEdit = (z: any) => {
     setForm({
-      name: z.name,
-      regions: z.regions,
-      flat_rate: String(z.flat_rate),
+      name: z.name, regions: z.regions, flat_rate: String(z.flat_rate),
       free_above: z.free_above ? String(z.free_above) : "",
-      rate_type: z.rate_type || "flat",
-      per_kg_rate: String(z.per_kg_rate || 0),
+      rate_type: z.rate_type || "flat", per_kg_rate: String(z.per_kg_rate || 0),
     });
     setEditZone(z);
+  };
+
+  const createService = async () => {
+    if (!serviceForm.name.trim() || !serviceForm.zone_id || !storeId) { toast.error("Name and zone required"); return; }
+    const { error } = await supabase.from("shipping_services").insert({
+      store_id: storeId, zone_id: serviceForm.zone_id, name: serviceForm.name,
+      carrier: serviceForm.carrier, estimated_days_min: Number(serviceForm.estimated_days_min),
+      estimated_days_max: Number(serviceForm.estimated_days_max),
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Service created");
+    qc.invalidateQueries({ queryKey: ["shipping_services"] });
+    setServiceOpen(false);
+    setServiceForm({ zone_id: "", name: "", carrier: "", estimated_days_min: "1", estimated_days_max: "5" });
+  };
+
+  const deleteService = async (id: string) => {
+    await supabase.from("shipping_services").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["shipping_services"] });
+    qc.invalidateQueries({ queryKey: ["shipping_rates"] });
+    toast.success("Service deleted");
+  };
+
+  const toggleService = async (id: string, is_active: boolean) => {
+    await supabase.from("shipping_services").update({ is_active }).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["shipping_services"] });
+  };
+
+  const createRate = async () => {
+    if (!rateForm.service_id || !storeId) { toast.error("Service required"); return; }
+    const { error } = await supabase.from("shipping_rates").insert({
+      store_id: storeId, service_id: rateForm.service_id,
+      min_weight: Number(rateForm.min_weight), max_weight: Number(rateForm.max_weight),
+      min_order_total: Number(rateForm.min_order_total), max_order_total: Number(rateForm.max_order_total),
+      rate: Number(rateForm.rate), rate_type: rateForm.rate_type,
+    });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Rate added");
+    qc.invalidateQueries({ queryKey: ["shipping_rates"] });
+    setRateOpen(false);
+    setRateForm({ service_id: "", min_weight: "0", max_weight: "99999", min_order_total: "0", max_order_total: "99999", rate: "0", rate_type: "flat" });
+  };
+
+  const deleteRate = async (id: string) => {
+    await supabase.from("shipping_rates").delete().eq("id", id);
+    qc.invalidateQueries({ queryKey: ["shipping_rates"] });
+    toast.success("Rate removed");
   };
 
   return (
     <AdminLayout>
       <div className="space-y-3">
-        <div className="flex items-center justify-between">
+        <div className="page-header">
           <div>
-            <h1 className="text-lg font-semibold">Shipping Zones</h1>
-            <p className="text-xs text-muted-foreground">{zones.length} zones configured</p>
+            <h1 className="text-lg font-semibold">Shipping</h1>
+            <p className="text-xs text-muted-foreground">
+              Zones, services & rate matrix
+            </p>
           </div>
-          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm" onClick={resetForm}><Plus className="h-4 w-4 mr-1" /> Add Zone</Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md">
-              <DialogHeader><DialogTitle>Add Shipping Zone</DialogTitle></DialogHeader>
-              <ZoneForm form={form} setForm={setForm} onSubmit={handleCreate} loading={createZone.isPending} label="Create" />
-            </DialogContent>
-          </Dialog>
         </div>
 
-        <Card>
-          <CardContent className="p-0">
-            <div className="flex items-center gap-2 p-3 border-b">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="h-8">
+            <TabsTrigger value="zones" className="text-xs h-7">Zones ({(zones as any[]).length})</TabsTrigger>
+            <TabsTrigger value="services" className="text-xs h-7">Services ({(services as any[]).length})</TabsTrigger>
+            <TabsTrigger value="rates" className="text-xs h-7">Rate Matrix ({(rates as any[]).length})</TabsTrigger>
+          </TabsList>
+
+          {/* ── Zones Tab ── */}
+          <TabsContent value="zones" className="space-y-3 mt-3">
+            <div className="flex items-center justify-between gap-2">
               <div className="relative flex-1 max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Search zones..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
               </div>
+              <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" onClick={resetForm}><Plus className="h-4 w-4 mr-1" /> Add Zone</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader><DialogTitle>Add Shipping Zone</DialogTitle></DialogHeader>
+                  <ZoneForm form={form} setForm={setForm} onSubmit={handleCreate} loading={createZone.isPending} label="Create" />
+                </DialogContent>
+              </Dialog>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs h-8">Name</TableHead>
-                  <TableHead className="text-xs h-8">Regions</TableHead>
-                  <TableHead className="text-xs h-8">Rate Type</TableHead>
-                  <TableHead className="text-xs h-8 text-right">Rate</TableHead>
-                  <TableHead className="text-xs h-8 text-right">Free Above</TableHead>
-                  <TableHead className="text-xs h-8 w-20"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  Array.from({ length: 3 }).map((_, i) => (
-                    <TableRow key={i}><TableCell colSpan={5}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
-                  ))
-                ) : filtered.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">
-                      <Truck className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
-                      No shipping zones configured.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filtered.map((z: any) => (
-                    <TableRow key={z.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => openEdit(z)}>
-                      <TableCell className="py-2 font-medium">{z.name}</TableCell>
-                      <TableCell className="py-2 max-w-[200px] truncate text-muted-foreground">{z.regions}</TableCell>
-                      <TableCell className="py-2 capitalize">{z.rate_type || "flat"}</TableCell>
-                      <TableCell className="py-2 text-right font-medium">
-                        {(z.rate_type === "weight") ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : `$${Number(z.flat_rate).toFixed(2)}`}
-                      </TableCell>
-                      <TableCell className="py-2 text-right">{z.free_above ? `$${Number(z.free_above).toFixed(2)}` : "—"}</TableCell>
-                      <TableCell className="py-2">
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); deleteZone.mutate(z.id); }}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </TableCell>
+
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Name</TableHead>
+                      <TableHead className="text-xs h-8">Regions</TableHead>
+                      <TableHead className="text-xs h-8">Rate Type</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Rate</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Free Above</TableHead>
+                      <TableHead className="text-xs h-8">Services</TableHead>
+                      <TableHead className="text-xs h-8 w-16"></TableHead>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      Array.from({ length: 3 }).map((_, i) => (
+                        <TableRow key={i}><TableCell colSpan={7}><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+                      ))
+                    ) : filtered.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={7} className="text-center text-xs text-muted-foreground py-6">
+                          <Truck className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                          No shipping zones configured.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filtered.map((z: any) => {
+                        const zoneServices = (services as any[]).filter((s) => s.zone_id === z.id);
+                        return (
+                          <TableRow key={z.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => openEdit(z)}>
+                            <TableCell className="py-2 font-medium">{z.name}</TableCell>
+                            <TableCell className="py-2 max-w-[160px] truncate text-muted-foreground">{z.regions}</TableCell>
+                            <TableCell className="py-2 capitalize">{z.rate_type || "flat"}</TableCell>
+                            <TableCell className="py-2 text-right font-medium">
+                              {(z.rate_type === "weight") ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : `$${Number(z.flat_rate).toFixed(2)}`}
+                            </TableCell>
+                            <TableCell className="py-2 text-right">{z.free_above ? `$${Number(z.free_above).toFixed(2)}` : "—"}</TableCell>
+                            <TableCell className="py-2">
+                              <Badge variant="secondary" className="text-2xs">{zoneServices.length} services</Badge>
+                            </TableCell>
+                            <TableCell className="py-2">
+                              <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={(e) => { e.stopPropagation(); deleteZone.mutate(z.id); }}>
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* ── Services Tab ── */}
+          <TabsContent value="services" className="space-y-3 mt-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Shipping methods available per zone (e.g. Express, Standard, Economy)</p>
+              <Dialog open={serviceOpen} onOpenChange={setServiceOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Add Service</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader><DialogTitle>Add Shipping Service</DialogTitle></DialogHeader>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs">Zone</Label>
+                      <Select value={serviceForm.zone_id} onValueChange={(v) => setServiceForm({ ...serviceForm, zone_id: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select zone" /></SelectTrigger>
+                        <SelectContent>
+                          {(zones as any[]).map((z) => (
+                            <SelectItem key={z.id} value={z.id} className="text-xs">{z.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Service Name</Label>
+                      <Input placeholder="e.g. Express Shipping" value={serviceForm.name} onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })} />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Carrier</Label>
+                      <Input placeholder="e.g. Australia Post, DHL" value={serviceForm.carrier} onChange={(e) => setServiceForm({ ...serviceForm, carrier: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Min Days</Label>
+                        <Input type="number" min="0" value={serviceForm.estimated_days_min} onChange={(e) => setServiceForm({ ...serviceForm, estimated_days_min: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Max Days</Label>
+                        <Input type="number" min="0" value={serviceForm.estimated_days_max} onChange={(e) => setServiceForm({ ...serviceForm, estimated_days_max: e.target.value })} />
+                      </div>
+                    </div>
+                    <Button onClick={createService} className="w-full">Create Service</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {(zones as any[]).map((zone) => {
+              const zoneServices = (services as any[]).filter((s) => s.zone_id === zone.id);
+              if (zoneServices.length === 0 && (zones as any[]).length > 3) return null;
+              return (
+                <Card key={zone.id}>
+                  <CardHeader className="p-3 pb-0">
+                    <CardTitle className="text-xs font-medium flex items-center gap-2">
+                      <Truck className="h-3.5 w-3.5 text-muted-foreground" />
+                      {zone.name}
+                      <span className="text-muted-foreground font-normal">— {zone.regions}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 pt-2">
+                    {zoneServices.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-4">No services configured for this zone.</p>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs h-7">Service</TableHead>
+                            <TableHead className="text-xs h-7">Carrier</TableHead>
+                            <TableHead className="text-xs h-7">Est. Days</TableHead>
+                            <TableHead className="text-xs h-7">Rates</TableHead>
+                            <TableHead className="text-xs h-7">Active</TableHead>
+                            <TableHead className="text-xs h-7 w-12"></TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {zoneServices.map((svc: any) => {
+                            const svcRates = (rates as any[]).filter((r) => r.service_id === svc.id);
+                            return (
+                              <TableRow key={svc.id} className="text-xs">
+                                <TableCell className="py-1.5 font-medium">{svc.name}</TableCell>
+                                <TableCell className="py-1.5 text-muted-foreground">{svc.carrier || "—"}</TableCell>
+                                <TableCell className="py-1.5">{svc.estimated_days_min}–{svc.estimated_days_max} days</TableCell>
+                                <TableCell className="py-1.5">
+                                  <Badge variant="secondary" className="text-2xs">{svcRates.length} tiers</Badge>
+                                </TableCell>
+                                <TableCell className="py-1.5">
+                                  <Switch checked={svc.is_active} onCheckedChange={(v) => toggleService(svc.id, v)} />
+                                </TableCell>
+                                <TableCell className="py-1.5">
+                                  <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteService(svc.id)}>
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </TabsContent>
+
+          {/* ── Rate Matrix Tab ── */}
+          <TabsContent value="rates" className="space-y-3 mt-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Weight & order-value based rate tiers per service</p>
+              <Dialog open={rateOpen} onOpenChange={setRateOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Add Rate Tier</Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader><DialogTitle>Add Rate Tier</DialogTitle></DialogHeader>
+                  <div className="space-y-3">
+                    <div>
+                      <Label className="text-xs">Service</Label>
+                      <Select value={rateForm.service_id} onValueChange={(v) => setRateForm({ ...rateForm, service_id: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select service" /></SelectTrigger>
+                        <SelectContent>
+                          {(services as any[]).map((s) => {
+                            const zone = (zones as any[]).find((z) => z.id === s.zone_id);
+                            return (
+                              <SelectItem key={s.id} value={s.id} className="text-xs">
+                                {zone?.name} → {s.name}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Rate Type</Label>
+                      <Select value={rateForm.rate_type} onValueChange={(v) => setRateForm({ ...rateForm, rate_type: v })}>
+                        <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="flat" className="text-xs">Flat Rate ($)</SelectItem>
+                          <SelectItem value="per_kg" className="text-xs">Per Kg ($)</SelectItem>
+                          <SelectItem value="percentage" className="text-xs">Percentage (%)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs">Rate</Label>
+                      <Input type="number" step="0.01" min="0" value={rateForm.rate} onChange={(e) => setRateForm({ ...rateForm, rate: e.target.value })} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Min Weight (kg)</Label>
+                        <Input type="number" step="0.01" min="0" value={rateForm.min_weight} onChange={(e) => setRateForm({ ...rateForm, min_weight: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Max Weight (kg)</Label>
+                        <Input type="number" step="0.01" min="0" value={rateForm.max_weight} onChange={(e) => setRateForm({ ...rateForm, max_weight: e.target.value })} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label className="text-xs">Min Order ($)</Label>
+                        <Input type="number" step="0.01" min="0" value={rateForm.min_order_total} onChange={(e) => setRateForm({ ...rateForm, min_order_total: e.target.value })} />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Max Order ($)</Label>
+                        <Input type="number" step="0.01" min="0" value={rateForm.max_order_total} onChange={(e) => setRateForm({ ...rateForm, max_order_total: e.target.value })} />
+                      </div>
+                    </div>
+                    <Button onClick={createRate} className="w-full">Add Rate Tier</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Zone → Service</TableHead>
+                      <TableHead className="text-xs h-8">Weight Range</TableHead>
+                      <TableHead className="text-xs h-8">Order Range</TableHead>
+                      <TableHead className="text-xs h-8">Type</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Rate</TableHead>
+                      <TableHead className="text-xs h-8 w-12"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(rates as any[]).length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">
+                          <Package className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                          No rate tiers configured. Add services first, then define rate tiers.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      (rates as any[]).map((r) => {
+                        const svc = (services as any[]).find((s) => s.id === r.service_id);
+                        const zone = svc ? (zones as any[]).find((z) => z.id === svc.zone_id) : null;
+                        return (
+                          <TableRow key={r.id} className="text-xs">
+                            <TableCell className="py-1.5 font-medium">
+                              {zone?.name || "?"} <ChevronRight className="inline h-3 w-3 text-muted-foreground" /> {svc?.name || "?"}
+                            </TableCell>
+                            <TableCell className="py-1.5">{r.min_weight}–{r.max_weight} kg</TableCell>
+                            <TableCell className="py-1.5">${r.min_order_total}–${r.max_order_total}</TableCell>
+                            <TableCell className="py-1.5 capitalize">{r.rate_type}</TableCell>
+                            <TableCell className="py-1.5 text-right font-medium">
+                              {r.rate_type === "percentage" ? `${r.rate}%` : `$${Number(r.rate).toFixed(2)}`}
+                              {r.rate_type === "per_kg" && "/kg"}
+                            </TableCell>
+                            <TableCell className="py-1.5">
+                              <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive" onClick={() => deleteRate(r.id)}>
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
+      {/* Edit Zone Dialog */}
       <Dialog open={!!editZone} onOpenChange={(o) => { if (!o) setEditZone(null); }}>
         <DialogContent className="max-w-md">
           <DialogHeader><DialogTitle>Edit Shipping Zone</DialogTitle></DialogHeader>

@@ -4,7 +4,7 @@ import {
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
-  FileDown, TrendingUp, Save, Zap,
+  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -19,56 +19,85 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { getSubdomainSlug } from "@/lib/subdomain";
 
-// Determine route prefix based on subdomain mode
 const prefix = getSubdomainSlug() ? "/_cpanel" : "";
 
+// ── Main ──
 const mainNav = [
   { title: "Dashboard", url: `${prefix}/dashboard`, icon: LayoutDashboard },
 ];
 
+// ── Catalog & Inventory ──
 const catalogNav = [
   { title: "Products", url: `${prefix}/products`, icon: Package },
   { title: "Categories", url: `${prefix}/categories`, icon: Layers },
   { title: "Smart Collections", url: `${prefix}/smart-collections`, icon: Sparkles },
   { title: "Digital Downloads", url: `${prefix}/digital-downloads`, icon: FileDown },
+];
+
+const inventoryNav = [
   { title: "Inventory", url: `${prefix}/inventory`, icon: Warehouse },
   { title: "Stock Adjustments", url: `${prefix}/stock-adjustments`, icon: History },
   { title: "Stocktake", url: `${prefix}/stocktake`, icon: ClipboardCheck },
-  { title: "Suppliers", url: `${prefix}/suppliers`, icon: Building },
-  { title: "Purchase Orders", url: `${prefix}/purchase-orders`, icon: ClipboardCopy },
   { title: "Backorders", url: `${prefix}/backorders`, icon: PackageX },
   { title: "Forecasting", url: `${prefix}/inventory-forecasting`, icon: TrendingUp },
   { title: "Inventory Reports", url: `${prefix}/inventory-reports`, icon: BarChart3 },
 ];
 
-const salesNav = [
-  { title: "Orders", url: `${prefix}/orders`, icon: Package },
-  { title: "POS", url: `${prefix}/pos`, icon: Smartphone },
-  { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
-  { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
-  { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
-  { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
-  { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
-  { title: "Customers", url: `${prefix}/customers`, icon: Users },
-  { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
-  { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
-  { title: "Warehouse", url: `${prefix}/warehouse`, icon: Warehouse },
-  { title: "Pick & Pack", url: `${prefix}/pick-pack`, icon: ClipboardCopy },
+// ── Purchasing ──
+const purchasingNav = [
+  { title: "Suppliers", url: `${prefix}/suppliers`, icon: Building },
+  { title: "Purchase Orders", url: `${prefix}/purchase-orders`, icon: ClipboardCopy },
 ];
 
+// ── Sales & Orders ──
+const salesNav = [
+  { title: "Orders", url: `${prefix}/orders`, icon: Package },
+  { title: "Quotes", url: `${prefix}/quotes`, icon: FileQuestion },
+  { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
+  { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
+  { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
+  { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
+  { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
+];
+
+// ── Customers ──
+const customersNav = [
+  { title: "Customers", url: `${prefix}/customers`, icon: Users },
+  { title: "Affiliates", url: `${prefix}/affiliates`, icon: UserPlus },
+  { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
+  { title: "Loyalty", url: `${prefix}/loyalty`, icon: Heart },
+];
+
+// ── POS ──
+const posNav = [
+  { title: "Point of Sale", url: `${prefix}/pos`, icon: Smartphone },
+];
+
+// ── Fulfillment & Shipping ──
+const fulfillmentNav = [
+  { title: "Warehouse", url: `${prefix}/warehouse`, icon: Warehouse },
+  { title: "Pick & Pack", url: `${prefix}/pick-pack`, icon: ClipboardCopy },
+  { title: "Carrier Manifest", url: `${prefix}/carrier-manifest`, icon: Truck },
+  { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: MapPin },
+];
+
+// ── Marketing & Channels ──
 const marketingNav = [
   { title: "Campaigns", url: `${prefix}/marketing`, icon: Megaphone },
   { title: "Adverts", url: `${prefix}/adverts`, icon: Image },
   { title: "Discounts", url: `${prefix}/coupons`, icon: Ticket },
   { title: "Price Rules", url: `${prefix}/price-rules`, icon: Zap },
   { title: "Gift Vouchers", url: `${prefix}/gift-vouchers`, icon: Gift },
-  { title: "Loyalty", url: `${prefix}/loyalty`, icon: Heart },
-  { title: "Affiliates", url: `${prefix}/affiliates`, icon: UserPlus },
-  { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
+  { title: "Marketplaces", url: `${prefix}/marketplaces`, icon: ShoppingBag },
+];
+
+// ── Analytics & Reports ──
+const analyticsNav = [
   { title: "Analytics", url: `${prefix}/analytics`, icon: BarChart3 },
   { title: "Report Builder", url: `${prefix}/report-builder`, icon: PieChart },
 ];
 
+// ── Content ──
 const contentNav = [
   { title: "Content Pages", url: `${prefix}/content-pages`, icon: FileText },
   { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
@@ -76,11 +105,11 @@ const contentNav = [
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
 ];
 
+// ── Settings & System ──
 const systemNav = [
-  { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: Truck },
   { title: "Tax Rates", url: `${prefix}/tax-rates`, icon: Percent },
   { title: "Currencies", url: `${prefix}/currencies`, icon: DollarSign },
-  { title: "Accounting", url: `${prefix}/accounting`, icon: CreditCard },
+  { title: "Accounting", url: `${prefix}/accounting`, icon: Calculator },
   { title: "Multimarket", url: `${prefix}/multimarket`, icon: Globe },
   { title: "Integrations", url: `${prefix}/integrations`, icon: Link2 },
   { title: "Webhooks", url: `${prefix}/webhooks`, icon: Webhook },
@@ -88,11 +117,11 @@ const systemNav = [
   { title: "API Docs", url: `${prefix}/api-docs`, icon: Book },
   { title: "Permissions", url: `${prefix}/permissions`, icon: Shield },
   { title: "Redirects", url: `${prefix}/redirects`, icon: ExternalLink },
+  { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
+  { title: "Email Automations", url: `${prefix}/email-automations`, icon: Zap },
   { title: "Activity Log", url: `${prefix}/activity-log`, icon: ClipboardList },
   { title: "Staff Activity", url: `${prefix}/staff-activity`, icon: Activity },
   { title: "Sessions", url: `${prefix}/sessions`, icon: Monitor },
-  { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
-  { title: "Email Automations", url: `${prefix}/email-automations`, icon: Zap },
   { title: "Feature Audit", url: `${prefix}/feature-audit`, icon: ClipboardCheck },
   { title: "Go-Live Checklist", url: `${prefix}/go-live`, icon: Sparkles },
   { title: "Add-Ons", url: `${prefix}/addons`, icon: Puzzle },
@@ -184,10 +213,16 @@ export function AppSidebar() {
       <SidebarContent className="px-2 py-1">
         <NavGroup label="Main" items={mainNav} collapsed={collapsed} currentPath={currentPath} />
         <NavGroup label="Catalog" items={catalogNav} collapsed={collapsed} currentPath={currentPath} />
-        <NavGroup label="Sales" items={salesNav} collapsed={collapsed} currentPath={currentPath} />
-        <NavGroup label="Marketing" items={marketingNav} collapsed={collapsed} currentPath={currentPath} />
-        <NavGroup label="Content" items={contentNav} collapsed={collapsed} currentPath={currentPath} />
-        <NavGroup label="System" items={systemNav} collapsed={collapsed} currentPath={currentPath} />
+        <NavGroup label="Inventory" items={inventoryNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Purchasing" items={purchasingNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Sales & Orders" items={salesNav} collapsed={collapsed} currentPath={currentPath} />
+        <NavGroup label="Customers" items={customersNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="POS" items={posNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Fulfillment" items={fulfillmentNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Marketing" items={marketingNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Analytics" items={analyticsNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Content" items={contentNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="System" items={systemNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
       </SidebarContent>
 
       <SidebarFooter className="p-3 border-t border-sidebar-border">
