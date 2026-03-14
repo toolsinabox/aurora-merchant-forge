@@ -31,6 +31,11 @@ export default function Quotes() {
     items: [{ title: "", quantity: 1, unit_price: 0 }],
   });
   const [creating, setCreating] = useState(false);
+  const [templates, setTemplates] = useState<any[]>(() => {
+    try { return JSON.parse(localStorage.getItem("quote_templates") || "[]"); } catch { return []; }
+  });
+  const [templateOpen, setTemplateOpen] = useState(false);
+  const [templateName, setTemplateName] = useState("");
 
   const fetchQuotes = async () => {
     if (!currentStore) return;
