@@ -403,11 +403,22 @@ export default function Subscriptions() {
                       <TableCell className="text-xs">{s.total_orders_created}</TableCell>
                       <TableCell>{statusBadge(s.status)}</TableCell>
                       <TableCell>
-                        <div className="flex gap-1">
+                        <div className="flex gap-1 flex-wrap">
                           {s.status === "active" && (
-                            <Button variant="ghost" size="icon" className="h-7 w-7" title="Pause" onClick={() => updateStatus.mutate({ id: s.id, status: "paused" })}>
-                              <Pause className="h-3.5 w-3.5" />
-                            </Button>
+                            <>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Pause" onClick={() => updateStatus.mutate({ id: s.id, status: "paused" })}>
+                                <Pause className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Skip Next Delivery" onClick={() => { setSkippingSubId(s.id); setSkipDialogOpen(true); }}>
+                                <SkipForward className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Swap Product" onClick={() => { setSwappingSub(s); setSwapProductId(s.product_id || ""); setSwapDialogOpen(true); }}>
+                                <ArrowLeftRight className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-7 w-7" title="Change Quantity" onClick={() => { setQtyEditSub(s); setNewQty(s.quantity); setQtyDialogOpen(true); }}>
+                                <Hash className="h-3.5 w-3.5" />
+                              </Button>
+                            </>
                           )}
                           {s.status === "paused" && (
                             <Button variant="ghost" size="icon" className="h-7 w-7" title="Resume" onClick={() => updateStatus.mutate({ id: s.id, status: "active" })}>
