@@ -547,6 +547,8 @@ export default function StorefrontCheckout() {
             paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
+            signatureRequired ? "[Signature Required]" : null,
+            authorityToLeave ? "[Authority to Leave]" : null,
             form.company ? `[Company: ${form.company}]` : null,
             form.po_number ? `[PO#: ${form.po_number}]` : null,
             form.custom_field_1 ? `[Custom: ${form.custom_field_1}]` : null,

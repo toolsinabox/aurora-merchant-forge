@@ -97,6 +97,39 @@ export default function CarrierManifest() {
     toast.success("Manifest opened for printing");
   };
 
+  // Pickup scheduling
+  const [pickups, setPickups] = useState<PickupSchedule[]>(() => {
+    try { return JSON.parse(localStorage.getItem("carrier_pickups") || "[]"); } catch { return []; }
+  });
+  const [showPickupDialog, setShowPickupDialog] = useState(false);
+  const [pickupForm, setPickupForm] = useState({ carrier: "", date: selectedDate, time: "17:00", notes: "" });
+
+  const savePickups = (updated: PickupSchedule[]) => {
+    setPickups(updated);
+    localStorage.setItem("carrier_pickups", JSON.stringify(updated));
+  };
+
+  const schedulePickup = () => {
+    if (!pickupForm.carrier || !pickupForm.date || !pickupForm.time) { toast.error("Carrier, date, and time required"); return; }
+    const pickup: PickupSchedule = {
+      id: crypto.randomUUID(),
+      carrier: pickupForm.carrier,
+      date: pickupForm.date,
+      time: pickupForm.time,
+      notes: pickupForm.notes,
+      status: "scheduled",
+    };
+    savePickups([...pickups, pickup]);
+    setShowPickupDialog(false);
+    setPickupForm({ carrier: "", date: selectedDate, time: "17:00", notes: "" });
+    toast.success(`Pickup scheduled for ${pickupForm.carrier}`);
+  };
+
+  const cancelPickup = (id: string) => savePickups(pickups.map(p => p.id === id ? { ...p, status: "cancelled" as const } : p));
+  const completePickup = (id: string) => savePickups(pickups.map(p => p.id === id ? { ...p, status: "completed" as const } : p));
+
+  const todayPickups = pickups.filter(p => p.date === selectedDate && p.status !== "cancelled");
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -105,9 +138,14 @@ export default function CarrierManifest() {
             <h1 className="text-lg font-semibold">Carrier Manifest</h1>
             <p className="text-xs text-muted-foreground">End-of-day manifest for carrier pickups</p>
           </div>
-          <Button size="sm" className="text-xs h-8 gap-1" onClick={printManifest} disabled={filtered.length === 0}>
-            <Printer className="h-3.5 w-3.5" /> Print Manifest
-          </Button>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" className="text-xs h-8 gap-1" onClick={() => { setPickupForm({ carrier: "", date: selectedDate, time: "17:00", notes: "" }); setShowPickupDialog(true); }}>
+              <Clock className="h-3.5 w-3.5" /> Schedule Pickup
+            </Button>
+            <Button size="sm" className="text-xs h-8 gap-1" onClick={printManifest} disabled={filtered.length === 0}>
+              <Printer className="h-3.5 w-3.5" /> Print Manifest
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-2 items-center">

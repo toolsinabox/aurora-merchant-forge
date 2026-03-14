@@ -931,6 +931,16 @@ export default function ProductForm() {
                       <Label className="text-xs">🌡 Temperature Sensitive</Label>
                       <Switch checked={form.temperature_sensitive} onCheckedChange={(v) => update("temperature_sensitive", v)} />
                     </div>
+                    <Separator className="my-2" />
+                    <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Customs / International</p>
+                    <div className="space-y-1">
+                      <Label className="text-xs">HS / Tariff Code</Label>
+                      <Input className="h-8 text-xs" value={form.hs_tariff_code} onChange={(e) => update("hs_tariff_code", e.target.value)} placeholder="e.g. 6109.10.00" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">Country of Origin</Label>
+                      <Input className="h-8 text-xs" value={form.country_of_origin} onChange={(e) => update("country_of_origin", e.target.value)} placeholder="e.g. Australia" />
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
