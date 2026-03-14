@@ -9506,7 +9506,131 @@ const supplierDeepFeatures: FeatureCategory[] = [
   },
 ];
 
-const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures, ...giftRegistryFeatures, ...warehouseAutomationFeatures, ...returnPolicyFeatures, ...customerSegmentationFeatures, ...internationalFeatures, ...productSchedulingFeatures, ...orderPrintingFeatures, ...developerToolsFeatures, ...cartFeatures, ...adminDashboardFeatures, ...productCustomFieldFeatures, ...onboardingFeatures, ...advancedOrderFeatures, ...storefrontNavigationFeatures, ...emailDeliverabilityFeatures, ...productRelationFeatures, ...storefrontFooterFeatures, ...inventoryReceivingFeatures, ...contentBlockFeatures, ...posAdvancedFeatures, ...supplierDeepFeatures]);
+// ═══════ WAVE 14 — FINAL EXHAUSTIVE SWEEP ═══════
+
+const currencyDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Currency Management — Deep",
+    icon: <DollarSign className="h-5 w-5" />,
+    features: [
+      { name: "Currency CRUD", description: "Add/edit/remove supported currencies", status: "done", notes: "Currencies page" },
+      { name: "Exchange Rate Manual Entry", description: "Manually set exchange rates", status: "done" },
+      { name: "Exchange Rate Auto-Fetch", description: "Auto-fetch rates from API (ECB, Open Exchange)", status: "not_started" },
+      { name: "Currency Display Format", description: "Configure symbol position, decimals", status: "partial" },
+      { name: "Currency Rounding Rules", description: "Round to nearest 5c, 10c, etc.", status: "not_started" },
+      { name: "Base Currency Lock", description: "All pricing stored in base currency", status: "done" },
+      { name: "Multi-Currency Cart", description: "Cart displays in selected currency", status: "done", notes: "CurrencySwitcher" },
+      { name: "Multi-Currency Checkout", description: "Charge in customer's selected currency", status: "partial" },
+      { name: "Currency per Market", description: "Default currency per multimarket region", status: "done", notes: "multimarket_settings" },
+      { name: "Historical Exchange Rates", description: "Store rate history for reporting", status: "not_started" },
+    ],
+  },
+];
+
+const reviewDeepFeatures: FeatureCategory[] = [
+  {
+    category: "Reviews & Ratings — Deep",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Product Review Submission", description: "Customers submit star rating + text review", status: "done", notes: "ProductReviews component" },
+      { name: "Review Moderation Queue", description: "Admin approves/rejects reviews before display", status: "done", notes: "Reviews page" },
+      { name: "Review Auto-Approval", description: "Auto-approve reviews from verified purchasers", status: "partial" },
+      { name: "Review Photo Upload", description: "Customers attach photos to reviews", status: "not_started" },
+      { name: "Review Voting (Helpful/Not)", description: "Users vote on review helpfulness", status: "not_started" },
+      { name: "Review Response (Merchant)", description: "Merchant replies to customer reviews", status: "not_started" },
+      { name: "Review Request Email (Post-Purchase)", description: "Auto-email asking for review after delivery", status: "done", notes: "order-follow-up function" },
+      { name: "Review Aggregate Rating (Schema)", description: "Aggregate rating in JSON-LD for SERP", status: "done", notes: "JSON-LD structured data" },
+      { name: "Review Syndication (Google)", description: "Syndicate reviews to Google Shopping", status: "not_started" },
+      { name: "Review Import (CSV)", description: "Import reviews from other platforms", status: "not_started" },
+      { name: "Review Sorting (Most Recent/Helpful)", description: "Sort reviews by date, rating, helpfulness", status: "partial" },
+      { name: "Review Filtering by Rating", description: "Filter reviews by star count", status: "partial" },
+    ],
+  },
+];
+
+const shippingTrackingFeatures: FeatureCategory[] = [
+  {
+    category: "Shipping Tracking — Full",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Tracking Number Entry", description: "Enter tracking number per shipment", status: "done" },
+      { name: "Multi-Carrier Tracking", description: "Support tracking across all carriers", status: "partial" },
+      { name: "Tracking Page (Customer)", description: "Customer-facing order tracking page", status: "done", notes: "StorefrontTrackOrder" },
+      { name: "Tracking Email with Link", description: "Email tracking number and link to customer", status: "done", notes: "shipment-email function" },
+      { name: "Tracking Status Auto-Update", description: "Auto-poll carrier API for status updates", status: "not_started" },
+      { name: "Delivery Confirmation Trigger", description: "Auto-mark delivered based on carrier status", status: "not_started" },
+      { name: "Multi-Parcel Tracking", description: "Multiple tracking numbers per order", status: "partial" },
+      { name: "Tracking Widget (Storefront)", description: "Embedded tracking widget on storefront", status: "done" },
+      { name: "Proof of Delivery (POD)", description: "Store/display proof of delivery from carrier", status: "not_started" },
+      { name: "Delivery Exception Alerts", description: "Alert admin of delivery exceptions", status: "not_started" },
+    ],
+  },
+];
+
+const adminBulkOpsFeatures: FeatureCategory[] = [
+  {
+    category: "Admin Bulk Operations",
+    icon: <Grip className="h-5 w-5" />,
+    features: [
+      { name: "Bulk Select (Checkbox All)", description: "Select all items on page/across pages", status: "done" },
+      { name: "Bulk Delete Products", description: "Delete multiple products at once", status: "done" },
+      { name: "Bulk Update Product Status", description: "Change status of multiple products", status: "done", notes: "BulkEditDialog" },
+      { name: "Bulk Update Product Price", description: "Adjust prices of multiple products", status: "done" },
+      { name: "Bulk Update Product Category", description: "Move products to different category", status: "done" },
+      { name: "Bulk Update Product Tags", description: "Add/remove tags from multiple products", status: "done" },
+      { name: "Bulk Print Labels", description: "Print labels for selected products", status: "done", notes: "PrintBarcodeLabels" },
+      { name: "Bulk Order Status Update", description: "Change status of multiple orders", status: "partial" },
+      { name: "Bulk Customer Tag Assignment", description: "Add tags to multiple customers", status: "partial" },
+      { name: "Bulk Customer Group Assignment", description: "Move customers between groups", status: "partial" },
+      { name: "Bulk Inventory Adjustment", description: "Adjust stock for multiple SKUs at once", status: "partial" },
+      { name: "Bulk Export Selected", description: "Export only selected rows to CSV", status: "partial" },
+    ],
+  },
+];
+
+const smartNotificationFeatures: FeatureCategory[] = [
+  {
+    category: "Smart Notifications & Automations",
+    icon: <Zap className="h-5 w-5" />,
+    features: [
+      { name: "Order Status Change Auto-Email", description: "Auto-email customer on any status change", status: "done" },
+      { name: "Shipment Created Auto-Email", description: "Email with tracking on shipment creation", status: "done", notes: "shipment-email" },
+      { name: "Payment Received Auto-Email", description: "Email on payment confirmation", status: "done", notes: "payment-email" },
+      { name: "Review Submitted Admin Alert", description: "Notify admin of new review submission", status: "not_started" },
+      { name: "Scheduled Cron Jobs", description: "Scheduled tasks (daily reports, cleanup)", status: "partial" },
+      { name: "Event-Driven Automation", description: "Trigger actions on specific events", status: "done", notes: "email_automations" },
+      { name: "Automation Delay / Wait", description: "Add delay before automation fires", status: "done", notes: "delay_hours field" },
+      { name: "Automation Condition Filtering", description: "Only fire automation if conditions met", status: "partial" },
+      { name: "Automation A/B Testing", description: "Test different email content per automation", status: "not_started" },
+      { name: "Automation Analytics (Sent/Open/Click)", description: "Track automation performance", status: "partial" },
+    ],
+  },
+];
+
+const invoiceFeatures: FeatureCategory[] = [
+  {
+    category: "Invoicing — Complete",
+    icon: <FileText className="h-5 w-5" />,
+    features: [
+      { name: "Auto-Generate Invoice on Order", description: "Invoice auto-created with order", status: "done" },
+      { name: "Invoice Number Sequence", description: "Sequential invoice numbering", status: "done" },
+      { name: "Invoice PDF Generation", description: "Generate PDF invoice", status: "done", notes: "PrintInvoice" },
+      { name: "Invoice Email to Customer", description: "Email invoice PDF to customer", status: "done" },
+      { name: "Invoice Line Items", description: "Itemized products, qty, price, tax", status: "done" },
+      { name: "Invoice Tax Summary", description: "Tax breakdown on invoice", status: "done" },
+      { name: "Invoice Payment Terms Display", description: "Show payment terms on invoice", status: "partial" },
+      { name: "Invoice Notes / Memo", description: "Custom notes on invoice", status: "partial" },
+      { name: "Invoice Branding (Logo/Colors)", description: "Custom logo and colors on invoice", status: "partial" },
+      { name: "Credit Note Generation", description: "Generate credit notes for refunds", status: "done", notes: "credit_notes table" },
+      { name: "Credit Note PDF", description: "PDF credit note document", status: "partial" },
+      { name: "Proforma Invoice", description: "Generate proforma invoices for quotes", status: "partial" },
+      { name: "Invoice Overdue Tracking", description: "Track overdue invoices for B2B", status: "not_started" },
+      { name: "Invoice Payment Link", description: "Include payment link in invoice email", status: "not_started" },
+    ],
+  },
+];
+
+const allFeatureData = deduplicateFeatures([...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures, ...b2bOperationsFeatures, ...b2bDeepDiveFeatures, ...templateAndChromeFeatures, ...templateDeepFeatures, ...adminInfraFeatures, ...warehouseDeepFeatures, ...shippingDeepFeatures, ...paymentDeepFeatures, ...b2bWholesaleDeepFeatures, ...marketplaceDeepFeatures, ...reportingDeepFeatures, ...emailAutomationDeepFeatures, ...returnsRmaFeatures, ...posDeepFeatures, ...adminUxFeatures, ...checkoutDeepFeatures, ...seoContentDeepFeatures, ...securityComplianceFeatures, ...carrierIntegrationFeatures, ...orderWorkflowFeatures, ...customerAdvancedFeatures, ...inventoryAdvancedFeatures, ...analyticsDeepFeatures, ...promotionFeatures, ...notificationFeatures, ...platformMultiTenantFeatures, ...importExportFeatures, ...apiWebhookFeatures, ...storefrontAdvancedFeatures, ...accountingIntFeatures, ...marketingAutomationFeatures, ...multimarketDeepFeatures, ...paymentGatewayDeepFeatures, ...purchaseOrderFeatures, ...subscriptionDeepFeatures, ...digitalProductFeatures, ...mediaManagementFeatures, ...smartCollectionDeepFeatures, ...staffPermissionFeatures, ...warehouseFulfillmentFeatures, ...thirdPartyIntegrationFeatures, ...laybyFeatures, ...quotingFeatures, ...returnPortalFeatures, ...performanceFeatures, ...accessibilityFeatures, ...mobileAppFeatures, ...dataPrivacyFeatures, ...configSettingsFeatures, ...productVariantDeepFeatures, ...searchMerchandisingFeatures, ...shippingRulesDeepFeatures, ...taxDeepFeatures, ...emailTemplateDeepFeatures, ...printDocumentDeepFeatures, ...addonEcosystemFeatures, ...backupMigrationFeatures, ...testingQaFeatures, ...netoTemplateFeatures, ...customerAccountFeatures, ...inventoryCountingFeatures, ...dropshipFeatures, ...socialCommerceFeatures, ...b2bPortalFeatures, ...advancedCouponFeatures, ...auditComplianceFeatures, ...giftRegistryFeatures, ...warehouseAutomationFeatures, ...returnPolicyFeatures, ...customerSegmentationFeatures, ...internationalFeatures, ...productSchedulingFeatures, ...orderPrintingFeatures, ...developerToolsFeatures, ...cartFeatures, ...adminDashboardFeatures, ...productCustomFieldFeatures, ...onboardingFeatures, ...advancedOrderFeatures, ...storefrontNavigationFeatures, ...emailDeliverabilityFeatures, ...productRelationFeatures, ...storefrontFooterFeatures, ...inventoryReceivingFeatures, ...contentBlockFeatures, ...posAdvancedFeatures, ...supplierDeepFeatures, ...currencyDeepFeatures, ...reviewDeepFeatures, ...shippingTrackingFeatures, ...adminBulkOpsFeatures, ...smartNotificationFeatures, ...invoiceFeatures]);
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
