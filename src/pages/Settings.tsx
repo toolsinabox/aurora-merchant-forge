@@ -1491,6 +1491,11 @@ export default function SettingsPage() {
           <TabsContent value="returns">
             <ReturnsPolicyTab />
           </TabsContent>
+
+          {/* Fulfillment Rules Tab */}
+          <TabsContent value="fulfillment">
+            <FulfillmentRulesTab />
+          </TabsContent>
         </Tabs>
       </div>
     </AdminLayout>
