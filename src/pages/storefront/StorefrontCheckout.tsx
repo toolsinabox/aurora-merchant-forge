@@ -104,6 +104,8 @@ export default function StorefrontCheckout() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [orderGiftMessage, setOrderGiftMessage] = useState("");
   const [checkoutStep, setCheckoutStep] = useState(1);
+  const [signatureRequired, setSignatureRequired] = useState(false);
+  const [authorityToLeave, setAuthorityToLeave] = useState(false);
   
   // Cart reservation timer (15 min)
   const RESERVATION_MINUTES = 15;
