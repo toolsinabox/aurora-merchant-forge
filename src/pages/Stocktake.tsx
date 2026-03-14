@@ -15,7 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProducts } from "@/hooks/use-data";
 import { toast } from "sonner";
-import { Plus, ClipboardCheck, Search, CheckCircle, AlertTriangle, Package, Calendar, Clock, Trash2 } from "lucide-react";
+import { Plus, ClipboardCheck, Search, CheckCircle, AlertTriangle, Package, Calendar, Clock, Trash2, Download } from "lucide-react";
 import { format } from "date-fns";
 
 interface CycleCountSchedule {
@@ -216,6 +216,20 @@ export default function Stocktake() {
               </p>
             </div>
             <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="gap-1 text-xs" onClick={() => {
+                const csvRows = [["SKU", "Product", "Expected", "Counted", "Variance"].join(",")];
+                items.forEach(i => {
+                  const variance = i.counted_quantity !== null ? i.counted_quantity - i.expected_quantity : "";
+                  csvRows.push([`"${i.sku || ''}"`, `"${i.product_name || ''}"`, i.expected_quantity, i.counted_quantity ?? "", variance].join(","));
+                });
+                const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a"); a.href = url; a.download = `stocktake-${activeStocktake.name}-${format(new Date(), "yyyy-MM-dd")}.csv`; a.click();
+                URL.revokeObjectURL(url);
+                toast.success("Stocktake exported to CSV");
+              }}>
+                <Download className="h-3.5 w-3.5" /> Export CSV
+              </Button>
               <Button variant="outline" size="sm" onClick={() => { setActiveStocktake(null); setVarianceFilter("all"); }}>Back</Button>
               {activeStocktake.status === "in_progress" && (
                 <Button size="sm" onClick={completeStocktake}>

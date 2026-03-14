@@ -8847,7 +8847,7 @@ const printDocumentDeepFeatures: FeatureCategory[] = [
       { name: "Gift Voucher PDF", description: "Printable gift voucher design", status: "done", notes: "PrintGiftVoucher" },
       { name: "Customer Statement PDF", description: "Account statement with balance", status: "done", notes: "PrintCustomerStatement" },
       { name: "Payment Receipt PDF", description: "Payment receipt for customer", status: "done", notes: "PrintPaymentReceipt" },
-      { name: "Batch Invoice Print", description: "Print multiple invoices at once", status: "not_started" },
+      { name: "Batch Invoice Print", description: "Print multiple invoices at once", status: "done", notes: "BatchInvoicePrint page with order selection checkboxes, date range filter, select all, batch print opening staggered tabs" },
       { name: "Custom Document Templates", description: "Customize PDF layouts with branding", status: "partial" },
       { name: "Thermal Printer Support (Label)", description: "Format labels for thermal printers", status: "not_started" },
     ],
@@ -8887,7 +8887,7 @@ const backupMigrationFeatures: FeatureCategory[] = [
       { name: "WooCommerce Migration Tool", description: "Import from WooCommerce", status: "not_started" },
       { name: "BigCommerce Migration Tool", description: "Import from BigCommerce", status: "not_started" },
       { name: "Media File Backup", description: "Backup all uploaded media files", status: "partial" },
-      { name: "Configuration Export/Import", description: "Export store settings for cloning", status: "not_started" },
+      { name: "Configuration Export/Import", description: "Export store settings for cloning", status: "done", notes: "Settings Config tab with JSON export/import for scripts, quote templates, scheduled prices, cycle counts, inventory snapshots" },
     ],
   },
 ];
@@ -8976,7 +8976,7 @@ const inventoryCountingFeatures: FeatureCategory[] = [
       { name: "Stocktake History", description: "History of past stocktakes with results", status: "partial" },
       { name: "Blind Count Mode", description: "Count without seeing expected quantities", status: "not_started" },
       { name: "Multi-User Stocktake", description: "Multiple staff counting simultaneously", status: "not_started" },
-      { name: "Stocktake Export", description: "Export stocktake results to CSV", status: "not_started" },
+      { name: "Stocktake Export", description: "Export stocktake results to CSV", status: "done", notes: "Stocktake active view Export CSV button downloads SKU, product, expected, counted, variance as CSV file" },
     ],
   },
 ];
