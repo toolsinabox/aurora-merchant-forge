@@ -60,6 +60,20 @@ export default function StorefrontCheckout() {
     billing_address: "", billing_city: "", billing_zip: "", billing_country: "",
     notes: "",
     delivery_instructions: "",
+    company: "",
+    po_number: "",
+    custom_field_1: "",
+  });
+
+  // Capture UTM params from URL
+  const [utmParams] = useState(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const params: Record<string, string> = {};
+    ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"].forEach(k => {
+      const v = sp.get(k);
+      if (v) params[k] = v;
+    });
+    return Object.keys(params).length > 0 ? params : null;
   });
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [shippingZones, setShippingZones] = useState<any[]>([]);
