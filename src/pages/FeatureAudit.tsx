@@ -7564,7 +7564,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Mobile Warehouse App", description: "Responsive mobile UI for warehouse operations", status: "partial", notes: "Responsive but not native" },
       { name: "Carrier Manifest Generation", description: "Generate end-of-day carrier manifest for pickups", status: "done", notes: "CarrierManifest page with date picker, carrier filter, summary cards, printable manifest" },
       { name: "Carrier Pickup Scheduling", description: "Schedule carrier pickups from warehouse", status: "not_started" },
-      { name: "Returns Receiving", description: "Scan and receive returned items back into inventory", status: "partial" },
+      { name: "Returns Receiving", description: "Scan and receive returned items back into inventory", status: "done", notes: "Returns Receiving tab with order number scan/entry, approved returns queue, scanned items with condition selection (good/damaged/defective/opened), per-item notes, Process button marks as refunded with receiving details in admin_notes" },
       { name: "Damaged Goods Processing", description: "Flag and quarantine damaged items during receiving", status: "not_started" },
       { name: "Warehouse User Roles", description: "Restrict warehouse staff to pick/pack only (no admin access)", status: "partial", notes: "Role system exists" },
     ],
