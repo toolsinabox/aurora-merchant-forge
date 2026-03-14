@@ -237,9 +237,9 @@ export default function ShippingZones() {
                           <TableRow key={z.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => openEdit(z)}>
                             <TableCell className="py-2 font-medium">{z.name}</TableCell>
                             <TableCell className="py-2 max-w-[160px] truncate text-muted-foreground">{z.regions}</TableCell>
-                            <TableCell className="py-2 capitalize">{z.rate_type || "flat"}</TableCell>
+                            <TableCell className="py-2 capitalize">{z.rate_type === "per_item" ? "Per Item" : z.rate_type || "flat"}</TableCell>
                             <TableCell className="py-2 text-right font-medium">
-                              {(z.rate_type === "weight") ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : `$${Number(z.flat_rate).toFixed(2)}`}
+                              {z.rate_type === "weight" ? `$${Number(z.per_kg_rate).toFixed(2)}/kg` : z.rate_type === "per_item" ? `$${Number(z.per_kg_rate).toFixed(2)}/item` : `$${Number(z.flat_rate).toFixed(2)}`}
                             </TableCell>
                             <TableCell className="py-2 text-right">{z.free_above ? `$${Number(z.free_above).toFixed(2)}` : "—"}</TableCell>
                             <TableCell className="py-2">
@@ -632,6 +632,7 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
             <SelectItem value="flat" className="text-xs">Flat Rate</SelectItem>
             <SelectItem value="weight" className="text-xs">Weight-Based (per kg)</SelectItem>
             <SelectItem value="cubic" className="text-xs">Dimension / Cubic Weight</SelectItem>
+            <SelectItem value="per_item" className="text-xs">Per Item (quantity-based)</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -647,6 +648,12 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
             <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
             <p className="text-[10px] text-muted-foreground mt-0.5">Cubic weight = L×W×H / 5000 (cm). Higher of actual vs cubic weight used.</p>
           </div>
+        ) : form.rate_type === "per_item" ? (
+          <div>
+            <Label className="text-xs">Rate per item ($)</Label>
+            <Input type="number" step="0.01" min="0" value={form.per_kg_rate} onChange={(e) => setForm({ ...form, per_kg_rate: e.target.value })} />
+            <p className="text-[10px] text-muted-foreground mt-0.5">Shipping cost = base flat rate + (rate × item count)</p>
+          </div>
         ) : (
           <div>
             <Label className="text-xs">Flat Rate ($)</Label>
@@ -658,9 +665,9 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <Input type="number" step="0.01" min="0" placeholder="Optional" value={form.free_above} onChange={(e) => setForm({ ...form, free_above: e.target.value })} />
         </div>
       </div>
-      {(form.rate_type === "weight" || form.rate_type === "cubic") && (
+      {(form.rate_type === "weight" || form.rate_type === "cubic" || form.rate_type === "per_item") && (
         <div>
-          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to {form.rate_type === "cubic" ? "cubic" : "weight"} cost)</span></Label>
+          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to {form.rate_type === "cubic" ? "cubic" : form.rate_type === "per_item" ? "per-item" : "weight"} cost)</span></Label>
           <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
         </div>
       )}

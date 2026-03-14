@@ -564,6 +564,7 @@ export default function StorefrontCheckout() {
           notes: [
             paymentMethod === "cod" ? "[Payment: Cash on Delivery]" : null,
             payOnAccount ? `Pay on Account - ${creditTerms}` : null,
+            deliveryMethod === "pickup" ? `[Click & Collect: ${pickupLocations.find(l => l.id === selectedPickupLocation)?.name || "Store pickup"}${pickupLocations.find(l => l.id === selectedPickupLocation)?.address ? ` — ${pickupLocations.find(l => l.id === selectedPickupLocation)?.address}` : ""}]` : null,
             form.delivery_instructions ? `[Delivery: ${form.delivery_instructions}]` : null,
             signatureRequired ? "[Signature Required]" : null,
             authorityToLeave ? "[Authority to Leave]" : null,
@@ -864,7 +865,7 @@ export default function StorefrontCheckout() {
 
                   {/* Click & Collect Location Picker */}
                   {deliveryMethod === "pickup" && pickupLocations.length > 0 && (
-                    <div className="mt-3 space-y-2">
+                    <div className="col-span-2 mt-1 space-y-2">
                       <Label className="text-xs font-medium">Select Pickup Location</Label>
                       {pickupLocations.map((loc: any) => (
                         <label
@@ -875,11 +876,16 @@ export default function StorefrontCheckout() {
                         >
                           <input type="radio" name="pickup_location" value={loc.id} checked={selectedPickupLocation === loc.id} onChange={() => setSelectedPickupLocation(loc.id)} className="accent-primary" />
                           <div>
-                            <p className="text-sm font-medium">{loc.name}</p>
-                            <p className="text-2xs text-muted-foreground">{loc.address || "Address not specified"} · {loc.type}</p>
+                            <p className="text-sm font-medium flex items-center gap-1.5"><MapPin className="h-3 w-3 text-muted-foreground" /> {loc.name}</p>
+                            <p className="text-2xs text-muted-foreground">{loc.address || "Address not specified"} · <span className="capitalize">{loc.type}</span></p>
                           </div>
                         </label>
                       ))}
+                      {selectedPickupLocation && (
+                        <p className="text-xs text-muted-foreground bg-muted/50 rounded p-2">
+                          📍 You'll receive a notification when your order is ready for collection.
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
