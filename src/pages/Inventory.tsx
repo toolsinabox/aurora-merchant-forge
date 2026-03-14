@@ -522,7 +522,7 @@ export default function Inventory() {
 
         <Card>
           <CardContent className="p-0">
-            <div className="flex items-center gap-2 p-3 border-b">
+            <div className="flex items-center gap-2 p-3 border-b flex-wrap">
               <div className="relative flex-1 max-w-xs">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
@@ -536,6 +536,11 @@ export default function Inventory() {
                   <SelectItem value="out-of-stock" className="text-xs">Out of Stock</SelectItem>
                 </SelectContent>
               </Select>
+              {selectedProducts.size > 0 && (
+                <Button size="sm" variant="outline" className="h-8 text-xs gap-1" onClick={() => setBulkAdjustOpen(true)}>
+                  <CheckSquare className="h-3.5 w-3.5" /> Bulk Adjust ({selectedProducts.size})
+                </Button>
+              )}
             </div>
             <Table>
               <TableHeader>
