@@ -226,6 +226,7 @@ export default function Customers() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-xs h-8 w-8"></TableHead>
                   <TableHead className="text-xs h-8">Name</TableHead>
                   <TableHead className="text-xs h-8">Email</TableHead>
                   <TableHead className="text-xs h-8">Segment</TableHead>
@@ -235,17 +236,20 @@ export default function Customers() {
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={5}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
+                  Array.from({ length: 4 }).map((_, i) => <TableRow key={i}><TableCell colSpan={6}><Skeleton className="h-4 w-full" /></TableCell></TableRow>)
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">No customers yet.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">No customers yet.</TableCell></TableRow>
                 ) : (
                   filtered.slice((page - 1) * pageSize, page * pageSize).map((c) => (
-                    <TableRow key={c.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/customers/${c.id}`)}>
-                      <TableCell className="py-2 font-medium">{c.name}</TableCell>
-                      <TableCell className="py-2 text-muted-foreground">{c.email || "—"}</TableCell>
-                      <TableCell className="py-2"><StatusBadge status={c.segment} /></TableCell>
-                      <TableCell className="py-2 text-right">{c.total_orders}</TableCell>
-                      <TableCell className="py-2 text-right font-medium">${Number(c.total_spent).toLocaleString()}</TableCell>
+                    <TableRow key={c.id} className="text-xs cursor-pointer hover:bg-muted/50">
+                      <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
+                        <Checkbox checked={selectedForMerge.includes(c.id)} onCheckedChange={() => toggleMergeSelection(c.id)} />
+                      </TableCell>
+                      <TableCell className="py-2 font-medium" onClick={() => navigate(`/customers/${c.id}`)}>{c.name}</TableCell>
+                      <TableCell className="py-2 text-muted-foreground" onClick={() => navigate(`/customers/${c.id}`)}>{c.email || "—"}</TableCell>
+                      <TableCell className="py-2" onClick={() => navigate(`/customers/${c.id}`)}><StatusBadge status={c.segment} /></TableCell>
+                      <TableCell className="py-2 text-right" onClick={() => navigate(`/customers/${c.id}`)}>{c.total_orders}</TableCell>
+                      <TableCell className="py-2 text-right font-medium" onClick={() => navigate(`/customers/${c.id}`)}>${Number(c.total_spent).toLocaleString()}</TableCell>
                     </TableRow>
                   ))
                 )}
