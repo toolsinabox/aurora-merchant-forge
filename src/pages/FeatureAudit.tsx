@@ -7679,7 +7679,7 @@ const b2bWholesaleDeepFeatures: FeatureCategory[] = [
     icon: <Building className="h-5 w-5" />,
     features: [
       { name: "Trade Application Form", description: "Online wholesale account application with approval workflow", status: "partial", notes: "Customer groups exist" },
-      { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number on trade signup", status: "not_started" },
+      { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number on trade signup", status: "partial", notes: "abn_vat_number field on customers, validation not yet automated" },
       { name: "Wholesale Price Lists", description: "Separate price lists visible only to approved wholesale customers", status: "done", notes: "Customer group pricing" },
       { name: "Minimum Order Quantity (MOQ)", description: "Enforce minimum quantity per product for wholesale", status: "partial" },
       { name: "Minimum Order Value", description: "Enforce minimum cart total for wholesale orders", status: "done", notes: "min_order_amount on customer_groups" },
