@@ -4,7 +4,7 @@ import {
   Building, Gift, FileText, ClipboardCopy, Truck, Percent, History, ShoppingCart, ExternalLink, FileQuestion, Link2,
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
-  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer,
+  FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer, Target,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -56,6 +56,7 @@ const salesNav = [
   { title: "Returns", url: `${prefix}/returns`, icon: RotateCcw },
   { title: "Credit Notes", url: `${prefix}/credit-notes`, icon: FileText },
   { title: "Layby", url: `${prefix}/layby`, icon: CreditCard },
+  { title: "Order Holds", url: `${prefix}/order-holds`, icon: Shield },
   { title: "Subscriptions", url: `${prefix}/subscriptions`, icon: Repeat },
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
@@ -65,6 +66,7 @@ const salesNav = [
 // ── Customers ──
 const customersNav = [
   { title: "Customers", url: `${prefix}/customers`, icon: Users },
+  { title: "Segments", url: `${prefix}/customer-segments`, icon: Target },
   { title: "Affiliates", url: `${prefix}/affiliates`, icon: UserPlus },
   { title: "Reviews", url: `${prefix}/reviews`, icon: Star },
   { title: "Loyalty", url: `${prefix}/loyalty`, icon: Heart },

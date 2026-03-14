@@ -118,6 +118,8 @@ import StoreLocator from "./pages/StoreLocator.tsx";
 import Notifications from "./pages/Notifications.tsx";
 import CreditNotes from "./pages/CreditNotes.tsx";
 import BatchInvoicePrint from "./pages/BatchInvoicePrint.tsx";
+import OrderHolds from "./pages/OrderHolds.tsx";
+import CustomerSegments from "./pages/CustomerSegments.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -253,6 +255,8 @@ const App = () => (
                    <Route path="/_cpanel/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
                    <Route path="/_cpanel/credit-notes" element={<RequireAuth><CreditNotes /></RequireAuth>} />
                    <Route path="/_cpanel/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
+                   <Route path="/_cpanel/order-holds" element={<RequireAuth><OrderHolds /></RequireAuth>} />
+                   <Route path="/_cpanel/customer-segments" element={<RequireAuth><CustomerSegments /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -357,6 +361,8 @@ const App = () => (
                    <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
                    <Route path="/credit-notes" element={<RequireAuth><CreditNotes /></RequireAuth>} />
                    <Route path="/batch-invoices" element={<RequireAuth><BatchInvoicePrint /></RequireAuth>} />
+                   <Route path="/order-holds" element={<RequireAuth><OrderHolds /></RequireAuth>} />
+                   <Route path="/customer-segments" element={<RequireAuth><CustomerSegments /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
