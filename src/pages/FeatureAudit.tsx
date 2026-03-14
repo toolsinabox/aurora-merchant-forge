@@ -9583,7 +9583,7 @@ const adminBulkOpsFeatures: FeatureCategory[] = [
       { name: "Bulk Customer Tag Assignment", description: "Add tags to multiple customers", status: "done", notes: "Customers page bulk tag dialog with add/remove action and multi-select" },
       { name: "Bulk Customer Group Assignment", description: "Move customers between groups", status: "done", notes: "Customers page bulk group dialog with customer_groups lookup" },
       { name: "Bulk Inventory Adjustment", description: "Adjust stock for multiple SKUs at once", status: "done", notes: "Inventory page with checkbox selection, bulk adjust dialog (add/subtract/set), multi-variant update" },
-      { name: "Bulk Export Selected", description: "Export only selected rows to CSV", status: "partial" },
+      { name: "Bulk Export Selected", description: "Export only selected rows to CSV", status: "done", notes: "ExportWizard exports all filtered/selected records to CSV" },
     ],
   },
 ];
