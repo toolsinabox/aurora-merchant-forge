@@ -9579,7 +9579,7 @@ const adminBulkOpsFeatures: FeatureCategory[] = [
       { name: "Bulk Update Product Category", description: "Move products to different category", status: "done" },
       { name: "Bulk Update Product Tags", description: "Add/remove tags from multiple products", status: "done" },
       { name: "Bulk Print Labels", description: "Print labels for selected products", status: "done", notes: "PrintBarcodeLabels" },
-      { name: "Bulk Order Status Update", description: "Change status of multiple orders", status: "partial" },
+      { name: "Bulk Order Status Update", description: "Change status of multiple orders", status: "done", notes: "Orders page with multi-select checkboxes, bulk status dropdown, and handleBulkUpdate" },
       { name: "Bulk Customer Tag Assignment", description: "Add tags to multiple customers", status: "partial" },
       { name: "Bulk Customer Group Assignment", description: "Move customers between groups", status: "partial" },
       { name: "Bulk Inventory Adjustment", description: "Adjust stock for multiple SKUs at once", status: "partial" },
