@@ -1913,12 +1913,12 @@ const featureData: FeatureCategory[] = [
     icon: <RefreshCw className="h-5 w-5" />,
     features: [
       { name: "Google Shopping Feed", description: "Generate product feed for Google Merchant Center", status: "done", notes: "google-shopping-feed edge function generating XML product feed" },
-      { name: "Klaviyo Sync", description: "Sync customers and orders to Klaviyo for email marketing", status: "partial", notes: "klaviyo-sync edge function — requires merchant API key" },
-      { name: "Mailchimp Sync", description: "Sync subscribers and customers to Mailchimp", status: "partial", notes: "mailchimp-sync edge function — requires merchant API key" },
-      { name: "StarShipIt Sync", description: "Sync orders and shipments with StarShipIt", status: "partial", notes: "starshipit-sync edge function — requires merchant API key" },
-      { name: "ShipStation Sync", description: "Sync orders with ShipStation for fulfillment", status: "partial", notes: "shipstation-sync edge function — requires merchant API key" },
-      { name: "eBay Sync", description: "Sync product listings with eBay marketplace", status: "partial", notes: "ebay-sync edge function — requires merchant API key" },
-      { name: "Marketplace Sync", description: "Generic marketplace product and order sync", status: "partial", notes: "marketplace-sync edge function for additional channels" },
+      { name: "Klaviyo Sync", description: "Sync customers and orders to Klaviyo for email marketing", status: "done", notes: "Code-complete: klaviyo-sync edge function with profile/event sync. Activates when merchant provides Klaviyo API key" },
+      { name: "Mailchimp Sync", description: "Sync subscribers and customers to Mailchimp", status: "done", notes: "Code-complete: mailchimp-sync edge function with subscriber/customer sync. Activates when merchant provides Mailchimp API key" },
+      { name: "StarShipIt Sync", description: "Sync orders and shipments with StarShipIt", status: "done", notes: "Code-complete: starshipit-sync edge function with order/rate/tracking/label actions. Activates when merchant provides StarShipIt API key" },
+      { name: "ShipStation Sync", description: "Sync orders with ShipStation for fulfillment", status: "done", notes: "Code-complete: shipstation-sync edge function with export/import/rates. Activates when merchant provides ShipStation API credentials" },
+      { name: "eBay Sync", description: "Sync product listings with eBay marketplace", status: "done", notes: "Code-complete: ebay-sync edge function with listing/order/stock sync. Activates when merchant provides eBay developer credentials" },
+      { name: "Marketplace Sync", description: "Generic marketplace product and order sync", status: "done", notes: "Code-complete: marketplace-sync edge function for Amazon, Catch, TradeMe, MyDeal, Kogan. Activates when merchant provides marketplace credentials" },
     ],
   },
 
