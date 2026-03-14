@@ -866,6 +866,19 @@ export default function StorefrontCheckout() {
             {/* Summary */}
             <div className="lg:col-span-1">
               <div className="border rounded-lg p-5 space-y-4 sticky top-20">
+                {/* Cart Reservation Timer */}
+                {timeLeft > 0 && (
+                  <div className={`flex items-center gap-2 text-xs px-3 py-2 rounded-md ${timeLeft < 120 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"}`}>
+                    <Timer className="h-3.5 w-3.5" />
+                    <span>Cart reserved for {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, "0")}</span>
+                  </div>
+                )}
+                {timeLeft <= 0 && (
+                  <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-md bg-destructive/10 text-destructive">
+                    <Timer className="h-3.5 w-3.5" />
+                    <span>Reservation expired — items may no longer be available</span>
+                  </div>
+                )}
                 <h2 className="font-semibold">Order Summary</h2>
                 <div className="space-y-3 divide-y">
                   {items.map((item) => (

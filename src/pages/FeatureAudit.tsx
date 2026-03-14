@@ -7837,7 +7837,7 @@ const posDeepFeatures: FeatureCategory[] = [
       { name: "POS Hold/Park Order", description: "Park current sale and start new one", status: "done", notes: "Park button on POS cart, Parked tab with resume/delete, localStorage persistence with notes" },
       { name: "POS Returns/Exchanges", description: "Process returns and exchanges at POS", status: "done", notes: "POS Returns tab with order search, item-level return qty selection, reason codes, refund total calculation, and return processing" },
       { name: "POS Custom Sale (No SKU)", description: "Enter custom item with price for miscellaneous sales", status: "done", notes: "Custom Sale button + dialog on POS with custom title and price, adds to cart as CUSTOM SKU" },
-      { name: "POS Staff PIN Login", description: "Quick staff switch using PIN code", status: "not_started" },
+      { name: "POS Staff PIN Login", description: "Quick staff switch using PIN code", status: "done", notes: "POS Staff button with PIN dialog, localStorage PIN registry, current staff badge display" },
       { name: "POS Customer Display", description: "Secondary screen showing cart items to customer", status: "not_started" },
       { name: "POS Inventory Count Mode", description: "Use POS device for stocktake counting", status: "not_started" },
     ],
