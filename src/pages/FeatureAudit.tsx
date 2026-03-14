@@ -7681,7 +7681,7 @@ const b2bWholesaleDeepFeatures: FeatureCategory[] = [
       { name: "Trade Application Form", description: "Online wholesale account application with approval workflow", status: "partial", notes: "Customer groups exist" },
       { name: "ABN/Tax ID Validation", description: "Validate Australian Business Number on trade signup", status: "partial", notes: "abn_vat_number field on customers, validation not yet automated" },
       { name: "Wholesale Price Lists", description: "Separate price lists visible only to approved wholesale customers", status: "done", notes: "Customer group pricing" },
-      { name: "Minimum Order Quantity (MOQ)", description: "Enforce minimum quantity per product for wholesale", status: "partial" },
+      { name: "Minimum Order Quantity (MOQ)", description: "Enforce minimum quantity per product for wholesale", status: "done", notes: "min_order_quantity column on products table (default 1), ProductForm Inventory tab with MOQ input, storefront enforces MOQ on quantity selector (min button respects MOQ), add-to-cart validates quantity >= MOQ with toast error, quantity auto-initialized to MOQ on page load" },
       { name: "Minimum Order Value", description: "Enforce minimum cart total for wholesale orders", status: "done", notes: "min_order_amount on customer_groups" },
       { name: "Quote Request (RFQ)", description: "Allow B2B customers to request quotes on products", status: "done", notes: "Quotes page" },
       { name: "Quote Negotiation Workflow", description: "Back-and-forth quote editing between staff and customer", status: "partial" },
