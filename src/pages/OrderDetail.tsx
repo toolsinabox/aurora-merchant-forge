@@ -78,6 +78,10 @@ export default function OrderDetail() {
   const [mergeOpen, setMergeOpen] = useState(false);
   const [mergeOrderNumber, setMergeOrderNumber] = useState("");
   const [mergeTarget, setMergeTarget] = useState<any>(null);
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+  const [exchangeItems, setExchangeItems] = useState<Record<string, { newProductId: string; newTitle: string; newPrice: number }>>({});
+  const [exchanging, setExchanging] = useState(false);
+  const [exchangeProducts, setExchangeProducts] = useState<any[]>([]);
   const [merging, setMerging] = useState(false);
   const { user, currentStore } = useAuth();
   const queryClient = useQueryClient();
