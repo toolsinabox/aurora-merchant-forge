@@ -239,16 +239,22 @@
     @apply animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite];
   }
 
-  /* Mobile-first page header — stacks title + actions vertically */
+  /* ─── ADMIN LAYOUT SYSTEM ─── */
+
+  /* Responsive admin main — filled layout, minimal wasted space */
+  .admin-main {
+    @apply flex-1 overflow-auto p-3 sm:p-4 animate-fade-in;
+  }
+
+  /* Page header — stacks on mobile, row on desktop */
   .page-header {
     @apply flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between;
   }
-
   .page-header-actions {
-    @apply flex flex-wrap gap-2;
+    @apply flex flex-wrap gap-1.5;
   }
 
-  /* Make admin content area responsive — page headers auto-stack on mobile */
+  /* Auto-fix: ANY flex justify-between with h1 inside admin-main → responsive */
   .admin-main > div > div:first-child:has(> div > h1) {
     @apply flex flex-col gap-2;
   }
@@ -258,10 +264,9 @@
     }
   }
 
-  /* Horizontal scroll wrapper for tables on mobile */
-  .table-scroll {
-    @apply overflow-x-auto -mx-0;
-    -webkit-overflow-scrolling: touch;
+  /* Auto-fix: button groups next to headers wrap on mobile */
+  .admin-main > div > div:first-child > div:last-child:has(button) {
+    @apply flex flex-wrap gap-1.5;
   }
 
   /* Hide text labels on buttons at mobile, keep icons */
@@ -269,23 +274,53 @@
     @apply hidden sm:inline;
   }
 
-  /* Responsive admin main padding */
-  .admin-main {
-    @apply flex-1 overflow-auto p-2 sm:p-4 animate-fade-in;
-  }
+  /* ─── AUTO-RESPONSIVE RULES ─── */
 
-  /* Auto-responsive 2-col grids on mobile within admin */
   @media (max-width: 639px) {
+    /* 2-col grids → 1 col on mobile in admin */
     .admin-main .grid-cols-2 {
       grid-template-columns: 1fr !important;
     }
+    /* 3-col stat grids → 1 col */
+    .admin-main .sm\:grid-cols-3:not(.grid-cols-2) {
+      grid-template-columns: 1fr !important;
+    }
+    /* Filter/search bars → full-width stack */
+    .admin-main [class*="border-b"] > div:has(> input),
+    .admin-main [class*="border-b"] > .relative:has(> input) {
+      width: 100% !important;
+      max-width: none !important;
+    }
+    .admin-main [class*="border-b"]:has(> .relative > input) {
+      flex-direction: column !important;
+      align-items: stretch !important;
+    }
+    /* TabsLists auto-wrap on mobile */
+    [role="tablist"] {
+      height: auto !important;
+      flex-wrap: wrap !important;
+      gap: 0.25rem !important;
+      padding: 0.25rem !important;
+    }
+    /* KPI cards → compact 2-col grid on mobile */
+    .admin-main .grid-cols-2.sm\:grid-cols-4,
+    .admin-main .grid-cols-2.md\:grid-cols-4 {
+      grid-template-columns: 1fr 1fr !important;
+    }
   }
+
+  /* Horizontal scroll wrapper for tables on mobile */
+  .table-scroll {
+    @apply overflow-x-auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ─── UTILITY CLASSES ─── */
 
   /* Responsive filter bar */
   .filter-bar {
     @apply flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 border-b border-border;
   }
-
   .filter-bar .filter-search {
     @apply relative flex-1 w-full sm:max-w-xs;
   }
