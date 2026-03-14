@@ -356,6 +356,61 @@ export default function MaropostMigration() {
     toast.success("Migration complete!");
   };
 
+  const retryEntity = async (entityName: string) => {
+    const entity = entities.find(e => e.entity === entityName);
+    if (!entity) return;
+    const sid = await resolveStoreId();
+    if (!sid) return;
+
+    setImporting(true);
+    setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, status: "importing", imported: 0, failed: 0, errors: [] } : e));
+    addLog(`▶ Retrying ${entity.label}...`);
+
+    try {
+      const sourceItems = await fetchAllPages(entity.entity);
+      addLog(`  Fetched ${sourceItems.length} total ${entity.entity} from Maropost`);
+
+      if (sourceItems.length === 0) {
+        setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, status: "success", imported: 0 } : e));
+        setImporting(false);
+        return;
+      }
+
+      let totalImported = 0;
+      let totalFailed = 0;
+      const allErrors: string[] = [];
+      const batchSize = 50;
+
+      for (let i = 0; i < sourceItems.length; i += batchSize) {
+        const batch = sourceItems.slice(i, i + batchSize);
+        const importAction = IMPORT_ACTION_MAP[entity.entity];
+        const dataKey = entity.entity === "products" ? "Item" : entity.entity === "categories" ? "Category" :
+          entity.entity === "customers" ? "Customer" : entity.entity === "orders" ? "Order" :
+          entity.entity === "content" ? "Content" : entity.entity === "vouchers" ? "Voucher" :
+          entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
+          entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
+
+        const { data: result, error } = await supabase.functions.invoke("maropost-import", {
+          body: { action: importAction, store_id: sid, source_data: { [dataKey]: batch } },
+        });
+        if (error) throw error;
+        totalImported += result?.imported || 0;
+        totalFailed += result?.failed || 0;
+        if (result?.errors) allErrors.push(...result.errors);
+      }
+
+      setEntities(prev => prev.map(e =>
+        e.entity === entityName ? { ...e, status: totalFailed > 0 && totalImported === 0 ? "failed" : "success", imported: totalImported, failed: totalFailed, errors: allErrors } : e
+      ));
+      addLog(`  ✓ ${entity.label}: ${totalImported} imported, ${totalFailed} failed`);
+    } catch (err: any) {
+      setEntities(prev => prev.map(e => e.entity === entityName ? { ...e, status: "failed", errors: [err.message] } : e));
+      addLog(`  ✗ ${entity.label} FAILED: ${err.message}`);
+    }
+
+    setImporting(false);
+  };
+
   const startThemeMigration = async () => {
     setThemeImporting(true);
     setStep("theme");
