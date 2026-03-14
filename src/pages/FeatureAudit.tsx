@@ -8918,9 +8918,9 @@ const netoTemplateFeatures: FeatureCategory[] = [
     features: [
       { name: "B@SE Template Engine", description: "Custom template engine with [%tag%] syntax", status: "done", notes: "base-template-engine.ts" },
       { name: "Template Theme Switching", description: "Switch between installed themes", status: "done", notes: "Templates page" },
-      { name: "Template File Editor", description: "Edit template files from admin", status: "partial" },
+      { name: "Template File Editor", description: "Edit template files from admin", status: "done", notes: "Templates page with inline HTML editor for header, footer, and page templates" },
       { name: "Template Version Control", description: "Track template file changes", status: "not_started" },
-      { name: "Template Preview Mode", description: "Preview template changes before publish", status: "partial" },
+      { name: "Template Preview Mode", description: "Preview template changes before publish", status: "done", notes: "Templates page Live Preview panel showing rendered template output" },
       { name: "Custom Header / Footer", description: "Store-specific header/footer templates", status: "done" },
       { name: "Category Page Template", description: "Template for category listing pages", status: "done" },
       { name: "Product Page Template", description: "Template for product detail pages", status: "done" },
