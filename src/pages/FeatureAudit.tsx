@@ -8880,8 +8880,8 @@ const backupMigrationFeatures: FeatureCategory[] = [
     features: [
       { name: "Database Auto-Backup", description: "Automated daily database backups", status: "done", notes: "Supabase managed" },
       { name: "Point-in-Time Recovery", description: "Restore database to specific timestamp", status: "done" },
-      { name: "Store Data Export (Full)", description: "Export all store data for migration", status: "partial" },
-      { name: "Store Data Import (Migration)", description: "Import data from another platform", status: "partial", notes: "ImportWizard" },
+      { name: "Store Data Export (Full)", description: "Export all store data for migration", status: "done", notes: "ExportWizard with all entity types (products, orders, customers, inventory), CSV/JSON format" },
+      { name: "Store Data Import (Migration)", description: "Import data from another platform", status: "done", notes: "ImportWizard with CSV parsing, column mapping, field transformations, entity type selection" },
       { name: "Maropost / Neto Migration Tool", description: "Dedicated migration from Maropost/Neto", status: "done", notes: "Full 6-step wizard with 14 entity types, scan, import, theme, review" },
       { name: "Shopify Migration Tool", description: "Import products/orders from Shopify", status: "not_started" },
       { name: "WooCommerce Migration Tool", description: "Import from WooCommerce", status: "not_started" },
