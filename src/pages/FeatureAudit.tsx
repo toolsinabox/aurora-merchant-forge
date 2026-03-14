@@ -7693,7 +7693,7 @@ const b2bWholesaleDeepFeatures: FeatureCategory[] = [
       { name: "Purchase Order Number Field", description: "Allow customers to enter their PO number at checkout", status: "partial" },
       { name: "Quick Order Pad", description: "Bulk order entry by SKU and quantity", status: "done", notes: "StorefrontQuickOrder page" },
       { name: "CSV Order Upload", description: "Upload CSV of SKU/quantity pairs to create order", status: "done", notes: "StorefrontQuickOrder CSV upload with auto-SKU lookup, supports comma/tab/semicolon delimiters" },
-      { name: "Reorder from Previous Order", description: "One-click reorder of previous order items", status: "partial" },
+      { name: "Reorder from Previous Order", description: "One-click reorder of previous order items", status: "done", notes: "Reorder button on storefront order list (delivered/shipped orders) and order detail view, adds all order items to cart via addToCart" },
       { name: "Sales Rep Assignment", description: "Assign sales reps to wholesale accounts", status: "done", notes: "sales_rep column on customers table, editable in CustomerDetail form with display in read-only view" },
       { name: "Sales Rep Commission Tracking", description: "Track commissions per sales rep on orders", status: "not_started" },
       { name: "Company Account with Sub-Users", description: "Company accounts with multiple buyers and permissions", status: "not_started" },
