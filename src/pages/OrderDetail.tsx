@@ -117,7 +117,7 @@ function OrderCustomFieldsCard({ orderId, storeId }: { orderId: string; storeId:
   );
 }
 
-
+export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: order, isLoading } = useOrder(id);
