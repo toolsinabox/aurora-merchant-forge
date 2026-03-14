@@ -312,20 +312,20 @@ export default function Products() {
                 <TableRow>
                   <TableHead className="w-10 h-9"><Checkbox checked={selected.length === filtered.length && filtered.length > 0} onCheckedChange={toggleAll} /></TableHead>
                   <TableHead className="text-xs h-9">Product</TableHead>
-                  <TableHead className="text-xs h-9">SKU</TableHead>
-                  <TableHead className="text-xs h-9">Status</TableHead>
-                  <TableHead className="text-xs h-9">Stock</TableHead>
-                  <TableHead className="text-xs h-9 text-right">Price</TableHead>
+                  {visibleCols.sku && <TableHead className="text-xs h-9">SKU</TableHead>}
+                  {visibleCols.status && <TableHead className="text-xs h-9">Status</TableHead>}
+                  {visibleCols.stock && <TableHead className="text-xs h-9">Stock</TableHead>}
+                  {visibleCols.price && <TableHead className="text-xs h-9 text-right">Price</TableHead>}
                   <TableHead className="text-xs h-9 w-10"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
-                    <TableRow key={i}><TableCell colSpan={7} className="py-3"><Skeleton className="h-4 w-full" /></TableCell></TableRow>
+                    <TableRow key={i}><TableCell colSpan={3 + Object.values(visibleCols).filter(Boolean).length} className="py-3"><Skeleton className="h-4 w-full" /></TableCell></TableRow>
                   ))
                 ) : filtered.length === 0 ? (
-                  <TableRow><TableCell colSpan={7} className="py-8 text-center text-xs text-muted-foreground">
+                  <TableRow><TableCell colSpan={3 + Object.values(visibleCols).filter(Boolean).length} className="py-8 text-center text-xs text-muted-foreground">
                     {products.length === 0 ? "No products yet. Add your first product." : "No products match your filters."}
                   </TableCell></TableRow>
                 ) : (
@@ -345,22 +345,22 @@ export default function Products() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-2 font-mono text-muted-foreground">{product.sku || "—"}</TableCell>
-                      <TableCell className="py-2"><StatusBadge status={product.status} /></TableCell>
-                      <TableCell className="py-2">
+                      {visibleCols.sku && <TableCell className="py-2 font-mono text-muted-foreground">{product.sku || "—"}</TableCell>}
+                      {visibleCols.status && <TableCell className="py-2"><StatusBadge status={product.status} /></TableCell>}
+                      {visibleCols.stock && <TableCell className="py-2">
                         {product.product_variants && product.product_variants.length > 0 ? (
                           <div className="flex items-center gap-1.5">
                             <span>{getTotalStock(product.product_variants)}</span>
                             <StatusBadge status={getStockStatus(product.product_variants)} />
                           </div>
                         ) : "—"}
-                      </TableCell>
-                      <TableCell className="py-2 text-right font-medium">
+                      </TableCell>}
+                      {visibleCols.price && <TableCell className="py-2 text-right font-medium">
                         ${Number(product.price).toFixed(2)}
                         {product.compare_at_price && (
                           <span className="ml-1 text-muted-foreground line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                         )}
-                      </TableCell>
+                      </TableCell>}
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
