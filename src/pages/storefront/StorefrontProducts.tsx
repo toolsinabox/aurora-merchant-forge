@@ -107,7 +107,7 @@ function ProductCard({ p, basePath, store, onQuickView }: { p: any; basePath: st
         <Button
           variant={comparing ? "default" : "secondary"}
           size="icon"
-          className="h-8 w-8 rounded-full shadow-sm"
+          className="h-8 w-8 rounded-full shadow-md backdrop-blur-sm bg-card/80"
           onClick={(e) => {
             e.preventDefault();
             comparing ? removeCompare(p.id) : addCompare({
