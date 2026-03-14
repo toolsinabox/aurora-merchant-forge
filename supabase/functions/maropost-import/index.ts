@@ -220,6 +220,63 @@ serve(async (req) => {
             }
           }
 
+          // Link product to categories
+          if (p.Categories) {
+            const cats = Array.isArray(p.Categories) ? p.Categories : [p.Categories];
+            for (const catItem of cats) {
+              const catId = catItem?.CategoryID || catItem?.Category?.CategoryID || (typeof catItem === "string" ? catItem : null);
+              if (catId) {
+                // Try to find the category by matching source CategoryID stored during category import
+                // We search by name or slug that would have been generated from the CategoryName
+                const catName = catItem?.CategoryName || catItem?.Category?.CategoryName;
+                if (catName) {
+                  const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const { data: foundCat } = await supabase
+                    .from("categories")
+                    .select("id")
+                    .eq("store_id", store_id)
+                    .eq("slug", slug)
+                    .maybeSingle();
+                  if (foundCat) {
+                    // Update product's category_id (first category becomes primary)
+                    await supabase.from("products").update({ category_id: foundCat.id }).eq("id", productId).catch(() => {});
+                  }
+                }
+              }
+            }
+          }
+
+          // Import product relations (cross-sell, upsell, free gifts)
+          const relationTypes: { field: string; type: string }[] = [
+            { field: "CrossSellProducts", type: "cross_sell" },
+            { field: "UpsellProducts", type: "upsell" },
+            { field: "FreeGifts", type: "free_gift" },
+          ];
+          for (const rel of relationTypes) {
+            if (p[rel.field]) {
+              const relItems = Array.isArray(p[rel.field]) ? p[rel.field] : [p[rel.field]];
+              for (const relItem of relItems) {
+                const relSku = typeof relItem === "string" ? relItem : relItem?.SKU || relItem?.ParentSKU;
+                if (relSku) {
+                  const { data: relProduct } = await supabase
+                    .from("products")
+                    .select("id")
+                    .eq("store_id", store_id)
+                    .eq("sku", relSku)
+                    .maybeSingle();
+                  if (relProduct) {
+                    await supabase.from("product_relations").insert({
+                      product_id: productId,
+                      related_product_id: relProduct.id,
+                      store_id,
+                      relation_type: rel.type,
+                    }).catch(() => {});
+                  }
+                }
+              }
+            }
+          }
+
           await logEntity("product", p.ID || p.ParentSKU || slug, productId);
           imported++;
         } catch (err: any) {
