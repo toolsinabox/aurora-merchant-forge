@@ -120,11 +120,60 @@ export default function Refunds() {
             <DialogTrigger asChild>
               <Button><Plus className="h-4 w-4 mr-2" />New Refund</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
               <DialogHeader><DialogTitle>Create Refund</DialogTitle></DialogHeader>
               <div className="space-y-4">
                 <div><Label>Order Number</Label><Input value={form.order_number} onChange={e => setForm(f => ({ ...f, order_number: e.target.value }))} placeholder="ORD-1234" /></div>
-                <div><Label>Amount</Label><Input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" /></div>
+                <div>
+                  <Label>Refund Type</Label>
+                  <Select value={form.refund_type} onValueChange={v => setForm(f => ({ ...f, refund_type: v as "full" | "partial" }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full">Full Refund</SelectItem>
+                      <SelectItem value="partial">Partial Refund (Line Items)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {form.refund_type === "full" ? (
+                  <div><Label>Amount</Label><Input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} placeholder="0.00" /></div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label>Line Items</Label>
+                      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={addLineItem}><Plus className="h-3 w-3 mr-1" />Add Item</Button>
+                    </div>
+                    {lineItems.map((item, idx) => (
+                      <div key={idx} className="grid grid-cols-12 gap-2 items-end">
+                        <div className="col-span-4 space-y-1">
+                          <Label className="text-xs">Item</Label>
+                          <Input className="h-8 text-xs" value={item.title} onChange={e => updateLineItem(idx, "title", e.target.value)} placeholder="Product name" />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <Label className="text-xs">Qty</Label>
+                          <Input className="h-8 text-xs" type="number" min="1" value={item.quantity} onChange={e => updateLineItem(idx, "quantity", parseInt(e.target.value) || 1)} />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <Label className="text-xs">Price</Label>
+                          <Input className="h-8 text-xs" type="number" step="0.01" value={item.unit_price || ""} onChange={e => updateLineItem(idx, "unit_price", parseFloat(e.target.value) || 0)} />
+                        </div>
+                        <div className="col-span-3 space-y-1">
+                          <Label className="text-xs">Refund $</Label>
+                          <Input className="h-8 text-xs" type="number" step="0.01" value={item.refund_amount || ""} onChange={e => updateLineItem(idx, "refund_amount", parseFloat(e.target.value) || 0)} />
+                        </div>
+                        <div className="col-span-1">
+                          {lineItems.length > 1 && (
+                            <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => removeLineItem(idx)}>
+                              <XCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <div className="text-right text-sm font-medium">
+                      Total Refund: <span className="text-primary">${lineItemTotal.toFixed(2)}</span>
+                    </div>
+                  </div>
+                )}
                 <div><Label>Reason</Label><Textarea value={form.reason} onChange={e => setForm(f => ({ ...f, reason: e.target.value }))} placeholder="Reason for refund" /></div>
                 <div>
                   <Label>Refund Method</Label>
