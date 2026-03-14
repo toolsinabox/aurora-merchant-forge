@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { BulkEditDialog } from "@/components/products/BulkEditDialog";
 import { ZipImageUpload } from "@/components/products/ZipImageUpload";
+import { TablePagination } from "@/components/admin/TablePagination";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
@@ -73,6 +74,8 @@ export default function Products() {
   const [importing, setImporting] = useState(false);
   const [bulkEditOpen, setBulkEditOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const filtered = products.filter((p) => {
     const matchesSearch = p.title.toLowerCase().includes(search.toLowerCase()) || (p.sku || "").toLowerCase().includes(search.toLowerCase());
@@ -252,7 +255,7 @@ export default function Products() {
                     {products.length === 0 ? "No products yet. Add your first product." : "No products match your filters."}
                   </TableCell></TableRow>
                 ) : (
-                  filtered.map((product) => (
+                  filtered.slice((page - 1) * pageSize, page * pageSize).map((product) => (
                     <TableRow key={product.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/products/${product.id}`)}>
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
                         <Checkbox checked={selected.includes(product.id)} onCheckedChange={() => toggleSelect(product.id)} />
@@ -300,6 +303,7 @@ export default function Products() {
                 )}
               </TableBody>
             </Table>
+            <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>
 

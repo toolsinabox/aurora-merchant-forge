@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { TablePagination } from "@/components/admin/TablePagination";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
@@ -49,6 +50,8 @@ export default function Customers() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [newCustomer, setNewCustomer] = useState({ name: "", email: "", phone: "", segment: "new" });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   const filtered = customers.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) || (c.email || "").toLowerCase().includes(search.toLowerCase());
@@ -188,7 +191,7 @@ export default function Customers() {
                 ) : filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={5} className="text-center text-xs text-muted-foreground py-6">No customers yet.</TableCell></TableRow>
                 ) : (
-                  filtered.map((c) => (
+                  filtered.slice((page - 1) * pageSize, page * pageSize).map((c) => (
                     <TableRow key={c.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/customers/${c.id}`)}>
                       <TableCell className="py-2 font-medium">{c.name}</TableCell>
                       <TableCell className="py-2 text-muted-foreground">{c.email || "—"}</TableCell>
@@ -200,6 +203,7 @@ export default function Customers() {
                 )}
               </TableBody>
             </Table>
+            <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>
 

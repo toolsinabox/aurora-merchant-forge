@@ -15,6 +15,7 @@ import { CreateOrderDialog } from "@/components/orders/CreateOrderDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { TablePagination } from "@/components/admin/TablePagination";
 
 function downloadCSV(data: any[], filename: string) {
   if (data.length === 0) return;
@@ -43,6 +44,8 @@ export default function Orders() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkStatus, setBulkStatus] = useState("");
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -270,7 +273,7 @@ export default function Orders() {
                 ) : filtered.length === 0 ? (
                   <TableRow><TableCell colSpan={10} className="text-center text-xs text-muted-foreground py-6">No orders yet.</TableCell></TableRow>
                 ) : (
-                  filtered.map((o: any) => (
+                  filtered.slice((page - 1) * pageSize, page * pageSize).map((o: any) => (
                     <TableRow key={o.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${o.id}`)}>
                       <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
                         <Checkbox
@@ -303,6 +306,7 @@ export default function Orders() {
                 )}
               </TableBody>
             </Table>
+            <TablePagination page={page} pageSize={pageSize} total={filtered.length} onPageChange={setPage} onPageSizeChange={setPageSize} />
           </CardContent>
         </Card>
       </div>
