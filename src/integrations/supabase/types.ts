@@ -3048,6 +3048,8 @@ export type Database = {
           promo_tag: string | null
           reorder_quantity: number | null
           restock_quantity: number | null
+          scheduled_publish_at: string | null
+          scheduled_unpublish_at: string | null
           search_keywords: string | null
           seo_description: string | null
           seo_keywords: string | null
@@ -3110,6 +3112,8 @@ export type Database = {
           promo_tag?: string | null
           reorder_quantity?: number | null
           restock_quantity?: number | null
+          scheduled_publish_at?: string | null
+          scheduled_unpublish_at?: string | null
           search_keywords?: string | null
           seo_description?: string | null
           seo_keywords?: string | null
@@ -3172,6 +3176,8 @@ export type Database = {
           promo_tag?: string | null
           reorder_quantity?: number | null
           restock_quantity?: number | null
+          scheduled_publish_at?: string | null
+          scheduled_unpublish_at?: string | null
           search_keywords?: string | null
           seo_description?: string | null
           seo_keywords?: string | null
@@ -3864,6 +3870,65 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "shipping_zones_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          match_type: string
+          name: string
+          rules: Json
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          sort_order: number
+          store_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          match_type?: string
+          name: string
+          rules?: Json
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          sort_order?: number
+          store_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          match_type?: string
+          name?: string
+          rules?: Json
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          sort_order?: number
+          store_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_collections_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
