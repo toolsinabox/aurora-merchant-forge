@@ -91,24 +91,24 @@ export default function Currencies() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Currencies</h1>
-            <p className="text-muted-foreground">Manage store currencies and exchange rates</p>
+            <h1 className="text-lg font-semibold">Currencies</h1>
+            <p className="text-xs text-muted-foreground">Manage store currencies and exchange rates</p>
           </div>
-          <Button onClick={() => setShowAdd(true)} className="gap-2"><Plus className="h-4 w-4" /> Add Currency</Button>
+          <Button size="sm" onClick={() => setShowAdd(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Add Currency</Button>
         </div>
 
         <Card>
-          <CardContent className="pt-4">
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Symbol</TableHead>
-                  <TableHead>Exchange Rate</TableHead>
-                  <TableHead>Default</TableHead>
-                  <TableHead>Active</TableHead>
-                  <TableHead />
+                  <TableHead className="text-xs h-8">Code</TableHead>
+                  <TableHead className="text-xs h-8">Name</TableHead>
+                  <TableHead className="text-xs h-8">Symbol</TableHead>
+                  <TableHead className="text-xs h-8">Exchange Rate</TableHead>
+                  <TableHead className="text-xs h-8">Default</TableHead>
+                  <TableHead className="text-xs h-8">Active</TableHead>
+                  <TableHead className="text-xs h-8 w-10" />
                 </TableRow>
               </TableHeader>
               <TableBody>
