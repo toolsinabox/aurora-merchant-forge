@@ -32,7 +32,20 @@ export function StorefrontLayout({ children, storeName }: StorefrontLayoutProps)
   const [categories, setCategories] = useState<any[]>([]);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [bannerText, setBannerText] = useState<string | null>(null);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const currencyData = useCurrency(storeId);
+
+  // Back to top scroll listener
+  useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   useEffect(() => {
     if (!storeSlug) return;
