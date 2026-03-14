@@ -834,6 +834,27 @@ export default function StorefrontCheckout() {
                       <p className="text-xs text-muted-foreground">Pick up in store — Free</p>
                     </div>
                   </label>
+
+                  {/* Click & Collect Location Picker */}
+                  {deliveryMethod === "pickup" && pickupLocations.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      <Label className="text-xs font-medium">Select Pickup Location</Label>
+                      {pickupLocations.map((loc: any) => (
+                        <label
+                          key={loc.id}
+                          className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                            selectedPickupLocation === loc.id ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                          }`}
+                        >
+                          <input type="radio" name="pickup_location" value={loc.id} checked={selectedPickupLocation === loc.id} onChange={() => setSelectedPickupLocation(loc.id)} className="accent-primary" />
+                          <div>
+                            <p className="text-sm font-medium">{loc.name}</p>
+                            <p className="text-2xs text-muted-foreground">{loc.address || "Address not specified"} · {loc.type}</p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Split Shipping / Multi-Address */}
