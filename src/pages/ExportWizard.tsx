@@ -393,7 +393,7 @@ function OrderExportTab() {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-4">
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-lg">Order Fields</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-base">Order Fields</CardTitle></CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
               {ORDER_FIELDS.map(f => (
