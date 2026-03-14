@@ -7783,7 +7783,7 @@ const emailAutomationDeepFeatures: FeatureCategory[] = [
       { name: "VIP Tier Upgrade Email", description: "Notify customer when they reach new loyalty tier", status: "done", notes: "EmailAutomations vip_upgrade trigger type" },
       { name: "Subscription Renewal Reminder", description: "Remind customers before subscription renewal charge", status: "done", notes: "Subscriptions page Send Renewal Reminder button per active subscription, emails via send-email function with product, frequency, amount, and next order date" },
       { name: "Email Engagement Tracking", description: "Track opens, clicks, and conversions per email", status: "not_started" },
-      { name: "Unsubscribe Management", description: "Global and per-type email unsubscribe preferences", status: "not_started" },
+      { name: "Unsubscribe Management", description: "Global and per-type email unsubscribe preferences", status: "done", notes: "StorefrontAccount Preferences tab with 8 toggleable email/SMS categories (order updates, shipping, reviews, back-in-stock, promos, newsletter, price drops, SMS) saved to customer record" },
       { name: "SMS Automation", description: "SMS notifications for order updates and marketing", status: "done", notes: "sms-gateway edge function" },
       { name: "SMS Templates", description: "Configurable SMS message templates", status: "partial" },
       { name: "Mailchimp Deep Sync", description: "Bi-directional customer and order sync with Mailchimp", status: "done", notes: "mailchimp-sync function" },
