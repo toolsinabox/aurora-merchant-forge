@@ -369,19 +369,19 @@ export default function Analytics() {
       const estimatedCheckouts = Math.round(totalPurchases * 1.15);
       setFunnelData({ visitors: estimatedVisitors, carts: totalCarts, checkouts: estimatedCheckouts, purchases: totalPurchases });
 
-      // Sales by Channel
-      const channelMap: Record<string, { orders: number; revenue: number }> = {};
-      (orders_data || []).forEach((o: any) => {
+      // Sales by Channel (detailed)
+      const channelDetailMap: Record<string, { orders: number; revenue: number }> = {};
+      (orders as any[]).forEach((o: any) => {
         const ch = o.order_channel || "web";
-        if (!channelMap[ch]) channelMap[ch] = { orders: 0, revenue: 0 };
-        channelMap[ch].orders++;
-        channelMap[ch].revenue += Number(o.total || 0);
+        if (!channelDetailMap[ch]) channelDetailMap[ch] = { orders: 0, revenue: 0 };
+        channelDetailMap[ch].orders++;
+        channelDetailMap[ch].revenue += Number(o.total || 0);
       });
-      setSalesByChannel(Object.entries(channelMap).map(([channel, d]) => ({ channel, ...d })).sort((a, b) => b.revenue - a.revenue));
+      setSalesByChannel(Object.entries(channelDetailMap).map(([channel, d]) => ({ channel, ...d })).sort((a, b) => b.revenue - a.revenue));
 
       // Sales by Region
       const regionMap: Record<string, { orders: number; revenue: number }> = {};
-      (orders_data || []).forEach((o: any) => {
+      (orders as any[]).forEach((o: any) => {
         let region = "Unknown";
         if (o.shipping_address) {
           try {
