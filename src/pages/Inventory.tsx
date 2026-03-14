@@ -571,6 +571,9 @@ export default function Inventory() {
                     const isExpiringSoon = expDate && !isExpired && new Date(expDate) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
                     return (
                       <TableRow key={p.id} className="text-xs">
+                        <TableCell className="py-2" onClick={e => e.stopPropagation()}>
+                          <Checkbox checked={selectedProducts.has(p.id)} onCheckedChange={() => toggleProductSelect(p.id)} />
+                        </TableCell>
                         <TableCell className="py-2 font-medium">{p.title}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">{p.sku || "—"}</TableCell>
                         <TableCell className="py-2 font-mono text-muted-foreground">
