@@ -43,10 +43,10 @@ export function TopBar() {
   const storefrontUrl = getStorefrontUrl(currentStore?.slug ?? currentStore?.name?.toLowerCase().replace(/\s+/g, "-"));
 
   return (
-    <header className="h-12 flex items-center gap-2 border-b border-border bg-card/80 backdrop-blur-sm px-3 shrink-0 sticky top-0 z-30">
+    <header className="h-12 flex items-center gap-1.5 sm:gap-2 border-b border-border bg-card/80 backdrop-blur-sm px-2 sm:px-3 shrink-0 sticky top-0 z-30">
       <SidebarTrigger className="h-8 w-8" />
 
-      <div className="relative flex-1 max-w-md">
+      <div className="relative flex-1 max-w-md hidden sm:block">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
         <Input
           placeholder="Search products, orders, customers..."
@@ -64,16 +64,16 @@ export function TopBar() {
           >
             <a href={storefrontUrl} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="h-3.5 w-3.5" />
-              View Storefront
+              <span className="btn-label">View Storefront</span>
             </a>
           </Button>
         )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs">
-              {currentStore?.name || "No Store"}
-              <ChevronDown className="h-3 w-3" />
+            <Button variant="ghost" size="sm" className="h-8 gap-1 text-xs max-w-[120px] sm:max-w-none">
+              <span className="truncate">{currentStore?.name || "No Store"}</span>
+              <ChevronDown className="h-3 w-3 shrink-0" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
