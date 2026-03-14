@@ -43,14 +43,14 @@ export function TopBar() {
   const storefrontUrl = getStorefrontUrl(currentStore?.slug ?? currentStore?.name?.toLowerCase().replace(/\s+/g, "-"));
 
   return (
-    <header className="h-12 flex items-center gap-2 border-b border-border bg-card px-3 shrink-0">
+    <header className="h-12 flex items-center gap-2 border-b border-border bg-card/80 backdrop-blur-sm px-3 shrink-0 sticky top-0 z-30">
       <SidebarTrigger className="h-8 w-8" />
 
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
         <Input
           placeholder="Search products, orders, customers..."
-          className="h-8 pl-8 text-xs bg-muted/50 border-transparent focus:border-border"
+          className="h-8 pl-8 text-xs bg-muted/50 border-transparent focus:border-border transition-colors"
         />
       </div>
 
