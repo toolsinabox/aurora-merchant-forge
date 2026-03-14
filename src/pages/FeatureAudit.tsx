@@ -975,31 +975,31 @@ export default function FeatureAudit() {
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Total Features</p>
-              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-lg font-bold">{stats.total}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Done</p>
-              <p className="text-2xl font-bold text-primary">{stats.done}</p>
+              <p className="text-lg font-bold text-primary">{stats.done}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Partial</p>
-              <p className="text-2xl font-bold text-accent-foreground">{stats.partial}</p>
+              <p className="text-lg font-bold text-accent-foreground">{stats.partial}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Not Started</p>
-              <p className="text-2xl font-bold text-muted-foreground">{stats.not_started}</p>
+              <p className="text-lg font-bold text-muted-foreground">{stats.not_started}</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="pt-4 pb-4 text-center">
               <p className="text-sm text-muted-foreground">Progress</p>
-              <p className="text-2xl font-bold">{stats.pct}%</p>
+              <p className="text-lg font-bold">{stats.pct}%</p>
               <Progress value={stats.pct} className="mt-2 h-2" />
             </CardContent>
           </Card>

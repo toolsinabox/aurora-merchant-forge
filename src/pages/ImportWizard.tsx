@@ -679,15 +679,15 @@ export default function ImportWizard() {
               <CardContent className="p-4 pt-2 space-y-3">
                 <div className="grid grid-cols-3 gap-3">
                   <div className="rounded-md bg-muted p-3 text-center">
-                    <p className="text-2xl font-bold">{csvData.rows.length}</p>
+                    <p className="text-lg font-bold">{csvData.rows.length}</p>
                     <p className="text-xs text-muted-foreground">Total Rows</p>
                   </div>
                   <div className="rounded-md bg-accent/20 p-3 text-center">
-                    <p className="text-2xl font-bold text-accent-foreground">{results.success}</p>
+                    <p className="text-lg font-bold text-accent-foreground">{results.success}</p>
                     <p className="text-xs text-muted-foreground">Imported</p>
                   </div>
                   <div className="rounded-md bg-destructive/10 p-3 text-center">
-                    <p className="text-2xl font-bold text-destructive">{results.errors.length}</p>
+                    <p className="text-lg font-bold text-destructive">{results.errors.length}</p>
                     <p className="text-xs text-muted-foreground">Errors</p>
                   </div>
                 </div>

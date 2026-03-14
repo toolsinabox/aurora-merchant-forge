@@ -425,15 +425,15 @@ export default function Dashboard() {
                   {loadingCustomers ? <Skeleton className="h-16 w-full" /> : (
                     <div className="flex items-center gap-6">
                       <div>
-                        <p className="text-2xl font-bold">{customers.length}</p>
+                        <p className="text-lg font-bold">{customers.length}</p>
                         <p className="text-xs text-muted-foreground">Total</p>
                       </div>
                       <div>
-                        <p className="text-2xl font-bold">{customers.filter((c: any) => c.segment === "new").length}</p>
+                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "new").length}</p>
                         <p className="text-xs text-muted-foreground">New</p>
                       </div>
                       <div>
-                        <p className="text-2xl font-bold">{customers.filter((c: any) => c.segment === "returning").length}</p>
+                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "returning").length}</p>
                         <p className="text-xs text-muted-foreground">Returning</p>
                       </div>
                     </div>
@@ -451,7 +451,7 @@ export default function Dashboard() {
                 <CardContent className="p-4 pt-2">
                   {loadingProducts ? <Skeleton className="h-16 w-full" /> : lowStockProducts > 0 ? (
                     <div>
-                      <p className="text-2xl font-bold text-warning">{lowStockProducts}</p>
+                      <p className="text-lg font-bold text-warning">{lowStockProducts}</p>
                       <p className="text-xs text-muted-foreground mb-2">Products with low stock (≤10 units)</p>
                       <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => navigate("/inventory")}>
                         Manage Inventory
