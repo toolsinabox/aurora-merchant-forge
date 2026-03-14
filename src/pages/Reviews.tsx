@@ -231,7 +231,7 @@ export default function Reviews() {
                       </TableCell>
                       <TableCell className="py-2">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-2xs font-medium ${
-                          r.is_approved ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
+                          r.is_approved ? "bg-success/10 text-success" : "bg-warning/10 text-warning"
                         }`}>
                           {r.is_approved ? "Approved" : "Pending"}
                         </span>

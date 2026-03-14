@@ -162,28 +162,28 @@ export default function Returns() {
                 <CardContent className="pt-4 pb-3 text-center">
                   <BarChart3 className="h-5 w-5 mx-auto mb-1 text-primary" />
                   <p className="text-xs text-muted-foreground">Total Returns</p>
-                  <p className="text-xl font-bold">{rmaStats.total}</p>
+                  <p className="text-lg font-bold">{rmaStats.total}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-4 pb-3 text-center">
                   <DollarSign className="h-5 w-5 mx-auto mb-1 text-destructive" />
                   <p className="text-xs text-muted-foreground">Total Refunds</p>
-                  <p className="text-xl font-bold">${rmaStats.totalRefunds.toFixed(2)}</p>
+                  <p className="text-lg font-bold">${rmaStats.totalRefunds.toFixed(2)}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-4 pb-3 text-center">
-                  <TrendingUp className="h-5 w-5 mx-auto mb-1 text-amber-500" />
+                  <TrendingUp className="h-5 w-5 mx-auto mb-1 text-warning" />
                   <p className="text-xs text-muted-foreground">Pending</p>
-                  <p className="text-xl font-bold">{rmaStats.byStatus["requested"] || 0}</p>
+                  <p className="text-lg font-bold">{rmaStats.byStatus["requested"] || 0}</p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-4 pb-3 text-center">
                   <AlertTriangle className="h-5 w-5 mx-auto mb-1 text-chart-2" />
                   <p className="text-xs text-muted-foreground">Refunded</p>
-                  <p className="text-xl font-bold">{(rmaStats.byStatus["refunded"] || 0) + (rmaStats.byStatus["completed"] || 0)}</p>
+                  <p className="text-lg font-bold">{(rmaStats.byStatus["refunded"] || 0) + (rmaStats.byStatus["completed"] || 0)}</p>
                 </CardContent>
               </Card>
             </div>

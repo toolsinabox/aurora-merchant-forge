@@ -103,8 +103,8 @@ export default function WarehouseDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Clock className="h-4 w-4 text-orange-500" />
+              <div className="h-9 w-9 rounded-lg bg-warning/10 flex items-center justify-center">
+                <Clock className="h-4 w-4 text-warning" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Awaiting Pick</p>
@@ -114,8 +114,8 @@ export default function WarehouseDashboard() {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Package className="h-4 w-4 text-blue-500" />
+              <div className="h-9 w-9 rounded-lg bg-info/10 flex items-center justify-center">
+                <Package className="h-4 w-4 text-info" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Items to Pick</p>
@@ -136,8 +136,8 @@ export default function WarehouseDashboard() {
           </Card>
           <Card>
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="h-9 w-9 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+              <div className="h-9 w-9 rounded-lg bg-success/10 flex items-center justify-center">
+                <CheckCircle className="h-4 w-4 text-success" />
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Shipped</p>
@@ -198,7 +198,7 @@ export default function WarehouseDashboard() {
           <Card>
             <CardHeader className="p-4 pb-2">
               <CardTitle className="text-sm flex items-center gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 text-orange-500" /> Low Stock Alert
+                <AlertTriangle className="h-3.5 w-3.5 text-warning" /> Low Stock Alert
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
