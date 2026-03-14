@@ -2577,6 +2577,131 @@ export type Database = {
           },
         ]
       }
+      migration_entity_logs: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          error_message: string | null
+          id: string
+          mapped_data: Json | null
+          migration_job_id: string
+          source_data: Json | null
+          source_id: string | null
+          status: string | null
+          store_id: string
+          target_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          error_message?: string | null
+          id?: string
+          mapped_data?: Json | null
+          migration_job_id: string
+          source_data?: Json | null
+          source_id?: string | null
+          status?: string | null
+          store_id: string
+          target_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          error_message?: string | null
+          id?: string
+          mapped_data?: Json | null
+          migration_job_id?: string
+          source_data?: Json | null
+          source_id?: string | null
+          status?: string | null
+          store_id?: string
+          target_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "migration_entity_logs_migration_job_id_fkey"
+            columns: ["migration_job_id"]
+            isOneToOne: false
+            referencedRelation: "migration_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "migration_entity_logs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      migration_jobs: {
+        Row: {
+          api_key_hash: string | null
+          completed_at: string | null
+          created_at: string | null
+          created_by: string | null
+          entities_to_import: string[] | null
+          error_log: Json | null
+          failed_records: number | null
+          id: string
+          imported_records: number | null
+          progress: Json | null
+          source_domain: string
+          source_platform: string
+          started_at: string | null
+          status: string | null
+          store_id: string
+          total_records: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_key_hash?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          entities_to_import?: string[] | null
+          error_log?: Json | null
+          failed_records?: number | null
+          id?: string
+          imported_records?: number | null
+          progress?: Json | null
+          source_domain: string
+          source_platform?: string
+          started_at?: string | null
+          status?: string | null
+          store_id: string
+          total_records?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_key_hash?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          entities_to_import?: string[] | null
+          error_log?: Json | null
+          failed_records?: number | null
+          id?: string
+          imported_records?: number | null
+          progress?: Json | null
+          source_domain?: string
+          source_platform?: string
+          started_at?: string | null
+          status?: string | null
+          store_id?: string
+          total_records?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "migration_jobs_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           email: string
@@ -6831,6 +6956,69 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "tax_rates_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      theme_migrations: {
+        Row: {
+          base_tags_converted: string[] | null
+          base_tags_found: string[] | null
+          base_tags_unsupported: string[] | null
+          conversion_status: string | null
+          converted_content: string | null
+          created_at: string | null
+          id: string
+          migration_job_id: string
+          notes: string | null
+          source_content: string | null
+          store_id: string
+          template_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          base_tags_converted?: string[] | null
+          base_tags_found?: string[] | null
+          base_tags_unsupported?: string[] | null
+          conversion_status?: string | null
+          converted_content?: string | null
+          created_at?: string | null
+          id?: string
+          migration_job_id: string
+          notes?: string | null
+          source_content?: string | null
+          store_id: string
+          template_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          base_tags_converted?: string[] | null
+          base_tags_found?: string[] | null
+          base_tags_unsupported?: string[] | null
+          conversion_status?: string | null
+          converted_content?: string | null
+          created_at?: string | null
+          id?: string
+          migration_job_id?: string
+          notes?: string | null
+          source_content?: string | null
+          store_id?: string
+          template_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_migrations_migration_job_id_fkey"
+            columns: ["migration_job_id"]
+            isOneToOne: false
+            referencedRelation: "migration_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theme_migrations_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
