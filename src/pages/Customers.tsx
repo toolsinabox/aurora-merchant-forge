@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useCustomers, useCreateCustomer } from "@/hooks/use-data";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2, Merge } from "lucide-react";
+import { Search, Plus, Users, DollarSign, ShoppingCart, Download, Upload, Loader2, Merge, Tag, UserCog } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
