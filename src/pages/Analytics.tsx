@@ -480,6 +480,41 @@ export default function Analytics() {
       });
       setSalesByGroup(Object.entries(groupSales).map(([group, d]) => ({ group, ...d })).sort((a, b) => b.revenue - a.revenue));
 
+      // ── Sales by Staff (via order_payments.recorded_by → profiles) ──
+      const { data: payments } = await supabase
+        .from("order_payments")
+        .select("amount, recorded_by, order_id")
+        .eq("store_id", currentStore.id);
+      if (payments && payments.length > 0) {
+        const staffIds = [...new Set(payments.map(p => p.recorded_by).filter(Boolean))];
+        const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", staffIds);
+        const profileMap: Record<string, string> = {};
+        (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p.display_name || "Unknown"; });
+        const staffMap: Record<string, { orders: Set<string>; revenue: number }> = {};
+        for (const p of payments) {
+          const name = profileMap[p.recorded_by] || p.recorded_by?.slice(0, 8) || "Unknown";
+          if (!staffMap[name]) staffMap[name] = { orders: new Set(), revenue: 0 };
+          staffMap[name].orders.add(p.order_id);
+          staffMap[name].revenue += Number(p.amount || 0);
+        }
+        setSalesByStaff(Object.entries(staffMap).map(([staffName, d]) => ({ staffName, orders: d.orders.size, revenue: d.revenue })).sort((a, b) => b.revenue - a.revenue));
+      }
+
+      // ── Discount / Coupon Usage Report ──
+      const { data: couponsData } = await supabase.from("coupons").select("id, code, used_count, discount_type, discount_value").eq("store_id", currentStore.id);
+      const ordersWithCoupon = allOrders.filter((o: any) => o.coupon_id);
+      const couponRevMap: Record<string, { revenue: number; discountTotal: number; usedCount: number; code: string }> = {};
+      for (const c of (couponsData || [])) {
+        couponRevMap[c.id] = { code: c.code, usedCount: c.used_count || 0, revenue: 0, discountTotal: 0 };
+      }
+      for (const o of ordersWithCoupon) {
+        if (couponRevMap[o.coupon_id]) {
+          couponRevMap[o.coupon_id].revenue += Number(o.total || 0);
+          couponRevMap[o.coupon_id].discountTotal += Number(o.discount || 0);
+        }
+      }
+      setDiscountUsage(Object.values(couponRevMap).filter(c => c.usedCount > 0).sort((a, b) => b.usedCount - a.usedCount));
+
       setLoadingTopProducts(false);
     };
     fetchData();
