@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Plus, Trash2, ShoppingCart, Search, Loader2 } from "lucide-react";
+import { Plus, Trash2, ShoppingCart, Search, Loader2, Upload } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 
 interface OrderLine {
