@@ -7625,7 +7625,7 @@ const shippingDeepFeatures: FeatureCategory[] = [
       { name: "Free Shipping Coupon", description: "Coupon code that grants free shipping", status: "done", notes: "free_shipping field on coupons" },
       { name: "Shipping Zones (Country/State/Postcode)", description: "Define zones by country, state, or postcode range", status: "done", notes: "ShippingZones page" },
       { name: "Postcode Range Restrictions", description: "Block or surcharge specific postcode ranges", status: "partial" },
-      { name: "Rural Delivery Surcharge", description: "Extra charge for rural/remote delivery postcodes", status: "not_started" },
+      { name: "Rural Delivery Surcharge", description: "Extra charge for rural/remote delivery postcodes", status: "done", notes: "ShippingZones ZoneForm has Rural/Remote Surcharge section with postcode ranges input (comma-separated ranges), surcharge amount, and configurable label" },
       { name: "Per-Product Shipping Override", description: "Override shipping rules per product (e.g., always free)", status: "partial" },
       { name: "Shipping Method Display Order", description: "Control sort order of shipping options at checkout", status: "done" },
       { name: "Estimated Delivery Date Display", description: "Show estimated delivery date on product/cart pages", status: "done", notes: "DeliveryEstimate component" },
