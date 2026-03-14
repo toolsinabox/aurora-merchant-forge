@@ -214,6 +214,53 @@ export default function Coupons() {
           </Dialog>
         </div>
 
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger-children">
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Ticket className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Total</p>
+                <p className="text-lg font-bold">{coupons.length}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-success/10 flex items-center justify-center">
+                <Ticket className="h-4 w-4 text-success" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Active</p>
+                <p className="text-lg font-bold">{activeCount}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-warning/10 flex items-center justify-center">
+                <Ticket className="h-4 w-4 text-warning" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Expired</p>
+                <p className="text-lg font-bold">{expiredCount}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="card-hover">
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="h-9 w-9 rounded-xl bg-info/10 flex items-center justify-center">
+                <Copy className="h-4 w-4 text-info" />
+              </div>
+              <div>
+                <p className="text-2xs text-muted-foreground">Total Uses</p>
+                <p className="text-lg font-bold">{totalUsed}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         <Card>
           <CardContent className="p-0">
             <div className="flex items-center gap-2 p-3 border-b">
