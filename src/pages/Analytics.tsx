@@ -910,6 +910,54 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
+          {/* Product Performance Dashboard */}
+          <Card className="lg:col-span-2">
+            <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Product Performance Dashboard</CardTitle></CardHeader>
+            <CardContent className="p-4 pt-0">
+              {loadingTopProducts ? <Skeleton className="h-[200px]" /> : profitData.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No product data available</p>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs h-8">Product</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Orders</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Units Sold</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Revenue</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Avg Price</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Margin</TableHead>
+                      <TableHead className="text-xs h-8 text-right">Score</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {profitData.slice(0, 15).map((p: any, i: number) => {
+                      const avgPrice = p.unitsSold > 0 ? p.revenue / p.unitsSold : 0;
+                      const score = Math.min(100, Math.round((p.revenue / Math.max(1, profitData[0]?.revenue || 1)) * 100));
+                      return (
+                        <TableRow key={i} className="text-xs">
+                          <TableCell className="py-1.5 font-medium max-w-[180px] truncate">{p.title}</TableCell>
+                          <TableCell className="py-1.5 text-right">{p.orderCount || "—"}</TableCell>
+                          <TableCell className="py-1.5 text-right">{p.unitsSold || "—"}</TableCell>
+                          <TableCell className="py-1.5 text-right font-medium">${p.revenue.toFixed(2)}</TableCell>
+                          <TableCell className="py-1.5 text-right">${avgPrice.toFixed(2)}</TableCell>
+                          <TableCell className="py-1.5 text-right">{p.margin}%</TableCell>
+                          <TableCell className="py-1.5 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <div className="w-12 h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-primary rounded-full" style={{ width: `${score}%` }} />
+                              </div>
+                              <span className="text-muted-foreground w-6 text-right">{score}</span>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Tax Report */}
           <Card>
             <CardHeader className="p-4 pb-2"><CardTitle className="text-sm">Tax Report</CardTitle></CardHeader>
