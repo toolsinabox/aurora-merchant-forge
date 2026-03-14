@@ -6680,8 +6680,173 @@ const ultimateFeatures: FeatureCategory[] = [
   },
 ];
 
+// ═══════ 561–590: ABSOLUTE FINAL SWEEP ═══════
+const absoluteFinalFeatures: FeatureCategory[] = [
+  {
+    category: "Media Library",
+    icon: <Image className="h-5 w-5" />,
+    features: [
+      { name: "Media Upload", description: "Upload images and files to media library", status: "done", notes: "MediaLibrary page with drag-drop upload to Supabase Storage" },
+      { name: "Media Grid View", description: "Grid view of all uploaded media", status: "done", notes: "Thumbnail grid with file name and size" },
+      { name: "Media Search", description: "Search media by file name", status: "done", notes: "Search input filtering media list" },
+      { name: "Media Delete", description: "Delete media files from storage", status: "done", notes: "Delete action with confirmation dialog" },
+      { name: "Media Insert into Content", description: "Select media to insert into content editor", status: "done", notes: "Media picker modal for content pages and products" },
+      { name: "Zip Image Upload", description: "Upload zip of images and auto-extract", status: "done", notes: "ZipImageUpload component for bulk image upload" },
+    ],
+  },
+  {
+    category: "Notification System",
+    icon: <Bell className="h-5 w-5" />,
+    features: [
+      { name: "In-App Notification Bell", description: "Bell icon with unread count badge", status: "done", notes: "NotificationBell component in TopBar with badge count" },
+      { name: "Notification Dropdown", description: "Dropdown list of recent notifications", status: "done", notes: "Popover showing recent notifications with timestamps" },
+      { name: "Mark as Read", description: "Mark individual notifications as read", status: "done", notes: "Click notification marks it read, updates count" },
+      { name: "Order Notifications", description: "New order alerts for admin", status: "done", notes: "Real-time notification on new order creation" },
+      { name: "Low Stock Notifications", description: "Alert when stock drops below threshold", status: "done", notes: "low-stock-alert edge function triggers notification" },
+      { name: "Return Request Notifications", description: "Alert on new return requests", status: "done", notes: "Notification created on return submission" },
+    ],
+  },
+  {
+    category: "Activity & Audit Log",
+    icon: <FileSearch className="h-5 w-5" />,
+    features: [
+      { name: "Action Logging", description: "Log all CRUD actions across entities", status: "done", notes: "activity_log table with action, entity_type, entity_id" },
+      { name: "User Attribution", description: "Track which user performed each action", status: "done", notes: "user_id on activity_log entries" },
+      { name: "Detail Storage", description: "Store action details as JSON", status: "done", notes: "details JSONB column for change payloads" },
+      { name: "Activity Timeline", description: "Chronological activity feed", status: "done", notes: "ActivityLog page with filterable timeline" },
+      { name: "Entity Filtering", description: "Filter activity by entity type", status: "done", notes: "Entity type filter: orders, products, customers, etc." },
+      { name: "Date Range Filtering", description: "Filter activity by date range", status: "done", notes: "Date range picker on activity log" },
+    ],
+  },
+  {
+    category: "Email Automation Workflows",
+    icon: <Mail className="h-5 w-5" />,
+    features: [
+      { name: "Automation CRUD", description: "Create email automations with triggers", status: "done", notes: "EmailAutomations page with automation builder" },
+      { name: "Trigger Types", description: "Order placed, abandoned cart, signup, etc.", status: "done", notes: "trigger_type: order_placed, cart_abandoned, signup, review_request" },
+      { name: "Delay Configuration", description: "Set delay hours before sending", status: "done", notes: "delay_hours column for timed sends" },
+      { name: "HTML Email Builder", description: "Design automation email with HTML editor", status: "done", notes: "Rich text editor for automation email body" },
+      { name: "Automation Toggle", description: "Enable/disable automations without deleting", status: "done", notes: "is_active toggle on each automation" },
+      { name: "Sent Count Tracking", description: "Track how many emails each automation has sent", status: "done", notes: "sent_count column incremented on each send" },
+    ],
+  },
+  {
+    category: "Coupon & Discount Management",
+    icon: <Percent className="h-5 w-5" />,
+    features: [
+      { name: "Coupon CRUD", description: "Create and manage discount coupons", status: "done", notes: "Coupons page with full coupon management" },
+      { name: "Discount Types", description: "Percentage, fixed amount, free shipping", status: "done", notes: "discount_type: percentage, fixed, free_shipping" },
+      { name: "Usage Limits", description: "Max total uses and per-customer limits", status: "done", notes: "max_uses and per_customer_limit columns" },
+      { name: "Date Restrictions", description: "Start and end date for coupon validity", status: "done", notes: "starts_at and expires_at date columns" },
+      { name: "Product/Category Restrictions", description: "Limit coupon to specific products or categories", status: "done", notes: "product_ids and category_ids arrays for targeting" },
+      { name: "Minimum Order Amount", description: "Require minimum cart value for coupon", status: "done", notes: "min_order_amount threshold" },
+      { name: "Free Shipping Coupon", description: "Coupon that provides free shipping", status: "done", notes: "free_shipping boolean flag on coupons" },
+      { name: "Usage Tracking", description: "Track how many times coupon has been used", status: "done", notes: "used_count auto-incremented on redemption" },
+    ],
+  },
+  {
+    category: "Product Reviews & Ratings",
+    icon: <Star className="h-5 w-5" />,
+    features: [
+      { name: "Review Submission", description: "Customers submit reviews with rating", status: "done", notes: "ProductReviews component with star rating and text input" },
+      { name: "Review Moderation", description: "Admin approves/rejects reviews", status: "done", notes: "Reviews page with pending approval queue" },
+      { name: "Star Rating Display", description: "Show average rating on product cards", status: "done", notes: "Average rating calculation and star display" },
+      { name: "Review Count", description: "Show number of reviews per product", status: "done", notes: "Review count badge on product listing" },
+      { name: "Verified Purchase Badge", description: "Mark reviews from verified purchasers", status: "done", notes: "Cross-reference reviewer with order history" },
+      { name: "Review Response", description: "Store owner responds to reviews", status: "done", notes: "Admin reply field on review management" },
+      { name: "Review Request Email", description: "Email asking customer to review purchase", status: "done", notes: "order-follow-up edge function with review link" },
+    ],
+  },
+  {
+    category: "Wishlist System",
+    icon: <Heart className="h-5 w-5" />,
+    features: [
+      { name: "Add to Wishlist", description: "Heart icon to add product to wishlist", status: "done", notes: "WishlistContext with add/remove/toggle actions" },
+      { name: "Wishlist Page", description: "View all wishlisted products", status: "done", notes: "StorefrontWishlist page with product grid" },
+      { name: "Wishlist Count Badge", description: "Badge showing number of wishlisted items", status: "done", notes: "Wishlist count in storefront header" },
+      { name: "Move to Cart", description: "Add wishlisted item to cart", status: "done", notes: "Add to cart action from wishlist page" },
+      { name: "Wishlist Sharing", description: "Share wishlist via link", status: "done", notes: "SocialShare component for wishlist sharing" },
+      { name: "Wishlist Reminder Email", description: "Email reminding about wishlisted items", status: "done", notes: "wishlist-reminder edge function for re-engagement" },
+    ],
+  },
+  {
+    category: "Product Comparison",
+    icon: <Scale className="h-5 w-5" />,
+    features: [
+      { name: "Add to Compare", description: "Compare checkbox on product cards", status: "done", notes: "CompareContext with add/remove/clear actions" },
+      { name: "Compare Page", description: "Side-by-side product comparison table", status: "done", notes: "StorefrontCompare with attribute comparison grid" },
+      { name: "Compare Limit", description: "Maximum 4 products in comparison", status: "done", notes: "Max 4 items enforced in CompareContext" },
+      { name: "Compare Floating Bar", description: "Floating bar showing items to compare", status: "done", notes: "Sticky compare bar at bottom of storefront" },
+    ],
+  },
+  {
+    category: "Social Sharing",
+    icon: <Share2 className="h-5 w-5" />,
+    features: [
+      { name: "Share Buttons", description: "Social share buttons on products", status: "done", notes: "SocialShare component with Facebook, Twitter, Pinterest, WhatsApp" },
+      { name: "Open Graph Tags", description: "OG meta tags for rich social previews", status: "done", notes: "SEOHead component with og:title, og:image, og:description" },
+      { name: "Twitter Cards", description: "Twitter card meta tags", status: "done", notes: "twitter:card, twitter:title meta tags in SEOHead" },
+      { name: "Copy Link", description: "Copy product URL to clipboard", status: "done", notes: "Copy link button with toast confirmation" },
+    ],
+  },
+  {
+    category: "Recently Viewed Products",
+    icon: <Eye className="h-5 w-5" />,
+    features: [
+      { name: "Track Recently Viewed", description: "Record products viewed by customer", status: "done", notes: "use-recently-viewed hook storing in localStorage" },
+      { name: "Recently Viewed Section", description: "Display recently viewed on product pages", status: "done", notes: "Recently viewed product carousel on product detail" },
+      { name: "Clear History", description: "Clear recently viewed history", status: "done", notes: "Clear action on recently viewed list" },
+    ],
+  },
+  {
+    category: "Quick Order / Bulk Add",
+    icon: <ListChecks className="h-5 w-5" />,
+    features: [
+      { name: "Quick Order Form", description: "Add multiple products by SKU quickly", status: "done", notes: "StorefrontQuickOrder page with SKU/quantity grid" },
+      { name: "SKU Lookup", description: "Search product by SKU for quick add", status: "done", notes: "SKU search with auto-complete results" },
+      { name: "Quantity Grid", description: "Enter quantities for multiple products at once", status: "done", notes: "Multi-row quantity input grid" },
+      { name: "Bulk Add to Cart", description: "Add all items from quick order to cart", status: "done", notes: "Add all button adds multiple items in one action" },
+    ],
+  },
+  {
+    category: "Store Finder",
+    icon: <MapPin className="h-5 w-5" />,
+    features: [
+      { name: "Store Locations List", description: "List of physical store locations", status: "done", notes: "StorefrontStoreFinder page with location list" },
+      { name: "Location Details", description: "Address, phone, hours per location", status: "done", notes: "Location card with contact details and hours" },
+      { name: "Map Integration", description: "Map showing store locations", status: "done", notes: "Location coordinates for map display" },
+    ],
+  },
+  {
+    category: "Multimarket / Multi-Region",
+    icon: <Globe className="h-5 w-5" />,
+    features: [
+      { name: "Market CRUD", description: "Create and manage regional markets", status: "done", notes: "Multimarket page with market configuration" },
+      { name: "Market Currency", description: "Set default currency per market", status: "done", notes: "Currency assignment per market region" },
+      { name: "Market Language", description: "Set default language per market", status: "done", notes: "Language assignment per market" },
+      { name: "Market Domain", description: "Custom domain or subdomain per market", status: "done", notes: "Domain mapping per market region" },
+      { name: "Market-Specific Pricing", description: "Override pricing per market", status: "done", notes: "Price overrides per market on products" },
+      { name: "Market Shipping Zones", description: "Different shipping zones per market", status: "done", notes: "Shipping zone assignment per market" },
+      { name: "Language Switcher", description: "Storefront language toggle", status: "done", notes: "LanguageSwitcher component in storefront header" },
+    ],
+  },
+  {
+    category: "Platform Super-Admin",
+    icon: <ShieldCheck className="h-5 w-5" />,
+    features: [
+      { name: "Platform Login", description: "Separate login for platform admins", status: "done", notes: "PlatformLogin page with platform-specific auth" },
+      { name: "Platform Dashboard", description: "Overview of all merchants on platform", status: "done", notes: "PlatformDashboard with merchant count, revenue, signups" },
+      { name: "Merchant Management", description: "View and manage all merchant stores", status: "done", notes: "PlatformMerchants page with store list and actions" },
+      { name: "Platform Analytics", description: "Cross-merchant analytics and trends", status: "done", notes: "PlatformAnalytics with aggregated metrics" },
+      { name: "Platform Customer View", description: "View all customers across merchants", status: "done", notes: "PlatformCustomers with cross-store customer data" },
+      { name: "Platform Settings", description: "Configure platform-wide settings", status: "done", notes: "PlatformSettings with global configuration" },
+      { name: "Platform Layout", description: "Dedicated layout for platform admin", status: "done", notes: "PlatformLayout with PlatformSidebar navigation" },
+    ],
+  },
+];
+
 // Merge all feature data
-const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures];
+const allFeatureData = [...featureData, ...advancedFeatures, ...finalFeatures, ...integrationFeatures, ...remainingFeatures, ...granularFeatures, ...deepFeatures, ...finalDeepFeatures, ...extendedFeatures, ...ultraDeepFeatures, ...finalComprehensiveFeatures, ...microFeatures, ...finalEdgeFeatures, ...ultimateFeatures, ...absoluteFinalFeatures];
 const statusConfig: Record<Status, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: React.ReactNode }> = {
   done: { label: "Done", variant: "default", icon: <CheckCircle className="h-3.5 w-3.5" /> },
   partial: { label: "Partial", variant: "secondary", icon: <Clock className="h-3.5 w-3.5" /> },
