@@ -689,6 +689,11 @@ export default function ProductForm() {
                       images={productImages}
                       onImagesChange={setProductImages}
                     />
+                    <div className="mt-3 space-y-1">
+                      <FieldLabel label="Video URL" field="video_url" />
+                      <Input className="h-8 text-xs" value={form.video_url} onChange={(e) => update("video_url", e.target.value)} placeholder="YouTube or Vimeo URL (e.g. https://youtube.com/watch?v=...)" />
+                      <p className="text-2xs text-muted-foreground">Paste a YouTube or Vimeo video URL to embed on the product page</p>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>
