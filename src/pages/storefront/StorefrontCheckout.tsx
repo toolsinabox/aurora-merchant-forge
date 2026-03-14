@@ -229,13 +229,38 @@ export default function StorefrontCheckout() {
 
   const handleZoneChange = (zoneId: string) => {
     setSelectedZone(zoneId);
+    setSelectedServiceId("");
     const zone = shippingZones.find((z) => z.id === zoneId);
     if (zone) {
       const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
-      setShippingCost(isFree ? 0 : Number(zone.flat_rate));
-      // Estimate delivery: 3-7 business days from now
-      const minDate = addBusinessDays(new Date(), 3);
-      const maxDate = addBusinessDays(new Date(), 7);
+      // Check if zone has services
+      const zoneSvcs = shippingServices.filter((s: any) => s.zone_id === zoneId);
+      if (zoneSvcs.length > 0) {
+        // Default to first service, user can pick
+        setSelectedServiceId(zoneSvcs[0].id);
+        setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+        const svc = zoneSvcs[0];
+        const minDate = addBusinessDays(new Date(), svc.estimated_days_min || 3);
+        const maxDate = addBusinessDays(new Date(), svc.estimated_days_max || 7);
+        setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
+      } else {
+        setShippingCost(isFree ? 0 : Number(zone.flat_rate));
+        const minDate = addBusinessDays(new Date(), 3);
+        const maxDate = addBusinessDays(new Date(), 7);
+        setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
+      }
+    }
+  };
+
+  const handleServiceChange = (serviceId: string) => {
+    setSelectedServiceId(serviceId);
+    const svc = shippingServices.find((s: any) => s.id === serviceId);
+    if (svc) {
+      const zone = shippingZones.find((z) => z.id === svc.zone_id);
+      const isFree = zone?.free_above && subtotalAfterDiscount >= Number(zone.free_above);
+      setShippingCost(isFree ? 0 : Number(zone?.flat_rate || 0));
+      const minDate = addBusinessDays(new Date(), svc.estimated_days_min || 3);
+      const maxDate = addBusinessDays(new Date(), svc.estimated_days_max || 7);
       setEstimatedDelivery(`${format(minDate, "MMM d")} – ${format(maxDate, "MMM d")}`);
     }
   };
