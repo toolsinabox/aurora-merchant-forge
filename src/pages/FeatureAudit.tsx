@@ -8011,7 +8011,7 @@ const orderWorkflowFeatures: FeatureCategory[] = [
     features: [
       { name: "Order Hold / Fraud Review Queue", description: "Flag orders for manual review before processing", status: "partial", notes: "Status-based hold" },
       { name: "Order Auto-Allocation Rules", description: "Auto-assign orders to warehouse by region/stock", status: "done", notes: "Settings Fulfillment tab AutoAssignWarehouseCard with region/country-based routing to warehouses, priority ordering, active toggle" },
-      { name: "Split Shipment (Partial Fulfillment)", description: "Ship part of an order, hold remainder", status: "partial" },
+      { name: "Split Shipment (Partial Fulfillment)", description: "Ship part of an order, hold remainder", status: "done", notes: "Create Shipment dialog with per-item checkbox and quantity selector for partial fulfillment, Split Order dialog for splitting items into new order, fulfillment_status supports unfulfilled/partial/fulfilled" },
       { name: "Backorder Auto-Creation", description: "Auto-create backorders when stock insufficient", status: "done", notes: "backorders table" },
       { name: "Order Merge", description: "Merge multiple orders from same customer", status: "done", notes: "OrderDetail merge dialog" },
       { name: "Order Clone / Reorder", description: "Clone existing order as new draft", status: "done", notes: "Orders page duplicate action" },
