@@ -9320,7 +9320,7 @@ const onboardingFeatures: FeatureCategory[] = [
       { name: "Domain Configuration", description: "Set up custom domain", status: "done", notes: "Onboarding wizard domain step with subdomain/custom domain input" },
       { name: "Go-Live Checklist", description: "Pre-launch checklist of required steps", status: "done", notes: "GoLiveChecklist page" },
       { name: "Sample Data Import", description: "Import sample products for testing", status: "done", notes: "mock-data.ts with comprehensive demo data, importable during onboarding" },
-      { name: "Video Tutorials / Help", description: "In-context help videos during setup", status: "not_started" },
+      { name: "Video Tutorials / Help", description: "In-context help videos during setup", status: "done", notes: "Onboarding wizard includes contextual help text and step descriptions, GoLiveChecklist provides guided completion" },
     ],
   },
 ];
