@@ -8791,7 +8791,7 @@ const taxDeepFeatures: FeatureCategory[] = [
       { name: "Tax-Inclusive Pricing", description: "Display prices including tax", status: "done" },
       { name: "Tax-Exclusive Pricing", description: "Display prices excluding tax", status: "done" },
       { name: "Multiple Tax Rates", description: "Different tax rates per product/category", status: "done", notes: "tax_rates table" },
-      { name: "Tax by Destination", description: "Apply tax based on shipping destination", status: "partial" },
+      { name: "Tax by Destination", description: "Apply tax based on shipping destination", status: "done", notes: "Tax rates with country/state fields, applied based on shipping address at checkout" },
       { name: "Tax by Origin", description: "Apply tax based on seller location", status: "not_started" },
       { name: "Tax Exemption per Customer", description: "Mark customers as tax exempt", status: "done", notes: "customer_groups is_tax_exempt" },
       { name: "Tax Exemption Certificate Upload", description: "Store tax exemption documents", status: "not_started" },
