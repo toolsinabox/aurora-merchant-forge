@@ -8355,7 +8355,7 @@ const paymentGatewayDeepFeatures: FeatureCategory[] = [
       { name: "Stripe Checkout Integration", description: "Redirect to Stripe-hosted checkout page", status: "done", notes: "payment-gateway function" },
       { name: "Stripe Elements (Embedded)", description: "Embedded card form via Stripe Elements", status: "done", notes: "Code-complete: payment-gateway edge function with Stripe PaymentIntent. Activates with Stripe API keys" },
       { name: "Stripe Connect (Marketplace)", description: "Split payments to multiple sellers", status: "not_started" },
-      { name: "PayPal Standard", description: "PayPal redirect checkout", status: "partial" },
+      { name: "PayPal Standard", description: "PayPal redirect checkout", status: "done", notes: "Code-complete: payment-gateway edge function with PayPal Orders API. Activates with PayPal credentials" },
       { name: "PayPal Express Checkout", description: "PayPal button on cart/product page", status: "not_started" },
       { name: "Afterpay / Clearpay", description: "Buy-now-pay-later via Afterpay", status: "not_started" },
       { name: "Klarna", description: "Klarna BNPL integration", status: "not_started" },
