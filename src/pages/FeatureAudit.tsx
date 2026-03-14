@@ -7607,7 +7607,7 @@ const shippingDeepFeatures: FeatureCategory[] = [
       { name: "ShipStation Sync", description: "Bi-directional sync with ShipStation for multi-carrier", status: "done", notes: "shipstation-sync edge function" },
       { name: "Starshipit Sync", description: "Sync orders to Starshipit for AU/NZ carrier management", status: "done", notes: "starshipit-sync edge function" },
       { name: "Click & Collect", description: "In-store pickup option with location selection", status: "partial", notes: "Store finder + locations exist" },
-      { name: "Click & Collect Notification", description: "Email/SMS when order ready for collection", status: "not_started" },
+      { name: "Click & Collect Notification", description: "Email/SMS when order ready for collection", status: "done", notes: "collection-ready-email edge function sends branded HTML email with pickup location, instructions, order number, and customer greeting via email_queue" },
       { name: "Same-Day Delivery Option", description: "Offer same-day delivery with cutoff time configuration", status: "not_started" },
       { name: "Shipping Insurance Option", description: "Optional shipping insurance at checkout", status: "not_started" },
     ],
