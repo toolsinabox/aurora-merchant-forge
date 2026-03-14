@@ -9085,7 +9085,7 @@ const giftRegistryFeatures: FeatureCategory[] = [
     category: "Gift Registry & Wishlists — Advanced",
     icon: <Gift className="h-5 w-5" />,
     features: [
-      { name: "Public Wishlist Sharing", description: "Share wishlist via link or social media", status: "partial" },
+      { name: "Public Wishlist Sharing", description: "Share wishlist via link or social media", status: "done", notes: "StorefrontWishlist Share button generates shareable link with social media options" },
       { name: "Gift Registry Creation", description: "Create wedding/baby/event gift registries", status: "not_started" },
       { name: "Gift Registry Search (Public)", description: "Search registries by name/event", status: "not_started" },
       { name: "Gift Registry Item Purchase Tracking", description: "Track which items have been purchased", status: "not_started" },
