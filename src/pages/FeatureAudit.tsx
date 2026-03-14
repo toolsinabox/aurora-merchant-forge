@@ -7800,7 +7800,7 @@ const returnsRmaFeatures: FeatureCategory[] = [
     features: [
       { name: "Return Request Form (Customer)", description: "Customer-facing return request submission", status: "partial", notes: "Returns page exists" },
       { name: "Return Reason Codes", description: "Configurable return reason dropdown", status: "done", notes: "DEFAULT_RETURN_REASONS constant with 10 configurable reason codes (wrong item, damaged, not as described, changed mind, wrong size/colour, better price, arrived late, missing parts, quality, other) plus separate DISPUTE_REASONS for warranty claims" },
-      { name: "Return Authorization Workflow", description: "Staff approve/reject return requests with notes", status: "partial" },
+      { name: "Return Authorization Workflow", description: "Staff approve/reject return requests with notes", status: "done", notes: "Returns detail dialog with Approve/Reject buttons for requested status, Mark Refunded for approved, Complete for refunded; admin notes textarea, refund amount input, restocking fee deduction, Save Notes button, replacement order creation" },
       { name: "Return Shipping Label Generation", description: "Auto-generate prepaid return shipping label", status: "done", notes: "PrintReturnLabel page" },
       { name: "Return Tracking", description: "Track return shipment status", status: "done", notes: "StorefrontAccount Returns tab shows return progress bar (requested → approved → processing → refunded) with visual step indicator" },
       { name: "Refund to Original Payment", description: "Process refund back to original payment method", status: "not_started" },
