@@ -7554,7 +7554,7 @@ const warehouseDeepFeatures: FeatureCategory[] = [
       { name: "Bin Location Management", description: "Assign and manage bin/shelf locations per SKU", status: "done", notes: "bin_location field on inventory_stock" },
       { name: "Putaway Rules", description: "Auto-suggest bin locations for incoming inventory", status: "not_started" },
       { name: "Cycle Count Scheduling", description: "Schedule regular cycle counts by zone/category", status: "partial", notes: "Manual stocktake exists" },
-      { name: "Cycle Count Variance Report", description: "Report showing discrepancies between expected and counted stock", status: "partial" },
+      { name: "Cycle Count Variance Report", description: "Report showing discrepancies between expected and counted stock", status: "done", notes: "Stocktake detail page with 5 KPI cards (counted, match, over, under, net variance), clickable cards filter table by variance type, color-coded net variance display" },
       { name: "Receiving / Goods-In", description: "Receive purchase orders with barcode scanning and quantity verification", status: "partial", notes: "PO receiving exists" },
       { name: "Quality Check on Receive", description: "Flag items for QC inspection during goods-in process", status: "not_started" },
       { name: "Cross-Docking", description: "Route incoming goods directly to outbound without shelving", status: "not_started" },
