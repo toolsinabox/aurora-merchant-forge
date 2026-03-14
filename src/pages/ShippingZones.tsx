@@ -547,9 +547,9 @@ function ZoneForm({ form, setForm, onSubmit, loading, label }: {
           <Input type="number" step="0.01" min="0" placeholder="Optional" value={form.free_above} onChange={(e) => setForm({ ...form, free_above: e.target.value })} />
         </div>
       </div>
-      {form.rate_type === "weight" && (
+      {(form.rate_type === "weight" || form.rate_type === "cubic") && (
         <div>
-          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to weight cost)</span></Label>
+          <Label className="text-xs">Base Flat Rate ($) <span className="text-muted-foreground">(added to {form.rate_type === "cubic" ? "cubic" : "weight"} cost)</span></Label>
           <Input type="number" step="0.01" min="0" value={form.flat_rate} onChange={(e) => setForm({ ...form, flat_rate: e.target.value })} />
         </div>
       )}
