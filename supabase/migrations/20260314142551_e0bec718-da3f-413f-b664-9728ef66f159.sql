@@ -1,0 +1,1 @@
+ALTER TABLE public.customers ADD COLUMN IF NOT EXISTS abn_vat_number TEXT;

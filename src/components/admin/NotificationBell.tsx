@@ -11,18 +11,20 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
-interface OrderNotification {
+interface Notification {
   id: string;
-  order_number: string;
-  total: number;
+  type: "order" | "customer" | "review";
+  title: string;
+  detail: string;
   created_at: string;
   read: boolean;
+  link: string;
 }
 
 export function NotificationBell() {
   const { currentStore } = useAuth();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<OrderNotification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
 
   // Load recent orders as initial notifications
@@ -33,37 +35,70 @@ export function NotificationBell() {
       .select("id, order_number, total, created_at")
       .eq("store_id", currentStore.id)
       .order("created_at", { ascending: false })
-      .limit(10)
+      .limit(8)
       .then(({ data }) => {
         if (data) {
-          const notifs = data.map((o) => ({ ...o, read: true }));
+          const notifs: Notification[] = data.map((o) => ({
+            id: o.id, type: "order" as const,
+            title: `New order ${o.order_number}`,
+            detail: `$${Number(o.total).toFixed(2)}`,
+            created_at: o.created_at, read: true,
+            link: `/orders/${o.id}`,
+          }));
           setNotifications(notifs);
         }
       });
   }, [currentStore]);
 
-  // Listen for realtime new orders
+  // Listen for realtime new orders, customers, and reviews
   useEffect(() => {
     if (!currentStore) return;
 
     const channel = supabase
-      .channel(`orders-${currentStore.id}`)
+      .channel(`notifications-${currentStore.id}`)
       .on(
         "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-          filter: `store_id=eq.${currentStore.id}`,
-        },
+        { event: "INSERT", schema: "public", table: "orders", filter: `store_id=eq.${currentStore.id}` },
         (payload) => {
-          const newOrder = payload.new as any;
-          const notif: OrderNotification = {
-            id: newOrder.id,
-            order_number: newOrder.order_number,
-            total: newOrder.total,
-            created_at: newOrder.created_at,
-            read: false,
+          const n = payload.new as any;
+          const notif: Notification = {
+            id: n.id, type: "order",
+            title: `New order ${n.order_number}`,
+            detail: `$${Number(n.total).toFixed(2)}`,
+            created_at: n.created_at, read: false,
+            link: `/orders/${n.id}`,
+          };
+          setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+          setUnreadCount((c) => c + 1);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "customers", filter: `store_id=eq.${currentStore.id}` },
+        (payload) => {
+          const n = payload.new as any;
+          const notif: Notification = {
+            id: n.id, type: "customer",
+            title: `New customer signup`,
+            detail: n.name || n.email || "Unknown",
+            created_at: n.created_at, read: false,
+            link: `/customers/${n.id}`,
+          };
+          setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+          setUnreadCount((c) => c + 1);
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "product_reviews", filter: `store_id=eq.${currentStore.id}` },
+        (payload) => {
+          const n = payload.new as any;
+          const notif: Notification = {
+            id: n.id, type: "review",
+            title: `New review submitted`,
+            detail: `${n.rating}★ — ${(n.title || "").slice(0, 30)}`,
+            created_at: n.created_at, read: false,
+            link: `/reviews`,
           };
           setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
           setUnreadCount((c) => c + 1);
@@ -94,22 +129,22 @@ export function NotificationBell() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80">
-        <DropdownMenuLabel className="text-xs">Order Notifications</DropdownMenuLabel>
+        <DropdownMenuLabel className="text-xs">Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.length === 0 ? (
           <div className="p-4 text-center text-xs text-muted-foreground">No notifications yet</div>
         ) : (
-          notifications.slice(0, 8).map((n) => (
+          notifications.slice(0, 10).map((n) => (
             <DropdownMenuItem
               key={n.id}
               className="flex items-start gap-3 py-2.5 cursor-pointer"
-              onClick={() => navigate(`/orders/${n.id}`)}
+              onClick={() => navigate(n.link)}
             >
               <div className={`mt-1 h-2 w-2 rounded-full flex-shrink-0 ${n.read ? "bg-transparent" : "bg-primary"}`} />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium">New order {n.order_number}</p>
+                <p className="text-xs font-medium">{n.title}</p>
                 <p className="text-2xs text-muted-foreground">
-                  ${Number(n.total).toFixed(2)} · {format(new Date(n.created_at), "MMM d, h:mm a")}
+                  {n.detail} · {format(new Date(n.created_at), "MMM d, h:mm a")}
                 </p>
               </div>
             </DropdownMenuItem>
