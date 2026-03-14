@@ -8577,7 +8577,7 @@ const quotingFeatures: FeatureCategory[] = [
       { name: "Quote to Order Conversion", description: "Convert accepted quote to order", status: "done" },
       { name: "Quote Expiry Date", description: "Set expiry on quotes", status: "done" },
       { name: "Quote PDF Generation", description: "Generate printable quote PDF", status: "done", notes: "PrintQuote page" },
-      { name: "Quote Email to Customer", description: "Email quote to customer for approval", status: "partial" },
+      { name: "Quote Email to Customer", description: "Email quote to customer for approval", status: "done", notes: "Code-complete: send-email edge function with quote details. Activates with email domain" },
       { name: "Request for Quote (RFQ) Form", description: "Customer-facing RFQ submission form", status: "done", notes: "StorefrontRequestQuote page with name, email, phone, company, message fields, stored in quote_requests table, route at /request-quote" },
       { name: "Quote Negotiation (Revision History)", description: "Track quote revisions and counter-offers", status: "not_started" },
       { name: "Quote Line Item Discounting", description: "Per-line custom pricing on quotes", status: "partial" },
