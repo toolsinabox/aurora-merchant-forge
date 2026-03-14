@@ -609,20 +609,32 @@ export default function StorefrontCheckout() {
                 </div>
                 <div className="space-y-1.5">
                   <Label>Address</Label>
-                  <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" />
+                  <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
+                  {form.address.length > 0 && form.address.length < 10 && (
+                    <p className="text-[10px] text-amber-600 flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   <div className="space-y-1.5">
                     <Label>City</Label>
                     <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
+                    {form.city && !/^[a-zA-Z\s'-]+$/.test(form.city) && <p className="text-[10px] text-amber-600">City should contain only letters</p>}
                   </div>
                   <div className="space-y-1.5">
-                    <Label>ZIP Code</Label>
+                    <Label>ZIP / Postcode</Label>
                     <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
+                    {form.zip && form.zip.length < 3 && <p className="text-[10px] text-amber-600">Please enter a valid postcode</p>}
                   </div>
                   <div className="space-y-1.5">
                     <Label>Country</Label>
-                    <Input value={form.country} onChange={(e) => update("country", e.target.value)} className="h-10" />
+                    <Select value={form.country} onValueChange={(v) => update("country", v)}>
+                      <SelectTrigger className="h-10"><SelectValue placeholder="Select country" /></SelectTrigger>
+                      <SelectContent>
+                        {["Australia", "New Zealand", "United States", "United Kingdom", "Canada", "Singapore", "Hong Kong", "Japan", "Germany", "France", "Netherlands", "Ireland"].map(c => (
+                          <SelectItem key={c} value={c}>{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
