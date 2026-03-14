@@ -133,6 +133,9 @@ export default function StorefrontCart() {
                     <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.product_id, item.variant_id, item.quantity + 1)}>
                       <Plus className="h-3 w-3" />
                     </Button>
+                    <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-muted-foreground" onClick={() => saveForLater(item.product_id, item.variant_id)}>
+                      <Bookmark className="h-3 w-3" /> Save for later
+                    </Button>
                     <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto text-destructive" onClick={() => removeItem(item.product_id, item.variant_id)}>
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
