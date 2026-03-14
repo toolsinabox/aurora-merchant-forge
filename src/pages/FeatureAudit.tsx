@@ -8778,7 +8778,7 @@ const shippingRulesDeepFeatures: FeatureCategory[] = [
       { name: "Estimated Delivery Date Display", description: "Show estimated delivery on product/cart", status: "done", notes: "DeliveryEstimate component" },
       { name: "Same-Day / Express Cutoff Time", description: "Express shipping cutoff time logic", status: "not_started" },
       { name: "Local Delivery Zone", description: "Define local delivery radius with own rates", status: "not_started" },
-      { name: "Pickup Location Selection", description: "Customer selects pickup location at checkout", status: "partial" },
+      { name: "Pickup Location Selection", description: "Customer selects pickup location at checkout", status: "done", notes: "StorefrontCheckout Click & Collect option with store location selector from store_locations" },
     ],
   },
 ];
