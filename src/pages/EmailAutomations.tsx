@@ -103,6 +103,7 @@ export default function EmailAutomations() {
       delay_hours: String(a.delay_hours),
       subject: a.subject,
       html_body: a.html_body,
+      step_number: String(a.step_number || 1),
     });
     setEditingId(a.id);
     setShowForm(true);
