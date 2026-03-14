@@ -39,6 +39,13 @@ export function StorefrontSearch({ storeId, basePath, onClose }: Props) {
         .limit(8);
       setResults(data || []);
       setLoading(false);
+
+      // Track search query for analytics
+      supabase.from("search_queries" as any).insert({
+        store_id: storeId,
+        query: query.trim(),
+        results_count: data?.length || 0,
+      }).then(() => {});
     }, 300);
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
