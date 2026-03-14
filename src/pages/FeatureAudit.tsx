@@ -8520,7 +8520,7 @@ const warehouseFulfillmentFeatures: FeatureCategory[] = [
       { name: "Order Queue Prioritization", description: "Priority-based order queue for fulfillment", status: "partial" },
       { name: "Multi-Box Shipment", description: "Split single order into multiple boxes", status: "not_started" },
       { name: "Package Weight Capture", description: "Record actual package weight at pack station", status: "not_started" },
-      { name: "Fulfillment SLA Tracking", description: "Track time from order to shipment vs SLA", status: "not_started" },
+      { name: "Fulfillment SLA Tracking", description: "Track time from order to shipment vs SLA", status: "done", notes: "Warehouse Dashboard SLA cards showing avg fulfillment time, SLA target (48h), and within-SLA percentage" },
     ],
   },
 ];
