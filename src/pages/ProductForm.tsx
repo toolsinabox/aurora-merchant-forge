@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useProduct, useCreateProduct, useUpdateProduct, useCategories, useDeleteVariant, useCreateVariant, useProductShipping, useUpsertProductShipping, useProductSpecifics, useCreateProductSpecific, useDeleteProductSpecific, useProductPricingTiers, useCreatePricingTier, useDeletePricingTier, useProductRelations, useCreateProductRelation, useDeleteProductRelation, useProducts } from "@/hooks/use-data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
