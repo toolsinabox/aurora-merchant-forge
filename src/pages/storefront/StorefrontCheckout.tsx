@@ -12,7 +12,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles, Timer } from "lucide-react";
+import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles, Timer, AlertTriangle } from "lucide-react";
 import { useStoreSlug } from "@/lib/subdomain";
 import { addBusinessDays, format } from "date-fns";
 
@@ -588,7 +588,14 @@ export default function StorefrontCheckout() {
   return (
     <StorefrontLayout>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+        <h1 className="text-2xl font-bold mb-2">Checkout</h1>
+        {/* Minimum order warning */}
+        {totalPrice < 25 && (
+          <div className="border border-amber-300 bg-amber-50 dark:bg-amber-950/20 rounded-lg p-3 mb-4 text-xs text-amber-700 dark:text-amber-400 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <span>Your cart total is ${totalPrice.toFixed(2)}. Some stores may require a minimum order amount.</span>
+          </div>
+        )}
 
         {/* Express Checkout for returning customers */}
         {hasSavedDetails && user && !expressCheckout && (

@@ -565,7 +565,29 @@ export default function CustomerDetail() {
                     <div><Label className="text-xs">Sales Rep</Label><Input className="h-8 text-xs" value={(editForm as any).sales_rep || ""} onChange={(e) => setEditForm({ ...editForm, sales_rep: e.target.value } as any)} placeholder="Sales rep name" /></div>
                     <div><Label className="text-xs">Referral Code</Label><Input className="h-8 text-xs" value={(editForm as any).referral_code || ""} onChange={(e) => setEditForm({ ...editForm, referral_code: e.target.value } as any)} placeholder="Auto or manual code" /></div>
                     <div><Label className="text-xs">Referred By (Code)</Label><Input className="h-8 text-xs" value={(editForm as any).referred_by || ""} onChange={(e) => setEditForm({ ...editForm, referred_by: e.target.value } as any)} placeholder="Referrer's code" /></div>
-                    <div><Label className="text-xs">Tax Exemption Certificate URL</Label><Input className="h-8 text-xs" value={(editForm as any).tax_exempt_cert_url || ""} onChange={(e) => setEditForm({ ...editForm, tax_exempt_cert_url: e.target.value } as any)} placeholder="https://..." /></div>
+                    <div>
+                      <Label className="text-xs">Tax Exemption Certificate</Label>
+                      <div className="flex gap-2 items-center">
+                        <Input className="h-8 text-xs flex-1" value={(editForm as any).tax_exempt_cert_url || ""} onChange={(e) => setEditForm({ ...editForm, tax_exempt_cert_url: e.target.value } as any)} placeholder="https://... or upload" />
+                        <Button type="button" size="sm" variant="outline" className="h-8 text-xs gap-1 shrink-0" onClick={async () => {
+                          const input = document.createElement("input");
+                          input.type = "file";
+                          input.accept = ".pdf,.jpg,.jpeg,.png,.webp";
+                          input.onchange = async () => {
+                            const file = input.files?.[0];
+                            if (!file) return;
+                            const ext = file.name.split(".").pop();
+                            const path = `tax-certs/${customer.id}-${Date.now()}.${ext}`;
+                            const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
+                            if (error) { toast.error("Upload failed"); return; }
+                            const url = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
+                            setEditForm({ ...editForm, tax_exempt_cert_url: url } as any);
+                            toast.success("Certificate uploaded");
+                          };
+                          input.click();
+                        }}><Upload className="h-3 w-3" /> Upload</Button>
+                      </div>
+                    </div>
                     <div className="flex gap-2">
                       <Button size="sm" className="flex-1 text-xs" onClick={saveEdit}><Save className="h-3 w-3 mr-1" />Save</Button>
                       <Button size="sm" variant="outline" className="text-xs" onClick={() => setEditing(false)}>Cancel</Button>
