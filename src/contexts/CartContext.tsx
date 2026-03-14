@@ -26,12 +26,14 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType>({
-  items: [], addItem: () => {}, removeItem: () => {},
+  items: [], savedItems: [], addItem: () => {}, removeItem: () => {},
   updateQuantity: () => {}, clearCart: () => {},
+  saveForLater: () => {}, moveToCart: () => {}, removeSaved: () => {},
   totalItems: 0, totalPrice: 0,
 });
 
 const CART_KEY = "storefront_cart";
+const SAVED_KEY = "storefront_saved";
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>(() => {
