@@ -884,6 +884,40 @@ export default function OrderDetail() {
                     </div>
                   </>
                 )}
+                {order.payment_status !== "paid" && (
+                  <>
+                    <Separator />
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="w-full gap-1.5 text-xs"
+                      onClick={async () => {
+                        try {
+                          await createPayment.mutateAsync({
+                            order_id: order.id,
+                            store_id: order.store_id,
+                            amount: Number(order.total) - (payments as any[]).reduce((s: number, p: any) => s + Number(p.amount), 0),
+                            payment_method: "retry",
+                            status: "completed",
+                            reference: `retry-${Date.now()}`,
+                          } as any);
+                          await updateOrder.mutateAsync({ id: order.id, payment_status: "paid" } as any);
+                          createTimelineEvent.mutate({
+                            order_id: order.id,
+                            event_type: "payment",
+                            title: "Payment Retry",
+                            description: "Payment retried and marked as paid",
+                          } as any);
+                          toast.success("Payment retry successful");
+                        } catch {
+                          toast.error("Payment retry failed");
+                        }
+                      }}
+                    >
+                      <RefreshCw className="h-3 w-3" /> Retry Payment
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
 

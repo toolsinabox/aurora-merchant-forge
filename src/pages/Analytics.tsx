@@ -1519,6 +1519,151 @@ export default function Analytics() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Customer Acquisition Cost */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Customer Acquisition Cost (CAC)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const customersArr = (customers as any[]) || [];
+              const ordersArr = (orders as any[]) || [];
+              // Group new customers by month
+              const monthlyData: Record<string, { newCustomers: number; firstOrderRevenue: number }> = {};
+              customersArr.forEach(c => {
+                const month = new Date(c.created_at).toISOString().slice(0, 7);
+                if (!monthlyData[month]) monthlyData[month] = { newCustomers: 0, firstOrderRevenue: 0 };
+                monthlyData[month].newCustomers++;
+              });
+              // Find first order per customer for revenue attribution
+              const customerFirstOrder: Record<string, any> = {};
+              ordersArr.forEach(o => {
+                if (!o.customer_id) return;
+                if (!customerFirstOrder[o.customer_id] || new Date(o.created_at) < new Date(customerFirstOrder[o.customer_id].created_at)) {
+                  customerFirstOrder[o.customer_id] = o;
+                }
+              });
+              Object.values(customerFirstOrder).forEach(o => {
+                const month = new Date(o.created_at).toISOString().slice(0, 7);
+                if (monthlyData[month]) monthlyData[month].firstOrderRevenue += Number(o.total);
+              });
+
+              const months = Object.keys(monthlyData).sort().slice(-12);
+              const totalNewCustomers = months.reduce((s, m) => s + monthlyData[m].newCustomers, 0);
+              const totalFirstRevenue = months.reduce((s, m) => s + monthlyData[m].firstOrderRevenue, 0);
+              const avgFirstOrderValue = totalNewCustomers > 0 ? totalFirstRevenue / totalNewCustomers : 0;
+
+              return (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold">{totalNewCustomers}</p>
+                      <p className="text-[10px] text-muted-foreground">New Customers (12mo)</p>
+                    </div>
+                    <div className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold">${avgFirstOrderValue.toFixed(2)}</p>
+                      <p className="text-[10px] text-muted-foreground">Avg First Order Value</p>
+                    </div>
+                    <div className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold">${totalFirstRevenue.toFixed(0)}</p>
+                      <p className="text-[10px] text-muted-foreground">First Order Revenue</p>
+                    </div>
+                  </div>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={months.map(m => ({ month: m.slice(5), newCustomers: monthlyData[m].newCustomers, revenue: monthlyData[m].firstOrderRevenue }))}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                        <XAxis dataKey="month" className="text-[10px]" tick={{ fontSize: 10 }} />
+                        <YAxis className="text-[10px]" tick={{ fontSize: 10 }} />
+                        <Tooltip contentStyle={{ fontSize: 11 }} />
+                        <Bar dataKey="newCustomers" fill="hsl(var(--primary))" name="New Customers" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+
+        {/* Forecast vs Actual Sales */}
+        <Card>
+          <CardHeader className="p-4 pb-2">
+            <CardTitle className="text-sm">Forecast vs Actual Sales</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const ordersArr = (orders as any[]) || [];
+              // Build weekly data for last 12 weeks
+              const now = new Date();
+              const weeks: { label: string; actual: number; forecast: number }[] = [];
+              const weeklyRevenues: number[] = [];
+              
+              for (let i = 11; i >= 0; i--) {
+                const weekStart = new Date(now);
+                weekStart.setDate(weekStart.getDate() - (i * 7 + 6));
+                const weekEnd = new Date(now);
+                weekEnd.setDate(weekEnd.getDate() - (i * 7));
+                const weekOrders = ordersArr.filter(o => {
+                  const d = new Date(o.created_at);
+                  return d >= weekStart && d <= weekEnd;
+                });
+                const revenue = weekOrders.reduce((s: number, o: any) => s + Number(o.total), 0);
+                weeklyRevenues.push(revenue);
+                weeks.push({
+                  label: `W${12 - i}`,
+                  actual: revenue,
+                  forecast: 0,
+                });
+              }
+              
+              // Simple moving average forecast (3-week)
+              for (let i = 0; i < weeks.length; i++) {
+                if (i < 3) {
+                  weeks[i].forecast = weeklyRevenues.slice(0, i + 1).reduce((a, b) => a + b, 0) / (i + 1);
+                } else {
+                  weeks[i].forecast = (weeklyRevenues[i - 1] + weeklyRevenues[i - 2] + weeklyRevenues[i - 3]) / 3;
+                }
+              }
+
+              const totalActual = weeklyRevenues.reduce((a, b) => a + b, 0);
+              const totalForecast = weeks.reduce((s, w) => s + w.forecast, 0);
+              const accuracy = totalForecast > 0 ? Math.round((1 - Math.abs(totalActual - totalForecast) / totalForecast) * 100) : 0;
+
+              return (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold">${totalActual.toFixed(0)}</p>
+                      <p className="text-[10px] text-muted-foreground">Actual (12 wks)</p>
+                    </div>
+                    <div className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold">${totalForecast.toFixed(0)}</p>
+                      <p className="text-[10px] text-muted-foreground">Forecast (12 wks)</p>
+                    </div>
+                    <div className="text-center p-2 rounded-lg bg-muted/50">
+                      <p className="text-lg font-bold">{accuracy}%</p>
+                      <p className="text-[10px] text-muted-foreground">Accuracy</p>
+                    </div>
+                  </div>
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={weeks}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                        <XAxis dataKey="label" className="text-[10px]" tick={{ fontSize: 10 }} />
+                        <YAxis className="text-[10px]" tick={{ fontSize: 10 }} />
+                        <Tooltip contentStyle={{ fontSize: 11 }} />
+                        <Line type="monotone" dataKey="actual" stroke="hsl(var(--primary))" strokeWidth={2} name="Actual" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="forecast" stroke="hsl(38, 92%, 50%)" strokeWidth={2} strokeDasharray="5 5" name="Forecast" dot={{ r: 2 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
