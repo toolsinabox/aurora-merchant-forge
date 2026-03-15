@@ -286,8 +286,8 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
 
       setIsRunning(false);
       setCurrentEntity(null);
-      addLog("═══ Migration Complete ═══");
-      toast.success("Migration complete! All data has been imported.");
+      addLog(testMode ? "═══ Test Import Complete ═══" : "═══ Migration Complete ═══");
+      toast.success(testMode ? "Test import complete! Check results before running full import." : "Migration complete! All data has been imported.");
     })();
   }, [addLog]);
 
