@@ -42,7 +42,7 @@ export default function StorefrontContact() {
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
-      if (s) { setStoreId(s.id); setStoreName(s.name); }
+      if (s) { setStoreId(s.id); setStoreName(s.name); setStore(s); }
     });
   }, [storeSlug]);
 
