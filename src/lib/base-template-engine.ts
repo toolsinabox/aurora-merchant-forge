@@ -1054,8 +1054,15 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
     }
     
-    // For product type without a template, generate a default product card
+    // For product type without a template, try loading the theme's thumb template
     if (!itemTemplate && type === "product") {
+      itemTemplate = resolveThemeTemplate("template", { ...ctx, themeFiles: filterThemeFilesByPath(ctx.themeFiles || {}, "thumbs/product") }) 
+        || resolveThemeTemplate("thumbs/product/template", ctx)
+        || "";
+    }
+    // Ultimate fallback: default product card
+    if (!itemTemplate && type === "product") {
+      const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
