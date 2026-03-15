@@ -94,6 +94,18 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "show_shipping_calculator": () => "1",
     "show_breadcrumbs": () => "1",
     "assets_url": () => "/assets",
+    // Social media — empty by default (themes conditionally show these)
+    "social_facebook": () => store.social_facebook || "",
+    "social_twitter": () => store.social_twitter || "",
+    "social_instagram": () => store.social_instagram || "",
+    "social_youtube": () => store.social_youtube || "",
+    "social_pinterest": () => store.social_pinterest || "",
+    "social_google_plus": () => "",
+    "social_tumblr": () => "",
+    "social_linkedin": () => "",
+    // Footer fields
+    "abn": () => store.abn || "",
+    "copyright_year": () => new Date().getFullYear().toString(),
   };
   const resolver = configMap[k];
   if (resolver) return resolver();
