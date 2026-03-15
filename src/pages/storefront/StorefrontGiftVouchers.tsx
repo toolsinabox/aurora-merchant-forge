@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { toast } from "sonner";
 import { Gift, Check, Loader2 } from "lucide-react";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const PRESET_VALUES = [25, 50, 100, 200];
 
 export default function StorefrontGiftVouchers() {
@@ -20,6 +23,7 @@ export default function StorefrontGiftVouchers() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [storeId, setStoreId] = useState("");
+  const [store, setStore] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [voucherCode, setVoucherCode] = useState("");
@@ -36,9 +40,39 @@ export default function StorefrontGiftVouchers() {
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
-      if (s) setStoreId(s.id);
+      if (s) { setStoreId(s.id); setStore(s); }
     });
   }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile =
+      findMainThemeFile(activeTheme, "gift-voucher") ||
+      findMainThemeFile(activeTheme, "gift_voucher") ||
+      findMainThemeFile(activeTheme, "gift-certificate");
+    if (!templateFile?.content) return null;
+
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+
+    const ctx: TemplateContext = {
+      store,
+      basePath,
+      pageType: "gift-voucher",
+      themeFiles: themeFilesMap,
+      themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Purchase a Gift Voucher", description: "Send a thoughtful gift to someone special" },
+    };
+
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi,
+      (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath]);
 
   const selectedValue = form.customValue ? Number(form.customValue) : form.value;
 
@@ -65,7 +99,6 @@ export default function StorefrontGiftVouchers() {
       } as any);
 
       if (error) throw error;
-      // Send gift voucher email to recipient
       const { data: inserted } = await supabase.from("gift_vouchers").select("id").eq("code", code).eq("store_id", storeId).maybeSingle();
       if (inserted?.id) {
         supabase.functions.invoke("gift-voucher-email", {
@@ -108,6 +141,14 @@ export default function StorefrontGiftVouchers() {
     );
   }
 
+  if (themeHtml) {
+    return (
+      <StorefrontLayout>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
     <StorefrontLayout>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -122,7 +163,6 @@ export default function StorefrontGiftVouchers() {
         <form onSubmit={handleSubmit}>
           <Card>
             <CardContent className="p-6 space-y-6">
-              {/* Value Selection */}
               <div className="space-y-3">
                 <Label className="text-base font-semibold">Select Value</Label>
                 <div className="grid grid-cols-4 gap-3">
@@ -154,7 +194,6 @@ export default function StorefrontGiftVouchers() {
                 </div>
               </div>
 
-              {/* Recipient */}
               <div className="space-y-3">
                 <Label className="text-base font-semibold">Recipient Details</Label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -179,7 +218,6 @@ export default function StorefrontGiftVouchers() {
                 </div>
               </div>
 
-              {/* Sender */}
               <div className="space-y-1.5">
                 <Label className="text-sm">Your Name</Label>
                 <Input
@@ -189,7 +227,6 @@ export default function StorefrontGiftVouchers() {
                 />
               </div>
 
-              {/* Message */}
               <div className="space-y-1.5">
                 <Label className="text-sm">Personal Message</Label>
                 <Textarea
@@ -200,7 +237,6 @@ export default function StorefrontGiftVouchers() {
                 />
               </div>
 
-              {/* Summary */}
               <div className="bg-muted/30 rounded-lg p-4 flex items-center justify-between">
                 <span className="font-medium">Total</span>
                 <span className="text-xl font-bold">${selectedValue > 0 ? selectedValue.toFixed(2) : "0.00"}</span>

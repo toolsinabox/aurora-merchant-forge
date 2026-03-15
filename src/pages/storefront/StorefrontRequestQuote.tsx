@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -10,12 +10,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { toast } from "sonner";
 import { FileText, Check, Loader2 } from "lucide-react";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontRequestQuote() {
   const { storeSlug: paramSlug } = useParams();
   const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const [storeId, setStoreId] = useState("");
   const [storeName, setStoreName] = useState("");
+  const [store, setStore] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
@@ -25,9 +30,39 @@ export default function StorefrontRequestQuote() {
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
-      if (s) { setStoreId(s.id); setStoreName(s.name); }
+      if (s) { setStoreId(s.id); setStoreName(s.name); setStore(s); }
     });
   }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile =
+      findMainThemeFile(activeTheme, "quote") ||
+      findMainThemeFile(activeTheme, "request-quote") ||
+      findMainThemeFile(activeTheme, "request_quote");
+    if (!templateFile?.content) return null;
+
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+
+    const ctx: TemplateContext = {
+      store,
+      basePath,
+      pageType: "quote",
+      themeFiles: themeFilesMap,
+      themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Request a Quote", description: "Tell us what you need and we'll send you a personalized quote" },
+    };
+
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi,
+      (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +102,14 @@ export default function StorefrontRequestQuote() {
             Submit Another Request
           </Button>
         </div>
+      </StorefrontLayout>
+    );
+  }
+
+  if (themeHtml) {
+    return (
+      <StorefrontLayout storeName={storeName}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
       </StorefrontLayout>
     );
   }

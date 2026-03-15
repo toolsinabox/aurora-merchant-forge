@@ -1593,6 +1593,12 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
   // [%form%] — form stubs
   result = processFormBlocks(result, ctx);
   
+  // [%newsletter%] — newsletter signup
+  result = processNewsletterBlock(result, ctx);
+  
+  // [%account%] — account info
+  result = processAccountBlock(result, ctx);
+  
   // [%paging%]
   result = result.replace(/\[%paging[^\]]*%\]([\s\S]*?)\[%\/paging%\]/gi, "");
   
@@ -1605,10 +1611,10 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
 // ── Process [%search%] — search form ──
 function processSearchBlock(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%search\s*([^\]]*?)%\]([\s\S]*?)\[%\/search%\]/gi, (_, _attrs: string, body: string) => {
-    // Just render the body with search URL resolved
     let result = body;
     result = result.replace(/\[@search_url@\]/gi, `${ctx.basePath || ""}/products`);
     result = result.replace(/\[@search_query@\]/gi, ctx.queryParams?.q || "");
+    result = result.replace(/\[@search_results_count@\]/gi, String((ctx.products || []).length));
     return result;
   });
 }
@@ -1617,30 +1623,59 @@ function processSearchBlock(template: string, ctx: TemplateContext): string {
 function processLoginBlock(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%login\s*([^\]]*?)%\]([\s\S]*?)\[%\/login%\]/gi, (_, _attrs: string, body: string) => {
     let result = body;
-    result = result.replace(/\[@login_url@\]/gi, `${ctx.basePath || ""}/login`);
-    result = result.replace(/\[@register_url@\]/gi, `${ctx.basePath || ""}/register`);
+    const bp = ctx.basePath || "";
+    result = result.replace(/\[@login_url@\]/gi, `${bp}/login`);
+    result = result.replace(/\[@register_url@\]/gi, `${bp}/register`);
+    result = result.replace(/\[@forgot_password_url@\]/gi, `${bp}/forgot-password`);
+    result = result.replace(/\[@account_url@\]/gi, `${bp}/account`);
+    result = result.replace(/\[@is_logged_in@\]/gi, ctx.customer ? "1" : "0");
+    result = result.replace(/\[@customer_name@\]/gi, ctx.customer?.name || "");
     return result;
   });
 }
 
-// ── Process [%form%] — generic form blocks ──
+// ── Process [%form%] — generic form blocks with expanded type support ──
 function processFormBlocks(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%form\s+([^\]]*?)%\]([\s\S]*?)\[%\/form%\]/gi, (_, attrs: string, body: string) => {
     const typeMatch = attrs.match(/type:'([^']+)'/i);
     const type = typeMatch?.[1] || "contact";
     let result = body;
-    
-    switch (type) {
-      case "newsletter":
-      case "subscribe":
-        result = result.replace(/\[@form_action@\]/gi, "#");
-        break;
-      case "contact":
-        result = result.replace(/\[@form_action@\]/gi, `${ctx.basePath || ""}/contact-us`);
-        break;
-      default:
-        result = result.replace(/\[@form_action@\]/gi, "#");
-    }
+    const bp = ctx.basePath || "";
+    const urlMap: Record<string, string> = {
+      newsletter: "#", subscribe: "#", contact: `${bp}/contact-us`,
+      login: `${bp}/login`, register: `${bp}/register`, signup: `${bp}/register`,
+      "forgot_password": `${bp}/forgot-password`, "forgot-password": `${bp}/forgot-password`,
+      quote: `${bp}/request-quote`, request_quote: `${bp}/request-quote`,
+      wholesale: `${bp}/wholesale`,
+      "gift_voucher": `${bp}/gift-vouchers`, "gift-voucher": `${bp}/gift-vouchers`,
+      "track_order": `${bp}/track-order`, "track-order": `${bp}/track-order`,
+      review: "#", write_review: "#",
+    };
+    result = result.replace(/\[@form_action@\]/gi, urlMap[type] || "#");
+    return result;
+  });
+}
+
+// ── Process [%newsletter%] — newsletter signup block ──
+function processNewsletterBlock(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%newsletter\s*([^\]]*?)%\]([\s\S]*?)\[%\/newsletter%\]/gi, (_, _attrs: string, body: string) => {
+    return body.replace(/\[@form_action@\]/gi, "#").replace(/\[@newsletter_url@\]/gi, "#");
+  });
+}
+
+// ── Process [%account%] — account info blocks ──
+function processAccountBlock(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%account\s*([^\]]*?)%\]([\s\S]*?)\[%\/account%\]/gi, (_, _attrs: string, body: string) => {
+    let result = body;
+    const bp = ctx.basePath || "";
+    result = result.replace(/\[@account_url@\]/gi, `${bp}/account`);
+    result = result.replace(/\[@orders_url@\]/gi, `${bp}/account`);
+    result = result.replace(/\[@wishlist_url@\]/gi, `${bp}/wishlist`);
+    result = result.replace(/\[@logout_url@\]/gi, `${bp}/login`);
+    result = result.replace(/\[@customer_name@\]/gi, ctx.customer?.name || "");
+    result = result.replace(/\[@customer_email@\]/gi, ctx.customer?.email || "");
+    result = result.replace(/\[@total_orders@\]/gi, String(ctx.customer?.total_orders || 0));
+    result = result.replace(/\[@total_spent@\]/gi, `$${Number(ctx.customer?.total_spent || 0).toFixed(2)}`);
     return result;
   });
 }
