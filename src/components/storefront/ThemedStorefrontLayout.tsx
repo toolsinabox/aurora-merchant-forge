@@ -217,7 +217,9 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<\/?body[^>]*>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-      .replace(/<link[^>]*>/gi, "");
+      // Strip local theme asset links but preserve CDN links (Google Fonts, etc.)
+      .replace(/<link[^>]*href=["'][^"']*\/assets\/themes\/[^"']*["'][^>]*>/gi, "")
+      .replace(/<link[^>]*href=["'](?!https?:\/\/|\/\/)[^"']*["'][^>]*>/gi, "");
     
     return { headContent, bodyContent };
   }, [headerFile, baseCtx]);
