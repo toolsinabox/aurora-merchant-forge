@@ -112,10 +112,16 @@ serve(async (req) => {
           const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
 
           if (p.Images) {
-            const imgs = Array.isArray(p.Images) ? p.Images : [p.Images];
+            // Maropost returns Images as {Image: [{URL:..., ThumbURL:...}]} or direct array
+            let rawImgs = p.Images;
+            if (rawImgs && !Array.isArray(rawImgs) && rawImgs.Image) {
+              rawImgs = rawImgs.Image; // unwrap nested {Image: [...]}
+            }
+            const imgs = Array.isArray(rawImgs) ? rawImgs : [rawImgs];
             for (let i = 0; i < imgs.length; i++) {
               const img = imgs[i];
-              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL;
+              if (!img) continue;
+              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL || img?.MediumURL || img?.SmallURL;
               if (url) {
                 const rehostedUrl = await rehostImage(url, slug, i);
                 imagesArr.push(rehostedUrl);
@@ -140,9 +146,9 @@ serve(async (req) => {
             promo_start: sanitizeDate(p.PromotionStartDate || p.PromotionStartDateLocal),
             promo_end: sanitizeDate(p.PromotionExpiryDate || p.PromotionExpiryDateLocal),
             promo_tag: p.PromotionLabel || p.PromotionID || null,
-            status: toBool(p.IsActive) ? "active" : "draft",
+            status: toBool(p.IsActive) ? "active" : "draft", // constraint: draft, active, archived
             is_active: toBool(p.IsActive),
-            is_approved: toBool(p.Approved) || toBool(p.IsApproved) || true,
+            is_approved: toBool(p.Approved) || toBool(p.IsApproved),
             seo_title: p.SEOPageTitle || null,
             seo_description: p.SEOMetaDescription || null,
             seo_keywords: p.SEOMetaKeywords || null,
@@ -550,21 +556,25 @@ serve(async (req) => {
       const items = source_data?.Order || source_data || [];
       const orders = Array.isArray(items) ? items : [items];
 
+      // DB constraint: pending, processing, shipped, delivered, cancelled
       const statusMap: Record<string, string> = {
         "New": "pending", "New Backorder": "pending", "Pending": "pending",
         "Pick": "processing", "Pack": "processing", "Processing": "processing",
-        "On Hold": "on_hold", "Dispatched": "shipped", "Shipped": "shipped",
-        "Cancelled": "cancelled", "Completed": "completed",
+        "On Hold": "pending", "Dispatched": "shipped", "Shipped": "shipped",
+        "Cancelled": "cancelled", "Completed": "delivered",
         "Awaiting Payment": "pending", "Back Order": "pending",
+        "Delivered": "delivered",
       };
 
+      // DB constraint: pending, paid, refunded
       const paymentStatusMap: Record<string, string> = {
-        "Paid": "paid", "Partially Paid": "partially_paid", "Unpaid": "pending",
+        "Paid": "paid", "Partially Paid": "paid", "Unpaid": "pending",
         "Refunded": "refunded", "Pending": "pending",
       };
 
       const fulfillmentMap: Record<string, string> = {
         "Dispatched": "fulfilled", "Shipped": "fulfilled", "Completed": "fulfilled",
+        "Delivered": "fulfilled",
         "Pick": "partial", "Pack": "partial", "Processing": "partial",
         "New": "unfulfilled", "Pending": "unfulfilled", "Cancelled": "unfulfilled",
       };
@@ -582,11 +592,18 @@ serve(async (req) => {
           // Count line items for items_count
           const lineItems = o.OrderLine ? (Array.isArray(o.OrderLine) ? o.OrderLine : [o.OrderLine]) : [];
 
+          // Validate against DB constraints — never let unknown values through
+          const VALID_ORDER_STATUS = new Set(["pending", "processing", "shipped", "delivered", "cancelled"]);
+          const VALID_PAYMENT_STATUS = new Set(["pending", "paid", "refunded"]);
+          
+          const rawStatus = statusMap[o.Status] || statusMap[o.OrderStatus] || "pending";
+          const rawPayStatus = paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : "pending");
+          
           const orderData: Record<string, any> = {
             store_id,
             order_number: originalOrderNumber,
-            status: statusMap[o.Status] || statusMap[o.OrderStatus] || "pending",
-            payment_status: paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : "pending"),
+            status: VALID_ORDER_STATUS.has(rawStatus) ? rawStatus : "pending",
+            payment_status: VALID_PAYMENT_STATUS.has(rawPayStatus) ? rawPayStatus : "pending",
             fulfillment_status: fulfillmentMap[o.Status] || "unfulfilled",
             subtotal: toFloat(o.SubTotal) || (grandTotal - taxTotal - shippingTotal + discountTotal),
             tax: taxTotal,
@@ -674,16 +691,25 @@ serve(async (req) => {
             }
           }
 
-          // Order payments
+          // Order payments — get store owner as recorded_by (required NOT NULL field)
           if (o.OrderPayment && !dry_run && orderId !== "dry-run") {
-            const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
-            for (const pay of payments) {
-              await safe(supabase.from("order_payments").insert({
-                order_id: orderId, store_id,
-                amount: toFloat(pay.Amount) || 0,
-                payment_method: pay.PaymentMethod || pay.PaymentType || "unknown",
-                reference: pay.TransactionID || pay.PaymentID || null,
-              } as any));
+            // Get store owner for recorded_by
+            const { data: storeOwner } = await supabase
+              .from("stores").select("owner_id").eq("id", store_id).single();
+            const recordedBy = storeOwner?.owner_id;
+            
+            if (recordedBy) {
+              const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
+              for (const pay of payments) {
+                await safe(supabase.from("order_payments").insert({
+                  order_id: orderId, store_id,
+                  amount: toFloat(pay.Amount) || 0,
+                  payment_method: pay.PaymentMethod || pay.PaymentType || "unknown",
+                  reference: pay.TransactionID || pay.PaymentID || null,
+                  recorded_by: recordedBy,
+                  created_at: sanitizeDate(pay.DatePaid || pay.DateCreated) || new Date().toISOString(),
+                } as any));
+              }
             }
           }
 
@@ -942,8 +968,53 @@ serve(async (req) => {
     }
 
     // ══════════════════════════════════════════════════════════
-    // ── IMPORT REDIRECTS (301) ──
+    // ── IMPORT PAYMENTS (standalone — link to orders by OrderID) ──
     // ══════════════════════════════════════════════════════════
+    else if (action === "import_payments") {
+      const items = source_data?.Payment || source_data || [];
+      const payments = Array.isArray(items) ? items : [items];
+
+      const { data: storeOwner } = await supabase
+        .from("stores").select("owner_id").eq("id", store_id).single();
+      const recordedBy = storeOwner?.owner_id;
+
+      for (const pay of payments) {
+        try {
+          if (!recordedBy) { failed++; errors.push(`Payment: No store owner for recorded_by`); continue; }
+          const orderRef = pay.OrderID || pay.OrderNumber;
+          if (!orderRef) { failed++; errors.push(`Payment ${pay.PaymentID}: No OrderID`); continue; }
+
+          const { data: order } = await supabase
+            .from("orders").select("id").eq("store_id", store_id).eq("order_number", String(orderRef)).maybeSingle();
+          if (!order) { failed++; errors.push(`Payment ${pay.PaymentID}: Order ${orderRef} not found`); continue; }
+
+          const ref = String(pay.TransactionID || pay.PaymentID || pay.ReceiptNumber || `pay-${Date.now()}`);
+          const { data: existingPay } = await supabase
+            .from("order_payments").select("id").eq("order_id", order.id).eq("reference", ref).maybeSingle();
+
+          const payData: Record<string, any> = {
+            order_id: order.id, store_id,
+            amount: toFloat(pay.Amount) || toFloat(pay.TotalAmount) || 0,
+            payment_method: pay.PaymentMethod || pay.PaymentType || pay.Gateway || "unknown",
+            reference: ref, recorded_by: recordedBy,
+            created_at: sanitizeDate(pay.DatePaid || pay.DateCreated || pay.PaymentDate) || new Date().toISOString(),
+          };
+
+          if (existingPay) {
+            await supabase.from("order_payments").update(payData).eq("id", existingPay.id);
+          } else {
+            const { error } = await supabase.from("order_payments").insert(payData);
+            if (error) throw error;
+          }
+          imported++;
+        } catch (err: any) {
+          failed++;
+          errors.push(`Payment ${pay.PaymentID || "unknown"}: ${err.message}`);
+        }
+      }
+    }
+
+    //
     else if (action === "import_redirects") {
       const items = source_data?.Redirect || source_data || [];
       const redirects = Array.isArray(items) ? items : [items];

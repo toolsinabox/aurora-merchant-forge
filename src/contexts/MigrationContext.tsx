@@ -67,7 +67,7 @@ const IMPORT_ACTION_MAP: Record<string, string> = {
   content: "import_content", vouchers: "import_vouchers",
   suppliers: "import_suppliers", warehouses: "import_warehouses",
   shipping: "import_shipping", rma: "import_rma",
-  templates: "import_theme_css", payments: "import_orders",
+  templates: "import_theme_css", payments: "import_payments",
   currency: "import_currencies", redirects: "import_redirects",
 };
 
@@ -161,7 +161,7 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
         entity.entity === "customers" ? "Customer" : entity.entity === "orders" ? "Order" :
         entity.entity === "content" ? "Content" : entity.entity === "vouchers" ? "Voucher" :
         entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
-        entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
+        entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : entity.entity === "payments" ? "Payment" : "Item";
 
       let result: any = null;
       let lastError: any = null;
