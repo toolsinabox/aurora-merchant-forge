@@ -213,7 +213,17 @@ export default function ThemeFiles() {
     await supabase.from("theme_packages" as any).update({ is_active: false }).eq("store_id", currentStore.id);
     await supabase.from("theme_packages" as any).update({ is_active: true }).eq("id", themeId);
     qc.invalidateQueries({ queryKey: ["theme_packages"] });
+    qc.invalidateQueries({ queryKey: ["active_theme"] });
     toast.success("Active theme updated");
+  };
+
+  const setDefaultTheme = async () => {
+    if (!currentStore) return;
+    // Deactivate all themes — storefront will use the built-in default layout
+    await supabase.from("theme_packages" as any).update({ is_active: false }).eq("store_id", currentStore.id);
+    qc.invalidateQueries({ queryKey: ["theme_packages"] });
+    qc.invalidateQueries({ queryKey: ["active_theme"] });
+    toast.success("Switched to Default theme");
   };
 
   const duplicateTheme = async (theme: any) => {
