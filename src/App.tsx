@@ -384,6 +384,7 @@ const App = () => (
                    <Route path="/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
                    <Route path="/maropost-migration" element={<RequireAuth><MaropostMigration /></RequireAuth>} />
                    <Route path="/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
+                   <Route path="/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
