@@ -284,7 +284,59 @@ function processLoadTemplate(template: string, ctx: TemplateContext, depth = 0):
   });
 }
 
-// ── Resolve a theme template file by name ──
+/** Build a Maropost-compatible product item object from our DB product */
+function buildMaropostProductItem(p: Record<string, any>, idx: number, basePath: string): Record<string, any> {
+  const save = p.compare_at_price && p.price ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
+  const imageUrl = resolveStorageUrl(p.images?.[0]) || "/placeholder.svg";
+  return {
+    ...p,
+    // Maropost field mappings
+    ad_id: p.id,
+    inventory_id: p.id,
+    SKU: p.sku || "",
+    sku: p.sku || "",
+    name: p.title || "",
+    model: p.title || p.model_number || "",
+    headline: p.title || "",
+    URL: `${basePath}/product/${p.slug || p.id}`,
+    url: `${basePath}/product/${p.slug || p.id}`,
+    image_url: imageUrl,
+    thumb: imageUrl,
+    store_price: p.price || 0,
+    retail: p.compare_at_price || p.price || 0,
+    rrp: p.compare_at_price || p.price || 0,
+    save: save,
+    inpromo: p.promo_price ? 1 : 0,
+    promo_price: p.promo_price || p.price,
+    store_quantity: p.stock_on_hand ?? 10, // Default to in-stock
+    preorder: p.preorder ? 1 : 0,
+    has_child: (p.has_variants || p.variant_count > 0) ? 1 : 0,
+    editable_bundle: p.is_kit ? 1 : 0,
+    reviews: p.review_count || 0,
+    "data:rating": p.average_rating || 0,
+    rndm: Math.random().toString(36).substring(2, 8),
+    count: idx,
+    index: idx,
+    // Misc fields (dimensions etc.)
+    misc40: p.misc40 || p.dimensions || "",
+    misc45: p.misc45 || p.length || "",
+  };
+}
+
+/** Filter themeFiles to only include files under a specific path */
+function filterThemeFilesByPath(files: Record<string, string>, pathPrefix: string): Record<string, string> {
+  const filtered: Record<string, string> = {};
+  for (const [key, value] of Object.entries(files)) {
+    if (key.toLowerCase().includes(pathPrefix.toLowerCase())) {
+      // Re-key to just the filename for resolution
+      const parts = key.split("/");
+      filtered[parts[parts.length - 1]] = value;
+      filtered[key] = value;
+    }
+  }
+  return filtered;
+}
+
 function resolveThemeTemplate(templateName: string, ctx: TemplateContext): string | null {
   if (!templateName) return null;
   const files = ctx.themeFiles || {};
