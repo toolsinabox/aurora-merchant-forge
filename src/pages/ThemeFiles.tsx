@@ -595,6 +595,23 @@ export default function ThemeFiles() {
           <>
             {/* Theme selector bar */}
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Default (built-in) theme option */}
+              {(() => {
+                const noActiveTheme = !themes.some((t: any) => t.is_active);
+                return (
+                  <Button
+                    variant={noActiveTheme ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs gap-1.5"
+                    onClick={setDefaultTheme}
+                  >
+                    <Palette className="h-3.5 w-3.5" />
+                    Default
+                    {noActiveTheme && <Badge variant="secondary" className="text-[8px] h-4 px-1 ml-1 bg-primary/20 text-primary">Active</Badge>}
+                  </Button>
+                );
+              })()}
+
               {themes.map((theme: any) => (
                 <div key={theme.id} className="flex items-center">
                   <Button
