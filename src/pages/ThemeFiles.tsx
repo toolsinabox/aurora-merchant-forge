@@ -146,7 +146,7 @@ export default function ThemeFiles() {
   // UI state
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [editorTab, setEditorTab] = useState("code");
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(THEME_FOLDERS.map(f => f.key)));
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editFileName, setEditFileName] = useState("");
