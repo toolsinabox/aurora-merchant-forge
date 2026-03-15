@@ -163,6 +163,28 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
 const SCOPE_SELECTOR = "#neto-theme";
 
+/**
+ * Rewrite relative image/asset paths in rendered HTML to point at the theme-assets storage bucket.
+ * Handles src="img/foo.png", src="css/foo.png", url(img/foo.png), etc.
+ * Skips URLs that are already absolute (http/https/data://).
+ */
+function rewriteAssetUrls(html: string, assetBase: string): string {
+  if (!assetBase) return html;
+  // Rewrite src="..." and href="..." that are relative paths to theme assets
+  // Match common asset extensions
+  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+  return html
+    .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+      if (!assetExt.test(path)) return match;
+      const cleanPath = path.replace(/^\/+/, "");
+      return `${attr}="${assetBase}/${cleanPath}"`;
+    })
+    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
+      const cleanPath = path.replace(/^\/+/, "").trim();
+      return `url("${assetBase}/${cleanPath}")`;
+    });
+}
+
 /** The actual themed shell that renders header/footer from B@SE templates */
 function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
