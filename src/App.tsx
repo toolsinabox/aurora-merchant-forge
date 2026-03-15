@@ -146,9 +146,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <MigrationProvider>
           <CartProvider>
           <WishlistProvider>
           <CompareProvider>
+            <MigrationProgressWidget />
             <Routes>
               {isSubdomainMode ? (
                 <>
