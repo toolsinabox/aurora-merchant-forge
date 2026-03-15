@@ -34,7 +34,7 @@ const ACTION_MAP: Record<string, string> = {
 
 // Minimal selectors for scanning/counting (fast, small response)
 const SCAN_SELECTORS: Record<string, string[]> = {
-  get_products: ["ID", "Name", "ParentSKU"],
+  get_products: ["ID", "SKU", "Name", "ParentSKU"],
   get_categories: ["CategoryID", "CategoryName"],
   get_customers: ["Username", "EmailAddress"],
   get_orders: ["OrderID", "GrandTotal"],
