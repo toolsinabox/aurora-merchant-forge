@@ -43,6 +43,7 @@ import ActivityLog from "./pages/ActivityLog.tsx";
 import ImportWizard from "./pages/ImportWizard.tsx";
 import ExportWizard from "./pages/ExportWizard.tsx";
 import Templates from "./pages/Templates.tsx";
+import ThemeFiles from "./pages/ThemeFiles.tsx";
 import FeatureAudit from "./pages/FeatureAudit.tsx";
 import Suppliers from "./pages/Suppliers.tsx";
 import GiftVouchers from "./pages/GiftVouchers.tsx";
