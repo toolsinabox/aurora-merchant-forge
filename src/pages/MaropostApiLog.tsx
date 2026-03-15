@@ -314,7 +314,7 @@ export default function MaropostApiLog() {
       for (const [path, zipEntry] of Object.entries(zip.files)) {
         if (zipEntry.dir) continue;
         const ext = path.split(".").pop()?.toLowerCase() || "";
-        const size = zipEntry._data?.uncompressedSize || 0;
+        const size = (zipEntry as any)._data?.uncompressedSize || 0;
         let type = "other";
         if (["html", "htm", "tpl", "template"].includes(ext)) type = "template";
         else if (["css", "scss", "less"].includes(ext)) type = "css";
