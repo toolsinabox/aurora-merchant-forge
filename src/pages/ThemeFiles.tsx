@@ -531,9 +531,9 @@ export default function ThemeFiles() {
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 p-2 border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 rounded-md">
-                <AlertCircle className="h-3.5 w-3.5 text-amber-600 shrink-0 mt-0.5" />
-                <p className="text-[10px] text-amber-700 dark:text-amber-400">
+              <div className="flex items-start gap-2 p-2 border border-destructive/30 bg-destructive/5 rounded-md">
+                <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0 mt-0.5" />
+                <p className="text-[10px] text-destructive/80">
                   Existing files with matching slugs will be overwritten. New files will be created. This cannot be undone.
                 </p>
               </div>
