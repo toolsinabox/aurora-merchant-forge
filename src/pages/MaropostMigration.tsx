@@ -982,10 +982,14 @@ export default function MaropostMigration() {
                 </AlertDescription>
               </Alert>
 
-              <div className="flex items-center gap-3 pt-4">
-                <Button onClick={startImport} disabled={!entities.some(e => e.selected)}>
+              <div className="flex items-center gap-3 pt-4 flex-wrap">
+                <Button onClick={() => startImport(true)} variant="outline" disabled={!entities.some(e => e.selected)}>
+                  <Zap className="h-4 w-4 mr-2" />
+                  Test Import (~3 items each)
+                </Button>
+                <Button onClick={() => startImport(false)} disabled={!entities.some(e => e.selected)}>
                   <Download className="h-4 w-4 mr-2" />
-                  {dryRun ? "Dry Run" : "Start Import"} ({entities.filter(e => e.selected).length} entities)
+                  {dryRun ? "Dry Run" : "Full Import"} ({entities.filter(e => e.selected).length} entities)
                 </Button>
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <Checkbox checked={dryRun} onCheckedChange={(v) => setDryRun(!!v)} />
