@@ -337,7 +337,7 @@ serve(async (req) => {
             }
           }
 
-          await logEntity("product", p.ID || p.ParentSKU || slug, productId);
+          await logEntity("product", p.ID || p.SKU || p.ParentSKU || slug, productId);
           imported++;
         } catch (err: any) {
           failed++;
