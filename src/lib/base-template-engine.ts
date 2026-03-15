@@ -1268,8 +1268,11 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining [%tag%]...[%/tag%] pairs that weren't handled
-  // Only remove simple known-safe ones
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|url_encode)[^\]]*%\]/gi, "");
+  // Remove remaining [%tag ...%]...[%END tag%] blocks
+  result = result.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
+  // Remove leftover [@...@] value tags
+  result = result.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
   return result;
 }
 
