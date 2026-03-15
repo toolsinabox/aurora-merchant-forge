@@ -1142,10 +1142,11 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     
     // Default product card if no template
     if (!itemTemplate && type === "products") {
+      const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
-            <a href="/product/[@id@]">
+            <a href="${bp}/product/[@id@]">
               <img src="[@image_url@]" alt="[@title@]" class="img-fluid" loading="lazy" />
               <div class="product-card__info">
                 <h3 class="product-card__title">[@title@]</h3>
