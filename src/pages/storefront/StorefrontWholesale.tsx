@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { toast } from "sonner";
 import { Building, CheckCircle } from "lucide-react";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontWholesale() {
   const { storeSlug: paramSlug } = useParams();
@@ -32,8 +36,39 @@ export default function StorefrontWholesale() {
     resolveStoreBySlug(storeSlug, supabase).then((s) => s && setStore(s));
   }, [storeSlug]);
 
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile =
+      findMainThemeFile(activeTheme, "wholesale") ||
+      findMainThemeFile(activeTheme, "trade") ||
+      findMainThemeFile(activeTheme, "wholesale-application");
+    if (!templateFile?.content) return null;
+
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const basePath = storeSlug ? `/store/${storeSlug}` : "";
+
+    const ctx: TemplateContext = {
+      store,
+      basePath,
+      pageType: "wholesale",
+      themeFiles: themeFilesMap,
+      themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Wholesale Application", description: "Apply for a wholesale account to access trade pricing and bulk ordering." },
+    };
+
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi,
+      (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, storeSlug]);
+
   const validateABN = (abn: string): boolean => {
-    if (!abn) return true; // optional field
+    if (!abn) return true;
     const cleaned = abn.replace(/\s/g, "");
     if (!/^\d{11}$/.test(cleaned)) return false;
     const weights = [10, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
@@ -79,6 +114,14 @@ export default function StorefrontWholesale() {
             Thank you for your wholesale application. We'll review your details and get back to you shortly.
           </p>
         </div>
+      </StorefrontLayout>
+    );
+  }
+
+  if (themeHtml) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
       </StorefrontLayout>
     );
   }

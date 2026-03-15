@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,11 @@ import { StatusBadge } from "@/components/admin/StatusBadge";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Package, Truck, CheckCircle2, Clock, XCircle, ExternalLink, MapPin } from "lucide-react";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 const STATUS_STEPS = [
   { key: "pending", label: "Order Placed", icon: Clock },
@@ -53,12 +57,49 @@ function OrderTracker({ status }: { status: string }) {
 
 export default function StorefrontTrackOrder() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const [orderNum, setOrderNum] = useState("");
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<any>(null);
   const [shipments, setShipments] = useState<any[]>([]);
   const [notFound, setNotFound] = useState(false);
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => s && setStore(s));
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile =
+      findMainThemeFile(activeTheme, "track-order") ||
+      findMainThemeFile(activeTheme, "track_order") ||
+      findMainThemeFile(activeTheme, "order-tracking");
+    if (!templateFile?.content) return null;
+
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+
+    const ctx: TemplateContext = {
+      store,
+      basePath,
+      pageType: "track-order",
+      order: order || undefined,
+      themeFiles: themeFilesMap,
+      themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Track Your Order" },
+    };
+
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi,
+      (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, order, basePath]);
 
   const handleSearch = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -90,6 +131,15 @@ export default function StorefrontTrackOrder() {
     setShipments(ships || []);
     setLoading(false);
   };
+
+  // Theme rendering is display-only; interactive tracking uses React fallback
+  if (themeHtml && !order) {
+    return (
+      <StorefrontLayout>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
 
   return (
     <StorefrontLayout>
