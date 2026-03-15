@@ -37,6 +37,8 @@ export interface TemplateContext {
   categories?: Record<string, any>[];
   /** Products for listings */
   products?: Record<string, any>[];
+  /** Generic key-value overrides (for item conditionals) */
+  [key: string]: any;
 }
 
 // ── Format pipes ──
@@ -80,6 +82,7 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "google_verification": () => store.google_verification || "",
     "related_limit": () => "8",
     "store_currency": () => store.default_currency || store.currency || "AUD",
+    "defaultcurrency": () => store.default_currency || store.currency || "AUD",
     "contact_email": () => store.contact_email || "",
     "phone": () => store.phone || "",
     "address": () => store.address || "",
@@ -95,7 +98,10 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "show_reviews": () => "1",
     "show_shipping_calculator": () => "1",
     "show_breadcrumbs": () => "1",
-    "assets_url": () => "/assets",
+    "assets_url": () => ctx.themeAssetBaseUrl || "/assets",
+    // Purchasing / inventory config
+    "allow_nostock_checkout": () => store.allow_nostock_checkout || "0",
+    "webstore_use_preorder_quantity": () => store.webstore_use_preorder_quantity || "0",
     // Social media — empty by default (themes conditionally show these)
     "social_facebook": () => store.social_facebook || "",
     "social_twitter": () => store.social_twitter || "",
@@ -132,6 +138,12 @@ function resolveField(field: string, ctx: TemplateContext): any {
   // Form/query fields
   if (field.startsWith("form:")) {
     return ctx.queryParams?.[field.replace("form:", "")] || "";
+  }
+
+  // Data fields (e.g., data:rating, data:ratings-count)
+  if (field.startsWith("data:")) {
+    const dataKey = field.replace("data:", "");
+    return ctx[`data:${dataKey}`] || ctx[dataKey] || "";
   }
 
   const productFields: Record<string, () => any> = {
@@ -234,6 +246,9 @@ function resolveField(field: string, ctx: TemplateContext): any {
   const resolver = productFields[field];
   if (resolver) return resolver();
 
+  // Direct context lookup (for item conditionals where item fields are spread onto ctx)
+  if (ctx[field] !== undefined) return ctx[field];
+
   // Dot-path resolution fallback
   const parts = field.split(".");
   let obj: any = ctx;
@@ -307,11 +322,14 @@ function buildMaropostProductItem(p: Record<string, any>, idx: number, basePath:
     rrp: p.compare_at_price || p.price || 0,
     save: save,
     inpromo: p.promo_price ? 1 : 0,
-    promo_price: p.promo_price || p.price,
+    promo_price: p.promo_price || p.price || 0,
     store_quantity: p.stock_on_hand ?? 10, // Default to in-stock
     preorder: p.preorder ? 1 : 0,
+    available_preorder_quantity: p.preorder_quantity || 0,
     has_child: (p.has_variants || p.variant_count > 0) ? 1 : 0,
     editable_bundle: p.is_kit ? 1 : 0,
+    extra: p.extra || 0,
+    min_qty: p.min_qty || p.minimum_quantity || 0,
     reviews: p.review_count || 0,
     "data:rating": p.average_rating || 0,
     rndm: Math.random().toString(36).substring(2, 8),
@@ -320,6 +338,26 @@ function buildMaropostProductItem(p: Record<string, any>, idx: number, basePath:
     // Misc fields (dimensions etc.)
     misc40: p.misc40 || p.dimensions || "",
     misc45: p.misc45 || p.length || "",
+    short_description: p.short_description || "",
+    brand: p.brand || "",
+    description: p.description || "",
+  };
+}
+
+/** Build a Maropost-compatible advert item object */
+function buildMaropostAdvertItem(ad: Record<string, any>, idx: number): Record<string, any> {
+  return {
+    ...ad,
+    ad_id: ad.id,
+    headline: ad.title || ad.name || "",
+    url: ad.link_url || "#",
+    image_url: resolveStorageUrl(ad.image_url) || "",
+    img_width: ad.image_width || ad.img_width || "2880",
+    img_height: ad.image_height || ad.img_height || "810",
+    linktext: ad.button_text || ad.linktext || "Learn More",
+    description: ad.subtitle || ad.description || "",
+    count: idx,
+    index: idx,
   };
 }
 
@@ -398,11 +436,8 @@ function processThemeAssets(template: string, ctx: TemplateContext): string {
 }
 
 // ── Process Maropost [%if%]...[%elseif%]...[%else%]...[%/if%] ──
-// CRITICAL: Use [\s\S]+? instead of [^\]]+? for condition capture because
-// conditions contain [@config:key@] tags which include ] characters.
 function processMaropostConditionals(template: string, ctx: TemplateContext): string {
   // First, pre-resolve all [@...@] tags inside [%if ...%] conditions
-  // This prevents ] characters in value tags from breaking the regex
   let result = template.replace(
     /\[%if\s+([\s\S]*?)%\]/gi,
     (match, cond: string) => {
@@ -434,22 +469,42 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
       /\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i,
       (_, condition: string, body: string) => {
         if (!condition.trim()) return ""; // Empty condition = false
-        let segments = body.split(/\[%elseif\s+[\s\S]*?%\]|\[%else%\]/i);
-        let markers: (string | null)[] = [condition];
         
-        const markerRegex = /\[%(elseif\s+([\s\S]*?)|else)%\]/gi;
-        let m;
-        while ((m = markerRegex.exec(body)) !== null) {
-          if (m[1].toUpperCase() === "ELSE") {
-            markers.push(null);
+        // Split body by elseif/else markers, preserving their conditions
+        const segments: string[] = [];
+        const conditions: (string | null)[] = [condition];
+        
+        // Manually parse elseif/else boundaries in body
+        let remaining = body;
+        let currentSegment = "";
+        
+        const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
+        
+        while (remaining.length > 0) {
+          const match = boundaryRegex.exec(remaining);
+          if (!match) {
+            currentSegment += remaining;
+            remaining = "";
           } else {
-            markers.push(m[2]);
+            currentSegment += remaining.slice(0, match.index);
+            segments.push(currentSegment);
+            currentSegment = "";
+            remaining = remaining.slice(match.index + match[0].length);
+            
+            if (match[1] !== undefined) {
+              // elseif
+              conditions.push(match[1]);
+            } else {
+              // else
+              conditions.push(null);
+            }
           }
         }
+        segments.push(currentSegment);
         
-        for (let i = 0; i < segments.length && i < markers.length; i++) {
-          const cond = markers[i];
-          if (cond === null) return segments[i];
+        for (let i = 0; i < segments.length && i < conditions.length; i++) {
+          const cond = conditions[i];
+          if (cond === null) return segments[i]; // else branch
           if (evaluateCondition(cond, ctx)) return segments[i];
         }
         
@@ -470,17 +525,26 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
   while (condition.startsWith("(") && condition.endsWith(")")) {
     const inner = condition.slice(1, -1).trim();
     if (!inner) break;
+    // Make sure the parens are balanced (not part of separate sub-expressions)
+    let depth = 0;
+    let balanced = true;
+    for (let i = 0; i < inner.length; i++) {
+      if (inner[i] === "(") depth++;
+      if (inner[i] === ")") depth--;
+      if (depth < 0) { balanced = false; break; }
+    }
+    if (!balanced) break;
     condition = inner;
   }
 
   // Support leading operators used by some Neto templates: "or X or Y", "and X and Y"
   condition = condition.replace(/^or\s+/i, "").replace(/^and\s+/i, "").trim();
 
-  // Logical OR / AND
-  const orParts = condition.split(/\s+OR\s+/i);
+  // Logical OR / AND — split on word boundaries only
+  const orParts = splitLogicalOp(condition, "OR");
   if (orParts.length > 1) return orParts.some((part) => evaluateCondition(part, ctx));
 
-  const andParts = condition.split(/\s+AND\s+/i);
+  const andParts = splitLogicalOp(condition, "AND");
   if (andParts.length > 1) return andParts.every((part) => evaluateCondition(part, ctx));
 
   // NOT / !
@@ -489,8 +553,9 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
     return !evaluateCondition(inner, ctx);
   }
 
-  // Comparison operators
-  const compMatch = condition.match(/^(.+?)\s*(eq|ne|!=|==|>|<|>=|<=)\s*(.+)$/i);
+  // Comparison operators — use a more specific regex that avoids matching inside quoted strings
+  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>=|<=|>|<)\s+(.+)$/i) ||
+                    condition.match(/^(.+?)\s*(!=|==|>=|<=|>|<)\s*(.+)$/);
   if (compMatch) {
     const left = resolveConditionOperand(compMatch[1], ctx);
     const right = resolveConditionOperand(compMatch[3], ctx);
@@ -519,6 +584,32 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
          value !== "" && value !== "0" && String(value).toLowerCase() !== "false";
 }
 
+/** Split a condition string by a logical operator (AND/OR), respecting parentheses */
+function splitLogicalOp(condition: string, op: string): string[] {
+  const regex = new RegExp(`\\s+${op}\\s+`, "gi");
+  const parts: string[] = [];
+  let depth = 0;
+  let lastIndex = 0;
+  let match;
+  
+  // Reset regex
+  const testRegex = new RegExp(`\\s+${op}\\s+`, "gi");
+  while ((match = testRegex.exec(condition)) !== null) {
+    // Check parenthesis depth at this position
+    depth = 0;
+    for (let i = 0; i < match.index; i++) {
+      if (condition[i] === '(') depth++;
+      if (condition[i] === ')') depth--;
+    }
+    if (depth === 0) {
+      parts.push(condition.slice(lastIndex, match.index));
+      lastIndex = match.index + match[0].length;
+    }
+  }
+  parts.push(condition.slice(lastIndex));
+  return parts.length > 1 ? parts : [condition];
+}
+
 function resolveConditionOperand(raw: string, ctx: TemplateContext): any {
   const operand = raw.trim();
 
@@ -527,7 +618,17 @@ function resolveConditionOperand(raw: string, ctx: TemplateContext): any {
     return operand.slice(1, -1);
   }
 
-  // Tagged / field values
+  // [@field@] tags — resolve them
+  const tagMatch = operand.match(/^\[@([\w:.]+)(?:\|(\w+))?@\]$/);
+  if (tagMatch) {
+    const val = resolveField(tagMatch[1], ctx);
+    if (val !== undefined && val !== null) {
+      return tagMatch[2] ? applyFormat(val, tagMatch[2]) : val;
+    }
+    return "";
+  }
+
+  // Tagged / field values (bare field name)
   const tagValue = resolveTagValue(operand, ctx);
   if (tagValue !== undefined && tagValue !== null && tagValue !== "") return tagValue;
 
@@ -558,9 +659,56 @@ function processFormatBlocks(template: string, ctx: TemplateContext): string {
         if (fmt === "#D") return now.getDate().toString();
         if (fmt === "#M") return (now.getMonth() + 1).toString();
         if (fmt === "#Y") return now.getFullYear().toString();
+        // #Y-#M-#d format
+        if (fmt.includes("#Y") || fmt.includes("#M") || fmt.includes("#d")) {
+          return fmt
+            .replace("#Y", now.getFullYear().toString())
+            .replace("#M", (now.getMonth() + 1).toString())
+            .replace("#d", now.getDate().toString())
+            .replace("#D", now.getDate().toString());
+        }
         return now.toLocaleDateString();
       }
-      return new Date(value).toLocaleDateString();
+      if (!value || value === "0000-00-00 00:00:00") return "";
+      try {
+        const d = new Date(value);
+        const fmt = formatMatch?.[1] || "";
+        if (fmt.includes("#Y") || fmt.includes("#M") || fmt.includes("#d")) {
+          return fmt
+            .replace("#Y", d.getFullYear().toString())
+            .replace("#M", (d.getMonth() + 1).toString())
+            .replace("#d", d.getDate().toString())
+            .replace("#D", d.getDate().toString());
+        }
+        return d.toLocaleDateString();
+      } catch {
+        return value;
+      }
+    }
+    
+    if (type === "currency") {
+      const num = parseFloat(content.trim());
+      if (!isNaN(num)) return `$${num.toFixed(2)}`;
+      return content.trim();
+    }
+
+    if (type === "percent") {
+      const num = parseFloat(content.trim());
+      if (!isNaN(num)) return `${Math.round(num)}%`;
+      return content.trim();
+    }
+
+    if (type === "text") {
+      let result = content.trim();
+      if (/rmhtml:'1'|nohtml:'1'/i.test(attrs)) {
+        result = result.replace(/<[^>]*>/g, "");
+      }
+      const maxLenMatch = attrs.match(/maxlength:'(\d+)'/i);
+      if (maxLenMatch) {
+        const maxLen = parseInt(maxLenMatch[1]);
+        if (result.length > maxLen) result = result.slice(0, maxLen) + "…";
+      }
+      return result;
     }
     
     return content;
@@ -595,11 +743,21 @@ function processUrlEncode(template: string): string {
 
 // ── Process [%FORMAT type:'date'%]value[%/FORMAT%] (uppercase variant) ──
 function processFormatDate(template: string): string {
-  return template.replace(/\[%FORMAT\s+type:'date'%\]([\s\S]*?)\[%\/FORMAT%\]/gi, (_, content: string) => {
+  return template.replace(/\[%FORMAT\s+type:'date'([^%]*)%\]([\s\S]*?)\[%\/FORMAT%\]/gi, (_, attrs: string, content: string) => {
     const val = content.trim();
     if (!val || val === "0000-00-00 00:00:00") return "";
     try {
-      return new Date(val).toLocaleDateString();
+      const d = new Date(val);
+      const formatMatch = (attrs || "").match(/format:'([^']+)'/i);
+      const fmt = formatMatch?.[1] || "";
+      if (fmt.includes("#Y") || fmt.includes("#M") || fmt.includes("#d")) {
+        return fmt
+          .replace("#Y", d.getFullYear().toString())
+          .replace("#M", (d.getMonth() + 1).toString())
+          .replace("#d", d.getDate().toString())
+          .replace("#D", d.getDate().toString());
+      }
+      return d.toLocaleDateString();
     } catch {
       return val;
     }
@@ -610,13 +768,20 @@ function processFormatDate(template: string): string {
 function processFormatText(template: string): string {
   return template.replace(/\[%(?:format|FORMAT)\s+type:'text'([^%]*)%\]([\s\S]*?)\[%\/(?:format|FORMAT)%\]/gi, (_, attrs: string, content: string) => {
     let result = content.trim();
-    if (/rmhtml:'1'/i.test(attrs)) {
+    if (/rmhtml:'1'|nohtml:'1'/i.test(attrs)) {
       result = result.replace(/<[^>]*>/g, "");
     }
     const maxLenMatch = attrs.match(/maxlength:'(\d+)'/i);
     if (maxLenMatch) {
       const maxLen = parseInt(maxLenMatch[1]);
       if (result.length > maxLen) result = result.slice(0, maxLen) + "…";
+    }
+    // Handle trim:'LE2R' and wordlength:'N' — truncate by word
+    const wordLenMatch = attrs.match(/wordlength:'(\d+)'/i);
+    if (wordLenMatch) {
+      const wLen = parseInt(wordLenMatch[1]);
+      const words = result.split(/\s+/);
+      if (words.length > wLen) result = words.slice(0, wLen).join(" ") + "…";
     }
     return result;
   });
@@ -631,10 +796,8 @@ function processAjaxLoader(template: string): string {
 function processCalc(template: string): string {
   return template.replace(/\[%calc\s+([^\]]*?)\s*\/?%\]/gi, (_, expr: string) => {
     try {
-      // Simple expression: "[@count@] + 1" — resolve any remaining numbers
       const cleaned = expr.replace(/[^0-9+\-*/. ()]/g, "").trim();
       if (!cleaned) return "0";
-      // eslint-disable-next-line no-eval
       const result = Function(`"use strict"; return (${cleaned})`)();
       return String(Math.round(Number(result)));
     } catch {
@@ -695,7 +858,6 @@ function resolveUrlTag(attrs: string, base: string, basePath?: string): string {
   const type = typeMatch?.[1] || "";
   const qs = qsMatch?.[1] || "";
   
-  // Use basePath for SPA navigation, fall back to base (domain URL)
   const prefix = basePath || base;
   
   let url = prefix;
@@ -780,8 +942,6 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
     const categories = ctx.categories || [];
     if (categories.length === 0) return "";
 
-    // Pre-process asset_url blocks in the body so that nested [%param default%]...[%/param%]
-    // inside asset_url doesn't confuse the level param extraction regex
     const preprocessedBody = collapseAssetUrlBlocks(body);
 
     const levelTemplates: Record<number, string> = {};
@@ -801,8 +961,6 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
       catMap.get(parentId)!.push(cat);
     }
 
-    // Determine if we should render hierarchically or flat
-    // Maropost content_menu with only level_1 template renders ALL categories flat
     const hasMultipleLevels = Object.keys(levelTemplates).some(k => parseInt(k) > 1);
 
     function renderCat(cat: any, level: number): string {
@@ -816,9 +974,7 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
       html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
       html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
       html = html.replace(/\[@slug@\]/gi, cat.slug || "");
-      // Fix alt attributes that ended up with raw UUIDs — replace with category name
       html = html.replace(/alt="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/gi, `alt="${(cat.name || "Category").replace(/"/g, "&quot;")}"`);
-      // Process any asset_url for category images within the template
       html = processAssetUrl(html, ctx, cat);
       return html;
     }
@@ -833,11 +989,9 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
     if (paramHeaderMatch) result += paramHeaderMatch[1];
 
     if (!hasMultipleLevels) {
-      // Flat mode: render ALL categories using level_1 template (Maropost default behavior)
       const allCats = categories.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
       result += allCats.map((cat: any) => renderCat(cat, 1)).join("");
     } else {
-      // Hierarchical mode: render only top-level, with children at deeper levels
       result += renderLevel(null, 1);
     }
 
@@ -849,56 +1003,42 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
 /**
  * Collapse [%asset_url ...%]...[%/asset_url%] blocks into self-closing placeholders
  * so that nested [%param default%] inside them doesn't break outer param extraction.
- * The placeholder retains the attrs so it can be resolved later by processAssetUrl.
  */
 function collapseAssetUrlBlocks(body: string): string {
-  // Match asset_url block form (with potential nested [%param%] and [%cdn_asset%] inside)
-  // Support both [%/asset_url%] and [%END asset_url%] closing tags
   return body.replace(
-    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url)%\]/gi,
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
     (_, attrs: string) => `[%asset_url ${attrs}/%]`
   );
 }
 
 // ── Process [%asset_url type:'...' id:'...'%]...[%END asset_url%] or [%/asset_url%] ──
 function processAssetUrl(template: string, ctx: TemplateContext, item?: any): string {
-  // Handle [%asset_url type:'adw' id:'[@ad_id@]'%]...[%END asset_url%]
-  // Also [%asset_url type:'category' id:'[@id@]'%]...[%end param%][%END asset_url%]
   let result = template;
   
   // Block variant FIRST (longer match): [%asset_url ...%]...[%END asset_url%]
-  // Use ((?:[^\[\]]|\[@[^\]]*@\])*) to allow [@...@] tags inside attrs
-  result = result.replace(/\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:END\s+asset_url|\/asset_url|\/ASSET_url|end\s+asset_url)%\]/gi, (_, attrs: string, body: string) => {
-    // Pre-resolve [@...@] tags in attrs using item context
-    const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
-      if (item && item[field] !== undefined) return String(item[field]);
-      return String(resolveField(field, ctx) || "");
-    });
-    const url = resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
-    if (url) return url;
-    // If no URL resolved, check for a default param
-    const defaultMatch = body.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
-    if (defaultMatch) {
-      // The default content might contain cdn_asset — resolve it
-      const defaultVal = defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
-      // If it's just a filename (not a full URL/path), use placeholder
-      if (defaultVal && !defaultVal.startsWith("/") && !defaultVal.startsWith("http")) {
-        return "/placeholder.svg";
-      }
-      return defaultVal || "/placeholder.svg";
+  result = result.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
+    (_, attrs: string) => {
+      // Resolve any [@...@] tags in the attrs
+      const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        if (item && item[field] !== undefined) return String(item[field]);
+        return String(resolveField(field, ctx) || "");
+      });
+      return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
     }
-    return "/placeholder.svg";
-  });
+  );
   
-  // Self-closing variant — also allow [@...@] inside attrs
-  result = result.replace(/\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/?%\]/gi, (full, attrs: string) => {
-    // Pre-resolve [@...@] tags in attrs using item context
-    const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
-      if (item && item[field] !== undefined) return String(item[field]);
-      return String(resolveField(field, ctx) || "");
-    });
-    return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
-  });
+  // Self-closing variant: [%asset_url .../%]
+  result = result.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/\s*%\]/gi,
+    (_, attrs: string) => {
+      const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        if (item && item[field] !== undefined) return String(item[field]);
+        return String(resolveField(field, ctx) || "");
+      });
+      return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
+    }
+  );
   
   return result;
 }
@@ -907,7 +1047,6 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
 function resolveStorageUrl(path: string | undefined | null): string {
   if (!path) return "";
   if (path.startsWith("http") || path.startsWith("//") || path.startsWith("/")) return path;
-  // Assume it's a Supabase storage path in the product-images bucket
   const supabaseUrl = typeof window !== "undefined"
     ? (window as any).__VITE_SUPABASE_URL || ""
     : "";
@@ -920,6 +1059,8 @@ function resolveStorageUrl(path: string | undefined | null): string {
 function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): string {
   const typeMatch = attrs.match(/type:'(\w+)'/i);
   const idMatch = attrs.match(/id:'([^']+)'/i);
+  const thumbMatch = attrs.match(/thumb:'(\w+)'/i);
+  const defaultMatch = attrs.match(/default:'([^']+)'/i);
   const type = typeMatch?.[1] || "";
   let id = idMatch?.[1] || "";
   
@@ -929,21 +1070,20 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
     return String(resolveField(field, ctx) || "");
   });
   
-  switch (type) {
+  const defaultUrl = defaultMatch?.[1] || "";
+  
+  switch (type.toLowerCase()) {
     case "adw":
     case "ad":
-      // Return the advert image URL from the item
       if (item?.image_url) return resolveStorageUrl(item.image_url);
-      // Fallback: look up in adverts
       const ad = (ctx.adverts || []).find(a => a.id === id || a.ad_id === id);
       if (ad?.image_url) return resolveStorageUrl(ad.image_url);
-      return "";
+      return defaultUrl || "";
     case "category":
-      // Return category image
       if (item?.image_url) return resolveStorageUrl(item.image_url);
       const cat = (ctx.categories || []).find(c => c.id === id);
       if (cat?.image_url) return resolveStorageUrl(cat.image_url);
-      return "/placeholder.svg";
+      return defaultUrl || "/placeholder.svg";
     case "product":
       // First check item context (current product in loop)
       if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
@@ -954,9 +1094,9 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
       // Look up by SKU (Maropost themes use SKU as the id)
       const prodBySku = (ctx.products || []).find(p => p.sku === id);
       if (prodBySku?.images?.[0]) return resolveStorageUrl(prodBySku.images[0]);
-      return "/placeholder.svg";
+      return defaultUrl || "/placeholder.svg";
     default:
-      return "";
+      return defaultUrl || "";
   }
 }
 
@@ -969,7 +1109,7 @@ function processSetAndWhile(template: string): string {
 
 // ── Process [%FORMAT type:'currency'%]value[%/FORMAT%] ──
 function processFormatCurrency(template: string, ctx: TemplateContext): string {
-  return template.replace(/\[%FORMAT\s+type:'currency'%\]([\s\S]*?)\[%\/FORMAT%\]/gi, (_, content: string) => {
+  return template.replace(/\[%(?:FORMAT|format)\s+type:'currency'%\]([\s\S]*?)\[%\/(?:FORMAT|format)%\]/gi, (_, content: string) => {
     const value = content.trim();
     const num = parseFloat(value);
     if (!isNaN(num)) return `$${num.toFixed(2)}`;
@@ -979,7 +1119,7 @@ function processFormatCurrency(template: string, ctx: TemplateContext): string {
 
 // ── Process [%format type:'percent'%]value[%/format%] ──
 function processFormatPercent(template: string): string {
-  return template.replace(/\[%format\s+type:'percent'%\]([\s\S]*?)\[%\/format%\]/gi, (_, content: string) => {
+  return template.replace(/\[%(?:format|FORMAT)\s+type:'percent'%\]([\s\S]*?)\[%\/(?:format|FORMAT)%\]/gi, (_, content: string) => {
     const value = content.trim();
     const num = parseFloat(value);
     if (!isNaN(num)) return `${Math.round(num)}%`;
@@ -988,20 +1128,34 @@ function processFormatPercent(template: string): string {
 }
 
 // ── Process [%SITE_VALUE id:'counter'%]...[%/SITE_VALUE%] — accumulator/counter blocks ──
-// In Maropost, these accumulate HTML across iterations. We render them inline.
 function processSiteValueBlocks(template: string): string {
-  // [%site_value id:'counter' type:'load'/%] — outputs the accumulated counter HTML
-  // We strip these since we handle the counter inline in advert rendering
   let result = template.replace(/\[%site_value[^\]]*\/%\]/gi, "");
-  // Block form: [%SITE_VALUE id:'counter'%]...[%/SITE_VALUE%]
-  // This defines what to accumulate — we keep the content as-is (it's rendered per-item)
   result = result.replace(/\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi, "");
   return result;
 }
 
 // ── Process [%content_zone id:'...'%]...[%end content_zone%] ──
 function processContentZone(template: string): string {
-  return template.replace(/\[%content_zone[^\]]*%\]([\s\S]*?)\[%end\s+content_zone%\]/gi, "");
+  return template.replace(/\[%content_zone[^\]]*%\]([\s\S]*?)\[%(?:end\s+content_zone|\/content_zone)%\]/gi, "");
+}
+
+// ── Process [%DATA id:'count' if:'==' value:'0'%]...[%END DATA%] ──
+function processDataBlocks(template: string, item?: any): string {
+  return template.replace(
+    /\[%DATA\s+id:'(\w+)'\s+if:'([^']+)'\s+value:'([^']*)'%\]([\s\S]*?)\[%(?:END\s+DATA|\/DATA)%\]/gi,
+    (_, id: string, op: string, value: string, content: string) => {
+      const itemValue = item ? String(item[id] ?? "") : "";
+      let match = false;
+      switch (op) {
+        case "==": match = itemValue === value; break;
+        case "!=": match = itemValue !== value; break;
+        case ">": match = Number(itemValue) > Number(value); break;
+        case "<": match = Number(itemValue) < Number(value); break;
+        default: match = itemValue === value;
+      }
+      return match ? content : "";
+    }
+  );
 }
 
 // ── Strip/handle Neto-specific system tags ──
@@ -1094,17 +1248,9 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       // Text/banner adverts — filter by ad_group if specified
       let filteredAdverts = ctx.adverts || [];
       if (adGroup) {
-        filteredAdverts = filteredAdverts.filter(a => (a.ad_group || "") === adGroup);
+        filteredAdverts = filteredAdverts.filter(a => (a.ad_group || a.placement || "") === adGroup);
       }
-      items = filteredAdverts.slice(0, limit).map((ad, idx) => ({
-        ...ad,
-        ad_id: ad.id,
-        headline: ad.title || ad.name,
-        url: ad.link_url || "#",
-        image_url: resolveStorageUrl(ad.image_url),
-        count: idx,
-        index: idx,
-      }));
+      items = filteredAdverts.slice(0, limit).map((ad, idx) => buildMaropostAdvertItem(ad, idx));
     }
     
     // Collapse nested asset_url blocks so param extraction doesn't break
@@ -1129,7 +1275,6 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     }
     // Ultimate fallback: default product card
     if (!itemTemplate && type === "product") {
-      const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
@@ -1146,30 +1291,24 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     
     if (items.length === 0 && !headerMatch) return "";
     
-    // Render header with total_showing
-    let html = "";
-    if (headerMatch) {
-      let headerHtml = headerMatch[1];
-      headerHtml = headerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
-      // Process conditionals within header (e.g., [%if [@total_showing@] > 1%])
-      headerHtml = processInlineConditionals(headerHtml, items.length, ctx);
-      html += headerHtml;
-    }
-    
-    // Render each item using the body template
+    // Render items and collect counter HTML
+    const counterHtml: string[] = [];
+    let itemsHtml = "";
+
     if (itemTemplate) {
-      const counterHtml: string[] = [];
-      
       items.forEach((item, idx) => {
         let rendered = itemTemplate;
         
         // Replace all [@field@] tags with item values
-        rendered = rendered.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        rendered = rendered.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
           if (field === "count") return String(idx);
           if (field === "index") return String(idx);
           if (field === "total_showing") return String(items.length);
           if (item[field] !== undefined && item[field] !== null) return String(item[field]);
-          // Try resolving from context
+          // Try config fields
+          if (field.startsWith("config:") || field.startsWith("CONFIG:")) {
+            return resolveConfig(field.replace(/^config:/i, ""), ctx);
+          }
           const ctxVal = resolveField(field, ctx);
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
         });
@@ -1178,19 +1317,30 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         rendered = processFormatCurrency(rendered, ctx);
         rendered = processFormatPercent(rendered);
         rendered = processFormatText(rendered);
+        rendered = processFormatBlocks(rendered, ctx);
         
         // Process asset_url tags within item template
         rendered = processAssetUrl(rendered, ctx, item);
         
-        // Process inline conditionals (e.g., [%if [@count@] eq '0'%])
+        // Process DATA blocks
+        rendered = processDataBlocks(rendered, item);
+        
+        // Process inline conditionals
         rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         
         // Clean up per-item template tags
         rendered = processSetAndWhile(rendered);
         rendered = processCacheBlocks(rendered);
-        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, "$1");
+        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
+          return content
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        });
         rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
-        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
+        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
         rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
         
         // Extract and accumulate SITE_VALUE counter content
@@ -1198,31 +1348,46 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         let svMatch;
         while ((svMatch = svRegex.exec(rendered)) !== null) {
           let counterItem = svMatch[1];
+          // Resolve item fields in counter
           counterItem = counterItem.replace(/\[@(\w+)@\]/gi, (__, f: string) => {
             if (f === "count") return String(idx);
             if (item[f] !== undefined) return String(item[f]);
             return "";
           });
+          // Process DATA blocks in counter
+          counterItem = processDataBlocks(counterItem, { ...item, count: idx });
+          // Process conditionals in counter
           counterItem = processItemConditionals(counterItem, item, idx, items.length, ctx);
           counterHtml.push(counterItem);
         }
         // Strip SITE_VALUE blocks from rendered output
         rendered = rendered.replace(/\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi, "");
-        
-        // Strip [%site_value .../%] load tags
         rendered = rendered.replace(/\[%site_value[^\]]*\/%\]/gi, "");
         
-        html += rendered;
+        // Clean remaining unresolved tags in item
+        rendered = rendered.replace(/\[@[\w:.]+@\]/g, "");
+        
+        itemsHtml += rendered;
       });
-      
-      // If header contained a site_value load point, inject counter HTML
-      if (counterHtml.length > 0) {
-        // Replace the counter indicators placeholder in the header
-        // The carousel-indicators <ol> should contain the counter items
-        html = html.replace(/<ol class="carousel-indicators">\s*<\/ol>/i, 
-          `<ol class="carousel-indicators">${counterHtml.join("")}</ol>`);
-      }
     }
+
+    // Build final HTML with header, items, footer
+    let html = "";
+    
+    // Render header with total_showing and counter injection
+    if (headerMatch) {
+      let headerHtml = headerMatch[1];
+      headerHtml = headerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
+      
+      // Inject counter HTML into site_value load point
+      headerHtml = headerHtml.replace(/\[%site_value[^\]]*\/%\]/gi, counterHtml.join(""));
+      
+      // Process conditionals within header
+      headerHtml = processInlineConditionals(headerHtml, items.length, ctx);
+      html += headerHtml;
+    }
+    
+    html += itemsHtml;
     
     // Render footer
     if (footerMatch) {
@@ -1241,20 +1406,69 @@ function processItemConditionals(template: string, item: any, idx: number, total
   let result = template;
   let safety = 0;
 
-  while (result.includes("[%if ") && safety++ < 30) {
+  // Build a merged context with item fields + special fields
+  const mergedCtx: TemplateContext = {
+    ...(ctx || {}),
+  };
+  // Spread item fields onto merged context for field resolution
+  if (item) {
+    for (const [key, value] of Object.entries(item)) {
+      (mergedCtx as any)[key] = value;
+    }
+  }
+  (mergedCtx as any).count = idx;
+  (mergedCtx as any).index = idx;
+  (mergedCtx as any).total_showing = total;
+
+  // First resolve [@...@] tags using item values
+  result = result.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
+    if (field === "count") return String(idx);
+    if (field === "index") return String(idx);
+    if (field === "total_showing") return String(total);
+    if (field.startsWith("config:") || field.startsWith("CONFIG:")) {
+      return resolveConfig(field.replace(/^config:/i, ""), mergedCtx);
+    }
+    if (item && item[field] !== undefined && item[field] !== null) return String(item[field]);
+    const ctxVal = resolveField(field, mergedCtx);
+    return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
+  });
+
+  // Now process if/elseif/else blocks
+  while (result.includes("[%if ") && safety++ < 50) {
     const prev = result;
     result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const parts = body.split(/\[%else%\]/i);
-      const ifBody = parts[0] || "";
-      const elseBody = parts.slice(1).join("[%else%]") || "";
-      const evalCtx = {
-        ...(ctx || {}),
-        ...(item || {}),
-        count: idx,
-        index: idx,
-        total_showing: total,
-      } as TemplateContext;
-      return evaluateCondition(cond, evalCtx) ? ifBody : elseBody;
+      // Split by elseif/else
+      const segments: string[] = [];
+      const conditions: (string | null)[] = [cond];
+      let remaining = body;
+      let currentSegment = "";
+      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
+      
+      while (remaining.length > 0) {
+        const match = boundaryRegex.exec(remaining);
+        if (!match) {
+          currentSegment += remaining;
+          remaining = "";
+        } else {
+          currentSegment += remaining.slice(0, match.index);
+          segments.push(currentSegment);
+          currentSegment = "";
+          remaining = remaining.slice(match.index + match[0].length);
+          if (match[1] !== undefined) {
+            conditions.push(match[1]);
+          } else {
+            conditions.push(null);
+          }
+        }
+      }
+      segments.push(currentSegment);
+      
+      for (let i = 0; i < segments.length && i < conditions.length; i++) {
+        const c = conditions[i];
+        if (c === null) return segments[i]; // else branch
+        if (evaluateCondition(c, mergedCtx)) return segments[i];
+      }
+      return "";
     });
     if (result === prev) break;
   }
@@ -1267,14 +1481,45 @@ function processInlineConditionals(template: string, totalShowing: number, ctx?:
   let result = template;
   let safety = 0;
 
+  const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
+
+  // Pre-resolve [@total_showing@] and similar
+  result = result.replace(/\[@total_showing@\]/gi, String(totalShowing));
+
   while (result.includes("[%if ") && safety++ < 30) {
     const prev = result;
     result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const parts = body.split(/\[%else%\]/i);
-      const ifBody = parts[0] || "";
-      const elseBody = parts.slice(1).join("[%else%]") || "";
-      const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
-      return evaluateCondition(cond, evalCtx) ? ifBody : elseBody;
+      const segments: string[] = [];
+      const conditions: (string | null)[] = [cond];
+      let remaining = body;
+      let currentSegment = "";
+      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
+      
+      while (remaining.length > 0) {
+        const match = boundaryRegex.exec(remaining);
+        if (!match) {
+          currentSegment += remaining;
+          remaining = "";
+        } else {
+          currentSegment += remaining.slice(0, match.index);
+          segments.push(currentSegment);
+          currentSegment = "";
+          remaining = remaining.slice(match.index + match[0].length);
+          if (match[1] !== undefined) {
+            conditions.push(match[1]);
+          } else {
+            conditions.push(null);
+          }
+        }
+      }
+      segments.push(currentSegment);
+      
+      for (let i = 0; i < segments.length && i < conditions.length; i++) {
+        const c = conditions[i];
+        if (c === null) return segments[i];
+        if (evaluateCondition(c, evalCtx)) return segments[i];
+      }
+      return "";
     });
     if (result === prev) break;
   }
@@ -1324,7 +1569,6 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     }
     // Ultimate fallback
     if (!itemTemplate && type === "products") {
-      const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
@@ -1346,10 +1590,14 @@ function processThumbList(template: string, ctx: TemplateContext): string {
       items.forEach((item, idx) => {
         let rendered = itemTemplate;
         
-        rendered = rendered.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        // Replace [@field@] tags
+        rendered = rendered.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
           if (field === "count") return String(idx);
           if (field === "index") return String(idx);
           if (field === "total_showing") return String(items.length);
+          if (field.startsWith("config:") || field.startsWith("CONFIG:")) {
+            return resolveConfig(field.replace(/^config:/i, ""), ctx);
+          }
           if (item[field] !== undefined && item[field] !== null) return String(item[field]);
           const ctxVal = resolveField(field, ctx);
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
@@ -1358,14 +1606,25 @@ function processThumbList(template: string, ctx: TemplateContext): string {
         rendered = processFormatCurrency(rendered, ctx);
         rendered = processFormatPercent(rendered);
         rendered = processFormatText(rendered);
+        rendered = processFormatBlocks(rendered, ctx);
         rendered = processAssetUrl(rendered, ctx, item);
+        rendered = processDataBlocks(rendered, item);
         rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         rendered = processSetAndWhile(rendered);
         rendered = processCacheBlocks(rendered);
-        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, "$1");
+        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
+          return content
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        });
         rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
-        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
+        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
         rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
+        // Clean remaining unresolved tags
+        rendered = rendered.replace(/\[@[\w:.]+@\]/g, "");
         
         html += rendered;
       });
@@ -1436,15 +1695,17 @@ function stripComments(template: string): string {
   return template.replace(/\[#[^#]*#\]/g, "");
 }
 
-// ── Normalize Maropost syntax variants (END tags, spaced closing tags, malformed close tokens) ──
+// ── Normalize Maropost syntax variants ──
 function normalizeTemplateSyntax(template: string): string {
   let result = template;
   // [%END asset_url%] or [%end param%] → [%/asset_url%] or [%/param%]
   result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/gi, "[%/$1%]");
-  // [% / param %] → [%/param%]
+  // [% / param %] or [%/ if%] → [%/param%]
   result = result.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
-  // [%/param%%] → [%/param%]
+  // [%/param%%] → [%/param%] (double percent at end)
   result = result.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
+  // [%/if%%] → [%/if%]
+  result = result.replace(/%\]%\]/g, "%]");
   return result;
 }
 
@@ -1471,14 +1732,17 @@ function processLegacyIncludes(template: string, ctx: TemplateContext, depth = 0
 function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
-  // Remove remaining [%tag%]...[%/tag%] pairs that weren't handled
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode)[^\]]*%\]/gi, "");
-  // Remove IN_WISHLIST blocks entirely (wishlist handled by React context)
-  result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
-  // Remove remaining [%tag ...%]...[%END tag%] blocks
+  // Remove remaining system tags
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA)[^\]]*%\]/gi, "");
+  // Remove IN_WISHLIST blocks entirely
+  result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
+  // Remove remaining block tags
   result = result.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
   // Remove leftover [@...@] value tags
   result = result.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
+  // Remove leftover [%if%]...[%/if%] that couldn't be resolved
+  // (safety: only small blocks to avoid eating large sections)
+  result = result.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
   return result;
 }
 
@@ -1491,7 +1755,7 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 1. Strip comments
   result = stripComments(result);
 
-  // 1b. Normalize syntax variants (END tags, spaced closers)
+  // 1b. Normalize syntax variants (END tags, spaced closers, double percents)
   result = normalizeTemplateSyntax(result);
 
   // 2. Strip cache wrappers
@@ -1540,7 +1804,7 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 13. System tags (breadcrumb, advert, thumb_list, content_menu, etc.)
   result = processSystemTags(result, ctx);
 
-  // 14. Maropost conditionals [%if%]...[%/if%] (after system tags to avoid breaking nested advert/thumb templates)
+  // 14. Maropost conditionals [%if%]...[%/if%]
   result = processMaropostConditionals(result, ctx);
 
   // 15. Block iterators [%crosssell%], etc.
@@ -1552,7 +1816,10 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 17. Value tags [@field@]
   result = processValueTags(result, ctx);
 
-  // 18. Clean up unresolved tags
+  // 18. DATA blocks (global pass)
+  result = processDataBlocks(result);
+
+  // 19. Clean up unresolved tags
   result = cleanupUnresolvedTags(result);
 
   return result;
