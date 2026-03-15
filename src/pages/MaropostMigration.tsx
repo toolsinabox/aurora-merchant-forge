@@ -547,10 +547,18 @@ export default function MaropostMigration() {
           entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
           entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
 
-        const { data: result, error } = await supabase.functions.invoke("maropost-import", {
-          body: { action: importAction, store_id: sid, source_data: { [dataKey]: batch } },
-        });
-        if (error) throw error;
+        let result: any = null;
+        let lastError: any = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const { data, error } = await supabase.functions.invoke("maropost-import", {
+            body: { action: importAction, store_id: sid, source_data: { [dataKey]: batch } },
+          });
+          if (!error) { result = data; lastError = null; break; }
+          lastError = error;
+          addLog(`  ⚠ Retry batch attempt ${attempt + 1} failed, retrying...`);
+          await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+        }
+        if (lastError) throw lastError;
         totalImported += result?.imported || 0;
         totalFailed += result?.failed || 0;
         if (result?.errors) allErrors.push(...result.errors);
