@@ -113,6 +113,33 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "SEOPageHeading", "SEOMetaDescription", "SEOMetaKeywords",
     "DatePosted", "DateUpdated"
   ],
+  get_rma: [
+    "RmaID", "OrderID", "OrderNumber", "Status", "DateCreated", "DateUpdated",
+    "Reason", "ReturnReason", "CustomerNotes", "AdminNotes", "StaffNotes",
+    "RefundAmount", "Action", "Resolution", "DateRequested", "DateResolved",
+    "RmaLine", "RmaLine.SKU", "RmaLine.Quantity", "RmaLine.Reason"
+  ],
+  get_payments: [
+    "PaymentID", "ID", "OrderID", "OrderNumber", "Amount", "TotalAmount",
+    "PaymentMethod", "PaymentType", "Gateway", "TransactionID",
+    "ReceiptNumber", "DatePaid", "DateCreated", "PaymentDate",
+    "CardType", "CardNumber", "Status"
+  ],
+  get_vouchers: [
+    "VoucherCode", "Code", "Value", "Balance", "Active",
+    "ExpiryDate", "RecipientEmail", "RecipientName", "SenderName",
+    "Message", "DateCreated", "DateRedeemed"
+  ],
+  get_suppliers: [
+    "SupplierID", "SupplierName", "CompanyName", "ContactName", "Contact",
+    "Email", "EmailAddress", "Phone", "PhoneNumber", "Fax",
+    "Address1", "Address2", "City", "State", "PostCode", "Country",
+    "LeadTime", "Notes", "Website", "AccountCode"
+  ],
+  get_warehouses: [
+    "WarehouseID", "WarehouseName", "Name", "Address1", "Address2",
+    "City", "State", "PostCode", "Country", "Phone", "IsActive"
+  ],
   test_connection: ["ID", "Name", "Model"],
 };
 
