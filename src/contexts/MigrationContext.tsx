@@ -35,6 +35,7 @@ interface MigrationContextType {
     apiKey: string;
     storeId: string;
     dryRun?: boolean;
+    testMode?: boolean;
   }) => void;
   retryEntity: (entityName: string, storeId: string) => void;
   togglePause: () => void;
