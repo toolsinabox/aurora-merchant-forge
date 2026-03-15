@@ -1593,6 +1593,12 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
   // [%form%] — form stubs
   result = processFormBlocks(result, ctx);
   
+  // [%newsletter%] — newsletter signup
+  result = processNewsletterBlock(result, ctx);
+  
+  // [%account%] — account info
+  result = processAccountBlock(result, ctx);
+  
   // [%paging%]
   result = result.replace(/\[%paging[^\]]*%\]([\s\S]*?)\[%\/paging%\]/gi, "");
   
