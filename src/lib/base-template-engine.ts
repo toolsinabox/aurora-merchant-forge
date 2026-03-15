@@ -290,19 +290,46 @@ function processThemeAssets(template: string, ctx: TemplateContext): string {
 }
 
 // ── Process Maropost [%if%]...[%elseif%]...[%else%]...[%/if%] ──
+// CRITICAL: Use [\s\S]+? instead of [^\]]+? for condition capture because
+// conditions contain [@config:key@] tags which include ] characters.
 function processMaropostConditionals(template: string, ctx: TemplateContext): string {
-  let result = template;
+  // First, pre-resolve all [@...@] tags inside [%if ...%] conditions
+  // This prevents ] characters in value tags from breaking the regex
+  let result = template.replace(
+    /\[%if\s+([\s\S]*?)%\]/gi,
+    (match, cond: string) => {
+      const resolved = cond.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
+        const value = resolveField(field, ctx);
+        if (value === undefined || value === null) return "";
+        return format ? applyFormat(value, format) : String(value);
+      });
+      return `[%if ${resolved}%]`;
+    }
+  );
+  // Also pre-resolve in [%elseif ...%]
+  result = result.replace(
+    /\[%elseif\s+([\s\S]*?)%\]/gi,
+    (match, cond: string) => {
+      const resolved = cond.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
+        const value = resolveField(field, ctx);
+        if (value === undefined || value === null) return "";
+        return format ? applyFormat(value, format) : String(value);
+      });
+      return `[%elseif ${resolved}%]`;
+    }
+  );
+
   let safety = 0;
-  
   while (result.includes("[%if ") && safety++ < 100) {
     const prevResult = result;
     result = result.replace(
-      /\[%if\s+([^\]]+?)%\]([\s\S]*?)\[%\/if%\]/i,
+      /\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i,
       (_, condition: string, body: string) => {
-        let segments = body.split(/\[%ELSEIF\s+[^\]]+?%\]|\[%ELSE%\]/i);
+        if (!condition.trim()) return ""; // Empty condition = false
+        let segments = body.split(/\[%elseif\s+[\s\S]*?%\]|\[%else%\]/i);
         let markers: (string | null)[] = [condition];
         
-        const markerRegex = /\[%(ELSEIF\s+([^\]]+?)|ELSE)%\]/gi;
+        const markerRegex = /\[%(elseif\s+([\s\S]*?)|else)%\]/gi;
         let m;
         while ((m = markerRegex.exec(body)) !== null) {
           if (m[1].toUpperCase() === "ELSE") {
@@ -314,12 +341,8 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
         
         for (let i = 0; i < segments.length && i < markers.length; i++) {
           const cond = markers[i];
-          if (cond === null) {
-            return segments[i];
-          }
-          if (evaluateCondition(cond, ctx)) {
-            return segments[i];
-          }
+          if (cond === null) return segments[i];
+          if (evaluateCondition(cond, ctx)) return segments[i];
         }
         
         return "";
