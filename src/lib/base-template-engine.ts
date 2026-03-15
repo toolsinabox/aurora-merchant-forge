@@ -1837,11 +1837,8 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
   });
 }
 
-// Process inline [%if%] conditionals with known values for items
+// Process inline [%if%] conditionals with known values for items — uses depth-tracking
 function processItemConditionals(template: string, item: any, idx: number, total: number, ctx?: TemplateContext): string {
-  let result = template;
-  let safety = 0;
-
   const mergedCtx: TemplateContext = {
     ...(ctx || {}),
   };
@@ -1855,7 +1852,7 @@ function processItemConditionals(template: string, item: any, idx: number, total
   (mergedCtx as any).total_showing = total;
 
   // First resolve [@...@] tags using item values
-  result = result.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
+  let result = template.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
     if (field === "count") return String(idx);
     if (field === "index") return String(idx);
     if (field === "total_showing") return String(total);
@@ -1867,44 +1864,11 @@ function processItemConditionals(template: string, item: any, idx: number, total
     return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
   });
 
-  // Now process if/elseif/else blocks
-  while (result.includes("[%if ") && safety++ < 50) {
-    const prev = result;
-    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const segments: string[] = [];
-      const conditions: (string | null)[] = [cond];
-      let remaining = body;
-      let currentSegment = "";
-      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
-      
-      while (remaining.length > 0) {
-        const match = boundaryRegex.exec(remaining);
-        if (!match) {
-          currentSegment += remaining;
-          remaining = "";
-        } else {
-          currentSegment += remaining.slice(0, match.index);
-          segments.push(currentSegment);
-          currentSegment = "";
-          remaining = remaining.slice(match.index + match[0].length);
-          if (match[1] !== undefined) {
-            conditions.push(match[1]);
-          } else {
-            conditions.push(null);
-          }
-        }
-      }
-      segments.push(currentSegment);
-      
-      for (let i = 0; i < segments.length && i < conditions.length; i++) {
-        const c = conditions[i];
-        if (c === null) return segments[i];
-        if (evaluateCondition(c, mergedCtx)) return segments[i];
-      }
-      return "";
-    });
-    if (result === prev) break;
-  }
+  // Process inline tags
+  result = processInlineTags(result, mergedCtx);
+
+  // Process [%if%] blocks using depth-tracking parser
+  result = processMaropostConditionals(result, mergedCtx);
 
   return result;
 }
