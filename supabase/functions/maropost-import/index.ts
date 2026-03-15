@@ -715,7 +715,7 @@ serve(async (req) => {
             initial_value: parseFloat(v.Value) || 0,
             balance: parseFloat(v.Balance) || parseFloat(v.Value) || 0,
             is_active: v.Active !== "False",
-            expires_at: v.ExpiryDate || null,
+            expires_at: sanitizeDate(v.ExpiryDate),
             recipient_email: v.RecipientEmail || null,
             recipient_name: v.RecipientName || null,
             sender_name: v.SenderName || null,
