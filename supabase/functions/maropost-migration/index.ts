@@ -34,7 +34,7 @@ const ACTION_MAP: Record<string, string> = {
 
 // Minimal selectors for scanning/counting (fast, small response)
 const SCAN_SELECTORS: Record<string, string[]> = {
-  get_products: ["ID", "Name", "ParentSKU"],
+  get_products: ["ID", "SKU", "Name", "ParentSKU"],
   get_categories: ["CategoryID", "CategoryName"],
   get_customers: ["Username", "EmailAddress"],
   get_orders: ["OrderID", "GrandTotal"],
@@ -45,7 +45,7 @@ const SCAN_SELECTORS: Record<string, string[]> = {
 // Full selectors for actual data import
 const OUTPUT_SELECTORS: Record<string, string[]> = {
   get_products: [
-    "ParentSKU", "ID", "Brand", "Model", "Name", "PrimarySupplier",
+    "ParentSKU", "SKU", "ID", "Brand", "Model", "Name", "PrimarySupplier",
     "Approved", "IsActive", "FreeGifts", "CrossSellProducts", "UpsellProducts",
     "PriceGroups", "ItemLength", "ItemWidth", "ItemHeight", "ShippingLength",
     "ShippingWidth", "ShippingHeight", "ShippingWeight", "CubicWeight",

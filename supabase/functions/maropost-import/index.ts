@@ -128,7 +128,7 @@ serve(async (req) => {
             store_id,
             title: p.Name || p.Model || "Untitled Product",
             slug,
-            sku: p.ParentSKU || p.Model || null,
+            sku: p.SKU || p.ParentSKU || null,
             barcode: p.Barcode || null,
             brand: p.Brand || null,
             description: p.Description || null,
@@ -180,7 +180,7 @@ serve(async (req) => {
 
           // Upsert by SKU — always update existing to FIX bad imports
           let productId: string;
-          const lookupSku = p.ParentSKU || p.Model;
+          const lookupSku = p.SKU || p.ParentSKU;
           if (lookupSku) {
             const { data: existing } = await supabase
               .from("products").select("id").eq("store_id", store_id).eq("sku", lookupSku).maybeSingle();
@@ -337,11 +337,11 @@ serve(async (req) => {
             }
           }
 
-          await logEntity("product", p.ID || p.ParentSKU || slug, productId);
+          await logEntity("product", p.ID || p.SKU || p.ParentSKU || slug, productId);
           imported++;
         } catch (err: any) {
           failed++;
-          errors.push(`Product ${p.Name || p.ParentSKU}: ${err.message}`);
+          errors.push(`Product ${p.Name || p.SKU || p.ParentSKU}: ${err.message}`);
         }
       }
     }
