@@ -304,8 +304,7 @@ export default function StorefrontProductDetail() {
       </StorefrontLayout>
     );
   }
-
-
+  const allRelated = crossSells.length > 0 ? crossSells : relatedProducts;
 
 
   // If there's a theme product template, render it via B@SE engine
