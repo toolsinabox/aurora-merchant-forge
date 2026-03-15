@@ -1121,76 +1121,48 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
 }
 
 // Process inline [%if%] conditionals with known values for items
-function processItemConditionals(template: string, item: any, idx: number, total: number): string {
+function processItemConditionals(template: string, item: any, idx: number, total: number, ctx?: TemplateContext): string {
   let result = template;
   let safety = 0;
-  
-  while (result.includes("[%if ") && safety++ < 20) {
+
+  while (result.includes("[%if ") && safety++ < 30) {
     const prev = result;
-    result = result.replace(/\[%if\s+([^\]]+?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      // Handle [%else%]
+    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
       const parts = body.split(/\[%else%\]/i);
-      const ifBody = parts[0];
-      const elseBody = parts[1] || "";
-      
-      // Evaluate the condition with item context
-      const resolved = cond
-        .replace(/\[@count@\]/gi, String(idx))
-        .replace(/\[@index@\]/gi, String(idx))
-        .replace(/\[@total_showing@\]/gi, String(total))
-        .replace(/\[@(\w+)@\]/gi, (__, f: string) => {
-          if (item[f] !== undefined) return String(item[f]);
-          return "";
-        });
-      
-      // Simple condition evaluation
-      const eqMatch = resolved.match(/^(.+?)\s+eq\s+'([^']*)'$/i);
-      if (eqMatch) {
-        return eqMatch[1].trim() === eqMatch[2] ? ifBody : elseBody;
-      }
-      
-      const neMatch = resolved.match(/^(.+?)\s+ne\s+'([^']*)'$/i);
-      if (neMatch) {
-        return neMatch[1].trim() !== neMatch[2] ? ifBody : elseBody;
-      }
-      
-      const gtMatch = resolved.match(/^(.+?)\s*>\s*(.+)$/);
-      if (gtMatch) {
-        return Number(gtMatch[1].trim()) > Number(gtMatch[2].trim()) ? ifBody : elseBody;
-      }
-      
-      // Truthy check
-      const val = resolved.trim();
-      const isTruthy = val && val !== "0" && val !== "false" && val !== "";
-      return isTruthy ? ifBody : elseBody;
+      const ifBody = parts[0] || "";
+      const elseBody = parts.slice(1).join("[%else%]") || "";
+      const evalCtx = {
+        ...(ctx || {}),
+        ...(item || {}),
+        count: idx,
+        index: idx,
+        total_showing: total,
+      } as TemplateContext;
+      return evaluateCondition(cond, evalCtx) ? ifBody : elseBody;
     });
     if (result === prev) break;
   }
-  
+
   return result;
 }
 
 // Process [%if%] blocks where we only know total_showing
-function processInlineConditionals(template: string, totalShowing: number): string {
+function processInlineConditionals(template: string, totalShowing: number, ctx?: TemplateContext): string {
   let result = template;
   let safety = 0;
-  
-  while (result.includes("[%if ") && safety++ < 20) {
+
+  while (result.includes("[%if ") && safety++ < 30) {
     const prev = result;
-    result = result.replace(/\[%if\s+([^\]]+?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const resolved = cond.replace(/\[@total_showing@\]/gi, String(totalShowing));
-      
-      const gtMatch = resolved.match(/^(.+?)\s*>\s*(.+)$/);
-      if (gtMatch) {
-        return Number(gtMatch[1].trim()) > Number(gtMatch[2].trim()) ? body : "";
-      }
-      
-      // Default: show content
-      return body;
+    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
+      const parts = body.split(/\[%else%\]/i);
+      const ifBody = parts[0] || "";
+      const elseBody = parts.slice(1).join("[%else%]") || "";
+      const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
+      return evaluateCondition(cond, evalCtx) ? ifBody : elseBody;
     });
     if (result === prev) break;
   }
-  
+
   return result;
 }
 
