@@ -184,14 +184,36 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
 
-  const renderedHeader = useMemo(() => {
-    if (!headerFile?.content) return "";
-    return renderTemplate(headerFile.content, baseCtx);
+  // Render header — the Maropost header template contains <!DOCTYPE>, <html>, <head>, <body>
+  // We need to extract just the <body> content for rendering
+  const { headContent, bodyContent: renderedHeader } = useMemo(() => {
+    if (!headerFile?.content) return { headContent: "", bodyContent: "" };
+    const rendered = renderTemplate(headerFile.content, baseCtx);
+    
+    // Extract <head> content for CSS/meta injection
+    const headMatch = rendered.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+    const headContent = headMatch?.[1] || "";
+    
+    // Extract <body> content — everything after <body...>
+    const bodyMatch = rendered.match(/<body[^>]*>([\s\S]*$)/i);
+    let bodyContent = bodyMatch?.[1] || rendered;
+    
+    // Remove DOCTYPE, html, head tags if present at top level
+    bodyContent = bodyContent
+      .replace(/<!DOCTYPE[^>]*>/gi, "")
+      .replace(/<\/?html[^>]*>/gi, "")
+      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
+      .replace(/<\/?body[^>]*>/gi, "");
+    
+    return { headContent, bodyContent };
   }, [headerFile, baseCtx]);
 
   const renderedFooter = useMemo(() => {
     if (!footerFile?.content) return "";
-    return renderTemplate(footerFile.content, baseCtx);
+    let rendered = renderTemplate(footerFile.content, baseCtx);
+    // Clean up closing tags
+    rendered = rendered.replace(/<\/body>/gi, "").replace(/<\/html>/gi, "");
+    return rendered;
   }, [footerFile, baseCtx]);
 
   // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
