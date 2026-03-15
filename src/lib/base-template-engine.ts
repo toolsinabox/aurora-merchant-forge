@@ -679,6 +679,20 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
   return result;
 }
 
+/** Resolve a storage path to a full public URL */
+function resolveStorageUrl(path: string | undefined | null): string {
+  if (!path) return "";
+  if (path.startsWith("http") || path.startsWith("//") || path.startsWith("/")) return path;
+  // Assume it's a Supabase storage path in the product-images bucket
+  const supabaseUrl = typeof window !== "undefined"
+    ? (window as any).__VITE_SUPABASE_URL || ""
+    : "";
+  if (supabaseUrl) {
+    return `${supabaseUrl}/storage/v1/object/public/product-images/${path}`;
+  }
+  return path;
+}
+
 function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): string {
   const typeMatch = attrs.match(/type:'(\w+)'/i);
   const idMatch = attrs.match(/id:'([^']+)'/i);
@@ -695,21 +709,21 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
     case "adw":
     case "ad":
       // Return the advert image URL from the item
-      if (item?.image_url) return item.image_url;
+      if (item?.image_url) return resolveStorageUrl(item.image_url);
       // Fallback: look up in adverts
       const ad = (ctx.adverts || []).find(a => a.id === id || a.ad_id === id);
-      if (ad?.image_url) return ad.image_url;
+      if (ad?.image_url) return resolveStorageUrl(ad.image_url);
       return "";
     case "category":
       // Return category image
-      if (item?.image_url) return item.image_url;
+      if (item?.image_url) return resolveStorageUrl(item.image_url);
       const cat = (ctx.categories || []).find(c => c.id === id);
-      if (cat?.image_url) return cat.image_url;
+      if (cat?.image_url) return resolveStorageUrl(cat.image_url);
       return "/placeholder.svg";
     case "product":
-      if (item?.images?.[0]) return item.images[0];
+      if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
       const prod = (ctx.products || []).find(p => p.id === id);
-      if (prod?.images?.[0]) return prod.images[0];
+      if (prod?.images?.[0]) return resolveStorageUrl(prod.images[0]);
       return "/placeholder.svg";
     default:
       return "";
@@ -850,19 +864,24 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         ad_id: p.id,
         headline: p.title,
         url: `/product/${p.id}`,
-        image_url: p.images?.[0] || "/placeholder.svg",
+        image_url: resolveStorageUrl(p.images?.[0]) || "/placeholder.svg",
         price: p.price,
         rrp: p.compare_at_price || p.price,
         count: idx,
         index: idx,
       }));
     } else {
-      // Text/banner adverts
-      items = (ctx.adverts || []).slice(0, limit).map((ad, idx) => ({
+      // Text/banner adverts — filter by ad_group if specified
+      let filteredAdverts = ctx.adverts || [];
+      if (adGroup) {
+        filteredAdverts = filteredAdverts.filter(a => (a.ad_group || "") === adGroup);
+      }
+      items = filteredAdverts.slice(0, limit).map((ad, idx) => ({
         ...ad,
         ad_id: ad.id,
         headline: ad.title || ad.name,
         url: ad.link_url || "#",
+        image_url: resolveStorageUrl(ad.image_url),
         count: idx,
         index: idx,
       }));
@@ -1052,16 +1071,82 @@ function processInlineConditionals(template: string, totalShowing: number): stri
 function processThumbList(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%thumb_list\s+([^\]]*?)%\]([\s\S]*?)\[%\/thumb_list%\]/gi, (_, attrs: string, body: string) => {
     const typeMatch = attrs.match(/type:'(\w+)'/i);
+    const limitMatch = attrs.match(/limit:'([^']+)'/i);
+    const templateMatch = attrs.match(/template:'([^']*)'/i);
     const type = typeMatch?.[1] || "products";
+    const limitStr = limitMatch?.[1] || "20";
+    const limit = parseInt(limitStr) || 20;
+    const templateName = templateMatch?.[1] || "";
     
     const headerMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
     const footerMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const bodyMatch = body.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
-    const items = type === "products" ? (ctx.products || []) : [];
+    let items: Record<string, any>[] = [];
+    if (type === "products") {
+      items = (ctx.products || []).slice(0, limit);
+    } else if (type === "content") {
+      // Content lists — not supported yet, return empty
+      return "";
+    } else if (type === "content_reviews") {
+      return "";
+    }
+    
     if (items.length === 0) return "";
+    
+    // Resolve item template: body param or theme template file
+    let itemTemplate = bodyMatch?.[1] || "";
+    if (!itemTemplate && templateName) {
+      itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
+    }
+    
+    // Default product card if no template
+    if (!itemTemplate && type === "products") {
+      itemTemplate = `
+        <div class="col-6 col-md-3 product-thumbnail">
+          <div class="product-card">
+            <a href="/product/[@id@]">
+              <img src="[@image_url@]" alt="[@title@]" class="img-fluid" loading="lazy" />
+              <div class="product-card__info">
+                <h3 class="product-card__title">[@title@]</h3>
+                <div class="product-card__price">$[@price@]</div>
+              </div>
+            </a>
+          </div>
+        </div>`;
+    }
     
     let html = "";
     if (headerMatch) html += headerMatch[1];
+    
+    if (itemTemplate) {
+      items.forEach((item, idx) => {
+        let rendered = itemTemplate;
+        // Prepare product item fields
+        const productItem = {
+          ...item,
+          image_url: resolveStorageUrl(item.images?.[0]) || "/placeholder.svg",
+          url: `/product/${item.id}`,
+          headline: item.title,
+          rrp: item.compare_at_price || item.price,
+        };
+        
+        rendered = rendered.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+          if (field === "count") return String(idx);
+          if (field === "index") return String(idx);
+          if (field === "total_showing") return String(items.length);
+          if (productItem[field] !== undefined && productItem[field] !== null) return String(productItem[field]);
+          const ctxVal = resolveField(field, ctx);
+          return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
+        });
+        
+        rendered = processAssetUrl(rendered, ctx, productItem);
+        rendered = processItemConditionals(rendered, productItem, idx, items.length);
+        
+        html += rendered;
+      });
+    }
+    
     if (footerMatch) html += footerMatch[1];
     
     return html;
