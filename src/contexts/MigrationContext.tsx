@@ -249,7 +249,7 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
         setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "importing" } : e));
 
         try {
-          const sourceItems = await fetchAllPages(entity.entity, domain, key);
+          const sourceItems = await fetchAllPages(entity.entity, domain, key, testMode);
           addLog(`  Fetched ${sourceItems.length} total ${entity.entity} from Maropost`);
 
           if (sourceItems.length === 0) {
