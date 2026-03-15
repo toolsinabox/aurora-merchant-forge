@@ -100,15 +100,29 @@ function useThemeFiles(themeId: string | null) {
   });
 }
 
-// ── Detect folder from file path ──
+// ── Detect folder from file path — uses actual directory from ZIP when available ──
 function detectFolder(filePath: string): FolderKey {
   const lower = filePath.toLowerCase();
-  if (lower.includes("/header") || lower.startsWith("header")) return "headers";
-  if (lower.includes("/footer") || lower.startsWith("footer")) return "footers";
-  if (lower.includes("/snippet") || lower.includes("/partial") || lower.includes("/include")) return "snippets";
-  if (lower.includes("/email")) return "emails";
-  if (lower.endsWith(".css") || lower.includes("/css")) return "css";
-  if (lower.endsWith(".js") || lower.includes("/js")) return "js";
+  
+  // Extract the first meaningful directory segment from the path
+  // e.g. "skeletal/headers/includes/head.template.html" → check "headers"
+  const segments = lower.split("/").filter(Boolean);
+  
+  // Check each segment for a known folder name
+  for (const seg of segments) {
+    if (seg === "headers" || seg === "header") return "headers";
+    if (seg === "footers" || seg === "footer") return "footers";
+    if (seg === "snippets" || seg === "snippet" || seg === "partials" || seg === "includes") return "snippets";
+    if (seg === "templates" || seg === "template") return "templates";
+    if (seg === "emails" || seg === "email") return "emails";
+    if (seg === "css" || seg === "styles" || seg === "stylesheets") return "css";
+    if (seg === "js" || seg === "javascript" || seg === "scripts") return "js";
+    if (seg === "assets" || seg === "images" || seg === "img" || seg === "fonts") return "assets";
+  }
+  
+  // Fallback: detect by file extension
+  if (lower.endsWith(".css")) return "css";
+  if (lower.endsWith(".js")) return "js";
   if (lower.match(/\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)$/)) return "assets";
   return "templates";
 }
@@ -289,13 +303,26 @@ export default function ThemeFiles() {
     try {
       const zip = await JSZip.loadAsync(file);
       const preview: { path: string; folder: string }[] = [];
+      const rawPaths: string[] = [];
       zip.forEach((path, entry) => {
         if (!entry.dir && !path.startsWith("__MACOSX") && !path.startsWith(".")) {
-          // Strip the top-level theme folder name if present
-          const cleanPath = path.includes("/") ? path : path;
-          preview.push({ path: cleanPath, folder: detectFolder(cleanPath) });
+          rawPaths.push(path);
         }
       });
+      
+      // Detect common top-level folder to strip
+      let stripPrefix = "";
+      if (rawPaths.length > 0) {
+        const firstSegment = rawPaths[0].split("/")[0];
+        if (rawPaths.every(p => p.startsWith(firstSegment + "/"))) {
+          stripPrefix = firstSegment + "/";
+        }
+      }
+      
+      for (const path of rawPaths) {
+        const cleanPath = stripPrefix ? path.slice(stripPrefix.length) : path;
+        preview.push({ path: cleanPath, folder: detectFolder(path) });
+      }
       setImportPreview(preview);
       setImportDialog(true);
     } catch (err: any) {
@@ -336,14 +363,27 @@ export default function ThemeFiles() {
       await Promise.all(promises);
 
       let imported = 0;
+      
+      // Detect the top-level theme folder (e.g. "skeletal/") to strip it
+      // Find the common root: if all paths start with the same folder, strip it
+      const allPaths = entries.map(e => e.path);
+      let stripPrefix = "";
+      if (allPaths.length > 0) {
+        const firstSegment = allPaths[0].split("/")[0];
+        if (allPaths.every(p => p.startsWith(firstSegment + "/"))) {
+          stripPrefix = firstSegment + "/";
+        }
+      }
+      
       for (const { path, content } of entries) {
         const fileName = path.split("/").pop() || path;
         const folder = detectFolder(path);
         const fileType = detectFileType(path);
-        // Strip top-level folder from path for cleaner display
-        const parts = path.split("/");
-        const cleanPath = parts.length > 1 ? parts.slice(1).join("/") : path;
-        const finalPath = `${folder}/${fileName}`;
+        
+        // Preserve the original path structure, just strip the top-level theme folder
+        const cleanPath = stripPrefix ? path.slice(stripPrefix.length) : path;
+        // Use cleanPath as-is to preserve the original directory structure
+        const finalPath = cleanPath;
 
         const { error } = await supabase
           .from("theme_files" as any)
