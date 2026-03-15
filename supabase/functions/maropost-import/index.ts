@@ -550,21 +550,25 @@ serve(async (req) => {
       const items = source_data?.Order || source_data || [];
       const orders = Array.isArray(items) ? items : [items];
 
+      // DB constraint: pending, processing, shipped, delivered, cancelled
       const statusMap: Record<string, string> = {
         "New": "pending", "New Backorder": "pending", "Pending": "pending",
         "Pick": "processing", "Pack": "processing", "Processing": "processing",
-        "On Hold": "on_hold", "Dispatched": "shipped", "Shipped": "shipped",
-        "Cancelled": "cancelled", "Completed": "completed",
+        "On Hold": "pending", "Dispatched": "shipped", "Shipped": "shipped",
+        "Cancelled": "cancelled", "Completed": "delivered",
         "Awaiting Payment": "pending", "Back Order": "pending",
+        "Delivered": "delivered",
       };
 
+      // DB constraint: pending, paid, refunded
       const paymentStatusMap: Record<string, string> = {
-        "Paid": "paid", "Partially Paid": "partially_paid", "Unpaid": "pending",
+        "Paid": "paid", "Partially Paid": "paid", "Unpaid": "pending",
         "Refunded": "refunded", "Pending": "pending",
       };
 
       const fulfillmentMap: Record<string, string> = {
         "Dispatched": "fulfilled", "Shipped": "fulfilled", "Completed": "fulfilled",
+        "Delivered": "fulfilled",
         "Pick": "partial", "Pack": "partial", "Processing": "partial",
         "New": "unfulfilled", "Pending": "unfulfilled", "Cancelled": "unfulfilled",
       };
