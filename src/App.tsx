@@ -7,6 +7,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { CompareProvider } from "@/contexts/CompareContext";
+import { MigrationProvider } from "@/contexts/MigrationContext";
+import { MigrationProgressWidget } from "@/components/admin/MigrationProgressWidget";
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { RequirePlatformAdmin } from "@/components/auth/RequirePlatformAdmin";
 import { getSubdomainSlug } from "@/lib/subdomain";
@@ -144,9 +146,11 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <MigrationProvider>
           <CartProvider>
           <WishlistProvider>
           <CompareProvider>
+            <MigrationProgressWidget />
             <Routes>
               {isSubdomainMode ? (
                 <>
@@ -409,6 +413,7 @@ const App = () => (
           </CompareProvider>
           </WishlistProvider>
           </CartProvider>
+          </MigrationProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
