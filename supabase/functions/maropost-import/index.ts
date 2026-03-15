@@ -577,7 +577,7 @@ serve(async (req) => {
             discount: discountTotal,
             total: grandTotal,
             notes: o.InternalOrderNotes || null,
-            created_at: o.DatePlaced || new Date().toISOString(),
+            created_at: sanitizeDate(o.DatePlaced) || new Date().toISOString(),
           };
 
           if (o.ShipAddress) orderData.shipping_address = o.ShipAddress;
