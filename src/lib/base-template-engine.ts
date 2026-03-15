@@ -2236,13 +2236,22 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 11. URL info tags [%url_info%]
   result = processUrlInfo(result, ctx);
 
-  // 12. Set/While stubs
-  result = processSetAndWhile(result);
+  // 12. Set variables [%set%] — MUST be before conditionals so vars are available
+  result = processSetAndWhile(result, ctx);
+
+  // 12b. Inline tags [%rndm%], [%config:key%], [%var:name%]
+  result = processInlineTags(result, ctx);
+
+  // 12c. Switch/case blocks
+  result = processSwitchCase(result, ctx);
+
+  // 12d. Foreach/each blocks
+  result = processForeach(result, ctx);
 
   // 13. System tags (breadcrumb, advert, thumb_list, content_menu, search, login, form, etc.)
   result = processSystemTags(result, ctx);
 
-  // 14. Maropost conditionals [%if%]...[%/if%]
+  // 14. Maropost conditionals [%if%]...[%/if%] — now with proper nesting support
   result = processMaropostConditionals(result, ctx);
 
   // 15. Block iterators [%crosssell%], etc.
