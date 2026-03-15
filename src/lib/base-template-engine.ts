@@ -247,23 +247,40 @@ function resolveField(field: string, ctx: TemplateContext): any {
 // ── Process Maropost [%load_template file:'path'/%] ──
 function processLoadTemplate(template: string, ctx: TemplateContext, depth = 0): string {
   if (depth > 10) return template;
-  return template.replace(/\[%load_template\s+file:'([^']+)'\/?%\]/gi, (_, filePath: string) => {
+  return template.replace(/\[%load_template\s+file:\s*(['"])([^'"]+)\1\s*\/?%\]/gi, (_, _quote: string, filePath: string) => {
     const files = ctx.themeFiles || {};
     const includes = ctx.includes || {};
-    
-    if (files[filePath]) return processLoadTemplate(files[filePath], ctx, depth + 1);
-    
-    const fileName = filePath.split("/").pop() || filePath;
+    const cleanPath = filePath.trim().replace(/^\/+/, "");
+
+    const directCandidates = [
+      cleanPath,
+      `templates/${cleanPath}`,
+      `templates/${cleanPath}.template.html`,
+      `templates/${cleanPath}.html`,
+    ];
+
+    for (const candidate of directCandidates) {
+      if (files[candidate]) return processLoadTemplate(files[candidate], ctx, depth + 1);
+    }
+
+    const fileName = cleanPath.split("/").pop() || cleanPath;
     const slug = fileName.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9-_]/g, "-");
     if (includes[slug]) return processLoadTemplate(includes[slug], ctx, depth + 1);
-    
+
+    const lowerPath = cleanPath.toLowerCase();
     for (const key of Object.keys(files)) {
-      if (key.endsWith(filePath) || key.includes(filePath)) {
+      const lowerKey = key.toLowerCase();
+      if (
+        lowerKey === lowerPath ||
+        lowerKey.endsWith(`/${lowerPath}`) ||
+        lowerKey.endsWith(`/${lowerPath}.template.html`) ||
+        lowerKey.endsWith(`/${lowerPath}.html`)
+      ) {
         return processLoadTemplate(files[key], ctx, depth + 1);
       }
     }
-    
-    return `<!-- load_template "${filePath}" not found -->`;
+
+    return `<!-- load_template "${cleanPath}" not found -->`;
   });
 }
 
@@ -272,27 +289,44 @@ function resolveThemeTemplate(templateName: string, ctx: TemplateContext): strin
   if (!templateName) return null;
   const files = ctx.themeFiles || {};
   const includes = ctx.includes || {};
-  
-  // Try direct path
+  const clean = templateName.trim().replace(/^\/+/, "");
+  const hasExt = /\.(html?|template\.html)$/i.test(clean);
+
   const paths = [
-    `templates/${templateName}.template.html`,
-    `templates/${templateName}.html`,
-    templateName,
+    clean,
+    `templates/${clean}`,
+    `templates/thumbs/advert/${clean}`,
+    `templates/thumbs/product/${clean}`,
+    `templates/thumbs/content/${clean}`,
+    ...(hasExt ? [] : [
+      `templates/${clean}.template.html`,
+      `templates/${clean}.html`,
+      `templates/thumbs/advert/${clean}.template.html`,
+      `templates/thumbs/product/${clean}.template.html`,
+      `templates/thumbs/content/${clean}.template.html`,
+    ]),
   ];
-  
+
   for (const p of paths) {
     if (files[p]) return files[p];
   }
-  
-  // Try slug match in includes
-  const slug = templateName.toLowerCase().replace(/[^a-z0-9-_]/g, "-");
+
+  const slug = clean.toLowerCase().replace(/[^a-z0-9-_]/g, "-");
   if (includes[slug]) return includes[slug];
-  
-  // Try partial match in files
+
+  const lowerClean = clean.toLowerCase();
   for (const key of Object.keys(files)) {
-    if (key.includes(templateName)) return files[key];
+    const lowerKey = key.toLowerCase();
+    if (
+      lowerKey === lowerClean ||
+      lowerKey.endsWith(`/${lowerClean}`) ||
+      (!hasExt && lowerKey.endsWith(`/${lowerClean}.template.html`)) ||
+      (!hasExt && lowerKey.endsWith(`/${lowerClean}.html`))
+    ) {
+      return files[key];
+    }
   }
-  
+
   return null;
 }
 
