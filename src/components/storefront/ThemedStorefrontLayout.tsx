@@ -110,6 +110,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   const { storeSlug } = useStoreSlug(paramSlug);
   const [storeId, setStoreId] = useState<string>("");
   const [store, setStore] = useState<any>(null);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
     if (!storeSlug) return;
@@ -117,6 +118,15 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
       if (s) {
         setStoreId(s.id);
         setStore(s);
+        // Fetch categories for menu rendering
+        supabase
+          .from("categories")
+          .select("id, name, slug, parent_id, sort_order, image_url")
+          .eq("store_id", s.id)
+          .order("sort_order")
+          .then(({ data }) => {
+            if (data) setCategories(data);
+          });
       }
     });
   }, [storeSlug]);
@@ -133,7 +143,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   }
 
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext}>
+    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories}>
       {children}
     </ThemedShell>
   );
@@ -142,12 +152,13 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 const SCOPE_SELECTOR = "#neto-theme";
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
   children: ReactNode;
   extraContext?: Partial<TemplateContext>;
+  categories?: any[];
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
@@ -176,10 +187,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
     },
     includes,
     themeFiles,
+    categories: categories || [],
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
     pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, extraContext]);
+  }), [store, storeName, includes, themeFiles, extraContext, categories]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
@@ -203,7 +215,9 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
       .replace(/<!DOCTYPE[^>]*>/gi, "")
       .replace(/<\/?html[^>]*>/gi, "")
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
-      .replace(/<\/?body[^>]*>/gi, "");
+      .replace(/<\/?body[^>]*>/gi, "")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+      .replace(/<link[^>]*>/gi, "");
     
     return { headContent, bodyContent };
   }, [headerFile, baseCtx]);
@@ -211,8 +225,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
   const renderedFooter = useMemo(() => {
     if (!footerFile?.content) return "";
     let rendered = renderTemplate(footerFile.content, baseCtx);
-    // Clean up closing tags
-    rendered = rendered.replace(/<\/body>/gi, "").replace(/<\/html>/gi, "");
+    // Clean up closing tags and strip scripts (handled separately)
+    rendered = rendered
+      .replace(/<\/body>/gi, "")
+      .replace(/<\/html>/gi, "")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
     return rendered;
   }, [footerFile, baseCtx]);
 
@@ -223,49 +240,85 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
     return scopeCss(raw, SCOPE_SELECTOR);
   }, [theme.cssFiles]);
 
-  // Combine all JS files
-  const combinedJs = useMemo(() => {
-    return theme.jsFiles.map(f => f.content || "").filter(Boolean).join("\n");
-  }, [theme.jsFiles]);
-
   // Inject external CSS/JS links from the theme's <head> content
   useEffect(() => {
     if (!headContent) return;
     const addedElements: Element[] = [];
     
-    // Extract and inject <link> stylesheet tags
-    const linkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*>/gi;
+    // Extract and inject <link> stylesheet tags — only external CDN ones
+    const linkRegex = /<link[^>]*(?:rel=["']stylesheet["']|type=["']text\/css["'])[^>]*>/gi;
     let match;
     while ((match = linkRegex.exec(headContent)) !== null) {
       const hrefMatch = match[0].match(/href=["']([^"']+)["']/);
-      if (hrefMatch && !document.querySelector(`link[href="${hrefMatch[1]}"]`)) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = hrefMatch[1];
-        link.setAttribute("data-theme-css", "true");
-        const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
-        if (mediaMatch) link.media = mediaMatch[1];
-        document.head.appendChild(link);
-        addedElements.push(link);
-      }
+      if (!hrefMatch) continue;
+      const href = hrefMatch[1];
+      // Skip theme asset CSS (already injected via scoped <style>)
+      if (href.includes("/assets/themes/") || href.includes("ntheme_asset")) continue;
+      if (!href.startsWith("http") && !href.startsWith("//")) continue;
+      if (document.querySelector(`link[href="${href}"]`)) continue;
+      
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.setAttribute("data-theme-css", "true");
+      const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
+      if (mediaMatch) link.media = mediaMatch[1];
+      document.head.appendChild(link);
+      addedElements.push(link);
+    }
+
+    // Also inject CSS links from body (the header template has <link> tags)
+    const bodyLinkRegex = /<link[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>/gi;
+    const bodyHtml = renderedHeader || "";
+    let bm;
+    while ((bm = bodyLinkRegex.exec(bodyHtml)) !== null) {
+      const href = bm[1];
+      if (href.includes("/assets/themes/") || document.querySelector(`link[href="${href}"]`)) continue;
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.setAttribute("data-theme-css", "true");
+      document.head.appendChild(link);
+      addedElements.push(link);
     }
     
     return () => {
       addedElements.forEach(el => el.remove());
     };
-  }, [headContent]);
+  }, [headContent, renderedHeader]);
 
-  // Inject theme JS files
+  // Inject external scripts from rendered header/footer (CDN jQuery, Bootstrap, etc.)
   useEffect(() => {
-    if (!combinedJs) return;
-    const script = document.createElement("script");
-    script.setAttribute("data-theme-js", "true");
-    script.textContent = combinedJs;
-    document.body.appendChild(script);
+    const addedScripts: HTMLScriptElement[] = [];
+    const allHtml = (renderedHeader || "") + (renderedFooter || "");
+    
+    // Extract <script src="..."> tags for external scripts
+    const scriptSrcRegex = /<script[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
+    let sm;
+    while ((sm = scriptSrcRegex.exec(allHtml)) !== null) {
+      const src = sm[1];
+      // Skip tracking/analytics scripts
+      if (src.includes("google-analytics") || src.includes("googletagmanager")) continue;
+      if (document.querySelector(`script[src="${src}"]`)) continue;
+      
+      const script = document.createElement("script");
+      script.src = src;
+      script.setAttribute("data-theme-ext-js", "true");
+      // Load jQuery first, others after
+      if (src.includes("jquery") && !src.includes("jquery-ui") && !src.includes("jquery.")) {
+        script.async = false;
+        document.head.appendChild(script);
+      } else {
+        script.async = false;
+        document.body.appendChild(script);
+      }
+      addedScripts.push(script);
+    }
+    
     return () => {
-      document.querySelectorAll("script[data-theme-js]").forEach(el => el.remove());
+      addedScripts.forEach(el => el.remove());
     };
-  }, [combinedJs]);
+  }, [renderedHeader, renderedFooter]);
 
   return (
     <>

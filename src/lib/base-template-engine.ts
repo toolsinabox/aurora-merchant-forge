@@ -432,6 +432,136 @@ function processUrlInfo(template: string, ctx: TemplateContext): string {
   });
 }
 
+// ── Process [%cache%]...[%/cache%] — strip wrapper, keep content ──
+function processCacheBlocks(template: string): string {
+  return template.replace(/\[%\/?cache[^\]]*%\]/gi, "");
+}
+
+// ── Process [%url page:'...' type:'...'/%] or [%url page:'...'/%] ──
+function processUrlTags(template: string, ctx: TemplateContext): string {
+  const base = ctx.baseUrl || "";
+  // Self-closing: [%url page:'account'/%]
+  let result = template.replace(/\[%url\s+([^\]]*?)\/?%\]\[%\/url%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base));
+  result = result.replace(/\[%url\s+([^\]]*?)\/%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base));
+  // Block form: [%URL page:'account' type:'...' qs:'...'%][%/URL%]
+  result = result.replace(/\[%URL\s+([^\]]*?)%\]\[%\/URL%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base));
+  return result;
+}
+
+function resolveUrlTag(attrs: string, base: string): string {
+  const pageMatch = attrs.match(/page:'([^']+)'/i);
+  const typeMatch = attrs.match(/type:'([^']+)'/i);
+  const qsMatch = attrs.match(/qs:'([^']+)'/i);
+  const page = pageMatch?.[1] || "";
+  const type = typeMatch?.[1] || "";
+  const qs = qsMatch?.[1] || "";
+  
+  let url = base;
+  switch (page) {
+    case "account": url += "/_myacct"; break;
+    case "checkout":
+      if (type === "cart") url += "/cart";
+      else url += "/checkout";
+      break;
+    case "contact": url += "/contact-us"; break;
+    case "wishlist": url += "/_myacct/wishlist"; break;
+    default: url += "/" + page;
+  }
+  if (type === "write_review") url = `${base}/_myacct/write_review`;
+  if (qs) url += "?" + qs;
+  return url;
+}
+
+// ── Process [%menu id:'cat-XXXX'%]...[%/menu%] — hierarchical category menu ──
+function processMenuBlocks(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%menu\s+([^\]]*?)%\]([\s\S]*?)\[%\/menu%\]/gi, (_, _attrs: string, body: string) => {
+    const categories = ctx.categories || [];
+    if (categories.length === 0) return "";
+
+    // Extract level templates: [%param *level_N%]...[%/param%]
+    const levelTemplates: Record<number, string> = {};
+    const paramHeaderMatch = body.match(/\[%param\s+header%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramFooterMatch = body.match(/\[%param\s+footer%\]([\s\S]*?)\[%\/param%\]/i);
+    
+    const levelRegex = /\[%param\s+\*?level_(\d+)%\]([\s\S]*?)\[%\/param%\]/gi;
+    let m;
+    while ((m = levelRegex.exec(body)) !== null) {
+      levelTemplates[parseInt(m[1])] = m[2];
+    }
+
+    // Build category tree
+    const catMap = new Map<string | null, any[]>();
+    for (const cat of categories) {
+      const parentId = cat.parent_id || null;
+      if (!catMap.has(parentId)) catMap.set(parentId, []);
+      catMap.get(parentId)!.push(cat);
+    }
+
+    // Recursive render
+    function renderLevel(parentId: string | null, level: number): string {
+      const children = catMap.get(parentId) || [];
+      if (children.length === 0) return "";
+      const tmpl = levelTemplates[level] || levelTemplates[Object.keys(levelTemplates).length > 0 ? Math.max(...Object.keys(levelTemplates).map(Number)) : 1];
+      if (!tmpl) return "";
+
+      return children.map(cat => {
+        const nextLevelHtml = renderLevel(cat.id, level + 1);
+        let html = tmpl;
+        // Replace [@name@], [@url@], [@next_level@]
+        html = html.replace(/\[@name@\]/gi, cat.name || "");
+        html = html.replace(/\[@url@\]/gi, cat.url || `/${cat.slug}` || "#");
+        html = html.replace(/\[@css_class@\]/gi, cat.css_class || "");
+        
+        // Handle [%if [@next_level@]%] conditionals
+        if (nextLevelHtml) {
+          html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "$1");
+          html = html.replace(/\[@next_level@\]/gi, nextLevelHtml);
+        } else {
+          // Remove conditional blocks for next_level when empty
+          html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "");
+          html = html.replace(/\[@next_level@\]/gi, "");
+        }
+        return html;
+      }).join("");
+    }
+
+    let result = "";
+    if (paramHeaderMatch) result += paramHeaderMatch[1];
+    result += renderLevel(null, 1);
+    if (paramFooterMatch) result += paramFooterMatch[1];
+    return result;
+  });
+}
+
+// ── Process [%set .../%] and [%while%] — stub out (not needed for nav) ──
+function processSetAndWhile(template: string): string {
+  // Strip [%set .../%] and [%while%]...[%/while%]
+  let result = template.replace(/\[%set\s+[^\]]*\/%\]/gi, "");
+  result = result.replace(/\[%while\s+[^\]]*%\]([\s\S]*?)\[%\/while%\]/gi, "");
+  return result;
+}
+
+// ── Process [%FORMAT type:'currency'%]value[%/FORMAT%] (case-insensitive variant) ──
+function processFormatCurrency(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%FORMAT\s+type:'currency'%\]([\s\S]*?)\[%\/FORMAT%\]/gi, (_, content: string) => {
+    // The content may contain [@field@] tags that are already resolved or not
+    const value = content.trim();
+    const num = parseFloat(value);
+    if (!isNaN(num)) return `$${num.toFixed(2)}`;
+    return value;
+  });
+}
+
+// ── Process [%format type:'percent'%]value[%/format%] ──
+function processFormatPercent(template: string): string {
+  return template.replace(/\[%format\s+type:'percent'%\]([\s\S]*?)\[%\/format%\]/gi, (_, content: string) => {
+    const value = content.trim();
+    const num = parseFloat(value);
+    if (!isNaN(num)) return `${Math.round(num)}%`;
+    return value;
+  });
+}
+
 // ── Strip/handle Neto-specific system tags that we can't execute ──
 function processSystemTags(template: string, ctx: TemplateContext): string {
   let result = template;
@@ -640,43 +770,57 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 1. Strip comments
   result = stripComments(result);
 
-  // 2. Load sub-templates [%load_template%]
+  // 2. Strip cache wrappers
+  result = processCacheBlocks(result);
+
+  // 3. Load sub-templates [%load_template%]
   result = processLoadTemplate(result, ctx);
 
-  // 3. Legacy includes [!include!]
+  // 4. Legacy includes [!include!]
   result = processLegacyIncludes(result, ctx);
 
-  // 4. Theme asset URLs [%ntheme_asset%]
+  // 5. Theme asset URLs [%ntheme_asset%]
   result = processThemeAssets(result, ctx);
 
-  // 5. Format blocks [%format%]
-  result = processFormatBlocks(result, ctx);
+  // 6. URL tags [%url page:'...'/%]
+  result = processUrlTags(result, ctx);
 
-  // 6. NoHTML blocks [%nohtml%]
+  // 7. Menu blocks [%menu%] — must run BEFORE param stripping
+  result = processMenuBlocks(result, ctx);
+
+  // 8. Format blocks [%format%] and [%FORMAT%]
+  result = processFormatBlocks(result, ctx);
+  result = processFormatCurrency(result, ctx);
+  result = processFormatPercent(result);
+
+  // 9. NoHTML blocks [%nohtml%]
   result = processNoHtml(result);
 
-  // 7. Filter blocks [%filter%]
+  // 10. Filter blocks [%filter%]
   result = processFilters(result, ctx);
 
-  // 8. URL info tags [%url_info%]
+  // 11. URL info tags [%url_info%]
   result = processUrlInfo(result, ctx);
 
-  // 9. Maropost conditionals [%if%]...[%/if%]
+  // 12. Set/While stubs
+  result = processSetAndWhile(result);
+
+  // 13. Maropost conditionals [%if%]...[%/if%]
   result = processMaropostConditionals(result, ctx);
 
-  // 10. System tags (breadcrumb, advert, thumb_list, etc.)
+  // 14. System tags (breadcrumb, advert, thumb_list, etc.)
   result = processSystemTags(result, ctx);
 
-  // 11. Block iterators [%crosssell%], etc.
+  // 15. Block iterators [%crosssell%], etc.
   result = processBlocks(result, ctx);
 
-  // 12. Legacy conditionals [?condition?]
+  // 16. Legacy conditionals [?condition?]
   result = processLegacyConditionals(result, ctx);
 
-  // 13. Value tags [@field@]
+  // 17. Value tags [@field@]
   result = processValueTags(result, ctx);
 
-  // 14. Clean up unresolved tags
+  // 18. Clean up unresolved tags
   result = cleanupUnresolvedTags(result);
 
   return result;
