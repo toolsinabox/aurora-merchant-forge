@@ -39,6 +39,13 @@ const SCAN_SELECTORS: Record<string, string[]> = {
   get_customers: ["Username", "EmailAddress"],
   get_orders: ["OrderID", "GrandTotal"],
   get_content: ["ContentID", "ContentName"],
+  get_rma: ["RmaID", "OrderID", "Status"],
+  get_payments: ["PaymentID", "OrderID", "Amount"],
+  get_vouchers: ["VoucherCode", "Value", "Balance"],
+  get_suppliers: ["SupplierID", "SupplierName"],
+  get_warehouses: ["WarehouseID", "WarehouseName"],
+  get_shipping: ["ShippingMethodName"],
+  get_currency: ["CurrencyCode", "CurrencyName"],
   test_connection: ["ID", "Name", "Model"],
 };
 
