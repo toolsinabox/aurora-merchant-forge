@@ -1359,11 +1359,122 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
   }
 }
 
-// ── Process [%set .../%] and [%while%] — stub out ──
-function processSetAndWhile(template: string): string {
-  let result = template.replace(/\[%set\s+[^\]]*\/%\]/gi, "");
+// ── Process [%set name:'varname' value:'val'/%] — store variables in context ──
+function processSetAndWhile(template: string, ctx?: TemplateContext): string {
+  let result = template;
+  
+  // Process [%set%] with name/value pairs — store in context.__variables
+  if (ctx) {
+    if (!(ctx as any).__variables) (ctx as any).__variables = {};
+    result = result.replace(/\[%set\s+(?:name:|var:)?'([^']+)'\s+(?:value:|to:)?'([^']*)'\s*\/?%\]/gi, (_, name: string, value: string) => {
+      // Resolve any [@...@] tags in the value
+      const resolved = value.replace(/\[@([\w:.]+)@\]/gi, (__: string, field: string) => {
+        const val = resolveField(field, ctx);
+        return val !== undefined && val !== null ? String(val) : "";
+      });
+      (ctx as any).__variables[name] = resolved;
+      return "";
+    });
+    // Also support [%set varname = 'value'%] syntax
+    result = result.replace(/\[%set\s+(\w+)\s*=\s*'([^']*)'\s*\/?%\]/gi, (_, name: string, value: string) => {
+      (ctx as any).__variables[name] = value;
+      return "";
+    });
+    // Support [%set varname = [@field@]%] syntax
+    result = result.replace(/\[%set\s+(\w+)\s*=\s*\[@([\w:.]+)@\]\s*\/?%\]/gi, (_, name: string, field: string) => {
+      const val = resolveField(field, ctx);
+      (ctx as any).__variables[name] = val !== undefined && val !== null ? String(val) : "";
+      return "";
+    });
+  } else {
+    result = result.replace(/\[%set\s+[^\]]*\/?%\]/gi, "");
+  }
+  
   result = result.replace(/\[%while\s+[^\]]*%\]([\s\S]*?)\[%\/while%\]/gi, "");
   return result;
+}
+
+// ── Process [%foreach items:'...' as:'...'%]...[%/foreach%] ──
+function processForeach(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%(?:foreach|each)\s+([^\]]*?)%\]([\s\S]*?)\[%\/(?:foreach|each)%\]/gi, (_, attrs: string, body: string) => {
+    const itemsMatch = attrs.match(/(?:items|list|collection):'([^']+)'/i);
+    const asMatch = attrs.match(/(?:as|var):'([^']+)'/i);
+    const limitMatch = attrs.match(/limit:'(\d+)'/i);
+    
+    const itemsKey = itemsMatch?.[1] || "";
+    const asVar = asMatch?.[1] || "item";
+    const limit = limitMatch ? parseInt(limitMatch[1]) : 999;
+    
+    // Resolve the items collection from context
+    let items: any[] = [];
+    if (itemsKey.startsWith("config:")) {
+      const val = resolveConfig(itemsKey.replace("config:", ""), ctx);
+      if (val && typeof val === "string") items = val.split(",").map(v => ({ value: v.trim(), name: v.trim() }));
+    } else {
+      const resolved = resolveField(itemsKey, ctx);
+      if (Array.isArray(resolved)) items = resolved;
+      else if (resolved && typeof resolved === "string") items = resolved.split(",").map(v => ({ value: v.trim(), name: v.trim() }));
+    }
+    
+    items = items.slice(0, limit);
+    if (items.length === 0) return "";
+    
+    return items.map((item, idx) => {
+      let rendered = body;
+      const isObj = typeof item === "object" && item !== null;
+      
+      // Replace [@as_var.field@] or [@as_var@]
+      rendered = rendered.replace(new RegExp(`\\[@${asVar}\\.?(\\w*)@\\]`, "gi"), (__, field: string) => {
+        if (!field) return isObj ? JSON.stringify(item) : String(item);
+        return isObj ? String(item[field] ?? "") : "";
+      });
+      
+      // Replace [@index@], [@count@]
+      rendered = rendered.replace(/\[@index@\]/gi, String(idx));
+      rendered = rendered.replace(/\[@count@\]/gi, String(items.length));
+      rendered = rendered.replace(/\[@first@\]/gi, idx === 0 ? "1" : "");
+      rendered = rendered.replace(/\[@last@\]/gi, idx === items.length - 1 ? "1" : "");
+      
+      return rendered;
+    }).join("");
+  });
+}
+
+// ── Process [%switch field%]...[%case 'val'%]...[%/switch%] ──
+function processSwitchCase(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%switch\s+([^\]]+)%\]([\s\S]*?)\[%\/switch%\]/gi, (_, expr: string, body: string) => {
+    // Resolve the switch expression
+    let switchVal = expr.trim();
+    const tagMatch = switchVal.match(/^\[@([\w:.]+)@\]$/);
+    if (tagMatch) {
+      const resolved = resolveField(tagMatch[1], ctx);
+      switchVal = resolved !== undefined && resolved !== null ? String(resolved) : "";
+    } else if (/^config:/i.test(switchVal)) {
+      switchVal = resolveConfig(switchVal.replace(/^config:/i, ""), ctx);
+    }
+    
+    // Split into cases
+    const caseRegex = /\[%case\s+'([^']*)'%\]/gi;
+    const defaultMatch = body.match(/\[%default%\]([\s\S]*?)(?=\[%(?:case|\/switch))/i);
+    let lastIndex = 0;
+    let caseMatch;
+    const cases: { value: string; start: number }[] = [];
+    
+    while ((caseMatch = caseRegex.exec(body)) !== null) {
+      cases.push({ value: caseMatch[1], start: caseMatch.index + caseMatch[0].length });
+    }
+    
+    for (let i = 0; i < cases.length; i++) {
+      if (cases[i].value === switchVal || cases[i].value === "*") {
+        const endPos = i + 1 < cases.length ? body.indexOf("[%case", cases[i].start) : body.length;
+        return body.slice(cases[i].start, endPos > -1 ? endPos : body.length).replace(/\[%\/switch%\]/gi, "").replace(/\[%default%\][\s\S]*/i, "");
+      }
+    }
+    
+    // Default case
+    if (defaultMatch) return defaultMatch[1];
+    return "";
+  });
 }
 
 // ── Process [%FORMAT type:'currency'%]value[%/FORMAT%] ──
