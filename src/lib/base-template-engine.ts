@@ -898,12 +898,12 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     let items: Record<string, any>[] = [];
     
     if (type === "product") {
-      // Product adverts use the products list
+      const bp = ctx.basePath || "";
       items = (ctx.products || []).slice(0, limit).map((p, idx) => ({
         ...p,
         ad_id: p.id,
         headline: p.title,
-        url: `/product/${p.id}`,
+        url: `${bp}/product/${p.id}`,
         image_url: resolveStorageUrl(p.images?.[0]) || "/placeholder.svg",
         price: p.price,
         rrp: p.compare_at_price || p.price,
