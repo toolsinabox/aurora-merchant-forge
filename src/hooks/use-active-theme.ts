@@ -99,25 +99,39 @@ export function findMainThemeFile(
   folder: string
 ): ThemeFile | undefined {
   if (!theme) return undefined;
-  const folderFiles = theme.files.filter(f => f.folder === folder);
+  
+  // Match files by folder field OR by file_path containing the folder directory
+  const folderFiles = theme.files.filter(f =>
+    f.folder === folder || f.file_path.match(new RegExp(`(?:^|/)${folder}/`, "i"))
+  );
+  
+  // Exclude files inside sub-directories like "includes" — we want the top-level template
+  const topLevelFiles = folderFiles.filter(f => {
+    const pathAfterFolder = f.file_path.replace(new RegExp(`^.*?${folder}/`, "i"), "");
+    return !pathAfterFolder.includes("/"); // No further nesting
+  });
   
   // Priority order for main template detection
   const priorities = [
-    "template.html",        // Maropost standard main template
-    "default.template.html", // Default page template
-    "index.template.html",   // Alternative index
+    "template.html",
+    "default.template.html",
+    "index.template.html",
     "index.html",
     "home.template.html",
     "homepage.template.html",
   ];
   
-  for (const name of priorities) {
-    const found = folderFiles.find(f => f.file_name.toLowerCase() === name);
-    if (found) return found;
+  // Search top-level files first, then all folder files as fallback
+  for (const candidates of [topLevelFiles, folderFiles]) {
+    for (const name of priorities) {
+      const found = candidates.find(f => f.file_name.toLowerCase() === name);
+      if (found) return found;
+    }
   }
   
-  // Fallback: first HTML file in the folder
-  return folderFiles.find(f => f.file_name.endsWith(".html"));
+  // Fallback: first HTML file at top level
+  return topLevelFiles.find(f => f.file_name.endsWith(".html"))
+    || folderFiles.find(f => f.file_name.endsWith(".html"));
 }
 
 /** Find all theme files in a folder */
