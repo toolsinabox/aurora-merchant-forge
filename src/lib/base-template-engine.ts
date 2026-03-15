@@ -1165,6 +1165,11 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
         });
         
+        // Process format blocks after field resolution
+        rendered = processFormatCurrency(rendered, ctx);
+        rendered = processFormatPercent(rendered);
+        rendered = processFormatText(rendered);
+        
         // Process asset_url tags within item template
         rendered = processAssetUrl(rendered, ctx, item);
         
