@@ -302,17 +302,48 @@ serve(async (req) => {
             }
           }
 
-          // Link to categories
+          // Link to categories — try multiple matching strategies
           if (p.Categories) {
             const cats = Array.isArray(p.Categories) ? p.Categories : [p.Categories];
             for (const catItem of cats) {
-              const catName = catItem?.CategoryName || catItem?.Category?.CategoryName;
-              if (catName) {
-                const catSlug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-                const { data: foundCat } = await supabase
-                  .from("categories").select("id").eq("store_id", store_id).eq("slug", catSlug).maybeSingle();
+              const catName = catItem?.CategoryName || catItem?.Category?.CategoryName || (typeof catItem === "string" ? catItem : null);
+              const catRef = catItem?.CategoryReference || catItem?.Category?.CategoryReference;
+              if (catName || catRef) {
+                let foundCat: any = null;
+
+                // 1. Try slug from CategoryReference (matches how categories are imported)
+                if (catRef && !foundCat) {
+                  const refSlug = catRef.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).eq("slug", refSlug).maybeSingle();
+                  foundCat = data;
+                }
+
+                // 2. Try slug from CategoryName
+                if (catName && !foundCat) {
+                  const nameSlug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).eq("slug", nameSlug).maybeSingle();
+                  foundCat = data;
+                }
+
+                // 3. Try exact name match
+                if (catName && !foundCat) {
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).eq("name", catName).maybeSingle();
+                  foundCat = data;
+                }
+
+                // 4. Try case-insensitive name match (ilike)
+                if (catName && !foundCat) {
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).ilike("name", catName).maybeSingle();
+                  foundCat = data;
+                }
+
                 if (foundCat) {
                   await safe(supabase.from("products").update({ category_id: foundCat.id }).eq("id", productId));
+                  break; // Use first matched category as primary
                 }
               }
             }
