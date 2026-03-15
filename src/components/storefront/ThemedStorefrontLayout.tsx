@@ -237,7 +237,56 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const scopedCss = useMemo(() => {
     const raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
     if (!raw) return "";
-    return scopeCss(raw, SCOPE_SELECTOR);
+    const scoped = scopeCss(raw, SCOPE_SELECTOR);
+    
+    // Add CSS fallbacks for Slick carousel wrappers that need JS to layout
+    // Without Slick JS, these containers stack vertically — provide flexbox fallback
+    const fallbackCss = `
+${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) > .hovercartmain {
+  flex: 0 0 calc(33.333% - 16px);
+  max-width: calc(33.333% - 16px);
+}
+${SCOPE_SELECTOR} .js-usp:not(.slick-initialized) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+${SCOPE_SELECTOR} .js-usp:not(.slick-initialized) > .col-6,
+${SCOPE_SELECTOR} .js-usp:not(.slick-initialized) > .col-md-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+${SCOPE_SELECTOR} .hovercartmain img {
+  max-width: 100%;
+  height: auto;
+  max-height: 180px;
+  object-fit: contain;
+}
+${SCOPE_SELECTOR} img[src="/placeholder.svg"] {
+  max-height: 140px;
+  object-fit: contain;
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+}
+@media (max-width: 767px) {
+  ${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) > .hovercartmain {
+    flex: 0 0 calc(50% - 16px);
+    max-width: calc(50% - 16px);
+  }
+  ${SCOPE_SELECTOR} .js-usp:not(.slick-initialized) > .col-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+`;
+    return scoped + fallbackCss;
   }, [theme.cssFiles]);
 
   // Inject external CSS/JS links from the theme's <head> content
