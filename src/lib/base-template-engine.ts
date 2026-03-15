@@ -718,13 +718,17 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
     const categories = ctx.categories || [];
     if (categories.length === 0) return "";
 
+    // Pre-process asset_url blocks in the body so that nested [%param default%]...[%/param%]
+    // inside asset_url doesn't confuse the level param extraction regex
+    const preprocessedBody = collapseAssetUrlBlocks(body);
+
     const levelTemplates: Record<number, string> = {};
-    const paramHeaderMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const paramFooterMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramHeaderMatch = preprocessedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramFooterMatch = preprocessedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
     
     const levelRegex = /\[%param\s+\*?level_(\d+)%\]([\s\S]*?)\[%\/param%\]/gi;
     let m;
-    while ((m = levelRegex.exec(body)) !== null) {
+    while ((m = levelRegex.exec(preprocessedBody)) !== null) {
       levelTemplates[parseInt(m[1])] = m[2];
     }
 
@@ -761,6 +765,19 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
     if (paramFooterMatch) result += paramFooterMatch[1];
     return result;
   });
+}
+
+/**
+ * Collapse [%asset_url ...%]...[%/asset_url%] blocks into self-closing placeholders
+ * so that nested [%param default%] inside them doesn't break outer param extraction.
+ * The placeholder retains the attrs so it can be resolved later by processAssetUrl.
+ */
+function collapseAssetUrlBlocks(body: string): string {
+  // Match asset_url block form (with potential nested [%param%] and [%cdn_asset%] inside)
+  return body.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%\/asset_url%\]/gi,
+    (_, attrs: string) => `[%asset_url ${attrs}/%]`
+  );
 }
 
 // ── Process [%asset_url type:'...' id:'...'%]...[%END asset_url%] or [%/asset_url%] ──
