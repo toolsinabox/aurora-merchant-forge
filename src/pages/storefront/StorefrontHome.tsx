@@ -138,10 +138,19 @@ export default function StorefrontHome() {
 
   // If we have a B@SE home template, render it fully
   if (homeTemplate?.content && theme) {
-    const renderedHome = renderTemplate(homeTemplate.content, templateCtx);
+    let renderedHome = renderTemplate(homeTemplate.content, templateCtx);
+    // Rewrite relative asset paths to storage bucket URLs
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      renderedHome = renderedHome
+        .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+          if (!assetExt.test(path)) return match;
+          const cleanPath = path.replace(/^\/+/, "");
+          return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+        });
+    }
     return (
       <ThemedStorefrontLayout storeName={store.name} extraContext={templateCtx}>
-        {/* Inject managed banners above template content */}
         <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
         <div dangerouslySetInnerHTML={{ __html: renderedHome }} />
         <AdvertBanner storeId={store.id} placement="homepage_bottom" basePath={basePath} />
