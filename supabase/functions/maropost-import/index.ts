@@ -683,7 +683,7 @@ serve(async (req) => {
             sort_order: parseInt(p.SortOrder) || 0,
             seo_title: p.SEOPageTitle || null,
             seo_description: p.SEOMetaDescription || null,
-            published_at: p.DatePosted || null,
+            published_at: sanitizeDate(p.DatePosted),
           };
 
           if (existing) {
