@@ -72,8 +72,8 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
   const configMap: Record<string, () => string> = {
     "company_name": () => store.name || "",
     "website_name": () => store.name || "",
-    "home_url": () => ctx.baseUrl || "/",
-    "canonical_url": () => ctx.baseUrl || "",
+    "home_url": () => ctx.basePath || ctx.baseUrl || "/",
+    "canonical_url": () => ctx.baseUrl || ctx.basePath || "",
     "current_page_type": () => ctx.pageType || "content",
     "templatelang": () => "en-AU",
     "neto_css_version": () => Date.now().toString(),
