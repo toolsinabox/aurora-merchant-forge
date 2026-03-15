@@ -661,13 +661,14 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
     const categories = ctx.categories || [];
     if (categories.length === 0) return "";
 
+    const preprocessedBody = collapseAssetUrlBlocks(body);
     const levelTemplates: Record<number, string> = {};
-    const paramHeaderMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const paramFooterMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramHeaderMatch = preprocessedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramFooterMatch = preprocessedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
     
     const levelRegex = /\[%param\s+\*?level_(\d+)%\]([\s\S]*?)\[%\/param%\]/gi;
     let m;
-    while ((m = levelRegex.exec(body)) !== null) {
+    while ((m = levelRegex.exec(preprocessedBody)) !== null) {
       levelTemplates[parseInt(m[1])] = m[2];
     }
 
