@@ -1873,53 +1873,11 @@ function processItemConditionals(template: string, item: any, idx: number, total
   return result;
 }
 
-// Process [%if%] blocks where we only know total_showing
+// Process [%if%] blocks where we only know total_showing — uses depth-tracking
 function processInlineConditionals(template: string, totalShowing: number, ctx?: TemplateContext): string {
-  let result = template;
-  let safety = 0;
-
   const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
-
-  result = result.replace(/\[@total_showing@\]/gi, String(totalShowing));
-
-  while (result.includes("[%if ") && safety++ < 30) {
-    const prev = result;
-    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const segments: string[] = [];
-      const conditions: (string | null)[] = [cond];
-      let remaining = body;
-      let currentSegment = "";
-      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
-      
-      while (remaining.length > 0) {
-        const match = boundaryRegex.exec(remaining);
-        if (!match) {
-          currentSegment += remaining;
-          remaining = "";
-        } else {
-          currentSegment += remaining.slice(0, match.index);
-          segments.push(currentSegment);
-          currentSegment = "";
-          remaining = remaining.slice(match.index + match[0].length);
-          if (match[1] !== undefined) {
-            conditions.push(match[1]);
-          } else {
-            conditions.push(null);
-          }
-        }
-      }
-      segments.push(currentSegment);
-      
-      for (let i = 0; i < segments.length && i < conditions.length; i++) {
-        const c = conditions[i];
-        if (c === null) return segments[i];
-        if (evaluateCondition(c, evalCtx)) return segments[i];
-      }
-      return "";
-    });
-    if (result === prev) break;
-  }
-
+  let result = template.replace(/\[@total_showing@\]/gi, String(totalShowing));
+  result = processMaropostConditionals(result, evalCtx);
   return result;
 }
 
