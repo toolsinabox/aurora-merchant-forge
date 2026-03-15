@@ -10,7 +10,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { AdvertBanner } from "@/components/storefront/AdvertBanner";
-import { useActiveTheme, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useActiveTheme, findMainThemeFile, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -60,9 +60,10 @@ export default function StorefrontHome() {
   // Check if there's an index/home template in the theme
   const homeTemplate = useMemo(() => {
     if (!theme) return null;
-    return findThemeFile(theme, "templates", "index") 
-      || findThemeFile(theme, "templates", "home")
-      || findThemeFile(theme, "templates", "homepage");
+    // Maropost convention: default.template.html is the homepage
+    return findMainThemeFile(theme, "templates")
+      || findThemeFile(theme, "templates", "index") 
+      || findThemeFile(theme, "templates", "home");
   }, [theme]);
 
   // Build context for template rendering
