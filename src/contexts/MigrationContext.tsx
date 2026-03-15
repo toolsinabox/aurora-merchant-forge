@@ -91,7 +91,8 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     setLogs(prev => [...prev, `[${ts}] ${msg}`]);
   }, []);
 
-  const fetchAllPages = async (entity: string, domain: string, key: string): Promise<any[]> => {
+  const fetchAllPages = async (entity: string, domain: string, key: string, testMode = false): Promise<any[]> => {
+    const TEST_LIMIT = 3;
     let allItems: any[] = [];
     let page = 0;
     let hasMore = true;
@@ -101,11 +102,12 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
         await new Promise(r => setTimeout(r, 500));
       }
 
+      const fetchLimit = testMode ? TEST_LIMIT : ITEMS_PER_PAGE;
       const { data, error } = await supabase.functions.invoke("maropost-migration", {
         body: {
           action: FETCH_ACTION_MAP[entity] || "test_connection",
           store_domain: domain, api_key: key,
-          page, limit: ITEMS_PER_PAGE,
+          page, limit: fetchLimit,
         },
       });
 
@@ -119,10 +121,17 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
           if (Array.isArray(items) && items.length > 0) {
             allItems = [...allItems, ...items];
             addLog(`  Fetched page ${page + 1}: ${items.length} ${entity}`);
-            if (items.length < ITEMS_PER_PAGE) hasMore = false;
+            if (items.length < fetchLimit) hasMore = false;
           } else { hasMore = false; }
         } else { hasMore = false; }
       } else { hasMore = false; }
+
+      // In test mode, only fetch 1 page
+      if (testMode) {
+        addLog(`  🧪 Test mode: limited to ${allItems.length} ${entity}`);
+        break;
+      }
+
       page++;
       if (page >= 200) { addLog(`  ⚠ Reached 200-page limit for ${entity}`); break; }
     }
