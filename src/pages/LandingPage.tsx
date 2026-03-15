@@ -144,7 +144,7 @@ export default function LandingPage() {
               <Button size="lg" className="text-sm px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25" asChild>
                 <Link to="/signup">Start Selling Free <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
               </Button>
-              <Button size="lg" variant="outline" className="text-sm px-8 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild>
+              <Button size="lg" variant="outline" className="text-sm px-8 bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild>
                 <a href="#features">Explore Features <ChevronRight className="ml-1 h-4 w-4" /></a>
               </Button>
             </div>
