@@ -303,13 +303,26 @@ export default function ThemeFiles() {
     try {
       const zip = await JSZip.loadAsync(file);
       const preview: { path: string; folder: string }[] = [];
+      const rawPaths: string[] = [];
       zip.forEach((path, entry) => {
         if (!entry.dir && !path.startsWith("__MACOSX") && !path.startsWith(".")) {
-          // Strip the top-level theme folder name if present
-          const cleanPath = path.includes("/") ? path : path;
-          preview.push({ path: cleanPath, folder: detectFolder(cleanPath) });
+          rawPaths.push(path);
         }
       });
+      
+      // Detect common top-level folder to strip
+      let stripPrefix = "";
+      if (rawPaths.length > 0) {
+        const firstSegment = rawPaths[0].split("/")[0];
+        if (rawPaths.every(p => p.startsWith(firstSegment + "/"))) {
+          stripPrefix = firstSegment + "/";
+        }
+      }
+      
+      for (const path of rawPaths) {
+        const cleanPath = stripPrefix ? path.slice(stripPrefix.length) : path;
+        preview.push({ path: cleanPath, folder: detectFolder(path) });
+      }
       setImportPreview(preview);
       setImportDialog(true);
     } catch (err: any) {
