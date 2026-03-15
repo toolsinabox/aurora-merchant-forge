@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
-import { useActiveTheme, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
