@@ -844,6 +844,16 @@ function resolveConditionOperand(raw: string, ctx: TemplateContext): any {
     return "";
   }
 
+  // config:key bare reference (common in Maropost: [%if config:show_price%])
+  if (/^config:/i.test(operand)) {
+    return resolveConfig(operand.replace(/^config:/i, ""), ctx);
+  }
+
+  // Check variables stored by [%set%]
+  if ((ctx as any).__variables?.[operand] !== undefined) {
+    return (ctx as any).__variables[operand];
+  }
+
   // Tagged / field values (bare field name)
   const tagValue = resolveTagValue(operand, ctx);
   if (tagValue !== undefined && tagValue !== null && tagValue !== "") return tagValue;
