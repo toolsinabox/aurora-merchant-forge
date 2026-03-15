@@ -602,7 +602,7 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
         const nextLevelHtml = renderLevel(cat.id, level + 1);
         let html = tmpl;
         html = html.replace(/\[@name@\]/gi, cat.name || "");
-        html = html.replace(/\[@url@\]/gi, cat.url || `/${cat.slug}` || "#");
+        html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
         html = html.replace(/\[@css_class@\]/gi, cat.css_class || "");
         html = html.replace(/\[@image_url@\]/gi, cat.image_url || "");
