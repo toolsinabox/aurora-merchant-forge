@@ -35,6 +35,7 @@ interface MigrationContextType {
     apiKey: string;
     storeId: string;
     dryRun?: boolean;
+    testMode?: boolean;
   }) => void;
   retryEntity: (entityName: string, storeId: string) => void;
   togglePause: () => void;
@@ -90,7 +91,8 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     setLogs(prev => [...prev, `[${ts}] ${msg}`]);
   }, []);
 
-  const fetchAllPages = async (entity: string, domain: string, key: string): Promise<any[]> => {
+  const fetchAllPages = async (entity: string, domain: string, key: string, testMode = false): Promise<any[]> => {
+    const TEST_LIMIT = 3;
     let allItems: any[] = [];
     let page = 0;
     let hasMore = true;
@@ -100,11 +102,12 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
         await new Promise(r => setTimeout(r, 500));
       }
 
+      const fetchLimit = testMode ? TEST_LIMIT : ITEMS_PER_PAGE;
       const { data, error } = await supabase.functions.invoke("maropost-migration", {
         body: {
           action: FETCH_ACTION_MAP[entity] || "test_connection",
           store_domain: domain, api_key: key,
-          page, limit: ITEMS_PER_PAGE,
+          page, limit: fetchLimit,
         },
       });
 
@@ -118,10 +121,17 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
           if (Array.isArray(items) && items.length > 0) {
             allItems = [...allItems, ...items];
             addLog(`  Fetched page ${page + 1}: ${items.length} ${entity}`);
-            if (items.length < ITEMS_PER_PAGE) hasMore = false;
+            if (items.length < fetchLimit) hasMore = false;
           } else { hasMore = false; }
         } else { hasMore = false; }
       } else { hasMore = false; }
+
+      // In test mode, only fetch 1 page
+      if (testMode) {
+        addLog(`  🧪 Test mode: limited to ${allItems.length} ${entity}`);
+        break;
+      }
+
       page++;
       if (page >= 200) { addLog(`  ⚠ Reached 200-page limit for ${entity}`); break; }
     }
@@ -190,12 +200,13 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     return { totalImported, totalFailed, allErrors };
   };
 
-  const startBackgroundImport = useCallback(({ entities: ents, storeDomain: domain, apiKey: key, storeId, dryRun = false }: {
+  const startBackgroundImport = useCallback(({ entities: ents, storeDomain: domain, apiKey: key, storeId, dryRun = false, testMode = false }: {
     entities: MigrationEntity[];
     storeDomain: string;
     apiKey: string;
     storeId: string;
     dryRun?: boolean;
+    testMode?: boolean;
   }) => {
     const selected = ents.filter(e => e.selected);
     if (selected.length === 0) { toast.error("Select at least one entity to import"); return; }
@@ -208,7 +219,7 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     setDismissed(false);
     pauseRef.current = false;
     setOverallProgress(0);
-    addLog("═══ Starting Migration (Background) ═══");
+    addLog(testMode ? "═══ Starting TEST Import (3 items per entity) ═══" : "═══ Starting Migration (Background) ═══");
 
     // Run the import in the background (not awaited)
     (async () => {
@@ -238,7 +249,7 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
         setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "importing" } : e));
 
         try {
-          const sourceItems = await fetchAllPages(entity.entity, domain, key);
+          const sourceItems = await fetchAllPages(entity.entity, domain, key, testMode);
           addLog(`  Fetched ${sourceItems.length} total ${entity.entity} from Maropost`);
 
           if (sourceItems.length === 0) {
@@ -275,8 +286,8 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
 
       setIsRunning(false);
       setCurrentEntity(null);
-      addLog("═══ Migration Complete ═══");
-      toast.success("Migration complete! All data has been imported.");
+      addLog(testMode ? "═══ Test Import Complete ═══" : "═══ Migration Complete ═══");
+      toast.success(testMode ? "Test import complete! Check results before running full import." : "Migration complete! All data has been imported.");
     })();
   }, [addLog]);
 

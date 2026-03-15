@@ -391,7 +391,7 @@ export default function MaropostMigration() {
     migration.togglePause();
   };
 
-  const startImport = async () => {
+  const startImport = async (testMode = false) => {
     const selected = entities.filter(e => e.selected);
     if (selected.length === 0) { toast.error("Select at least one entity to import"); return; }
 
@@ -399,7 +399,10 @@ export default function MaropostMigration() {
     if (!sid) { toast.error("No store found. Please complete onboarding first."); return; }
 
     setStep("import");
-    toast.success("Migration started in background — you can navigate away safely!");
+    toast.success(testMode
+      ? "Test import started — importing ~3 items per entity to verify..."
+      : "Migration started in background — you can navigate away safely!"
+    );
 
     // Delegate to context — runs in background across page navigation
     migration.startBackgroundImport({
@@ -408,6 +411,7 @@ export default function MaropostMigration() {
       apiKey,
       storeId: sid,
       dryRun,
+      testMode,
     });
   };
 
@@ -978,10 +982,14 @@ export default function MaropostMigration() {
                 </AlertDescription>
               </Alert>
 
-              <div className="flex items-center gap-3 pt-4">
-                <Button onClick={startImport} disabled={!entities.some(e => e.selected)}>
+              <div className="flex items-center gap-3 pt-4 flex-wrap">
+                <Button onClick={() => startImport(true)} variant="outline" disabled={!entities.some(e => e.selected)}>
+                  <Zap className="h-4 w-4 mr-2" />
+                  Test Import (~3 items each)
+                </Button>
+                <Button onClick={() => startImport(false)} disabled={!entities.some(e => e.selected)}>
                   <Download className="h-4 w-4 mr-2" />
-                  {dryRun ? "Dry Run" : "Start Import"} ({entities.filter(e => e.selected).length} entities)
+                  {dryRun ? "Dry Run" : "Full Import"} ({entities.filter(e => e.selected).length} entities)
                 </Button>
                 <label className="flex items-center gap-2 text-sm cursor-pointer">
                   <Checkbox checked={dryRun} onCheckedChange={(v) => setDryRun(!!v)} />
