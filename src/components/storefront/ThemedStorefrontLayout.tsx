@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useCallback, useMemo } from "react";
+import { ReactNode, useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,92 @@ interface ThemedStorefrontLayoutProps {
   storeName?: string;
   /** Extra context to merge into template rendering */
   extraContext?: Partial<TemplateContext>;
+}
+
+/**
+ * Scope all CSS rules under a given selector so theme CSS doesn't bleed
+ * into React-rendered components. Handles @media, @keyframes, @font-face, etc.
+ */
+function scopeCss(css: string, scopeSelector: string): string {
+  // Remove source map comments
+  let result = css.replace(/\/\*#\s*sourceMappingURL=.*?\*\//g, "");
+
+  // Process the CSS by splitting on top-level braces
+  // We need to prefix selectors but leave @-rules intact
+  const output: string[] = [];
+  let i = 0;
+
+  while (i < result.length) {
+    // Skip whitespace
+    while (i < result.length && /\s/.test(result[i])) { output.push(result[i]); i++; }
+    if (i >= result.length) break;
+
+    // Find the next { to determine if this is an @-rule or a selector
+    const braceIdx = result.indexOf("{", i);
+    if (braceIdx === -1) { output.push(result.slice(i)); break; }
+
+    const prelude = result.slice(i, braceIdx).trim();
+
+    if (prelude.startsWith("@media") || prelude.startsWith("@supports") || prelude.startsWith("@layer")) {
+      // Nested @-rule: output the @-rule opener, then recursively scope its contents
+      output.push(prelude + " {");
+      i = braceIdx + 1;
+      // Find matching closing brace
+      let depth = 1;
+      let blockStart = i;
+      while (i < result.length && depth > 0) {
+        if (result[i] === "{") depth++;
+        else if (result[i] === "}") depth--;
+        i++;
+      }
+      const innerBlock = result.slice(blockStart, i - 1);
+      output.push(scopeCss(innerBlock, scopeSelector));
+      output.push("}");
+    } else if (prelude.startsWith("@keyframes") || prelude.startsWith("@-webkit-keyframes") || prelude.startsWith("@font-face") || prelude.startsWith("@import") || prelude.startsWith("@charset")) {
+      // Pass through as-is (don't scope these)
+      output.push(prelude + " {");
+      i = braceIdx + 1;
+      let depth = 1;
+      while (i < result.length && depth > 0) {
+        if (result[i] === "{") depth++;
+        else if (result[i] === "}") depth--;
+        output.push(result[i]);
+        i++;
+      }
+    } else {
+      // Regular selector(s) — scope them
+      const scopedSelectors = prelude
+        .split(",")
+        .map(sel => {
+          sel = sel.trim();
+          if (!sel) return sel;
+          // Don't double-scope
+          if (sel.includes(scopeSelector)) return sel;
+          // :root and html and body → replace with scope selector
+          if (sel === ":root" || sel === "html" || sel === "body") {
+            return scopeSelector;
+          }
+          if (sel.startsWith("html ") || sel.startsWith("body ")) {
+            return `${scopeSelector} ${sel.replace(/^(?:html|body)\s+/, "")}`;
+          }
+          return `${scopeSelector} ${sel}`;
+        })
+        .join(", ");
+
+      output.push(scopedSelectors + " {");
+      i = braceIdx + 1;
+      // Find the closing brace for this rule
+      let depth = 1;
+      while (i < result.length && depth > 0) {
+        if (result[i] === "{") depth++;
+        else if (result[i] === "}") depth--;
+        output.push(result[i]);
+        i++;
+      }
+    }
+  }
+
+  return output.join("");
 }
 
 /**
@@ -53,6 +139,8 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   );
 }
 
+const SCOPE_SELECTOR = "#neto-theme";
+
 /** The actual themed shell that renders header/footer from B@SE templates */
 function ThemedShell({ theme, store, storeName, children, extraContext }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
@@ -74,7 +162,6 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
     ...extraContext,
   }), [store, storeName, includes, extraContext]);
 
-  // Find header template
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
 
@@ -88,9 +175,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
     return renderTemplate(footerFile.content, baseCtx);
   }, [footerFile, baseCtx]);
 
-  // Combine all CSS files
-  const combinedCss = useMemo(() => {
-    return theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
+  // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
+  const scopedCss = useMemo(() => {
+    const raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
+    if (!raw) return "";
+    return scopeCss(raw, SCOPE_SELECTOR);
   }, [theme.cssFiles]);
 
   // Combine all JS files
@@ -111,33 +200,33 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
   }, [combinedJs]);
 
   return (
-    <div className="min-h-screen flex flex-col" id="themed-storefront">
-      {/* Theme CSS */}
-      {combinedCss && (
-        <style dangerouslySetInnerHTML={{ __html: combinedCss }} />
+    <>
+      {/* Scoped Theme CSS — only applies inside #neto-theme */}
+      {scopedCss && (
+        <style dangerouslySetInnerHTML={{ __html: scopedCss }} />
       )}
 
-      {/* Rendered Header */}
-      {renderedHeader && (
-        <header
-          dangerouslySetInnerHTML={{ __html: renderedHeader }}
-        />
-      )}
+      {/* Theme-rendered sections: header + footer wrapped in scope */}
+      <div id="neto-theme" className="min-h-screen flex flex-col">
+        {/* Rendered Header */}
+        {renderedHeader && (
+          <header dangerouslySetInnerHTML={{ __html: renderedHeader }} />
+        )}
 
-      {/* Page Content */}
-      <main id="main-content" className="flex-1 pb-16 md:pb-0">
-        {children}
-      </main>
+        {/* Page Content — children render OUTSIDE theme scope for React pages,
+            but INSIDE for B@SE-rendered pages (they bring their own themed wrapper) */}
+        <main id="main-content" className="flex-1 pb-16 md:pb-0">
+          {children}
+        </main>
 
-      {/* Rendered Footer */}
-      {renderedFooter && (
-        <footer
-          dangerouslySetInnerHTML={{ __html: renderedFooter }}
-        />
-      )}
+        {/* Rendered Footer */}
+        {renderedFooter && (
+          <footer dangerouslySetInnerHTML={{ __html: renderedFooter }} />
+        )}
+      </div>
 
       <CookieConsentBanner />
       <MobileBottomNav />
-    </div>
+    </>
   );
 }
