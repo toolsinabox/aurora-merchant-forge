@@ -536,7 +536,7 @@ export default function MaropostMigration() {
       let totalImported = 0;
       let totalFailed = 0;
       const allErrors: string[] = [];
-      const batchSize = 50;
+      const batchSize = entity.entity === "products" ? 5 : entity.entity === "orders" ? 20 : 50;
 
       for (let i = 0; i < sourceItems.length; i += batchSize) {
         const batch = sourceItems.slice(i, i + batchSize);
