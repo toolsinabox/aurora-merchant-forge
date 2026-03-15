@@ -100,24 +100,31 @@ function useThemeFiles(themeId: string | null) {
   });
 }
 
-// ── Detect folder from file path — uses actual directory from ZIP when available ──
+// ── Detect folder from file path — uses the FIRST known directory segment ──
+// This ensures "headers/includes/head.template.html" → "headers" (not "snippets")
 function detectFolder(filePath: string): FolderKey {
   const lower = filePath.toLowerCase();
   
-  // Extract the first meaningful directory segment from the path
-  // e.g. "skeletal/headers/includes/head.template.html" → check "headers"
+  // Remove the filename to only look at directory segments
   const segments = lower.split("/").filter(Boolean);
+  // Remove the last segment (the filename itself)
+  const dirSegments = segments.slice(0, -1);
   
-  // Check each segment for a known folder name
-  for (const seg of segments) {
-    if (seg === "headers" || seg === "header") return "headers";
-    if (seg === "footers" || seg === "footer") return "footers";
-    if (seg === "snippets" || seg === "snippet" || seg === "partials" || seg === "includes") return "snippets";
-    if (seg === "templates" || seg === "template") return "templates";
-    if (seg === "emails" || seg === "email") return "emails";
-    if (seg === "css" || seg === "styles" || seg === "stylesheets") return "css";
-    if (seg === "js" || seg === "javascript" || seg === "scripts") return "js";
-    if (seg === "assets" || seg === "images" || seg === "img" || seg === "fonts") return "assets";
+  // Map of segment names → folder key, checked in order of appearance
+  const segmentMap: Record<string, FolderKey> = {
+    headers: "headers", header: "headers",
+    footers: "footers", footer: "footers",
+    templates: "templates", template: "templates",
+    snippets: "snippets", snippet: "snippets", partials: "snippets", includes: "snippets",
+    emails: "emails", email: "emails",
+    css: "css", styles: "css", stylesheets: "css",
+    js: "js", javascript: "js", scripts: "js",
+    assets: "assets", images: "assets", img: "assets", fonts: "assets",
+  };
+  
+  // Use the FIRST matching directory segment (leftmost = most specific parent)
+  for (const seg of dirSegments) {
+    if (segmentMap[seg]) return segmentMap[seg];
   }
   
   // Fallback: detect by file extension

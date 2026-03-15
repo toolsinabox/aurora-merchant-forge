@@ -164,11 +164,16 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const themeFiles = useMemo(() => {
     const map: Record<string, string> = {};
     for (const f of theme.files) {
+      // Map by full file_path (e.g. "headers/includes/head.template.html")
       map[f.file_path] = f.content || "";
+      // Map by folder/filename (legacy)
       map[`${f.folder}/${f.file_name}`] = f.content || "";
+      // Map by just filename for simple includes
+      map[f.file_name] = f.content || "";
+      // Map by all sub-path combinations for flexible resolution
       const parts = f.file_path.split("/");
-      if (parts.length > 1) {
-        map[parts.slice(0).join("/")] = f.content || "";
+      for (let i = 0; i < parts.length; i++) {
+        map[parts.slice(i).join("/")] = f.content || "";
       }
     }
     return map;
