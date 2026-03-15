@@ -244,27 +244,47 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     if (!headContent) return;
     const addedElements: Element[] = [];
     
-    // Extract and inject <link> stylesheet tags
+    // Extract and inject <link> stylesheet tags — only external CDN ones
     const linkRegex = /<link[^>]*(?:rel=["']stylesheet["']|type=["']text\/css["'])[^>]*>/gi;
     let match;
     while ((match = linkRegex.exec(headContent)) !== null) {
       const hrefMatch = match[0].match(/href=["']([^"']+)["']/);
-      if (hrefMatch && !document.querySelector(`link[href="${hrefMatch[1]}"]`)) {
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = hrefMatch[1];
-        link.setAttribute("data-theme-css", "true");
-        const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
-        if (mediaMatch) link.media = mediaMatch[1];
-        document.head.appendChild(link);
-        addedElements.push(link);
-      }
+      if (!hrefMatch) continue;
+      const href = hrefMatch[1];
+      // Skip theme asset CSS (already injected via scoped <style>)
+      if (href.includes("/assets/themes/") || href.includes("ntheme_asset")) continue;
+      if (!href.startsWith("http") && !href.startsWith("//")) continue;
+      if (document.querySelector(`link[href="${href}"]`)) continue;
+      
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.setAttribute("data-theme-css", "true");
+      const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
+      if (mediaMatch) link.media = mediaMatch[1];
+      document.head.appendChild(link);
+      addedElements.push(link);
+    }
+
+    // Also inject CSS links from body (the header template has <link> tags)
+    const bodyLinkRegex = /<link[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>/gi;
+    const bodyHtml = renderedHeader || "";
+    let bm;
+    while ((bm = bodyLinkRegex.exec(bodyHtml)) !== null) {
+      const href = bm[1];
+      if (href.includes("/assets/themes/") || document.querySelector(`link[href="${href}"]`)) continue;
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.setAttribute("data-theme-css", "true");
+      document.head.appendChild(link);
+      addedElements.push(link);
     }
     
     return () => {
       addedElements.forEach(el => el.remove());
     };
-  }, [headContent]);
+  }, [headContent, renderedHeader]);
 
   // Inject external scripts from rendered header/footer (CDN jQuery, Bootstrap, etc.)
   useEffect(() => {
