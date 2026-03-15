@@ -14,6 +14,7 @@ export interface TemplateContext {
   free_gifts?: Record<string, any>[];
   adverts?: Record<string, any>[];
   thumblist?: Record<string, any>[];
+  reviews?: Record<string, any>[];
   shipping?: Record<string, any>;
   store?: Record<string, any>;
   order?: Record<string, any>;
