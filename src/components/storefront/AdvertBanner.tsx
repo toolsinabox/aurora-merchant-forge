@@ -3,6 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const resolveUrl = (path: string | null) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
+};
+
 interface AdvertBannerProps {
   storeId: string;
   placement: string;
