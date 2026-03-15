@@ -864,19 +864,24 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         ad_id: p.id,
         headline: p.title,
         url: `/product/${p.id}`,
-        image_url: p.images?.[0] || "/placeholder.svg",
+        image_url: resolveStorageUrl(p.images?.[0]) || "/placeholder.svg",
         price: p.price,
         rrp: p.compare_at_price || p.price,
         count: idx,
         index: idx,
       }));
     } else {
-      // Text/banner adverts
-      items = (ctx.adverts || []).slice(0, limit).map((ad, idx) => ({
+      // Text/banner adverts — filter by ad_group if specified
+      let filteredAdverts = ctx.adverts || [];
+      if (adGroup) {
+        filteredAdverts = filteredAdverts.filter(a => (a.ad_group || "") === adGroup);
+      }
+      items = filteredAdverts.slice(0, limit).map((ad, idx) => ({
         ...ad,
         ad_id: ad.id,
         headline: ad.title || ad.name,
         url: ad.link_url || "#",
+        image_url: resolveStorageUrl(ad.image_url),
         count: idx,
         index: idx,
       }));
