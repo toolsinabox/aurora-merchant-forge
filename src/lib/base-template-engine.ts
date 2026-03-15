@@ -766,8 +766,8 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
     return !values.includes(left.toLowerCase());
   }
 
-  // Comparison operators
-  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>=|<=|>|<)\s+(.+)$/i) ||
+  // Comparison operators — expanded set
+  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>=|<=|>|<|gt|lt|gte|lte|is|isnot)\s+(.+)$/i) ||
                     condition.match(/^(.+?)\s*(!=|==|>=|<=|>|<)\s*(.+)$/);
   if (compMatch) {
     const left = resolveConditionOperand(compMatch[1], ctx);
@@ -777,17 +777,23 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
     switch (op) {
       case "eq":
       case "==":
+      case "is":
         return String(left) === String(right);
       case "ne":
       case "!=":
+      case "isnot":
         return String(left) !== String(right);
       case ">":
+      case "gt":
         return Number(left) > Number(right);
       case "<":
+      case "lt":
         return Number(left) < Number(right);
       case ">=":
+      case "gte":
         return Number(left) >= Number(right);
       case "<=":
+      case "lte":
         return Number(left) <= Number(right);
     }
   }
