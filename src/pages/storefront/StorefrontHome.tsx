@@ -60,9 +60,10 @@ export default function StorefrontHome() {
   // Check if there's an index/home template in the theme
   const homeTemplate = useMemo(() => {
     if (!theme) return null;
-    return findThemeFile(theme, "templates", "index") 
-      || findThemeFile(theme, "templates", "home")
-      || findThemeFile(theme, "templates", "homepage");
+    // Maropost convention: default.template.html is the homepage
+    return findMainThemeFile(theme, "templates")
+      || findThemeFile(theme, "templates", "index") 
+      || findThemeFile(theme, "templates", "home");
   }, [theme]);
 
   // Build context for template rendering
