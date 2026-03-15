@@ -1075,7 +1075,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         rendered = processAssetUrl(rendered, ctx, item);
         
         // Process inline conditionals (e.g., [%if [@count@] eq '0'%])
-        rendered = processItemConditionals(rendered, item, idx, items.length);
+        rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         
         // Extract and accumulate SITE_VALUE counter content
         const svRegex = /\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi;
