@@ -224,8 +224,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const renderedFooter = useMemo(() => {
     if (!footerFile?.content) return "";
     let rendered = renderTemplate(footerFile.content, baseCtx);
-    // Clean up closing tags
-    rendered = rendered.replace(/<\/body>/gi, "").replace(/<\/html>/gi, "");
+    // Clean up closing tags and strip scripts (handled separately)
+    rendered = rendered
+      .replace(/<\/body>/gi, "")
+      .replace(/<\/html>/gi, "")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
     return rendered;
   }, [footerFile, baseCtx]);
 
