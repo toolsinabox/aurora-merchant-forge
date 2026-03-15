@@ -588,11 +588,12 @@ serve(async (req) => {
             }
           }
 
-          // Communication logs
-          if (c.CustomerLog) {
-            const logs = Array.isArray(c.CustomerLog) ? c.CustomerLog : [c.CustomerLog];
+          // Communication logs — Maropost returns "CustomerLogs" (plural)
+          const custLogs = c.CustomerLogs || c.CustomerLog;
+          if (custLogs && custLogs !== "") {
+            const logs = Array.isArray(custLogs) ? custLogs : [custLogs];
             for (const log of logs) {
-              if (log && (log.Notes || log.Description || log.Subject)) {
+              if (log && typeof log === "object" && (log.Notes || log.Description || log.Subject)) {
                 await safe(supabase.from("customer_communications").insert({
                   customer_id: custId, store_id,
                   channel: log.Type || "note", direction: "inbound",
