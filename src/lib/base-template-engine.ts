@@ -1304,6 +1304,14 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   result = processFormatBlocks(result, ctx);
   result = processFormatCurrency(result, ctx);
   result = processFormatPercent(result);
+  result = processFormatDate(result);
+  result = processFormatText(result);
+
+  // 8b. URL encode blocks [%url_encode%]
+  result = processUrlEncode(result);
+
+  // 8c. Ajax loader — strip wrappers
+  result = processAjaxLoader(result);
 
   // 9. NoHTML blocks [%nohtml%]
   result = processNoHtml(result);
