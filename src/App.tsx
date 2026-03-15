@@ -43,6 +43,7 @@ import ActivityLog from "./pages/ActivityLog.tsx";
 import ImportWizard from "./pages/ImportWizard.tsx";
 import ExportWizard from "./pages/ExportWizard.tsx";
 import Templates from "./pages/Templates.tsx";
+import ThemeFiles from "./pages/ThemeFiles.tsx";
 import FeatureAudit from "./pages/FeatureAudit.tsx";
 import Suppliers from "./pages/Suppliers.tsx";
 import GiftVouchers from "./pages/GiftVouchers.tsx";
@@ -213,6 +214,7 @@ const App = () => (
                   <Route path="/_cpanel/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/_cpanel/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/_cpanel/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/_cpanel/theme-files" element={<RequireAuth><ThemeFiles /></RequireAuth>} />
                   <Route path="/_cpanel/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
                   <Route path="/_cpanel/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
                   <Route path="/_cpanel/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
@@ -325,6 +327,7 @@ const App = () => (
                   <Route path="/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/theme-files" element={<RequireAuth><ThemeFiles /></RequireAuth>} />
                   <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
                   <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
                   <Route path="/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />

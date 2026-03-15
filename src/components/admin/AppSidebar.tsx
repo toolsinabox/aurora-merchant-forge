@@ -5,7 +5,7 @@ import {
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
   FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer, Target,
-  FormInput, ReceiptText, Share2, ArrowLeftRight,
+  FormInput, ReceiptText, Share2, ArrowLeftRight, Palette,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -111,6 +111,7 @@ const contentNav = [
   { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
   { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
+  { title: "Theme Files", url: `${prefix}/theme-files`, icon: Palette },
   { title: "Store Locator", url: `${prefix}/store-locator`, icon: Navigation },
 ];
 
