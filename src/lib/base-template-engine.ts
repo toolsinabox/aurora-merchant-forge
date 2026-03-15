@@ -1198,9 +1198,10 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     const limit = parseInt(limitStr) || 20;
     const templateName = templateMatch?.[1] || "";
     
-    const headerMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const footerMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
-    const bodyMatch = body.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
+    const processedBody = collapseAssetUrlBlocks(body);
+    const headerMatch = processedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const footerMatch = processedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const bodyMatch = processedBody.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
     let items: Record<string, any>[] = [];
     if (type === "products") {
