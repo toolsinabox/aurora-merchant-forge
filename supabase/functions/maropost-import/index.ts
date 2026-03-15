@@ -473,13 +473,23 @@ serve(async (req) => {
       for (const c of customers) {
         try {
           const custEmail = c.EmailAddress || c.Email || null;
-          const custName = `${c.Name || c.FirstName || ""} ${c.Surname || c.LastName || ""}`.trim() || c.Username || "Unknown";
+          
+          // ⚠ CRITICAL FIX: Maropost does NOT return Name/Surname/Phone as top-level fields!
+          // Customer name MUST be extracted from BillingAddress.BillFirstName + BillLastName
+          const billing = c.BillingAddress || {};
+          const shipping = c.ShippingAddress || {};
+          
+          const firstName = c.Name || c.FirstName || billing.BillFirstName || shipping.ShipFirstName || "";
+          const lastName = c.Surname || c.LastName || billing.BillLastName || shipping.ShipLastName || "";
+          const custName = `${firstName} ${lastName}`.trim() || c.Username || "Unknown";
+          const custPhone = c.Phone || c.Mobile || c.PhoneNumber || billing.BillPhone || shipping.ShipPhone || null;
+          const custCompany = c.CompanyName || billing.BillCompany || shipping.ShipCompany || null;
 
           const custData: Record<string, any> = {
             store_id,
             name: custName,
             email: custEmail,
-            phone: c.Phone || c.Mobile || c.PhoneNumber || null,
+            phone: custPhone,
             abn_vat_number: c.ABN || c.VATNumber || c.CompanyTaxNumber || null,
             segment: normalizeSegment(c),
             notes: c.IdentificationDetails || c.Notes || null,
@@ -530,25 +540,47 @@ serve(async (req) => {
           // Addresses — delete old for this customer then re-insert (fixes duplicates from bad imports)
           await safe(supabase.from("customer_addresses").delete().eq("customer_id", custId).eq("store_id", store_id));
 
+          // ⚠ CRITICAL FIX: Maropost returns BillStreetLine1, BillCity, etc. NOT StreetAddress1
           for (const addrType of ["BillingAddress", "ShippingAddress"]) {
             const addr = c[addrType];
             if (addr) {
               const addresses = Array.isArray(addr) ? addr : [addr];
+              const isBilling = addrType === "BillingAddress";
               for (const a of addresses) {
-                if (a && (a.StreetAddress1 || a.Address1 || a.City)) {
+                // Maropost billing uses BillStreetLine1, shipping uses ShipStreetLine1
+                const street1 = isBilling
+                  ? (a.BillStreetLine1 || a.StreetAddress1 || a.Address1 || "")
+                  : (a.ShipStreetLine1 || a.StreetAddress1 || a.Address1 || "");
+                const street2 = isBilling
+                  ? (a.BillStreetLine2 || a.StreetAddress2 || a.Address2 || null)
+                  : (a.ShipStreetLine2 || a.StreetAddress2 || a.Address2 || null);
+                const city = isBilling ? (a.BillCity || a.City || "") : (a.ShipCity || a.City || "");
+                const state = isBilling ? (a.BillState || a.State || "") : (a.ShipState || a.State || "");
+                const postcode = isBilling
+                  ? (a.BillPostCode || a.PostCode || a.Postcode || "")
+                  : (a.ShipPostCode || a.PostCode || a.Postcode || "");
+                const country = isBilling
+                  ? (a.BillCountry || a.Country || "AU")
+                  : (a.ShipCountry || a.Country || "AU");
+                const addrFirstName = isBilling ? (a.BillFirstName || firstName) : (a.ShipFirstName || firstName);
+                const addrLastName = isBilling ? (a.BillLastName || lastName) : (a.ShipLastName || lastName);
+                const addrCompany = isBilling ? (a.BillCompany || custCompany) : (a.ShipCompany || custCompany);
+                const addrPhone = isBilling ? (a.BillPhone || custPhone) : (a.ShipPhone || custPhone);
+
+                if (street1 || city) {
                   await safe(supabase.from("customer_addresses").insert({
                     customer_id: custId, store_id,
-                    address_type: addrType === "BillingAddress" ? "billing" : "shipping",
-                    first_name: a.FirstName || c.Name || c.FirstName || "",
-                    last_name: a.LastName || c.Surname || c.LastName || "",
-                    company: a.Company || c.CompanyName || null,
-                    address_1: a.StreetAddress1 || a.Address1 || "",
-                    address_2: a.StreetAddress2 || a.Address2 || null,
-                    city: a.City || "",
-                    state: a.State || "",
-                    postcode: a.PostCode || a.Postcode || a.ZipCode || "",
-                    country: a.Country || a.CountryCode || "AU",
-                    phone: a.Phone || c.Phone || null,
+                    address_type: isBilling ? "billing" : "shipping",
+                    first_name: addrFirstName || "",
+                    last_name: addrLastName || "",
+                    company: addrCompany || null,
+                    address_1: street1,
+                    address_2: street2,
+                    city,
+                    state,
+                    postcode,
+                    country,
+                    phone: addrPhone || null,
                     is_default: true,
                   }));
                 }
