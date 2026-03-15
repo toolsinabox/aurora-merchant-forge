@@ -24,6 +24,7 @@ export default function StorefrontHome() {
   const [store, setStore] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [adverts, setAdverts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function StorefrontHome() {
       if (!found) { setLoading(false); return; }
       setStore(found);
 
-      const [prodsRes, catsRes] = await Promise.all([
+      const [prodsRes, catsRes, adsRes] = await Promise.all([
         supabase
           .from("products")
           .select("*")
@@ -46,10 +47,17 @@ export default function StorefrontHome() {
           .select("*")
           .eq("store_id", found.id)
           .order("sort_order")
-          .limit(6),
+          .limit(25),
+        supabase
+          .from("adverts")
+          .select("*")
+          .eq("store_id", found.id)
+          .eq("is_active", true)
+          .order("sort_order"),
       ]);
       setProducts(prodsRes.data || []);
       setCategories(catsRes.data || []);
+      setAdverts(adsRes.data || []);
       setLoading(false);
     }
     load();
@@ -60,20 +68,36 @@ export default function StorefrontHome() {
   // Check if there's an index/home template in the theme
   const homeTemplate = useMemo(() => {
     if (!theme) return null;
-    // Maropost convention: default.template.html is the homepage
-    return findMainThemeFile(theme, "templates")
-      || findThemeFile(theme, "templates", "index") 
-      || findThemeFile(theme, "templates", "home");
+    return findThemeFile(theme, "templates", "home")
+      || findMainThemeFile(theme, "templates")
+      || findThemeFile(theme, "templates", "index");
   }, [theme]);
 
-  // Build context for template rendering
+  // Build themeFiles map for template resolution (same logic as ThemedShell)
+  const themeFiles = useMemo(() => {
+    if (!theme) return {};
+    const map: Record<string, string> = {};
+    for (const f of theme.files) {
+      map[f.file_path] = f.content || "";
+      map[`${f.folder}/${f.file_name}`] = f.content || "";
+    }
+    return map;
+  }, [theme]);
+
+  // Build context for template rendering with ALL required data
   const templateCtx: TemplateContext = useMemo(() => {
     const includes = theme ? buildIncludesMap(theme) : {};
     return {
       store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
       includes,
+      themeFiles,
+      categories,
+      products,
+      adverts,
+      baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
+      pageType: "home",
     };
-  }, [store, theme]);
+  }, [store, theme, themeFiles, categories, products, adverts]);
 
   if (loading) {
     return (
