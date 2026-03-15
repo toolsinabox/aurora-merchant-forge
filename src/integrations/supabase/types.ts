@@ -7047,6 +7047,66 @@ export type Database = {
           },
         ]
       }
+      theme_files: {
+        Row: {
+          content: string | null
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string
+          folder: string
+          id: string
+          is_active: boolean | null
+          store_id: string
+          theme_id: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type?: string
+          folder?: string
+          id?: string
+          is_active?: boolean | null
+          store_id: string
+          theme_id: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string
+          folder?: string
+          id?: string
+          is_active?: boolean | null
+          store_id?: string
+          theme_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_files_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theme_files_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "theme_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       theme_migrations: {
         Row: {
           base_tags_converted: string[] | null
@@ -7103,6 +7163,56 @@ export type Database = {
           },
           {
             foreignKeyName: "theme_migrations_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      theme_packages: {
+        Row: {
+          author: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          name: string
+          screenshot_url: string | null
+          store_id: string
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          author?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name: string
+          screenshot_url?: string | null
+          store_id: string
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          author?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          screenshot_url?: string | null
+          store_id?: string
+          updated_at?: string
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_packages_store_id_fkey"
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
