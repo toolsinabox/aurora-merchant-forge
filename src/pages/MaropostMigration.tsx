@@ -435,7 +435,8 @@ export default function MaropostMigration() {
         let totalImported = 0;
         let totalFailed = 0;
         const allErrors: string[] = [];
-        const batchSize = 50;
+        // Products have image rehosting which is slow — use smaller batches
+        const batchSize = entity.entity === "products" ? 5 : entity.entity === "orders" ? 20 : 50;
 
         for (let i = 0; i < sourceItems.length; i += batchSize) {
           // Check pause at batch level
@@ -460,17 +461,25 @@ export default function MaropostMigration() {
             entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
             entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
 
-          const { data: result, error } = await supabase.functions.invoke("maropost-import", {
-            body: {
-              action: importAction,
-              store_id: sid,
-              source_data: { [dataKey]: batch },
-              migration_job_id: migrationJobId,
-              dry_run: dryRun,
-            },
-          });
-
-          if (error) throw error;
+          let result: any = null;
+          let lastError: any = null;
+          // Retry up to 3 times for transient failures
+          for (let attempt = 0; attempt < 3; attempt++) {
+            const { data, error } = await supabase.functions.invoke("maropost-import", {
+              body: {
+                action: importAction,
+                store_id: sid,
+                source_data: { [dataKey]: batch },
+                migration_job_id: migrationJobId,
+                dry_run: dryRun,
+              },
+            });
+            if (!error) { result = data; lastError = null; break; }
+            lastError = error;
+            addLog(`  ⚠ Batch ${batchNum} attempt ${attempt + 1} failed, retrying...`);
+            await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+          }
+          if (lastError) throw lastError;
 
           totalImported += result?.imported || 0;
           totalFailed += result?.failed || 0;
@@ -527,7 +536,7 @@ export default function MaropostMigration() {
       let totalImported = 0;
       let totalFailed = 0;
       const allErrors: string[] = [];
-      const batchSize = 50;
+      const batchSize = entity.entity === "products" ? 5 : entity.entity === "orders" ? 20 : 50;
 
       for (let i = 0; i < sourceItems.length; i += batchSize) {
         const batch = sourceItems.slice(i, i + batchSize);
@@ -538,10 +547,18 @@ export default function MaropostMigration() {
           entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
           entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
 
-        const { data: result, error } = await supabase.functions.invoke("maropost-import", {
-          body: { action: importAction, store_id: sid, source_data: { [dataKey]: batch } },
-        });
-        if (error) throw error;
+        let result: any = null;
+        let lastError: any = null;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          const { data, error } = await supabase.functions.invoke("maropost-import", {
+            body: { action: importAction, store_id: sid, source_data: { [dataKey]: batch } },
+          });
+          if (!error) { result = data; lastError = null; break; }
+          lastError = error;
+          addLog(`  ⚠ Retry batch attempt ${attempt + 1} failed, retrying...`);
+          await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+        }
+        if (lastError) throw lastError;
         totalImported += result?.imported || 0;
         totalFailed += result?.failed || 0;
         if (result?.errors) allErrors.push(...result.errors);
