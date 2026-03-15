@@ -41,12 +41,14 @@ export function useActiveTheme(storeId: string | undefined) {
 
       if (pkgErr || !pkg) return null;
 
-      // 2. Fetch all files for this theme
+      // 2. Fetch all files for this theme, ordered by folder then file_path
       const { data: files, error: filesErr } = await supabase
         .from("theme_files" as any)
         .select("id, file_name, file_path, folder, file_type, content")
         .eq("theme_id", (pkg as any).id)
-        .eq("store_id", storeId);
+        .eq("store_id", storeId)
+        .order("folder")
+        .order("file_path");
 
       if (filesErr || !files) return null;
 
