@@ -277,6 +277,100 @@ export default function StorefrontProductDetail() {
 
   const allRelated = crossSells.length > 0 ? crossSells : relatedProducts;
 
+  // ── Theme-based product detail rendering ──
+  const { data: theme } = useActiveTheme(store?.id);
+
+  const productTemplate = useMemo(() => {
+    if (!theme) return null;
+    // Look for product detail template in common Maropost locations
+    return findThemeFile(theme, "templates", "product")
+      || findMainThemeFile(theme, "product")
+      || findThemeFile(theme, "templates", "item");
+  }, [theme]);
+
+  const themeFiles = useMemo(() => {
+    if (!theme) return {};
+    const map: Record<string, string> = {};
+    for (const f of theme.files) {
+      map[f.file_path] = f.content || "";
+      map[`${f.folder}/${f.file_name}`] = f.content || "";
+      map[f.file_name] = f.content || "";
+      const parts = f.file_path.split("/");
+      for (let i = 0; i < parts.length; i++) {
+        map[parts.slice(i).join("/")] = f.content || "";
+      }
+    }
+    return map;
+  }, [theme]);
+
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
+
+  // If there's a theme product template, render it via B@SE engine
+  if (productTemplate?.content && theme && product) {
+    const includes = buildIncludesMap(theme);
+    const productCtx: TemplateContext = {
+      product,
+      variants,
+      specifics,
+      shipping,
+      pricing_tiers: pricingTiers,
+      cross_sells: crossSells,
+      products: allRelated,
+      store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
+      includes,
+      themeFiles,
+      themeAssetBaseUrl,
+      baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
+      basePath: basePath || "",
+      pageType: "product",
+    };
+
+    let renderedProduct = renderTemplate(productTemplate.content, productCtx);
+
+    // Rewrite relative asset paths
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      const skipPaths = /^(\/placeholder\.|\/assets\/|\/favicon)/i;
+      renderedProduct = renderedProduct
+        .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+          if (!assetExt.test(path)) return match;
+          if (skipPaths.test(path)) return match;
+          const cleanPath = path.replace(/^\/+/, "");
+          return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+        });
+    }
+
+    return (
+      <StorefrontLayout storeName={store?.name} extraContext={productCtx}>
+        <SEOHead
+          title={product.seo_title || `${product.title} — ${store?.name || "Store"}`}
+          description={product.seo_description || product.short_description || product.description?.slice(0, 160)}
+          image={images[0] ? getImageUrl(images[0]) : undefined}
+          url={window.location.href}
+          type="product"
+          price={Number(finalPrice)}
+          currency={store?.currency || "USD"}
+          canonicalUrl={window.location.origin + window.location.pathname}
+          product={{
+            name: product.title,
+            description: product.short_description || product.description?.slice(0, 300),
+            sku: currentVariant?.sku || product.sku,
+            brand: product.brand,
+            image: images[0] ? getImageUrl(images[0]) : undefined,
+            price: Number(finalPrice),
+            currency: store?.currency || "USD",
+            availability: (currentVariant && currentVariant.stock <= 0) ? "OutOfStock" : "InStock",
+            url: window.location.href,
+          }}
+        />
+        <div dangerouslySetInnerHTML={{ __html: renderedProduct }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
     <StorefrontLayout storeName={store?.name}>
       <SEOHead
