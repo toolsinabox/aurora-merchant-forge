@@ -54,12 +54,18 @@ export function useActiveTheme(storeId: string | undefined) {
 
       const allFiles = files as any as ThemeFile[];
 
+      // Match CSS/JS files by folder OR by file_path containing the directory
+      const isCssFile = (f: ThemeFile) =>
+        f.folder === "css" || f.file_path.match(/(?:^|\/)(css|styles|stylesheets)\//i) || f.file_name.endsWith(".css");
+      const isJsFile = (f: ThemeFile) =>
+        f.folder === "js" || f.file_path.match(/(?:^|\/)(js|javascript|scripts)\//i) || f.file_name.endsWith(".js");
+
       return {
         id: (pkg as any).id,
         name: (pkg as any).name,
         files: allFiles,
-        cssFiles: allFiles.filter(f => f.folder === "css"),
-        jsFiles: allFiles.filter(f => f.folder === "js"),
+        cssFiles: allFiles.filter(f => isCssFile(f) && f.file_name.endsWith(".css")),
+        jsFiles: allFiles.filter(f => isJsFile(f) && f.file_name.endsWith(".js")),
       };
     },
   });
