@@ -1441,7 +1441,9 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining [%tag%]...[%/tag%] pairs that weren't handled
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|url_encode)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode)[^\]]*%\]/gi, "");
+  // Remove IN_WISHLIST blocks entirely (wishlist handled by React context)
+  result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
   // Remove remaining [%tag ...%]...[%END tag%] blocks
   result = result.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
   // Remove leftover [@...@] value tags
