@@ -748,17 +748,12 @@ serve(async (req) => {
             if (cust) linkedCustomer = cust;
           }
 
-          // 4. Try building name from BillAddress fields
-          if (!linkedCustomer && (o.BillAddress || o.BillingAddress)) {
-            const ba = o.BillAddress || o.BillingAddress;
-            const baName = `${ba.FirstName || ""} ${ba.LastName || ba.Surname || ""}`.trim();
-            const baEmail = ba.Email || ba.EmailAddress || null;
-            if (baEmail) {
-              const { data: cust } = await supabase
-                .from("customers").select("id").eq("store_id", store_id).eq("email", baEmail).maybeSingle();
-              if (cust) linkedCustomer = cust;
-            }
-            if (!linkedCustomer && baName) {
+          // 4. Try building name from FLAT bill address fields (Maropost returns these at top level)
+          if (!linkedCustomer) {
+            const baFirstName = o.BillFirstName || (o.BillAddress && o.BillAddress.FirstName) || "";
+            const baLastName = o.BillLastName || (o.BillAddress && o.BillAddress.LastName) || "";
+            const baName = `${baFirstName} ${baLastName}`.trim();
+            if (baName) {
               const { data: cust } = await supabase
                 .from("customers").select("id").eq("store_id", store_id).eq("name", baName).maybeSingle();
               if (cust) linkedCustomer = cust;
