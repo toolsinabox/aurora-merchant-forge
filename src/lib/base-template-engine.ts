@@ -936,9 +936,15 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
       if (cat?.image_url) return resolveStorageUrl(cat.image_url);
       return "/placeholder.svg";
     case "product":
+      // First check item context (current product in loop)
       if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
-      const prod = (ctx.products || []).find(p => p.id === id);
-      if (prod?.images?.[0]) return resolveStorageUrl(prod.images[0]);
+      if (item?.image_url) return item.image_url;
+      // Look up by ID
+      const prodById = (ctx.products || []).find(p => p.id === id);
+      if (prodById?.images?.[0]) return resolveStorageUrl(prodById.images[0]);
+      // Look up by SKU (Maropost themes use SKU as the id)
+      const prodBySku = (ctx.products || []).find(p => p.sku === id);
+      if (prodBySku?.images?.[0]) return resolveStorageUrl(prodBySku.images[0]);
       return "/placeholder.svg";
     default:
       return "";
