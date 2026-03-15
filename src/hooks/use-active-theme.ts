@@ -79,6 +79,37 @@ export function findThemeFile(
   });
 }
 
+/**
+ * Find the main template file in a Maropost theme folder.
+ * Maropost convention: the main file is typically `template.html` in headers/footers,
+ * and `default.template.html` for the homepage.
+ */
+export function findMainThemeFile(
+  theme: ActiveTheme | null | undefined,
+  folder: string
+): ThemeFile | undefined {
+  if (!theme) return undefined;
+  const folderFiles = theme.files.filter(f => f.folder === folder);
+  
+  // Priority order for main template detection
+  const priorities = [
+    "template.html",        // Maropost standard main template
+    "default.template.html", // Default page template
+    "index.template.html",   // Alternative index
+    "index.html",
+    "home.template.html",
+    "homepage.template.html",
+  ];
+  
+  for (const name of priorities) {
+    const found = folderFiles.find(f => f.file_name.toLowerCase() === name);
+    if (found) return found;
+  }
+  
+  // Fallback: first HTML file in the folder
+  return folderFiles.find(f => f.file_name.endsWith(".html"));
+}
+
 /** Find all theme files in a folder */
 export function findThemeFiles(
   theme: ActiveTheme | null | undefined,
