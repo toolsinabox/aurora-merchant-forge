@@ -163,7 +163,7 @@ export default function ThemeFiles() {
       const files: { name: string; path: string; size: number }[] = [];
       zip.forEach((relativePath, entry) => {
         if (!entry.dir && !relativePath.startsWith("__MACOSX") && !relativePath.startsWith(".")) {
-          files.push({ name: entry.name, path: relativePath, size: entry._data?.uncompressedSize || 0 });
+          files.push({ name: entry.name, path: relativePath, size: 0 });
         }
       });
       setImportPreview(files);
