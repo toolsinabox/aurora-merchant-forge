@@ -808,7 +808,7 @@ serve(async (req) => {
             reason: r.Reason || r.ReturnReason || null,
             status: r.Status === "Approved" ? "approved" : r.Status === "Complete" ? "completed" : "pending",
             notes: r.Notes || null,
-            created_at: r.DateCreated || new Date().toISOString(),
+            created_at: sanitizeDate(r.DateCreated) || new Date().toISOString(),
           });
           imported++;
         } catch (err: any) {
