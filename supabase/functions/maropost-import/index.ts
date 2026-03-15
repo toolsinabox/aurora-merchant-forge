@@ -586,11 +586,18 @@ serve(async (req) => {
           // Count line items for items_count
           const lineItems = o.OrderLine ? (Array.isArray(o.OrderLine) ? o.OrderLine : [o.OrderLine]) : [];
 
+          // Validate against DB constraints — never let unknown values through
+          const VALID_ORDER_STATUS = new Set(["pending", "processing", "shipped", "delivered", "cancelled"]);
+          const VALID_PAYMENT_STATUS = new Set(["pending", "paid", "refunded"]);
+          
+          const rawStatus = statusMap[o.Status] || statusMap[o.OrderStatus] || "pending";
+          const rawPayStatus = paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : "pending");
+          
           const orderData: Record<string, any> = {
             store_id,
             order_number: originalOrderNumber,
-            status: statusMap[o.Status] || statusMap[o.OrderStatus] || "pending",
-            payment_status: paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : "pending"),
+            status: VALID_ORDER_STATUS.has(rawStatus) ? rawStatus : "pending",
+            payment_status: VALID_PAYMENT_STATUS.has(rawPayStatus) ? rawPayStatus : "pending",
             fulfillment_status: fulfillmentMap[o.Status] || "unfulfilled",
             subtotal: toFloat(o.SubTotal) || (grandTotal - taxTotal - shippingTotal + discountTotal),
             tax: taxTotal,
