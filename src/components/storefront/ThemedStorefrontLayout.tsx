@@ -452,6 +452,43 @@ ${SCOPE_SELECTOR} .product-card__price {
   font-weight: 700;
   font-size: 15px;
 }
+/* Ensure category and product sections are visible */
+${SCOPE_SELECTOR} .list-category-box {
+  display: block !important;
+  visibility: visible !important;
+}
+${SCOPE_SELECTOR} .home-outer-wrapper {
+  display: block !important;
+  visibility: visible !important;
+}
+${SCOPE_SELECTOR} .firstpage-custom-collection {
+  display: block !important;
+  visibility: visible !important;
+}
+${SCOPE_SELECTOR} .hovercartmain img[src="/placeholder.svg"],
+${SCOPE_SELECTOR} .hovercartmain img:not([src]),
+${SCOPE_SELECTOR} .hovercartmain img[src=""] {
+  width: 217px;
+  height: 137px;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+${SCOPE_SELECTOR} .section-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+${SCOPE_SELECTOR} .hovercart {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}
+${SCOPE_SELECTOR} .hovercart .view {
+  margin-top: 8px;
+  font-weight: 600;
+}
 @media (max-width: 767px) {
   ${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) > .hovercartmain {
     flex: 0 0 calc(50% - 16px);
