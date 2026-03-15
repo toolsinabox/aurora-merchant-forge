@@ -121,11 +121,20 @@ serve(async (req) => {
             for (let i = 0; i < imgs.length; i++) {
               const img = imgs[i];
               if (!img) continue;
-              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL || img?.MediumURL || img?.SmallURL;
+              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL || img?.MediumURL || img?.SmallURL || img?.LargeURL;
               if (url) {
                 const rehostedUrl = await rehostImage(url, slug, i);
                 imagesArr.push(rehostedUrl);
               }
+            }
+          }
+
+          // Fallback: check top-level image fields if Images array is empty
+          if (imagesArr.length === 0) {
+            const fallbackUrl = p.ThumbURL || p.ImageURL || p.DefaultImageURL || p.MainImageURL || p.Thumbnail || p.ImageSmallURL || p.ImageLargeURL;
+            if (fallbackUrl) {
+              const rehostedUrl = await rehostImage(fallbackUrl, slug, 0);
+              imagesArr.push(rehostedUrl);
             }
           }
 
