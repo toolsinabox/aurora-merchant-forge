@@ -642,14 +642,15 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
   // Also [%asset_url type:'category' id:'[@id@]'%]...[%end param%][%END asset_url%]
   let result = template;
   
-  // Self-closing variant
-  result = result.replace(/\[%asset_url\s+([^\]]*?)\/?%\]/gi, (full, attrs: string) => {
-    return resolveAssetUrlAttrs(attrs, ctx, item);
-  });
-  
-  // Block variant: [%asset_url ...%]...[%END asset_url%] or [%/asset_url%] or [%/ASSET_url%]
-  result = result.replace(/\[%asset_url\s+([^\]]*?)%\]([\s\S]*?)\[%(?:END\s+asset_url|\/asset_url|\/ASSET_url)%\]/gi, (_, attrs: string, body: string) => {
-    const url = resolveAssetUrlAttrs(attrs, ctx, item);
+  // Block variant FIRST (longer match): [%asset_url ...%]...[%END asset_url%]
+  // Use ((?:[^\[\]]|\[@[^\]]*@\])*) to allow [@...@] tags inside attrs
+  result = result.replace(/\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:END\s+asset_url|\/asset_url|\/ASSET_url|end\s+asset_url)%\]/gi, (_, attrs: string, body: string) => {
+    // Pre-resolve [@...@] tags in attrs using item context
+    const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+      if (item && item[field] !== undefined) return String(item[field]);
+      return String(resolveField(field, ctx) || "");
+    });
+    const url = resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
     if (url) return url;
     // If no URL resolved, check for a default param
     const defaultMatch = body.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
@@ -658,6 +659,16 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
       return defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1");
     }
     return "";
+  });
+  
+  // Self-closing variant — also allow [@...@] inside attrs
+  result = result.replace(/\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/?%\]/gi, (full, attrs: string) => {
+    // Pre-resolve [@...@] tags in attrs using item context
+    const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+      if (item && item[field] !== undefined) return String(item[field]);
+      return String(resolveField(field, ctx) || "");
+    });
+    return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
   });
   
   return result;
