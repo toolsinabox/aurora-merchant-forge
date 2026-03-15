@@ -327,6 +327,7 @@ const App = () => (
                   <Route path="/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/theme-files" element={<RequireAuth><ThemeFiles /></RequireAuth>} />
                   <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
                   <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
                   <Route path="/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
