@@ -446,6 +446,38 @@ function processEscape(template: string): string {
   });
 }
 
+// ── Process [%url_encode%]...[%/url_encode%] — URL encoding ──
+function processUrlEncode(template: string): string {
+  return template.replace(/\[%url_encode%\]([\s\S]*?)\[%\/url_encode%\]/gi, (_, content: string) => {
+    return encodeURIComponent(content.trim());
+  });
+}
+
+// ── Process [%FORMAT type:'date'%]value[%/FORMAT%] (uppercase variant) ──
+function processFormatDate(template: string): string {
+  return template.replace(/\[%FORMAT\s+type:'date'%\]([\s\S]*?)\[%\/FORMAT%\]/gi, (_, content: string) => {
+    const val = content.trim();
+    if (!val || val === "0000-00-00 00:00:00") return "";
+    try {
+      return new Date(val).toLocaleDateString();
+    } catch {
+      return val;
+    }
+  });
+}
+
+// ── Process [%format type:'text' rmhtml:'1'%]...[%/format%] ──
+function processFormatText(template: string): string {
+  return template.replace(/\[%format\s+type:'text'[^%]*rmhtml:'1'[^%]*%\]([\s\S]*?)\[%\/format%\]/gi, (_, content: string) => {
+    return content.replace(/<[^>]*>/g, "");
+  });
+}
+
+// ── Process [%ajax_loader%]...[%/ajax_loader%] — keep content ──
+function processAjaxLoader(template: string): string {
+  return template.replace(/\[%\/?ajax_loader%\]/gi, "");
+}
+
 // ── Process [%calc expr /%] — simple math ──
 function processCalc(template: string): string {
   return template.replace(/\[%calc\s+([^\]]*?)\s*\/?%\]/gi, (_, expr: string) => {
