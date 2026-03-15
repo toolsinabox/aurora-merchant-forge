@@ -578,79 +578,117 @@ function processThemeAssets(template: string, ctx: TemplateContext): string {
   });
 }
 
-// ── Process Maropost [%if%]...[%elseif%]...[%else%]...[%/if%] ──
-function processMaropostConditionals(template: string, ctx: TemplateContext): string {
-  // First, pre-resolve all [@...@] tags inside [%if ...%] conditions
-  let result = template.replace(
-    /\[%if\s+([\s\S]*?)%\]/gi,
-    (match, cond: string) => {
-      const resolved = cond.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
-        const value = resolveField(field, ctx);
-        if (value === undefined || value === null) return "";
-        return format ? applyFormat(value, format) : String(value);
-      });
-      return `[%if ${resolved}%]`;
+// ── Find the matching [%/if%] for the [%if ...%] at position `start`, handling nesting ──
+function findMatchingEndIf(template: string, start: number): number {
+  let depth = 0;
+  let i = start;
+  while (i < template.length) {
+    const ifMatch = template.slice(i).match(/^\[%if\s+/i);
+    const endMatch = template.slice(i).match(/^\[%\/if%\]/i);
+    if (ifMatch && i !== start) {
+      depth++;
+      i += ifMatch[0].length;
+    } else if (endMatch) {
+      if (depth === 0) return i;
+      depth--;
+      i += endMatch[0].length;
+    } else {
+      i++;
     }
-  );
-  // Also pre-resolve in [%elseif ...%]
-  result = result.replace(
-    /\[%elseif\s+([\s\S]*?)%\]/gi,
-    (match, cond: string) => {
-      const resolved = cond.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
-        const value = resolveField(field, ctx);
-        if (value === undefined || value === null) return "";
-        return format ? applyFormat(value, format) : String(value);
-      });
-      return `[%elseif ${resolved}%]`;
-    }
-  );
+  }
+  return -1; // no matching [%/if%]
+}
 
+// ── Process Maropost [%if%]...[%elseif%]...[%else%]...[%/if%] with proper nesting ──
+function processMaropostConditionals(template: string, ctx: TemplateContext): string {
+  let result = template;
   let safety = 0;
-  while (result.includes("[%if ") && safety++ < 100) {
-    const prevResult = result;
-    result = result.replace(
-      /\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i,
-      (_, condition: string, body: string) => {
-        if (!condition.trim()) return "";
-        
-        const segments: string[] = [];
-        const conditions: (string | null)[] = [condition];
-        
-        let remaining = body;
-        let currentSegment = "";
-        
-        const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
-        
-        while (remaining.length > 0) {
-          const match = boundaryRegex.exec(remaining);
-          if (!match) {
-            currentSegment += remaining;
-            remaining = "";
+
+  while (safety++ < 200) {
+    // Find the innermost [%if ...%] that has no nested [%if inside its body
+    // We do this by finding [%if%] tags and processing from the inside out
+    const ifRegex = /\[%if\s+([\s\S]*?)%\]/gi;
+    let match: RegExpExecArray | null;
+    let found = false;
+    
+    // Reset regex
+    ifRegex.lastIndex = 0;
+    
+    // Find all [%if%] positions, then process the last one first (innermost)
+    const ifPositions: { index: number; condition: string; fullMatch: string }[] = [];
+    while ((match = ifRegex.exec(result)) !== null) {
+      ifPositions.push({ index: match.index, condition: match[1], fullMatch: match[0] });
+    }
+    
+    if (ifPositions.length === 0) break;
+    
+    // Process from last to first to handle innermost blocks first
+    for (let p = ifPositions.length - 1; p >= 0; p--) {
+      const pos = ifPositions[p];
+      const bodyStart = pos.index + pos.fullMatch.length;
+      const endIfPos = findMatchingEndIf(result, pos.index);
+      if (endIfPos === -1) continue;
+      
+      const body = result.slice(bodyStart, endIfPos);
+      
+      // Check if body contains nested [%if — skip if so (will be processed first on next pass)
+      if (/\[%if\s+/i.test(body)) continue;
+      
+      // Pre-resolve [@...@] in condition
+      let resolvedCond = pos.condition.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_: string, field: string, format?: string) => {
+        const value = resolveField(field, ctx);
+        if (value === undefined || value === null) return "";
+        return format ? applyFormat(value, format) : String(value);
+      });
+      
+      // Parse segments: if / elseif / else
+      const segments: string[] = [];
+      const conditions: (string | null)[] = [resolvedCond];
+      let remaining = body;
+      let currentSegment = "";
+      // Match elseif or else at the TOP level only (no nested ifs to worry about here)
+      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
+      
+      while (remaining.length > 0) {
+        const bMatch = boundaryRegex.exec(remaining);
+        if (!bMatch) {
+          currentSegment += remaining;
+          remaining = "";
+        } else {
+          currentSegment += remaining.slice(0, bMatch.index);
+          segments.push(currentSegment);
+          currentSegment = "";
+          remaining = remaining.slice(bMatch.index + bMatch[0].length);
+          if (bMatch[1] !== undefined) {
+            // elseif — pre-resolve tags in condition
+            let elseifCond = bMatch[1].replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_: string, field: string, format?: string) => {
+              const value = resolveField(field, ctx);
+              if (value === undefined || value === null) return "";
+              return format ? applyFormat(value, format) : String(value);
+            });
+            conditions.push(elseifCond);
           } else {
-            currentSegment += remaining.slice(0, match.index);
-            segments.push(currentSegment);
-            currentSegment = "";
-            remaining = remaining.slice(match.index + match[0].length);
-            
-            if (match[1] !== undefined) {
-              conditions.push(match[1]);
-            } else {
-              conditions.push(null);
-            }
+            conditions.push(null); // else
           }
         }
-        segments.push(currentSegment);
-        
-        for (let i = 0; i < segments.length && i < conditions.length; i++) {
-          const cond = conditions[i];
-          if (cond === null) return segments[i];
-          if (evaluateCondition(cond, ctx)) return segments[i];
-        }
-        
-        return "";
       }
-    );
-    if (result === prevResult) break;
+      segments.push(currentSegment);
+      
+      // Evaluate
+      let replacement = "";
+      for (let i = 0; i < segments.length && i < conditions.length; i++) {
+        const c = conditions[i];
+        if (c === null) { replacement = segments[i]; break; }
+        if (evaluateCondition(c, ctx)) { replacement = segments[i]; break; }
+      }
+      
+      // Replace the entire [%if ...%]...[%/if%] block
+      result = result.slice(0, pos.index) + replacement + result.slice(endIfPos + "[%/if%]".length);
+      found = true;
+      break; // restart from scratch since positions shifted
+    }
+    
+    if (!found) break;
   }
   
   return result;
