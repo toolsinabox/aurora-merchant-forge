@@ -350,14 +350,27 @@ export default function ThemeFiles() {
       await Promise.all(promises);
 
       let imported = 0;
+      
+      // Detect the top-level theme folder (e.g. "skeletal/") to strip it
+      // Find the common root: if all paths start with the same folder, strip it
+      const allPaths = entries.map(e => e.path);
+      let stripPrefix = "";
+      if (allPaths.length > 0) {
+        const firstSegment = allPaths[0].split("/")[0];
+        if (allPaths.every(p => p.startsWith(firstSegment + "/"))) {
+          stripPrefix = firstSegment + "/";
+        }
+      }
+      
       for (const { path, content } of entries) {
         const fileName = path.split("/").pop() || path;
         const folder = detectFolder(path);
         const fileType = detectFileType(path);
-        // Strip top-level folder from path for cleaner display
-        const parts = path.split("/");
-        const cleanPath = parts.length > 1 ? parts.slice(1).join("/") : path;
-        const finalPath = `${folder}/${fileName}`;
+        
+        // Preserve the original path structure, just strip the top-level theme folder
+        const cleanPath = stripPrefix ? path.slice(stripPrefix.length) : path;
+        // Use cleanPath as-is to preserve the original directory structure
+        const finalPath = cleanPath;
 
         const { error } = await supabase
           .from("theme_files" as any)
