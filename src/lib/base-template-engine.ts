@@ -412,32 +412,77 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
 
 function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
   condition = condition.trim();
-  
+  if (!condition) return false;
+
+  // Trim wrapping parentheses repeatedly
+  while (condition.startsWith("(") && condition.endsWith(")")) {
+    const inner = condition.slice(1, -1).trim();
+    if (!inner) break;
+    condition = inner;
+  }
+
+  // Support leading operators used by some Neto templates: "or X or Y", "and X and Y"
+  condition = condition.replace(/^or\s+/i, "").replace(/^and\s+/i, "").trim();
+
+  // Logical OR / AND
+  const orParts = condition.split(/\s+OR\s+/i);
+  if (orParts.length > 1) return orParts.some((part) => evaluateCondition(part, ctx));
+
+  const andParts = condition.split(/\s+AND\s+/i);
+  if (andParts.length > 1) return andParts.every((part) => evaluateCondition(part, ctx));
+
+  // NOT / !
   if (condition.startsWith("!") || condition.toUpperCase().startsWith("NOT ")) {
     const inner = condition.replace(/^!|^NOT\s+/i, "").trim();
     return !evaluateCondition(inner, ctx);
   }
-  
+
   // Comparison operators
-  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>|<|>=|<=)\s+(.+)$/i);
+  const compMatch = condition.match(/^(.+?)\s*(eq|ne|!=|==|>|<|>=|<=)\s*(.+)$/i);
   if (compMatch) {
-    let left = resolveTagValue(compMatch[1].trim(), ctx);
+    const left = resolveConditionOperand(compMatch[1], ctx);
+    const right = resolveConditionOperand(compMatch[3], ctx);
     const op = compMatch[2].toLowerCase();
-    let right = compMatch[3].trim().replace(/^['"]|['"]$/g, "");
-    
+
     switch (op) {
-      case "eq": case "==": return String(left) === right;
-      case "ne": case "!=": return String(left) !== right;
-      case ">": return Number(left) > Number(right);
-      case "<": return Number(left) < Number(right);
-      case ">=": return Number(left) >= Number(right);
-      case "<=": return Number(left) <= Number(right);
+      case "eq":
+      case "==":
+        return String(left) === String(right);
+      case "ne":
+      case "!=":
+        return String(left) !== String(right);
+      case ">":
+        return Number(left) > Number(right);
+      case "<":
+        return Number(left) < Number(right);
+      case ">=":
+        return Number(left) >= Number(right);
+      case "<=":
+        return Number(left) <= Number(right);
     }
   }
-  
-  const value = resolveTagValue(condition, ctx);
-  return value !== null && value !== undefined && value !== false && value !== 0 && 
-         value !== "" && value !== "0" && value !== "false";
+
+  const value = resolveConditionOperand(condition, ctx);
+  return value !== null && value !== undefined && value !== false && value !== 0 &&
+         value !== "" && value !== "0" && String(value).toLowerCase() !== "false";
+}
+
+function resolveConditionOperand(raw: string, ctx: TemplateContext): any {
+  const operand = raw.trim();
+
+  // Quoted string literal
+  if ((operand.startsWith("'") && operand.endsWith("'")) || (operand.startsWith('"') && operand.endsWith('"'))) {
+    return operand.slice(1, -1);
+  }
+
+  // Tagged / field values
+  const tagValue = resolveTagValue(operand, ctx);
+  if (tagValue !== undefined && tagValue !== null && tagValue !== "") return tagValue;
+
+  if (/^(true|false)$/i.test(operand)) return operand.toLowerCase() === "true";
+  if (/^-?\d+(?:\.\d+)?$/.test(operand)) return Number(operand);
+
+  return operand;
 }
 
 function resolveTagValue(tag: string, ctx: TemplateContext): any {
