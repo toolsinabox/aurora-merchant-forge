@@ -19,7 +19,14 @@ interface ImportRequest {
 // Supabase JS v2 PromiseLike doesn't have .catch(), wrap in try/catch
 const safe = async (p: PromiseLike<any>) => { try { await p; } catch {} };
 
-const VALID_CUSTOMER_SEGMENTS = new Set(["new", "returning", "vip"]);
+    const VALID_CUSTOMER_SEGMENTS = new Set(["new", "returning", "vip"]);
+
+    const sanitizeDate = (d: any): string | null => {
+      if (!d || d === "0000-00-00 00:00:00" || d === "0000-00-00" || d === "0001-01-01T00:00:00") return null;
+      const parsed = new Date(d);
+      if (isNaN(parsed.getTime()) || parsed.getFullYear() < 1970) return null;
+      return parsed.toISOString();
+    };
 
 const normalizeCustomerSegment = (customer: any): "new" | "returning" | "vip" => {
   const rawValues = [
@@ -517,7 +524,7 @@ serve(async (req) => {
                   subject: log.Subject || log.Type || "Log Entry",
                   body: log.Notes || log.Description || "",
                   status: "delivered",
-                  created_at: log.DateCreated || log.Date || new Date().toISOString(),
+                  created_at: sanitizeDate(log.DateCreated || log.Date) || new Date().toISOString(),
                 }));
               }
             }
@@ -570,7 +577,7 @@ serve(async (req) => {
             discount: discountTotal,
             total: grandTotal,
             notes: o.InternalOrderNotes || null,
-            created_at: o.DatePlaced || new Date().toISOString(),
+            created_at: sanitizeDate(o.DatePlaced) || new Date().toISOString(),
           };
 
           if (o.ShipAddress) orderData.shipping_address = o.ShipAddress;
@@ -676,7 +683,7 @@ serve(async (req) => {
             sort_order: parseInt(p.SortOrder) || 0,
             seo_title: p.SEOPageTitle || null,
             seo_description: p.SEOMetaDescription || null,
-            published_at: p.DatePosted || null,
+            published_at: sanitizeDate(p.DatePosted),
           };
 
           if (existing) {
@@ -708,7 +715,7 @@ serve(async (req) => {
             initial_value: parseFloat(v.Value) || 0,
             balance: parseFloat(v.Balance) || parseFloat(v.Value) || 0,
             is_active: v.Active !== "False",
-            expires_at: v.ExpiryDate || null,
+            expires_at: sanitizeDate(v.ExpiryDate),
             recipient_email: v.RecipientEmail || null,
             recipient_name: v.RecipientName || null,
             sender_name: v.SenderName || null,
@@ -801,7 +808,7 @@ serve(async (req) => {
             reason: r.Reason || r.ReturnReason || null,
             status: r.Status === "Approved" ? "approved" : r.Status === "Complete" ? "completed" : "pending",
             notes: r.Notes || null,
-            created_at: r.DateCreated || new Date().toISOString(),
+            created_at: sanitizeDate(r.DateCreated) || new Date().toISOString(),
           });
           imported++;
         } catch (err: any) {
