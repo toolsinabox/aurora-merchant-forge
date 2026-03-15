@@ -10,6 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Star } from "lucide-react";
 import { toast } from "sonner";
+import { useActiveTheme, findThemeFile, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 function StarRating({ value, onChange, readonly = false }: { value: number; onChange?: (v: number) => void; readonly?: boolean }) {
   const [hover, setHover] = useState(0);
@@ -40,6 +44,36 @@ export default function StorefrontContentPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewForm, setReviewForm] = useState({ rating: 5, title: "", body: "" });
   const [submitting, setSubmitting] = useState(false);
+
+  // ── Theme hooks (must be before early returns) ──
+  const { data: theme } = useActiveTheme(store?.id);
+
+  const contentTemplate = useMemo(() => {
+    if (!theme) return null;
+    return findThemeFile(theme, "templates", "content")
+      || findMainThemeFile(theme, "content")
+      || findThemeFile(theme, "templates", "page");
+  }, [theme]);
+
+  const themeFiles = useMemo(() => {
+    if (!theme) return {};
+    const map: Record<string, string> = {};
+    for (const f of theme.files) {
+      map[f.file_path] = f.content || "";
+      map[`${f.folder}/${f.file_name}`] = f.content || "";
+      map[f.file_name] = f.content || "";
+      const parts = f.file_path.split("/");
+      for (let i = 0; i < parts.length; i++) {
+        map[parts.slice(i).join("/")] = f.content || "";
+      }
+    }
+    return map;
+  }, [theme]);
+
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
 
   useEffect(() => {
     async function load() {
@@ -138,6 +172,42 @@ export default function StorefrontContentPage() {
           <h1 className="text-2xl font-bold mb-2">Page not found</h1>
           <p className="text-muted-foreground">The page you're looking for doesn't exist or isn't published.</p>
         </div>
+      </StorefrontLayout>
+    );
+  }
+
+
+  if (contentTemplate?.content && theme && page && store) {
+    const includes = buildIncludesMap(theme);
+    const contentCtx: TemplateContext = {
+      content: {
+        ...page,
+        body: page.content || "",
+      },
+      reviews,
+      store: { name: store.name, ...store },
+      includes,
+      themeFiles,
+      themeAssetBaseUrl,
+      basePath: "",
+      pageType: "content",
+    };
+
+    let rendered = renderTemplate(contentTemplate.content, contentCtx);
+
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      rendered = rendered.replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+        if (!assetExt.test(path)) return match;
+        if (/^(\/placeholder\.|\/assets\/|\/favicon)/i.test(path)) return match;
+        const cleanPath = path.replace(/^\/+/, "");
+        return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+      });
+    }
+
+    return (
+      <StorefrontLayout storeName={store.name} extraContext={contentCtx}>
+        <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </StorefrontLayout>
     );
   }
