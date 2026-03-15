@@ -105,6 +105,7 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "social_linkedin": () => "",
     // Footer fields
     "abn": () => store.abn || "",
+    "company_abn": () => store.abn || store.company_abn || "",
     "copyright_year": () => new Date().getFullYear().toString(),
   };
   const resolver = configMap[k];
@@ -410,7 +411,7 @@ function processFormatBlocks(template: string, ctx: TemplateContext): string {
     
     if (type === "date") {
       const value = content.trim();
-      if (value === "NOW" || value === "now") {
+      if (value === "NOW" || value === "now" || value === "today" || value === "TODAY") {
         const now = new Date();
         const fmt = formatMatch?.[1] || "";
         if (fmt === "#K") return now.toLocaleDateString("en-AU", { weekday: "long" }).toUpperCase();
