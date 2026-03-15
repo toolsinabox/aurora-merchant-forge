@@ -1031,10 +1031,13 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       }));
     }
     
+    // Collapse nested asset_url blocks so param extraction doesn't break
+    const processedBody = collapseAssetUrlBlocks(body);
+    
     // Extract param blocks from the advert body
-    const headerMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const footerMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
-    const bodyMatch = body.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
+    const headerMatch = processedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const footerMatch = processedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const bodyMatch = processedBody.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
     // Resolve body template: if no *body param, use theme template file
     let itemTemplate = bodyMatch?.[1] || "";
