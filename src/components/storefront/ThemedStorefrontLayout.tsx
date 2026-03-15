@@ -151,6 +151,22 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
+  // Build themeFiles map for [%load_template%] resolution
+  const themeFiles = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const f of theme.files) {
+      map[f.file_path] = f.content || "";
+      // Also map by folder/filename variants
+      map[`${f.folder}/${f.file_name}`] = f.content || "";
+      // And by includes-style paths (e.g., "headers/includes/head.template.html")
+      const parts = f.file_path.split("/");
+      if (parts.length > 1) {
+        map[parts.slice(0).join("/")] = f.content || "";
+      }
+    }
+    return map;
+  }, [theme.files]);
+
   const baseCtx: TemplateContext = useMemo(() => ({
     store: {
       name: store?.name || storeName || "Store",
@@ -159,8 +175,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
       ...(store || {}),
     },
     includes,
+    themeFiles,
+    baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
+    pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, extraContext]);
+  }), [store, storeName, includes, themeFiles, extraContext]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
