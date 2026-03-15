@@ -110,6 +110,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   const { storeSlug } = useStoreSlug(paramSlug);
   const [storeId, setStoreId] = useState<string>("");
   const [store, setStore] = useState<any>(null);
+  const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
     if (!storeSlug) return;
@@ -117,6 +118,15 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
       if (s) {
         setStoreId(s.id);
         setStore(s);
+        // Fetch categories for menu rendering
+        supabase
+          .from("categories")
+          .select("id, name, slug, parent_id, sort_order, image_url")
+          .eq("store_id", s.id)
+          .order("sort_order")
+          .then(({ data }) => {
+            if (data) setCategories(data);
+          });
       }
     });
   }, [storeSlug]);
@@ -133,7 +143,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   }
 
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext}>
+    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories}>
       {children}
     </ThemedShell>
   );
