@@ -298,21 +298,15 @@ function resolveThemeTemplate(templateName: string, ctx: TemplateContext): strin
 
 // ── Process [%ntheme_asset%]path[%/ntheme_asset%] ──
 function processThemeAssets(template: string, ctx: TemplateContext): string {
-  // Theme CSS/JS are already injected via scoped <style> and <script> tags
-  // For image references, try to resolve from theme files or use placeholder
   return template.replace(/\[%ntheme_asset%\]([\s\S]*?)\[%\/ntheme_asset%\]/gi, (_, path: string) => {
     const trimmed = path.trim();
-    // CSS/JS files are already injected — return empty for <link>/<script> src references
+    // CSS/JS files are already injected via scoped <style>/<script> tags — return empty for src references
     if (trimmed.endsWith(".css") || trimmed.endsWith(".js")) return "";
-    // For images, check if we have it in theme files (unlikely) or use a storage path
-    const themeFiles = ctx.themeFiles || {};
-    for (const key of Object.keys(themeFiles)) {
-      if (key.endsWith(trimmed)) {
-        // If it's an image stored as content, we can't inline it — return placeholder
-        return "/placeholder.svg";
-      }
+    // Resolve from themeAssetBaseUrl (binary assets stored in storage bucket)
+    if (ctx.themeAssetBaseUrl) {
+      return `${ctx.themeAssetBaseUrl}/${trimmed}`;
     }
-    // Try resolving as a storage URL
+    // Fallback: try storage URL resolution
     return resolveStorageUrl(trimmed) || "/placeholder.svg";
   });
 }

@@ -80,17 +80,29 @@ export default function StorefrontHome() {
     for (const f of theme.files) {
       map[f.file_path] = f.content || "";
       map[`${f.folder}/${f.file_name}`] = f.content || "";
+      map[f.file_name] = f.content || "";
+      // All sub-path combinations for flexible resolution
+      const parts = f.file_path.split("/");
+      for (let i = 0; i < parts.length; i++) {
+        map[parts.slice(i).join("/")] = f.content || "";
+      }
     }
     return map;
   }, [theme]);
 
   // Build context for template rendering with ALL required data
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
+
   const templateCtx: TemplateContext = useMemo(() => {
     const includes = theme ? buildIncludesMap(theme) : {};
     return {
       store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
       includes,
       themeFiles,
+      themeAssetBaseUrl,
       categories,
       products,
       adverts,
@@ -98,7 +110,7 @@ export default function StorefrontHome() {
       basePath: basePath || "",
       pageType: "home",
     };
-  }, [store, theme, themeFiles, categories, products, adverts, basePath]);
+  }, [store, theme, themeFiles, themeAssetBaseUrl, categories, products, adverts, basePath]);
 
   if (loading) {
     return (
@@ -126,10 +138,19 @@ export default function StorefrontHome() {
 
   // If we have a B@SE home template, render it fully
   if (homeTemplate?.content && theme) {
-    const renderedHome = renderTemplate(homeTemplate.content, templateCtx);
+    let renderedHome = renderTemplate(homeTemplate.content, templateCtx);
+    // Rewrite relative asset paths to storage bucket URLs
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      renderedHome = renderedHome
+        .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+          if (!assetExt.test(path)) return match;
+          const cleanPath = path.replace(/^\/+/, "");
+          return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+        });
+    }
     return (
       <ThemedStorefrontLayout storeName={store.name} extraContext={templateCtx}>
-        {/* Inject managed banners above template content */}
         <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
         <div dangerouslySetInnerHTML={{ __html: renderedHome }} />
         <AdvertBanner storeId={store.id} placement="homepage_bottom" basePath={basePath} />

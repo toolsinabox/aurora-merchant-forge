@@ -163,6 +163,28 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
 const SCOPE_SELECTOR = "#neto-theme";
 
+/**
+ * Rewrite relative image/asset paths in rendered HTML to point at the theme-assets storage bucket.
+ * Handles src="img/foo.png", src="css/foo.png", url(img/foo.png), etc.
+ * Skips URLs that are already absolute (http/https/data://).
+ */
+function rewriteAssetUrls(html: string, assetBase: string): string {
+  if (!assetBase) return html;
+  // Rewrite src="..." and href="..." that are relative paths to theme assets
+  // Match common asset extensions
+  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+  return html
+    .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+      if (!assetExt.test(path)) return match;
+      const cleanPath = path.replace(/^\/+/, "");
+      return `${attr}="${assetBase}/${cleanPath}"`;
+    })
+    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
+      const cleanPath = path.replace(/^\/+/, "").trim();
+      return `url("${assetBase}/${cleanPath}")`;
+    });
+}
+
 /** The actual themed shell that renders header/footer from B@SE templates */
 function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
@@ -193,6 +215,12 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return map;
   }, [theme.files]);
 
+  const themeAssetBaseUrl = useMemo(() => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl || !store?.id || !theme.id) return "";
+    return `${supabaseUrl}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme.id]);
+
   const baseCtx: TemplateContext = useMemo(() => ({
     store: {
       name: store?.name || storeName || "Store",
@@ -202,12 +230,13 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     },
     includes,
     themeFiles,
+    themeAssetBaseUrl,
     categories: categories || [],
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
     basePath: basePath || "",
     pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, extraContext, categories, basePath]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
@@ -237,8 +266,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<link[^>]*href=["'][^"']*\/assets\/themes\/[^"']*["'][^>]*>/gi, "")
       .replace(/<link[^>]*href=["'](?!https?:\/\/|\/\/)[^"']*["'][^>]*>/gi, "");
     
+    // Rewrite relative asset paths to storage bucket URLs
+    bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
+    
     return { headContent, bodyContent };
-  }, [headerFile, baseCtx]);
+  }, [headerFile, baseCtx, themeAssetBaseUrl]);
 
   const renderedFooter = useMemo(() => {
     if (!footerFile?.content) return "";
@@ -248,13 +280,22 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<\/body>/gi, "")
       .replace(/<\/html>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+    // Rewrite relative asset paths to storage bucket URLs
+    rendered = rewriteAssetUrls(rendered, themeAssetBaseUrl);
     return rendered;
-  }, [footerFile, baseCtx]);
+  }, [footerFile, baseCtx, themeAssetBaseUrl]);
 
   // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
   const scopedCss = useMemo(() => {
-    const raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
+    let raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
     if (!raw) return "";
+    // Rewrite relative url() paths in CSS to storage bucket
+    if (themeAssetBaseUrl) {
+      raw = raw.replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (_, path) => {
+        const cleanPath = path.replace(/^\.?\/+/, "").trim();
+        return `url("${themeAssetBaseUrl}/${cleanPath}")`;
+      });
+    }
     const scoped = scopeCss(raw, SCOPE_SELECTOR);
     
     // Add CSS fallbacks for Slick carousel wrappers that need JS to layout
@@ -431,18 +472,25 @@ ${SCOPE_SELECTOR} .product-card__price {
 }
 `;
     return scoped + fallbackCss;
-  }, [theme.cssFiles]);
+  }, [theme.cssFiles, themeAssetBaseUrl]);
 
-  // Inject Font Awesome CSS (required by theme icons)
+  // Inject Font Awesome + Bootstrap CSS (required by most Maropost themes)
   useEffect(() => {
-    const faHref = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
-    if (document.querySelector(`link[href="${faHref}"]`)) return;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = faHref;
-    link.setAttribute("data-theme-fa", "true");
-    document.head.appendChild(link);
-    return () => { link.remove(); };
+    const cdnLinks = [
+      { href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", attr: "data-theme-fa" },
+      { href: "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css", attr: "data-theme-bs" },
+    ];
+    const addedLinks: HTMLLinkElement[] = [];
+    for (const { href, attr } of cdnLinks) {
+      if (document.querySelector(`link[${attr}]`)) continue;
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.setAttribute(attr, "true");
+      document.head.appendChild(link);
+      addedLinks.push(link);
+    }
+    return () => { addedLinks.forEach(l => l.remove()); };
   }, []);
 
   // Inject external CSS links from the theme's <head> content (CDN only)
