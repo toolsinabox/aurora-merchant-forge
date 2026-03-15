@@ -395,8 +395,7 @@ export default function ThemeFiles() {
       let imported = 0;
       
       // Detect the top-level theme folder (e.g. "skeletal/") to strip it
-      // Find the common root: if all paths start with the same folder, strip it
-      const allPaths = entries.map(e => e.path);
+      const allPaths = [...entries.map(e => e.path), ...binaryEntries.map(e => e.path)];
       let stripPrefix = "";
       if (allPaths.length > 0) {
         const firstSegment = allPaths[0].split("/")[0];
@@ -409,10 +408,7 @@ export default function ThemeFiles() {
         const fileName = path.split("/").pop() || path;
         const folder = detectFolder(path);
         const fileType = detectFileType(path);
-        
-        // Preserve the original path structure, just strip the top-level theme folder
         const cleanPath = stripPrefix ? path.slice(stripPrefix.length) : path;
-        // Use cleanPath as-is to preserve the original directory structure
         const finalPath = cleanPath;
 
         const { error } = await supabase
@@ -431,7 +427,18 @@ export default function ThemeFiles() {
         if (!error) imported++;
       }
 
-      toast.success(`Imported ${imported} files into theme`);
+      // Upload binary assets (images, fonts) to storage bucket
+      let binaryUploaded = 0;
+      for (const { path, blob, mimeType } of binaryEntries) {
+        const cleanPath = stripPrefix ? path.slice(stripPrefix.length) : path;
+        const storagePath = `${currentStore.id}/${themeId}/${cleanPath}`;
+        const { error } = await supabase.storage
+          .from("theme-assets")
+          .upload(storagePath, blob, { contentType: mimeType, upsert: true });
+        if (!error) binaryUploaded++;
+      }
+
+      toast.success(`Imported ${imported} text files and ${binaryUploaded} assets into theme`);
       setImportDialog(false);
       setZipFile(null);
       setImportPreview([]);

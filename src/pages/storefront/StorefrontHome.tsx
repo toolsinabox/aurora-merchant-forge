@@ -80,6 +80,12 @@ export default function StorefrontHome() {
     for (const f of theme.files) {
       map[f.file_path] = f.content || "";
       map[`${f.folder}/${f.file_name}`] = f.content || "";
+      map[f.file_name] = f.content || "";
+      // All sub-path combinations for flexible resolution
+      const parts = f.file_path.split("/");
+      for (let i = 0; i < parts.length; i++) {
+        map[parts.slice(i).join("/")] = f.content || "";
+      }
     }
     return map;
   }, [theme]);
