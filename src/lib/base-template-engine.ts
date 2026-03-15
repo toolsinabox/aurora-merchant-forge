@@ -578,79 +578,117 @@ function processThemeAssets(template: string, ctx: TemplateContext): string {
   });
 }
 
-// ── Process Maropost [%if%]...[%elseif%]...[%else%]...[%/if%] ──
-function processMaropostConditionals(template: string, ctx: TemplateContext): string {
-  // First, pre-resolve all [@...@] tags inside [%if ...%] conditions
-  let result = template.replace(
-    /\[%if\s+([\s\S]*?)%\]/gi,
-    (match, cond: string) => {
-      const resolved = cond.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
-        const value = resolveField(field, ctx);
-        if (value === undefined || value === null) return "";
-        return format ? applyFormat(value, format) : String(value);
-      });
-      return `[%if ${resolved}%]`;
+// ── Find the matching [%/if%] for the [%if ...%] at position `start`, handling nesting ──
+function findMatchingEndIf(template: string, start: number): number {
+  let depth = 0;
+  let i = start;
+  while (i < template.length) {
+    const ifMatch = template.slice(i).match(/^\[%if\s+/i);
+    const endMatch = template.slice(i).match(/^\[%\/if%\]/i);
+    if (ifMatch && i !== start) {
+      depth++;
+      i += ifMatch[0].length;
+    } else if (endMatch) {
+      if (depth === 0) return i;
+      depth--;
+      i += endMatch[0].length;
+    } else {
+      i++;
     }
-  );
-  // Also pre-resolve in [%elseif ...%]
-  result = result.replace(
-    /\[%elseif\s+([\s\S]*?)%\]/gi,
-    (match, cond: string) => {
-      const resolved = cond.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
-        const value = resolveField(field, ctx);
-        if (value === undefined || value === null) return "";
-        return format ? applyFormat(value, format) : String(value);
-      });
-      return `[%elseif ${resolved}%]`;
-    }
-  );
+  }
+  return -1; // no matching [%/if%]
+}
 
+// ── Process Maropost [%if%]...[%elseif%]...[%else%]...[%/if%] with proper nesting ──
+function processMaropostConditionals(template: string, ctx: TemplateContext): string {
+  let result = template;
   let safety = 0;
-  while (result.includes("[%if ") && safety++ < 100) {
-    const prevResult = result;
-    result = result.replace(
-      /\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i,
-      (_, condition: string, body: string) => {
-        if (!condition.trim()) return "";
-        
-        const segments: string[] = [];
-        const conditions: (string | null)[] = [condition];
-        
-        let remaining = body;
-        let currentSegment = "";
-        
-        const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
-        
-        while (remaining.length > 0) {
-          const match = boundaryRegex.exec(remaining);
-          if (!match) {
-            currentSegment += remaining;
-            remaining = "";
+
+  while (safety++ < 200) {
+    // Find the innermost [%if ...%] that has no nested [%if inside its body
+    // We do this by finding [%if%] tags and processing from the inside out
+    const ifRegex = /\[%if\s+([\s\S]*?)%\]/gi;
+    let match: RegExpExecArray | null;
+    let found = false;
+    
+    // Reset regex
+    ifRegex.lastIndex = 0;
+    
+    // Find all [%if%] positions, then process the last one first (innermost)
+    const ifPositions: { index: number; condition: string; fullMatch: string }[] = [];
+    while ((match = ifRegex.exec(result)) !== null) {
+      ifPositions.push({ index: match.index, condition: match[1], fullMatch: match[0] });
+    }
+    
+    if (ifPositions.length === 0) break;
+    
+    // Process from last to first to handle innermost blocks first
+    for (let p = ifPositions.length - 1; p >= 0; p--) {
+      const pos = ifPositions[p];
+      const bodyStart = pos.index + pos.fullMatch.length;
+      const endIfPos = findMatchingEndIf(result, pos.index);
+      if (endIfPos === -1) continue;
+      
+      const body = result.slice(bodyStart, endIfPos);
+      
+      // Check if body contains nested [%if — skip if so (will be processed first on next pass)
+      if (/\[%if\s+/i.test(body)) continue;
+      
+      // Pre-resolve [@...@] in condition
+      let resolvedCond = pos.condition.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_: string, field: string, format?: string) => {
+        const value = resolveField(field, ctx);
+        if (value === undefined || value === null) return "";
+        return format ? applyFormat(value, format) : String(value);
+      });
+      
+      // Parse segments: if / elseif / else
+      const segments: string[] = [];
+      const conditions: (string | null)[] = [resolvedCond];
+      let remaining = body;
+      let currentSegment = "";
+      // Match elseif or else at the TOP level only (no nested ifs to worry about here)
+      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
+      
+      while (remaining.length > 0) {
+        const bMatch = boundaryRegex.exec(remaining);
+        if (!bMatch) {
+          currentSegment += remaining;
+          remaining = "";
+        } else {
+          currentSegment += remaining.slice(0, bMatch.index);
+          segments.push(currentSegment);
+          currentSegment = "";
+          remaining = remaining.slice(bMatch.index + bMatch[0].length);
+          if (bMatch[1] !== undefined) {
+            // elseif — pre-resolve tags in condition
+            let elseifCond = bMatch[1].replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_: string, field: string, format?: string) => {
+              const value = resolveField(field, ctx);
+              if (value === undefined || value === null) return "";
+              return format ? applyFormat(value, format) : String(value);
+            });
+            conditions.push(elseifCond);
           } else {
-            currentSegment += remaining.slice(0, match.index);
-            segments.push(currentSegment);
-            currentSegment = "";
-            remaining = remaining.slice(match.index + match[0].length);
-            
-            if (match[1] !== undefined) {
-              conditions.push(match[1]);
-            } else {
-              conditions.push(null);
-            }
+            conditions.push(null); // else
           }
         }
-        segments.push(currentSegment);
-        
-        for (let i = 0; i < segments.length && i < conditions.length; i++) {
-          const cond = conditions[i];
-          if (cond === null) return segments[i];
-          if (evaluateCondition(cond, ctx)) return segments[i];
-        }
-        
-        return "";
       }
-    );
-    if (result === prevResult) break;
+      segments.push(currentSegment);
+      
+      // Evaluate
+      let replacement = "";
+      for (let i = 0; i < segments.length && i < conditions.length; i++) {
+        const c = conditions[i];
+        if (c === null) { replacement = segments[i]; break; }
+        if (evaluateCondition(c, ctx)) { replacement = segments[i]; break; }
+      }
+      
+      // Replace the entire [%if ...%]...[%/if%] block
+      result = result.slice(0, pos.index) + replacement + result.slice(endIfPos + "[%/if%]".length);
+      found = true;
+      break; // restart from scratch since positions shifted
+    }
+    
+    if (!found) break;
   }
   
   return result;
@@ -728,8 +766,8 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
     return !values.includes(left.toLowerCase());
   }
 
-  // Comparison operators
-  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>=|<=|>|<)\s+(.+)$/i) ||
+  // Comparison operators — expanded set
+  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>=|<=|>|<|gt|lt|gte|lte|is|isnot)\s+(.+)$/i) ||
                     condition.match(/^(.+?)\s*(!=|==|>=|<=|>|<)\s*(.+)$/);
   if (compMatch) {
     const left = resolveConditionOperand(compMatch[1], ctx);
@@ -739,17 +777,23 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
     switch (op) {
       case "eq":
       case "==":
+      case "is":
         return String(left) === String(right);
       case "ne":
       case "!=":
+      case "isnot":
         return String(left) !== String(right);
       case ">":
+      case "gt":
         return Number(left) > Number(right);
       case "<":
+      case "lt":
         return Number(left) < Number(right);
       case ">=":
+      case "gte":
         return Number(left) >= Number(right);
       case "<=":
+      case "lte":
         return Number(left) <= Number(right);
     }
   }
@@ -798,6 +842,16 @@ function resolveConditionOperand(raw: string, ctx: TemplateContext): any {
       return tagMatch[2] ? applyFormat(val, tagMatch[2]) : val;
     }
     return "";
+  }
+
+  // config:key bare reference (common in Maropost: [%if config:show_price%])
+  if (/^config:/i.test(operand)) {
+    return resolveConfig(operand.replace(/^config:/i, ""), ctx);
+  }
+
+  // Check variables stored by [%set%]
+  if ((ctx as any).__variables?.[operand] !== undefined) {
+    return (ctx as any).__variables[operand];
   }
 
   // Tagged / field values (bare field name)
@@ -1305,11 +1359,122 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
   }
 }
 
-// ── Process [%set .../%] and [%while%] — stub out ──
-function processSetAndWhile(template: string): string {
-  let result = template.replace(/\[%set\s+[^\]]*\/%\]/gi, "");
+// ── Process [%set name:'varname' value:'val'/%] — store variables in context ──
+function processSetAndWhile(template: string, ctx?: TemplateContext): string {
+  let result = template;
+  
+  // Process [%set%] with name/value pairs — store in context.__variables
+  if (ctx) {
+    if (!(ctx as any).__variables) (ctx as any).__variables = {};
+    result = result.replace(/\[%set\s+(?:name:|var:)?'([^']+)'\s+(?:value:|to:)?'([^']*)'\s*\/?%\]/gi, (_, name: string, value: string) => {
+      // Resolve any [@...@] tags in the value
+      const resolved = value.replace(/\[@([\w:.]+)@\]/gi, (__: string, field: string) => {
+        const val = resolveField(field, ctx);
+        return val !== undefined && val !== null ? String(val) : "";
+      });
+      (ctx as any).__variables[name] = resolved;
+      return "";
+    });
+    // Also support [%set varname = 'value'%] syntax
+    result = result.replace(/\[%set\s+(\w+)\s*=\s*'([^']*)'\s*\/?%\]/gi, (_, name: string, value: string) => {
+      (ctx as any).__variables[name] = value;
+      return "";
+    });
+    // Support [%set varname = [@field@]%] syntax
+    result = result.replace(/\[%set\s+(\w+)\s*=\s*\[@([\w:.]+)@\]\s*\/?%\]/gi, (_, name: string, field: string) => {
+      const val = resolveField(field, ctx);
+      (ctx as any).__variables[name] = val !== undefined && val !== null ? String(val) : "";
+      return "";
+    });
+  } else {
+    result = result.replace(/\[%set\s+[^\]]*\/?%\]/gi, "");
+  }
+  
   result = result.replace(/\[%while\s+[^\]]*%\]([\s\S]*?)\[%\/while%\]/gi, "");
   return result;
+}
+
+// ── Process [%foreach items:'...' as:'...'%]...[%/foreach%] ──
+function processForeach(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%(?:foreach|each)\s+([^\]]*?)%\]([\s\S]*?)\[%\/(?:foreach|each)%\]/gi, (_, attrs: string, body: string) => {
+    const itemsMatch = attrs.match(/(?:items|list|collection):'([^']+)'/i);
+    const asMatch = attrs.match(/(?:as|var):'([^']+)'/i);
+    const limitMatch = attrs.match(/limit:'(\d+)'/i);
+    
+    const itemsKey = itemsMatch?.[1] || "";
+    const asVar = asMatch?.[1] || "item";
+    const limit = limitMatch ? parseInt(limitMatch[1]) : 999;
+    
+    // Resolve the items collection from context
+    let items: any[] = [];
+    if (itemsKey.startsWith("config:")) {
+      const val = resolveConfig(itemsKey.replace("config:", ""), ctx);
+      if (val && typeof val === "string") items = val.split(",").map(v => ({ value: v.trim(), name: v.trim() }));
+    } else {
+      const resolved = resolveField(itemsKey, ctx);
+      if (Array.isArray(resolved)) items = resolved;
+      else if (resolved && typeof resolved === "string") items = resolved.split(",").map(v => ({ value: v.trim(), name: v.trim() }));
+    }
+    
+    items = items.slice(0, limit);
+    if (items.length === 0) return "";
+    
+    return items.map((item, idx) => {
+      let rendered = body;
+      const isObj = typeof item === "object" && item !== null;
+      
+      // Replace [@as_var.field@] or [@as_var@]
+      rendered = rendered.replace(new RegExp(`\\[@${asVar}\\.?(\\w*)@\\]`, "gi"), (__, field: string) => {
+        if (!field) return isObj ? JSON.stringify(item) : String(item);
+        return isObj ? String(item[field] ?? "") : "";
+      });
+      
+      // Replace [@index@], [@count@]
+      rendered = rendered.replace(/\[@index@\]/gi, String(idx));
+      rendered = rendered.replace(/\[@count@\]/gi, String(items.length));
+      rendered = rendered.replace(/\[@first@\]/gi, idx === 0 ? "1" : "");
+      rendered = rendered.replace(/\[@last@\]/gi, idx === items.length - 1 ? "1" : "");
+      
+      return rendered;
+    }).join("");
+  });
+}
+
+// ── Process [%switch field%]...[%case 'val'%]...[%/switch%] ──
+function processSwitchCase(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%switch\s+([^\]]+)%\]([\s\S]*?)\[%\/switch%\]/gi, (_, expr: string, body: string) => {
+    // Resolve the switch expression
+    let switchVal = expr.trim();
+    const tagMatch = switchVal.match(/^\[@([\w:.]+)@\]$/);
+    if (tagMatch) {
+      const resolved = resolveField(tagMatch[1], ctx);
+      switchVal = resolved !== undefined && resolved !== null ? String(resolved) : "";
+    } else if (/^config:/i.test(switchVal)) {
+      switchVal = resolveConfig(switchVal.replace(/^config:/i, ""), ctx);
+    }
+    
+    // Split into cases
+    const caseRegex = /\[%case\s+'([^']*)'%\]/gi;
+    const defaultMatch = body.match(/\[%default%\]([\s\S]*?)(?=\[%(?:case|\/switch))/i);
+    let lastIndex = 0;
+    let caseMatch;
+    const cases: { value: string; start: number }[] = [];
+    
+    while ((caseMatch = caseRegex.exec(body)) !== null) {
+      cases.push({ value: caseMatch[1], start: caseMatch.index + caseMatch[0].length });
+    }
+    
+    for (let i = 0; i < cases.length; i++) {
+      if (cases[i].value === switchVal || cases[i].value === "*") {
+        const endPos = i + 1 < cases.length ? body.indexOf("[%case", cases[i].start) : body.length;
+        return body.slice(cases[i].start, endPos > -1 ? endPos : body.length).replace(/\[%\/switch%\]/gi, "").replace(/\[%default%\][\s\S]*/i, "");
+      }
+    }
+    
+    // Default case
+    if (defaultMatch) return defaultMatch[1];
+    return "";
+  });
 }
 
 // ── Process [%FORMAT type:'currency'%]value[%/FORMAT%] ──
@@ -1539,7 +1704,7 @@ function renderItemsWithTemplate(
       rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
       
       // Clean up per-item template tags
-      rendered = processSetAndWhile(rendered);
+      rendered = processSetAndWhile(rendered, ctx);
       rendered = processCacheBlocks(rendered);
       rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
         return content
@@ -1672,11 +1837,8 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
   });
 }
 
-// Process inline [%if%] conditionals with known values for items
+// Process inline [%if%] conditionals with known values for items — uses depth-tracking
 function processItemConditionals(template: string, item: any, idx: number, total: number, ctx?: TemplateContext): string {
-  let result = template;
-  let safety = 0;
-
   const mergedCtx: TemplateContext = {
     ...(ctx || {}),
   };
@@ -1690,7 +1852,7 @@ function processItemConditionals(template: string, item: any, idx: number, total
   (mergedCtx as any).total_showing = total;
 
   // First resolve [@...@] tags using item values
-  result = result.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
+  let result = template.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
     if (field === "count") return String(idx);
     if (field === "index") return String(idx);
     if (field === "total_showing") return String(total);
@@ -1702,95 +1864,20 @@ function processItemConditionals(template: string, item: any, idx: number, total
     return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
   });
 
-  // Now process if/elseif/else blocks
-  while (result.includes("[%if ") && safety++ < 50) {
-    const prev = result;
-    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const segments: string[] = [];
-      const conditions: (string | null)[] = [cond];
-      let remaining = body;
-      let currentSegment = "";
-      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
-      
-      while (remaining.length > 0) {
-        const match = boundaryRegex.exec(remaining);
-        if (!match) {
-          currentSegment += remaining;
-          remaining = "";
-        } else {
-          currentSegment += remaining.slice(0, match.index);
-          segments.push(currentSegment);
-          currentSegment = "";
-          remaining = remaining.slice(match.index + match[0].length);
-          if (match[1] !== undefined) {
-            conditions.push(match[1]);
-          } else {
-            conditions.push(null);
-          }
-        }
-      }
-      segments.push(currentSegment);
-      
-      for (let i = 0; i < segments.length && i < conditions.length; i++) {
-        const c = conditions[i];
-        if (c === null) return segments[i];
-        if (evaluateCondition(c, mergedCtx)) return segments[i];
-      }
-      return "";
-    });
-    if (result === prev) break;
-  }
+  // Process inline tags
+  result = processInlineTags(result, mergedCtx);
+
+  // Process [%if%] blocks using depth-tracking parser
+  result = processMaropostConditionals(result, mergedCtx);
 
   return result;
 }
 
-// Process [%if%] blocks where we only know total_showing
+// Process [%if%] blocks where we only know total_showing — uses depth-tracking
 function processInlineConditionals(template: string, totalShowing: number, ctx?: TemplateContext): string {
-  let result = template;
-  let safety = 0;
-
   const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
-
-  result = result.replace(/\[@total_showing@\]/gi, String(totalShowing));
-
-  while (result.includes("[%if ") && safety++ < 30) {
-    const prev = result;
-    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const segments: string[] = [];
-      const conditions: (string | null)[] = [cond];
-      let remaining = body;
-      let currentSegment = "";
-      const boundaryRegex = /\[%(?:elseif\s+([\s\S]*?)|else)%\]/i;
-      
-      while (remaining.length > 0) {
-        const match = boundaryRegex.exec(remaining);
-        if (!match) {
-          currentSegment += remaining;
-          remaining = "";
-        } else {
-          currentSegment += remaining.slice(0, match.index);
-          segments.push(currentSegment);
-          currentSegment = "";
-          remaining = remaining.slice(match.index + match[0].length);
-          if (match[1] !== undefined) {
-            conditions.push(match[1]);
-          } else {
-            conditions.push(null);
-          }
-        }
-      }
-      segments.push(currentSegment);
-      
-      for (let i = 0; i < segments.length && i < conditions.length; i++) {
-        const c = conditions[i];
-        if (c === null) return segments[i];
-        if (evaluateCondition(c, evalCtx)) return segments[i];
-      }
-      return "";
-    });
-    if (result === prev) break;
-  }
-
+  let result = template.replace(/\[@total_showing@\]/gi, String(totalShowing));
+  result = processMaropostConditionals(result, evalCtx);
   return result;
 }
 
@@ -1959,10 +2046,35 @@ function normalizeTemplateSyntax(template: string): string {
 // ── Process simple value tags: [@field@] and [@field|format@] ──
 function processValueTags(template: string, ctx: TemplateContext): string {
   return template.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
+    // Check __variables first
+    if ((ctx as any).__variables?.[field] !== undefined) {
+      const val = (ctx as any).__variables[field];
+      return format ? applyFormat(val, format) : String(val);
+    }
     const value = resolveField(field, ctx);
     if (value === undefined || value === null) return "";
     return format ? applyFormat(value, format) : String(value);
   });
+}
+
+// ── Process inline tags: [%rndm%], [%config:key%], [%now%] ──
+function processInlineTags(template: string, ctx: TemplateContext): string {
+  let result = template;
+  // [%rndm%] — random string
+  result = result.replace(/\[%rndm%\]/gi, () => Math.random().toString(36).substring(2, 8));
+  // [%now%] — current timestamp
+  result = result.replace(/\[%now%\]/gi, () => new Date().toISOString());
+  // [%today%] — current date
+  result = result.replace(/\[%today%\]/gi, () => new Date().toLocaleDateString());
+  // [%year%] — current year
+  result = result.replace(/\[%year%\]/gi, () => new Date().getFullYear().toString());
+  // [%config:key%] — inline config values
+  result = result.replace(/\[%config:([^\]%]+)%\]/gi, (_, key: string) => resolveConfig(key.trim(), ctx));
+  // [%var:name%] — variable references
+  result = result.replace(/\[%var:([^\]%]+)%\]/gi, (_, name: string) => {
+    return (ctx as any).__variables?.[name.trim()] ?? "";
+  });
+  return result;
 }
 
 // ── Process legacy includes: [!include slug!] ──
@@ -1980,7 +2092,7 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining system tags
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|config:[^\]]*)[^\]]*%\]/gi, "");
   // Remove IN_WISHLIST blocks entirely
   result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   // Remove remaining block tags
@@ -1991,6 +2103,8 @@ function cleanupUnresolvedTags(template: string): string {
   result = result.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
   // Remove leftover [%param%] blocks
   result = result.replace(/\[%param\s+[^\]]*%\]([\s\S]*?)\[%\/param%\]/gi, "");
+  // Remove leftover [%var:...%] tags
+  result = result.replace(/\[%var:[^\]]*%\]/gi, "");
   return result;
 }
 
@@ -2046,13 +2160,22 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 11. URL info tags [%url_info%]
   result = processUrlInfo(result, ctx);
 
-  // 12. Set/While stubs
-  result = processSetAndWhile(result);
+  // 12. Set variables [%set%] — MUST be before conditionals so vars are available
+  result = processSetAndWhile(result, ctx);
+
+  // 12b. Inline tags [%rndm%], [%config:key%], [%var:name%]
+  result = processInlineTags(result, ctx);
+
+  // 12c. Switch/case blocks
+  result = processSwitchCase(result, ctx);
+
+  // 12d. Foreach/each blocks
+  result = processForeach(result, ctx);
 
   // 13. System tags (breadcrumb, advert, thumb_list, content_menu, search, login, form, etc.)
   result = processSystemTags(result, ctx);
 
-  // 14. Maropost conditionals [%if%]...[%/if%]
+  // 14. Maropost conditionals [%if%]...[%/if%] — now with proper nesting support
   result = processMaropostConditionals(result, ctx);
 
   // 15. Block iterators [%crosssell%], etc.
