@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
+import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { useCompare } from "@/contexts/CompareContext";
 import { Button } from "@/components/ui/button";
 import { X, ArrowLeft } from "lucide-react";

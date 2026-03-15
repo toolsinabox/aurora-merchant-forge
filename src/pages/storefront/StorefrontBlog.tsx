@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
+import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { Calendar, ArrowRight } from "lucide-react";

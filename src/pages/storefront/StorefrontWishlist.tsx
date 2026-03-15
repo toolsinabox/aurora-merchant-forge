@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
+import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
