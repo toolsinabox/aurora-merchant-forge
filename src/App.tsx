@@ -413,6 +413,7 @@ const App = () => (
           </CompareProvider>
           </WishlistProvider>
           </CartProvider>
+          </MigrationProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
