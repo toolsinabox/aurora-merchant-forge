@@ -398,128 +398,17 @@ export default function MaropostMigration() {
     const sid = await resolveStoreId();
     if (!sid) { toast.error("No store found. Please complete onboarding first."); return; }
 
-    setImporting(true);
-    setPaused(false);
-    pauseRef.current = false;
     setStep("import");
-    addLog("═══ Starting Migration ═══");
+    toast.success("Migration started in background — you can navigate away safely!");
 
-    let migrationJobId: string | null = null;
-    try {
-      const { data: job } = await (supabase.from("migration_jobs" as any).insert({
-        store_id: sid,
-        source_platform: "maropost",
-        source_domain: storeDomain,
-        status: "running",
-        entities_selected: selected.map(e => e.entity),
-        progress: {},
-      } as any).select("id").single() as any);
-      migrationJobId = job?.id || null;
-    } catch { /* migration_jobs table may not exist yet */ }
-
-    let completed = 0;
-    const total = selected.length;
-
-    for (const entity of selected) {
-      // Check pause at entity level too
-      while (pauseRef.current) {
-        await new Promise(r => setTimeout(r, 500));
-      }
-
-      addLog(`▶ Importing ${entity.label}...`);
-      setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "importing" } : e));
-
-      try {
-        const sourceItems = await fetchAllPages(entity.entity);
-        addLog(`  Fetched ${sourceItems.length} total ${entity.entity} from Maropost`);
-
-        if (sourceItems.length === 0) {
-          setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "success", imported: 0 } : e));
-          addLog(`  No ${entity.entity} to import, skipping`);
-          completed++;
-          setOverallProgress(Math.round((completed / total) * 100));
-          continue;
-        }
-
-        let totalImported = 0;
-        let totalFailed = 0;
-        const allErrors: string[] = [];
-        // Products have image rehosting which is slow — use smaller batches
-        const batchSize = entity.entity === "products" ? 5 : entity.entity === "orders" ? 20 : 50;
-
-        for (let i = 0; i < sourceItems.length; i += batchSize) {
-          // Check pause at batch level
-          while (pauseRef.current) {
-            setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, status: "paused" } : e));
-            await new Promise(r => setTimeout(r, 500));
-          }
-          setEntities(prev => prev.map(e => e.entity === entity.entity && e.status === "paused" ? { ...e, status: "importing" } : e));
-
-          const batch = sourceItems.slice(i, i + batchSize);
-          const batchNum = Math.floor(i / batchSize) + 1;
-          const totalBatches = Math.ceil(sourceItems.length / batchSize);
-          const batchPct = Math.round((batchNum / totalBatches) * 100);
-          addLog(`  Processing batch ${batchNum}/${totalBatches} (${batch.length} items)...`);
-
-          setEntities(prev => prev.map(e => e.entity === entity.entity ? { ...e, batchProgress: batchPct } : e));
-
-          const importAction = IMPORT_ACTION_MAP[entity.entity];
-          const dataKey = entity.entity === "products" ? "Item" : entity.entity === "categories" ? "Category" :
-            entity.entity === "customers" ? "Customer" : entity.entity === "orders" ? "Order" :
-            entity.entity === "content" ? "Content" : entity.entity === "vouchers" ? "Voucher" :
-            entity.entity === "suppliers" ? "Supplier" : entity.entity === "warehouses" ? "Warehouse" :
-            entity.entity === "shipping" ? "ShippingMethod" : entity.entity === "rma" ? "Rma" : "Item";
-
-          let result: any = null;
-          let lastError: any = null;
-          // Retry up to 3 times for transient failures
-          for (let attempt = 0; attempt < 3; attempt++) {
-            const { data, error } = await supabase.functions.invoke("maropost-import", {
-              body: {
-                action: importAction,
-                store_id: sid,
-                source_data: { [dataKey]: batch },
-                migration_job_id: migrationJobId,
-                dry_run: dryRun,
-              },
-            });
-            if (!error) { result = data; lastError = null; break; }
-            lastError = error;
-            addLog(`  ⚠ Batch ${batchNum} attempt ${attempt + 1} failed, retrying...`);
-            await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
-          }
-          if (lastError) throw lastError;
-
-          totalImported += result?.imported || 0;
-          totalFailed += result?.failed || 0;
-          if (result?.errors) allErrors.push(...result.errors);
-        }
-
-        setEntities(prev => prev.map(e =>
-          e.entity === entity.entity ? { ...e, status: totalFailed > 0 && totalImported === 0 ? "failed" : "success", imported: totalImported, failed: totalFailed, errors: allErrors } : e
-        ));
-        addLog(`  ✓ ${entity.label}: ${totalImported} imported, ${totalFailed} failed`);
-      } catch (err: any) {
-        setEntities(prev => prev.map(e =>
-          e.entity === entity.entity ? { ...e, status: "failed", errors: [err.message] } : e
-        ));
-        addLog(`  ✗ ${entity.label} FAILED: ${err.message}`);
-      }
-
-      completed++;
-      setOverallProgress(Math.round((completed / total) * 100));
-    }
-
-    if (migrationJobId) {
-      await supabase.from("migration_jobs" as any).update({
-        status: "completed",
-        completed_at: new Date().toISOString(),
-      }).eq("id", migrationJobId);
-    }
-
-    setImporting(false);
-    addLog("═══ Migration Complete ═══");
-    toast.success("Migration complete!");
+    // Delegate to context — runs in background across page navigation
+    migration.startBackgroundImport({
+      entities: entities as any,
+      storeDomain,
+      apiKey,
+      storeId: sid,
+      dryRun,
+    });
   };
 
   const retryEntity = async (entityName: string) => {
