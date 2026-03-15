@@ -152,12 +152,13 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 const SCOPE_SELECTOR = "#neto-theme";
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
   children: ReactNode;
   extraContext?: Partial<TemplateContext>;
+  categories?: any[];
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
