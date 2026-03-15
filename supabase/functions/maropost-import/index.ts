@@ -43,13 +43,13 @@ serve(async (req) => {
 
     const logEntity = async (entityType: string, sourceId: string, targetId: string) => {
       if (migration_job_id) {
-        await supabase.from("migration_entity_logs").insert({
+        await safe(supabase.from("migration_entity_logs").insert({
           migration_job_id,
           entity_type: entityType,
           source_id: sourceId,
           target_id: targetId,
           status: "success",
-        } as any).catch(() => {});
+        } as any));
       }
     };
 
