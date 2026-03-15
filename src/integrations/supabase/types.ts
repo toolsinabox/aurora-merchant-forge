@@ -169,10 +169,15 @@ export type Database = {
           html_content: string | null
           id: string
           image_url: string | null
+          image_url_mobile: string | null
+          image_url_tablet: string | null
           is_active: boolean
           link_url: string | null
           name: string
           placement: string
+          show_on_desktop: boolean
+          show_on_mobile: boolean
+          show_on_tablet: boolean
           sort_order: number
           starts_at: string | null
           store_id: string
@@ -188,10 +193,15 @@ export type Database = {
           html_content?: string | null
           id?: string
           image_url?: string | null
+          image_url_mobile?: string | null
+          image_url_tablet?: string | null
           is_active?: boolean
           link_url?: string | null
           name: string
           placement?: string
+          show_on_desktop?: boolean
+          show_on_mobile?: boolean
+          show_on_tablet?: boolean
           sort_order?: number
           starts_at?: string | null
           store_id: string
@@ -207,10 +217,15 @@ export type Database = {
           html_content?: string | null
           id?: string
           image_url?: string | null
+          image_url_mobile?: string | null
+          image_url_tablet?: string | null
           is_active?: boolean
           link_url?: string | null
           name?: string
           placement?: string
+          show_on_desktop?: boolean
+          show_on_mobile?: boolean
+          show_on_tablet?: boolean
           sort_order?: number
           starts_at?: string | null
           store_id?: string

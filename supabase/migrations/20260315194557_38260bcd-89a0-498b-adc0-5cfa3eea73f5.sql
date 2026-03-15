@@ -1,0 +1,7 @@
+
+ALTER TABLE public.adverts
+  ADD COLUMN IF NOT EXISTS image_url_tablet TEXT,
+  ADD COLUMN IF NOT EXISTS image_url_mobile TEXT,
+  ADD COLUMN IF NOT EXISTS show_on_desktop BOOLEAN NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS show_on_tablet BOOLEAN NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS show_on_mobile BOOLEAN NOT NULL DEFAULT true;
