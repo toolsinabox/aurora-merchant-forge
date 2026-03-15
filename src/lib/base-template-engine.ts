@@ -1961,26 +1961,77 @@ function processBlocks(template: string, ctx: TemplateContext): string {
   const blockRegex = /\[%(\w+)%\]([\s\S]*?)\[%\/\1%\]/g;
 
   return template.replace(blockRegex, (match, blockName: string, innerTemplate: string) => {
-    const systemBlocks = ["ntheme_asset", "format", "nohtml", "filter", "parse", "breadcrumb", "advert", "thumb_list", "paging", "param", "cdn_asset", "ASSET_url", "asset_url", "if", "menu", "content_menu", "cache", "escape", "SITE_VALUE", "site_value", "content_zone", "search", "login", "form", "url_encode"];
+    const systemBlocks = ["ntheme_asset", "format", "nohtml", "filter", "parse", "breadcrumb", "advert", "thumb_list", "paging", "param", "cdn_asset", "ASSET_url", "asset_url", "if", "menu", "content_menu", "cache", "escape", "SITE_VALUE", "site_value", "content_zone", "search", "login", "form", "url_encode", "foreach", "each", "switch"];
     if (systemBlocks.includes(blockName) || systemBlocks.includes(blockName.toLowerCase())) return match;
     
     let items: Record<string, any>[] = [];
 
     switch (blockName.toLowerCase()) {
-      case "crosssell": case "cross_sell": items = ctx.cross_sells || []; break;
+      case "crosssell": case "cross_sell": case "related": case "related_products": items = ctx.cross_sells || []; break;
       case "upsell": case "up_sell": items = ctx.upsells || []; break;
       case "free_gift": case "freegift": items = ctx.free_gifts || []; break;
-      case "variant": case "variants": items = ctx.variants || []; break;
-      case "specific": case "specifics": items = ctx.specifics || []; break;
-      case "pricing_tier": case "pricing_tiers": items = ctx.pricing_tiers || []; break;
-      case "images":
-        items = (ctx.product?.images || []).map((url: string, idx: number) => ({ url: resolveStorageUrl(url), image_url: resolveStorageUrl(url), index: idx + 1, count: idx }));
+      case "variant": case "variants": case "child_products": case "child":
+        items = (ctx.variants || []).map((v: any, idx: number) => ({
+          ...v,
+          index: idx,
+          count: idx,
+          inventory_id: v.id,
+          SKU: v.sku || "",
+          sku: v.sku || "",
+          name: v.name || v.option_value || "",
+          option_name: v.option_name || v.name || "",
+          option_value: v.option_value || v.name || "",
+          price: v.price || ctx.product?.price || 0,
+          store_price: v.price || ctx.product?.price || 0,
+          store_quantity: v.stock ?? v.stock_on_hand ?? 10,
+          available_quantity: v.stock ?? v.stock_on_hand ?? 10,
+          image_url: resolveStorageUrl(v.image || v.images?.[0] || ctx.product?.images?.[0]) || "/placeholder.svg",
+          URL: `${ctx.basePath || ""}/product/${ctx.product?.slug || ctx.product?.id}?variant=${v.id}`,
+        }));
+        break;
+      case "specific": case "specifics": case "item_specifics": case "item_specific":
+        items = (ctx.specifics || []).map((s: any, idx: number) => ({
+          ...s,
+          index: idx,
+          count: idx,
+          spec_name: s.name || "",
+          spec_value: s.value || "",
+          label: s.name || "",
+        }));
+        break;
+      case "pricing_tier": case "pricing_tiers": case "quantity_price": case "qty_price":
+        items = (ctx.pricing_tiers || []).map((t: any, idx: number) => ({
+          ...t,
+          index: idx,
+          count: idx,
+          qty: t.min_quantity || 1,
+          min_quantity: t.min_quantity || 1,
+          tier_price: t.price || 0,
+          store_price: t.price || 0,
+        }));
+        break;
+      case "images": case "item_images":
+        items = (ctx.product?.images || []).map((url: string, idx: number) => ({
+          url: resolveStorageUrl(url),
+          image_url: resolveStorageUrl(url),
+          thumb_url: resolveStorageUrl(url),
+          src: resolveStorageUrl(url),
+          alt: ctx.product?.title || "",
+          index: idx + 1,
+          count: idx,
+          is_primary: idx === 0 ? 1 : 0,
+          position: idx + 1,
+        }));
         break;
       case "tags":
-        items = (ctx.product?.tags || []).map((tag: string, idx: number) => ({ name: tag, index: idx, count: idx }));
+        items = (ctx.product?.tags || []).map((tag: string, idx: number) => ({ name: tag, tag: tag, index: idx, count: idx }));
         break;
       case "adverts": items = ctx.adverts || []; break;
       case "thumb": case "thumblist": items = ctx.thumblist || []; break;
+      case "reviews": case "review":
+        // Reviews would come from context if provided
+        items = ctx.reviews || [];
+        break;
       default: return "";
     }
 
