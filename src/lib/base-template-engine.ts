@@ -1022,17 +1022,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     
     if (type === "product") {
       const bp = ctx.basePath || "";
-      items = (ctx.products || []).slice(0, limit).map((p, idx) => ({
-        ...p,
-        ad_id: p.id,
-        headline: p.title,
-        url: `${bp}/product/${p.id}`,
-        image_url: resolveStorageUrl(p.images?.[0]) || "/placeholder.svg",
-        price: p.price,
-        rrp: p.compare_at_price || p.price,
-        count: idx,
-        index: idx,
-      }));
+      items = (ctx.products || []).slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
     } else {
       // Text/banner adverts — filter by ad_group if specified
       let filteredAdverts = ctx.adverts || [];
