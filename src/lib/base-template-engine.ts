@@ -1164,10 +1164,11 @@ function processThumbList(template: string, ctx: TemplateContext): string {
       items.forEach((item, idx) => {
         let rendered = itemTemplate;
         // Prepare product item fields
+        const bp = ctx.basePath || "";
         const productItem = {
           ...item,
           image_url: resolveStorageUrl(item.images?.[0]) || "/placeholder.svg",
-          url: `/product/${item.id}`,
+          url: `${bp}/product/${item.id}`,
           headline: item.title,
           rrp: item.compare_at_price || item.price,
         };
