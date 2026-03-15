@@ -661,13 +661,14 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
     const categories = ctx.categories || [];
     if (categories.length === 0) return "";
 
+    const preprocessedBody = collapseAssetUrlBlocks(body);
     const levelTemplates: Record<number, string> = {};
-    const paramHeaderMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const paramFooterMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramHeaderMatch = preprocessedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramFooterMatch = preprocessedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
     
     const levelRegex = /\[%param\s+\*?level_(\d+)%\]([\s\S]*?)\[%\/param%\]/gi;
     let m;
-    while ((m = levelRegex.exec(body)) !== null) {
+    while ((m = levelRegex.exec(preprocessedBody)) !== null) {
       levelTemplates[parseInt(m[1])] = m[2];
     }
 
@@ -718,13 +719,17 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
     const categories = ctx.categories || [];
     if (categories.length === 0) return "";
 
+    // Pre-process asset_url blocks in the body so that nested [%param default%]...[%/param%]
+    // inside asset_url doesn't confuse the level param extraction regex
+    const preprocessedBody = collapseAssetUrlBlocks(body);
+
     const levelTemplates: Record<number, string> = {};
-    const paramHeaderMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const paramFooterMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramHeaderMatch = preprocessedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramFooterMatch = preprocessedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
     
     const levelRegex = /\[%param\s+\*?level_(\d+)%\]([\s\S]*?)\[%\/param%\]/gi;
     let m;
-    while ((m = levelRegex.exec(body)) !== null) {
+    while ((m = levelRegex.exec(preprocessedBody)) !== null) {
       levelTemplates[parseInt(m[1])] = m[2];
     }
 
@@ -761,6 +766,19 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
     if (paramFooterMatch) result += paramFooterMatch[1];
     return result;
   });
+}
+
+/**
+ * Collapse [%asset_url ...%]...[%/asset_url%] blocks into self-closing placeholders
+ * so that nested [%param default%] inside them doesn't break outer param extraction.
+ * The placeholder retains the attrs so it can be resolved later by processAssetUrl.
+ */
+function collapseAssetUrlBlocks(body: string): string {
+  // Match asset_url block form (with potential nested [%param%] and [%cdn_asset%] inside)
+  return body.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%\/asset_url%\]/gi,
+    (_, attrs: string) => `[%asset_url ${attrs}/%]`
+  );
 }
 
 // ── Process [%asset_url type:'...' id:'...'%]...[%END asset_url%] or [%/asset_url%] ──
@@ -1014,10 +1032,13 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       }));
     }
     
+    // Collapse nested asset_url blocks so param extraction doesn't break
+    const processedBody = collapseAssetUrlBlocks(body);
+    
     // Extract param blocks from the advert body
-    const headerMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const footerMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
-    const bodyMatch = body.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
+    const headerMatch = processedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const footerMatch = processedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const bodyMatch = processedBody.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
     // Resolve body template: if no *body param, use theme template file
     let itemTemplate = bodyMatch?.[1] || "";
@@ -1177,9 +1198,10 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     const limit = parseInt(limitStr) || 20;
     const templateName = templateMatch?.[1] || "";
     
-    const headerMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
-    const footerMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
-    const bodyMatch = body.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
+    const processedBody = collapseAssetUrlBlocks(body);
+    const headerMatch = processedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const footerMatch = processedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const bodyMatch = processedBody.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
     let items: Record<string, any>[] = [];
     if (type === "products") {
@@ -1316,8 +1338,11 @@ function stripComments(template: string): string {
 // ── Normalize Maropost syntax variants (END tags, spaced closing tags, malformed close tokens) ──
 function normalizeTemplateSyntax(template: string): string {
   let result = template;
-  result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  // [%END asset_url%] or [%end param%] → [%/asset_url%] or [%/param%]
+  result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/gi, "[%/$1%]");
+  // [% / param %] → [%/param%]
   result = result.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  // [%/param%%] → [%/param%]
   result = result.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
   return result;
 }
