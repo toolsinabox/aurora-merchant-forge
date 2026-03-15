@@ -812,15 +812,29 @@ serve(async (req) => {
                 }
               }
 
+              // ⚠ Maropost OrderLine may only have SKU+Quantity — look up product for title/price
+              let lineTitle = line.ProductName || line.ItemDescription || line.Description || null;
+              let lineUnitPrice = toFloat(line.UnitPrice);
+              
+              // If we found the product and are missing title/price, fill from product record
+              if (productId && (!lineTitle || lineUnitPrice === null)) {
+                const { data: prodInfo } = await supabase
+                  .from("products").select("title, price").eq("id", productId).single();
+                if (prodInfo) {
+                  if (!lineTitle) lineTitle = prodInfo.title;
+                  if (lineUnitPrice === null) lineUnitPrice = prodInfo.price;
+                }
+              }
+
               await safe(supabase.from("order_items").insert({
                 order_id: orderId, store_id,
                 product_id: productId,
                 variant_id: variantId,
-                title: line.ProductName || line.ItemDescription || line.Description || "Item",
+                title: lineTitle || lineSku || "Item",
                 sku: lineSku,
                 quantity: toInt(line.Quantity) || 1,
-                unit_price: toFloat(line.UnitPrice) || 0,
-                total: toFloat(line.LineTotal) || ((toFloat(line.UnitPrice) || 0) * (toInt(line.Quantity) || 1)),
+                unit_price: lineUnitPrice || 0,
+                total: toFloat(line.LineTotal) || ((lineUnitPrice || 0) * (toInt(line.Quantity) || 1)),
               } as any));
             }
           }
