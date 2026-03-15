@@ -2392,6 +2392,8 @@ export const SUPPORTED_TAGS = [
 export const SUPPORTED_BLOCKS = [
   "crosssell", "upsell", "free_gift", "variant", "specific",
   "pricing_tier", "images", "tags", "adverts", "thumb",
+  "order_lines", "cart_items", "wishlist_items", "locations", "addresses",
+  "reviews", "categories",
 ];
 
 export const SUPPORTED_FORMATS = [
