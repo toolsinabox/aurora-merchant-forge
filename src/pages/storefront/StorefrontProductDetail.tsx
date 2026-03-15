@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
@@ -25,7 +25,8 @@ import { AddToCartPopup } from "@/components/storefront/AddToCartPopup";
 import { SocialShare } from "@/components/storefront/SocialShare";
 import { ProductBadges } from "@/components/storefront/ProductBadges";
 import { DeliveryEstimate } from "@/components/storefront/DeliveryEstimate";
-import type { TemplateContext } from "@/lib/base-template-engine";
+import { useActiveTheme, findThemeFile, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
