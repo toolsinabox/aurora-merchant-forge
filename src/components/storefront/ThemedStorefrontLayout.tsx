@@ -472,7 +472,7 @@ ${SCOPE_SELECTOR} .product-card__price {
 }
 `;
     return scoped + fallbackCss;
-  }, [theme.cssFiles]);
+  }, [theme.cssFiles, themeAssetBaseUrl]);
 
   // Inject Font Awesome + Bootstrap CSS (required by most Maropost themes)
   useEffect(() => {
