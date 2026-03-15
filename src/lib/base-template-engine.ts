@@ -1363,6 +1363,9 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 1. Strip comments
   result = stripComments(result);
 
+  // 1b. Normalize syntax variants (END tags, spaced closers)
+  result = normalizeTemplateSyntax(result);
+
   // 2. Strip cache wrappers
   result = processCacheBlocks(result);
 
@@ -1406,11 +1409,11 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 12. Set/While stubs
   result = processSetAndWhile(result);
 
-  // 13. Maropost conditionals [%if%]...[%/if%]
-  result = processMaropostConditionals(result, ctx);
-
-  // 14. System tags (breadcrumb, advert, thumb_list, content_menu, etc.)
+  // 13. System tags (breadcrumb, advert, thumb_list, content_menu, etc.)
   result = processSystemTags(result, ctx);
+
+  // 14. Maropost conditionals [%if%]...[%/if%] (after system tags to avoid breaking nested advert/thumb templates)
+  result = processMaropostConditionals(result, ctx);
 
   // 15. Block iterators [%crosssell%], etc.
   result = processBlocks(result, ctx);
