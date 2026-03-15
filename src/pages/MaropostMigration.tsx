@@ -170,6 +170,7 @@ const ITEMS_PER_PAGE = 20;
 const SCAN_PAGE_SIZE = 500;
 
 export default function MaropostMigration() {
+  const migration = useMigration();
   const [step, setStep] = useState<MigrationStep>(() => {
     const saved = sessionStorage.getItem("maropost_step");
     return (saved as MigrationStep) || "connect";
@@ -196,6 +197,17 @@ export default function MaropostMigration() {
   const [mappingEntity, setMappingEntity] = useState<string>("products");
   const [verificationResults, setVerificationResults] = useState<VerificationResult[]>([]);
   const [verifying, setVerifying] = useState(false);
+
+  // Sync from migration context when it's running (so we see live updates even on this page)
+  useEffect(() => {
+    if (migration.state.isRunning || migration.state.overallProgress > 0) {
+      setEntities(migration.state.entities as EntityCount[]);
+      setOverallProgress(migration.state.overallProgress);
+      setImporting(migration.state.isRunning);
+      setPaused(migration.state.isPaused);
+      setLogs(migration.state.logs);
+    }
+  }, [migration.state.entities, migration.state.overallProgress, migration.state.isRunning, migration.state.isPaused, migration.state.logs]);
 
   // Persist state to sessionStorage for resume
   const persistState = useCallback(() => {
