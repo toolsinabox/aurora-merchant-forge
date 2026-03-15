@@ -740,31 +740,46 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
       catMap.get(parentId)!.push(cat);
     }
 
-    function renderLevel(parentId: string | null, level: number): string {
-      const children = catMap.get(parentId) || [];
-      if (children.length === 0) return "";
+    // Determine if we should render hierarchically or flat
+    // Maropost content_menu with only level_1 template renders ALL categories flat
+    const hasMultipleLevels = Object.keys(levelTemplates).some(k => parseInt(k) > 1);
+
+    function renderCat(cat: any, level: number): string {
       const tmpl = levelTemplates[level] || levelTemplates[1];
       if (!tmpl) return "";
 
-      return children.map(cat => {
-        let html = tmpl;
-        html = html.replace(/\[@name@\]/gi, cat.name || "");
-        html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
-        html = html.replace(/\[@id@\]/gi, cat.id || "");
-        html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
-        html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
-        html = html.replace(/\[@slug@\]/gi, cat.slug || "");
-        // Fix alt attributes that ended up with raw UUIDs — replace with category name
-        html = html.replace(/alt="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/gi, `alt="${(cat.name || "Category").replace(/"/g, "&quot;")}"`);
-        // Process any asset_url for category images within the template
-        html = processAssetUrl(html, ctx, cat);
-        return html;
-      }).join("");
+      let html = tmpl;
+      html = html.replace(/\[@name@\]/gi, cat.name || "");
+      html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
+      html = html.replace(/\[@id@\]/gi, cat.id || "");
+      html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
+      html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
+      html = html.replace(/\[@slug@\]/gi, cat.slug || "");
+      // Fix alt attributes that ended up with raw UUIDs — replace with category name
+      html = html.replace(/alt="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/gi, `alt="${(cat.name || "Category").replace(/"/g, "&quot;")}"`);
+      // Process any asset_url for category images within the template
+      html = processAssetUrl(html, ctx, cat);
+      return html;
+    }
+
+    function renderLevel(parentId: string | null, level: number): string {
+      const children = catMap.get(parentId) || [];
+      if (children.length === 0) return "";
+      return children.map(cat => renderCat(cat, level)).join("");
     }
 
     let result = "";
     if (paramHeaderMatch) result += paramHeaderMatch[1];
-    result += renderLevel(null, 1);
+
+    if (!hasMultipleLevels) {
+      // Flat mode: render ALL categories using level_1 template (Maropost default behavior)
+      const allCats = categories.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
+      result += allCats.map((cat: any) => renderCat(cat, 1)).join("");
+    } else {
+      // Hierarchical mode: render only top-level, with children at deeper levels
+      result += renderLevel(null, 1);
+    }
+
     if (paramFooterMatch) result += paramFooterMatch[1];
     return result;
   });
@@ -777,8 +792,9 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
  */
 function collapseAssetUrlBlocks(body: string): string {
   // Match asset_url block form (with potential nested [%param%] and [%cdn_asset%] inside)
+  // Support both [%/asset_url%] and [%END asset_url%] closing tags
   return body.replace(
-    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%\/asset_url%\]/gi,
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url)%\]/gi,
     (_, attrs: string) => `[%asset_url ${attrs}/%]`
   );
 }
