@@ -52,6 +52,74 @@ export default function StorefrontBlog() {
     );
   }
 
+  // ── Theme-based blog rendering ──
+  const { data: theme } = useActiveTheme(store?.id);
+
+  const blogTemplate = useMemo(() => {
+    if (!theme) return null;
+    return findThemeFile(theme, "templates", "blog")
+      || findMainThemeFile(theme, "blog")
+      || findThemeFile(theme, "templates", "news");
+  }, [theme]);
+
+  const themeFiles = useMemo(() => {
+    if (!theme) return {};
+    const map: Record<string, string> = {};
+    for (const f of theme.files) {
+      map[f.file_path] = f.content || "";
+      map[`${f.folder}/${f.file_name}`] = f.content || "";
+      map[f.file_name] = f.content || "";
+      const parts = f.file_path.split("/");
+      for (let i = 0; i < parts.length; i++) {
+        map[parts.slice(i).join("/")] = f.content || "";
+      }
+    }
+    return map;
+  }, [theme]);
+
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
+
+  if (blogTemplate?.content && theme && store) {
+    const includes = buildIncludesMap(theme);
+    const blogCtx: TemplateContext = {
+      products: posts.map(p => ({
+        ...p,
+        URL: `${basePath}/page/${p.slug}`,
+        url: `${basePath}/page/${p.slug}`,
+        image_url: p.featured_image || "",
+        date: p.published_at ? format(new Date(p.published_at), "MMM d, yyyy") : "",
+        excerpt: p.seo_description || "",
+      })),
+      store: { name: store.name, ...store },
+      includes,
+      themeFiles,
+      themeAssetBaseUrl,
+      basePath: basePath || "",
+      pageType: "blog",
+    };
+
+    let rendered = renderTemplate(blogTemplate.content, blogCtx);
+
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      rendered = rendered.replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+        if (!assetExt.test(path)) return match;
+        if (/^(\/placeholder\.|\/assets\/|\/favicon)/i.test(path)) return match;
+        const cleanPath = path.replace(/^\/+/, "");
+        return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+      });
+    }
+
+    return (
+      <StorefrontLayout storeName={store.name} extraContext={blogCtx}>
+        <div dangerouslySetInnerHTML={{ __html: rendered }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
     <StorefrontLayout storeName={store?.name}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
