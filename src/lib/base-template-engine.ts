@@ -1176,6 +1176,14 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         // Process inline conditionals (e.g., [%if [@count@] eq '0'%])
         rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         
+        // Clean up per-item template tags
+        rendered = processSetAndWhile(rendered);
+        rendered = processCacheBlocks(rendered);
+        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, "$1");
+        rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
+        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
+        rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
+        
         // Extract and accumulate SITE_VALUE counter content
         const svRegex = /\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi;
         let svMatch;
