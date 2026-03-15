@@ -48,6 +48,8 @@ function applyFormat(value: any, format: string): string {
     case "currency": return `$${Number(value).toFixed(2)}`;
     case "currency_no_symbol": return Number(value).toFixed(2);
     case "integer": return Math.round(Number(value)).toString();
+    case "number": { const n = Number(value); return isNaN(n) ? String(value) : n.toLocaleString(); }
+    case "decimal": return Number(value).toFixed(2);
     case "date": return new Date(value).toLocaleDateString();
     case "datetime": return new Date(value).toLocaleString();
     case "date_short": return new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -63,6 +65,7 @@ function applyFormat(value: any, format: string): string {
     case "count": return Array.isArray(value) ? value.length.toString() : "0";
     case "first": return Array.isArray(value) && value.length > 0 ? String(value[0]) : "";
     case "boolean": return value ? "Yes" : "No";
+    case "nl2br": return String(value).replace(/\n/g, "<br>");
     default: return String(value);
   }
 }
@@ -74,18 +77,23 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
   const configMap: Record<string, () => string> = {
     "company_name": () => store.name || "",
     "website_name": () => store.name || "",
+    "store_name": () => store.name || "",
     "home_url": () => ctx.basePath || ctx.baseUrl || "/",
     "canonical_url": () => ctx.baseUrl || ctx.basePath || "",
     "current_page_type": () => ctx.pageType || "content",
     "templatelang": () => "en-AU",
+    "template_lang": () => "en-AU",
     "neto_css_version": () => Date.now().toString(),
     "google_verification": () => store.google_verification || "",
     "related_limit": () => "8",
     "store_currency": () => store.default_currency || store.currency || "AUD",
     "defaultcurrency": () => store.default_currency || store.currency || "AUD",
+    "currency_symbol": () => store.currency_symbol || "$",
     "contact_email": () => store.contact_email || "",
     "phone": () => store.phone || "",
     "address": () => store.address || "",
+    "logo_url": () => store.logo_url || "",
+    "logo": () => store.logo_url || "",
     // Default config values that themes expect to be truthy
     "show_home_ads": () => "1",
     "show_home_categories": () => "1",
@@ -98,10 +106,23 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "show_reviews": () => "1",
     "show_shipping_calculator": () => "1",
     "show_breadcrumbs": () => "1",
+    "show_qty": () => "1",
+    "show_brand": () => "1",
+    "show_sku": () => "1",
+    "show_stock": () => "1",
+    "show_save": () => "1",
+    "show_tax_info": () => "0",
+    "tax_label": () => store.tax_label || "inc. GST",
+    "tax_rate": () => store.tax_rate || "10",
     "assets_url": () => ctx.themeAssetBaseUrl || "/assets",
     // Purchasing / inventory config
     "allow_nostock_checkout": () => store.allow_nostock_checkout || "0",
     "webstore_use_preorder_quantity": () => store.webstore_use_preorder_quantity || "0",
+    "items_per_page": () => store.items_per_page || "24",
+    "default_sort": () => store.default_sort || "relevance",
+    // Shipping
+    "free_shipping_threshold": () => store.free_shipping_threshold || "0",
+    "shipping_from": () => store.shipping_from || store.address || "",
     // Social media — empty by default (themes conditionally show these)
     "social_facebook": () => store.social_facebook || "",
     "social_twitter": () => store.social_twitter || "",
@@ -110,11 +131,30 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "social_pinterest": () => store.social_pinterest || "",
     "social_google_plus": () => "",
     "social_tumblr": () => "",
-    "social_linkedin": () => "",
+    "social_linkedin": () => store.social_linkedin || "",
+    "social_tiktok": () => store.social_tiktok || "",
     // Footer fields
     "abn": () => store.abn || "",
     "company_abn": () => store.abn || store.company_abn || "",
     "copyright_year": () => new Date().getFullYear().toString(),
+    // Cart URLs
+    "cart_url": () => `${ctx.basePath || ""}/cart`,
+    "checkout_url": () => `${ctx.basePath || ""}/checkout`,
+    "account_url": () => `${ctx.basePath || ""}/account`,
+    "wishlist_url": () => `${ctx.basePath || ""}/wishlist`,
+    "compare_url": () => `${ctx.basePath || ""}/compare`,
+    "login_url": () => `${ctx.basePath || ""}/login`,
+    "register_url": () => `${ctx.basePath || ""}/register`,
+    "search_url": () => `${ctx.basePath || ""}/products`,
+    // Cart data
+    "cart_count": () => "0",
+    "cart_total": () => "$0.00",
+    "cart_subtotal": () => "$0.00",
+    // User state
+    "is_logged_in": () => ctx.customer ? "1" : "0",
+    "customer_name": () => ctx.customer?.name || "",
+    "customer_email": () => ctx.customer?.email || "",
+    "customer_first_name": () => ctx.customer?.name?.split(" ")[0] || "",
   };
   const resolver = configMap[k];
   if (resolver) return resolver();
@@ -148,19 +188,31 @@ function resolveField(field: string, ctx: TemplateContext): any {
 
   const productFields: Record<string, () => any> = {
     title: () => ctx.product?.title,
+    name: () => ctx.product?.title || ctx.product?.name,
     sku: () => ctx.product?.sku,
     SKU: () => ctx.product?.sku,
+    inventory_id: () => ctx.product?.id,
+    product_id: () => ctx.product?.id,
     price: () => ctx.product?.price,
+    store_price: () => ctx.product?.price,
+    retail_price: () => ctx.product?.price,
+    price_inc: () => ctx.product?.price,
+    price_ex: () => { const p = Number(ctx.product?.price || 0); const rate = Number(ctx.store?.tax_rate || 10); return (p / (1 + rate / 100)).toFixed(2); },
     cost_price: () => ctx.product?.cost_price,
     compare_at_price: () => ctx.product?.compare_at_price,
+    rrp: () => ctx.product?.compare_at_price || ctx.product?.price,
+    rrp_inc: () => ctx.product?.compare_at_price || ctx.product?.price,
+    rrp_ex: () => { const p = Number(ctx.product?.compare_at_price || ctx.product?.price || 0); const rate = Number(ctx.store?.tax_rate || 10); return (p / (1 + rate / 100)).toFixed(2); },
     description: () => ctx.product?.description,
     short_description: () => ctx.product?.short_description,
     brand: () => ctx.product?.brand,
     barcode: () => ctx.product?.barcode,
     model_number: () => ctx.product?.model_number,
+    model: () => ctx.product?.model_number || ctx.product?.title,
     status: () => ctx.product?.status,
     slug: () => ctx.product?.slug,
     subtitle: () => ctx.product?.subtitle,
+    headline: () => ctx.product?.title,
     features: () => ctx.product?.features,
     specifications: () => ctx.product?.specifications,
     warranty: () => ctx.product?.warranty,
@@ -184,8 +236,17 @@ function resolveField(field: string, ctx: TemplateContext): any {
     misc3: () => ctx.product?.misc3,
     misc4: () => ctx.product?.misc4,
     misc5: () => ctx.product?.misc5,
+    misc6: () => ctx.product?.misc6,
+    misc7: () => ctx.product?.misc7,
+    misc8: () => ctx.product?.misc8,
+    misc9: () => ctx.product?.misc9,
+    misc10: () => ctx.product?.misc10,
+    misc40: () => ctx.product?.misc40 || ctx.product?.dimensions || "",
+    misc45: () => ctx.product?.misc45 || ctx.product?.length || "",
     images: () => ctx.product?.images,
     image: () => ctx.product?.images?.[0],
+    image_url: () => resolveStorageUrl(ctx.product?.images?.[0]) || "",
+    thumb_url: () => resolveStorageUrl(ctx.product?.images?.[0]) || "",
     image_1: () => ctx.product?.images?.[0],
     image_2: () => ctx.product?.images?.[1],
     image_3: () => ctx.product?.images?.[2],
@@ -199,9 +260,29 @@ function resolveField(field: string, ctx: TemplateContext): any {
     track_inventory: () => ctx.product?.track_inventory,
     created_at: () => ctx.product?.created_at,
     updated_at: () => ctx.product?.updated_at,
+    date_added: () => ctx.product?.created_at,
+    date_updated: () => ctx.product?.updated_at,
+    // Stock fields
+    store_quantity: () => ctx.product?.stock_on_hand ?? 10,
+    available_quantity: () => ctx.product?.stock_on_hand ?? 10,
+    committed_quantity: () => ctx.product?.committed_quantity || 0,
+    stock_on_hand: () => ctx.product?.stock_on_hand ?? 10,
+    preorder: () => ctx.product?.preorder ? 1 : 0,
+    available_preorder_quantity: () => ctx.product?.preorder_quantity || 0,
+    // URLs
+    URL: () => `${ctx.basePath || ""}/product/${ctx.product?.slug || ctx.product?.id}`,
+    url: () => `${ctx.basePath || ""}/product/${ctx.product?.slug || ctx.product?.id}`,
+    add_to_cart_url: () => "#",
+    wishlist_url: () => `${ctx.basePath || ""}/wishlist`,
+    compare_url: () => `${ctx.basePath || ""}/compare`,
+    // Computed
     savings: () => {
       const c = ctx.product?.compare_at_price, p = ctx.product?.price;
       return c && p ? Number(c) - Number(p) : 0;
+    },
+    save: () => {
+      const c = ctx.product?.compare_at_price, p = ctx.product?.price;
+      return c && p ? Math.round((1 - Number(p) / Number(c)) * 100) : 0;
     },
     savings_percent: () => {
       const c = ctx.product?.compare_at_price, p = ctx.product?.price;
@@ -209,6 +290,7 @@ function resolveField(field: string, ctx: TemplateContext): any {
     },
     has_variants: () => (ctx.variants?.length || 0) > 0,
     variant_count: () => ctx.variants?.length || 0,
+    has_child: () => (ctx.variants?.length || 0) > 0 ? 1 : 0,
     has_promo: () => {
       const p = ctx.product;
       if (!p?.promo_price) return false;
@@ -216,9 +298,23 @@ function resolveField(field: string, ctx: TemplateContext): any {
       return (!p.promo_start || new Date(p.promo_start) <= now) &&
              (!p.promo_end || new Date(p.promo_end) >= now);
     },
+    inpromo: () => {
+      const p = ctx.product;
+      if (!p?.promo_price) return 0;
+      const now = new Date();
+      return (!p.promo_start || new Date(p.promo_start) <= now) &&
+             (!p.promo_end || new Date(p.promo_end) >= now) ? 1 : 0;
+    },
     has_cross_sells: () => (ctx.cross_sells?.length || 0) > 0,
     has_upsells: () => (ctx.upsells?.length || 0) > 0,
     specifics_count: () => ctx.specifics?.length || 0,
+    editable_bundle: () => ctx.product?.is_kit ? 1 : 0,
+    min_qty: () => ctx.product?.minimum_quantity || ctx.product?.min_qty || 0,
+    extra: () => ctx.product?.extra || 0,
+    reviews: () => ctx.product?.review_count || 0,
+    "data:rating": () => ctx.product?.average_rating || 0,
+    "data:ratings-count": () => ctx.product?.review_count || 0,
+    // Shipping fields
     shipping_weight: () => ctx.shipping?.shipping_weight,
     shipping_length: () => ctx.shipping?.shipping_length,
     shipping_width: () => ctx.shipping?.shipping_width,
@@ -227,20 +323,30 @@ function resolveField(field: string, ctx: TemplateContext): any {
     flat_rate_charge: () => ctx.shipping?.flat_rate_charge,
     selling_unit: () => ctx.shipping?.selling_unit,
     base_unit: () => ctx.shipping?.base_unit,
+    // Store fields
     store_name: () => ctx.store?.name,
     store_currency: () => ctx.store?.currency,
     store_email: () => ctx.store?.contact_email,
+    // Order fields
     order_number: () => ctx.order?.order_number,
     order_total: () => ctx.order?.total,
     order_subtotal: () => ctx.order?.subtotal,
     order_status: () => ctx.order?.status,
     order_date: () => ctx.order?.created_at,
+    // Customer fields
     customer_name: () => ctx.customer?.name,
     customer_email: () => ctx.customer?.email,
     customer_phone: () => ctx.customer?.phone,
+    // Category fields (for category pages)
+    category_name: () => ctx.content?.name || ctx.content?.title || "",
+    category_url: () => ctx.content?.url || "",
+    category_description: () => ctx.content?.description || "",
+    category_image: () => ctx.content?.image_url || "",
     // Page-level fields
     page_content: () => ctx.content?.description || ctx.content?.content || "",
-    total_showing: () => String((ctx.adverts || []).length),
+    page_title: () => ctx.content?.title || ctx.store?.name || "",
+    total_showing: () => String((ctx.products || ctx.adverts || []).length),
+    rndm: () => Math.random().toString(36).substring(2, 8),
   };
 
   const resolver = productFields[field];
@@ -262,7 +368,7 @@ function resolveField(field: string, ctx: TemplateContext): any {
 // ── Process Maropost [%load_template file:'path'/%] ──
 function processLoadTemplate(template: string, ctx: TemplateContext, depth = 0): string {
   if (depth > 10) return template;
-  return template.replace(/\[%load_template\s+file:\s*(['"])([^'"]+)\1\s*\/?%\]/gi, (_, _quote: string, filePath: string) => {
+  return template.replace(/\[%load_template\s+(?:file:\s*)?(['"])([^'"]+)\1\s*\/?%\]/gi, (_, _quote: string, filePath: string) => {
     const files = ctx.themeFiles || {};
     const includes = ctx.includes || {};
     const cleanPath = filePath.trim().replace(/^\/+/, "");
@@ -302,28 +408,49 @@ function processLoadTemplate(template: string, ctx: TemplateContext, depth = 0):
 /** Build a Maropost-compatible product item object from our DB product */
 function buildMaropostProductItem(p: Record<string, any>, idx: number, basePath: string): Record<string, any> {
   const save = p.compare_at_price && p.price ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
+  const saveDollar = p.compare_at_price && p.price ? (Number(p.compare_at_price) - Number(p.price)).toFixed(2) : "0.00";
   const imageUrl = resolveStorageUrl(p.images?.[0]) || "/placeholder.svg";
+  const taxRate = 10; // default GST
+  const priceNum = Number(p.price || 0);
+  const rrpNum = Number(p.compare_at_price || p.price || 0);
   return {
     ...p,
     // Maropost field mappings
     ad_id: p.id,
     inventory_id: p.id,
+    product_id: p.id,
     SKU: p.sku || "",
     sku: p.sku || "",
     name: p.title || "",
     model: p.title || p.model_number || "",
     headline: p.title || "",
+    subtitle: p.subtitle || "",
     URL: `${basePath}/product/${p.slug || p.id}`,
     url: `${basePath}/product/${p.slug || p.id}`,
+    add_to_cart_url: "#",
+    wishlist_url: `${basePath}/wishlist`,
+    compare_url: `${basePath}/compare`,
     image_url: imageUrl,
     thumb: imageUrl,
+    thumb_url: imageUrl,
+    image_url_small: imageUrl,
+    image_url_medium: imageUrl,
+    image_url_large: imageUrl,
     store_price: p.price || 0,
-    retail: p.compare_at_price || p.price || 0,
-    rrp: p.compare_at_price || p.price || 0,
+    price_inc: priceNum.toFixed(2),
+    price_ex: (priceNum / (1 + taxRate / 100)).toFixed(2),
+    retail: rrpNum,
+    rrp: rrpNum,
+    rrp_inc: rrpNum.toFixed(2),
+    rrp_ex: (rrpNum / (1 + taxRate / 100)).toFixed(2),
     save: save,
+    save_dollar: saveDollar,
+    save_percent: save,
     inpromo: p.promo_price ? 1 : 0,
     promo_price: p.promo_price || p.price || 0,
-    store_quantity: p.stock_on_hand ?? 10, // Default to in-stock
+    store_quantity: p.stock_on_hand ?? 10,
+    available_quantity: p.stock_on_hand ?? 10,
+    committed_quantity: p.committed_quantity || 0,
     preorder: p.preorder ? 1 : 0,
     available_preorder_quantity: p.preorder_quantity || 0,
     has_child: (p.has_variants || p.variant_count > 0) ? 1 : 0,
@@ -332,15 +459,29 @@ function buildMaropostProductItem(p: Record<string, any>, idx: number, basePath:
     min_qty: p.min_qty || p.minimum_quantity || 0,
     reviews: p.review_count || 0,
     "data:rating": p.average_rating || 0,
+    "data:ratings-count": p.review_count || 0,
     rndm: Math.random().toString(36).substring(2, 8),
     count: idx,
     index: idx,
+    // Date fields
+    date_added: p.created_at || "",
+    date_updated: p.updated_at || "",
+    // Category fields
+    category_name: p.category_name || "",
+    category_url: p.category_url || "",
     // Misc fields (dimensions etc.)
+    misc1: p.misc1 || "",
+    misc2: p.misc2 || "",
+    misc3: p.misc3 || "",
+    misc4: p.misc4 || "",
+    misc5: p.misc5 || "",
     misc40: p.misc40 || p.dimensions || "",
     misc45: p.misc45 || p.length || "",
     short_description: p.short_description || "",
     brand: p.brand || "",
     description: p.description || "",
+    // Custom label / badge
+    custom_label: p.custom_label || p.promo_tag || "",
   };
 }
 
@@ -350,14 +491,20 @@ function buildMaropostAdvertItem(ad: Record<string, any>, idx: number): Record<s
     ...ad,
     ad_id: ad.id,
     headline: ad.title || ad.name || "",
+    name: ad.name || ad.title || "",
     url: ad.link_url || "#",
     image_url: resolveStorageUrl(ad.image_url) || "",
+    image_url_mobile: resolveStorageUrl(ad.image_url_mobile) || resolveStorageUrl(ad.image_url) || "",
+    image_url_tablet: resolveStorageUrl(ad.image_url_tablet) || resolveStorageUrl(ad.image_url) || "",
     img_width: ad.image_width || ad.img_width || "2880",
     img_height: ad.image_height || ad.img_height || "810",
     linktext: ad.button_text || ad.linktext || "Learn More",
     description: ad.subtitle || ad.description || "",
+    subtitle: ad.subtitle || "",
+    button_text: ad.button_text || "",
     count: idx,
     index: idx,
+    rndm: Math.random().toString(36).substring(2, 8),
   };
 }
 
@@ -366,7 +513,6 @@ function filterThemeFilesByPath(files: Record<string, string>, pathPrefix: strin
   const filtered: Record<string, string> = {};
   for (const [key, value] of Object.entries(files)) {
     if (key.toLowerCase().includes(pathPrefix.toLowerCase())) {
-      // Re-key to just the filename for resolution
       const parts = key.split("/");
       filtered[parts[parts.length - 1]] = value;
       filtered[key] = value;
@@ -424,13 +570,10 @@ function resolveThemeTemplate(templateName: string, ctx: TemplateContext): strin
 function processThemeAssets(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%ntheme_asset%\]([\s\S]*?)\[%\/ntheme_asset%\]/gi, (_, path: string) => {
     const trimmed = path.trim();
-    // CSS/JS files are already injected via scoped <style>/<script> tags — return empty for src references
     if (trimmed.endsWith(".css") || trimmed.endsWith(".js")) return "";
-    // Resolve from themeAssetBaseUrl (binary assets stored in storage bucket)
     if (ctx.themeAssetBaseUrl) {
       return `${ctx.themeAssetBaseUrl}/${trimmed}`;
     }
-    // Fallback: try storage URL resolution
     return resolveStorageUrl(trimmed) || "/placeholder.svg";
   });
 }
@@ -468,13 +611,11 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
     result = result.replace(
       /\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i,
       (_, condition: string, body: string) => {
-        if (!condition.trim()) return ""; // Empty condition = false
+        if (!condition.trim()) return "";
         
-        // Split body by elseif/else markers, preserving their conditions
         const segments: string[] = [];
         const conditions: (string | null)[] = [condition];
         
-        // Manually parse elseif/else boundaries in body
         let remaining = body;
         let currentSegment = "";
         
@@ -492,10 +633,8 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
             remaining = remaining.slice(match.index + match[0].length);
             
             if (match[1] !== undefined) {
-              // elseif
               conditions.push(match[1]);
             } else {
-              // else
               conditions.push(null);
             }
           }
@@ -504,7 +643,7 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
         
         for (let i = 0; i < segments.length && i < conditions.length; i++) {
           const cond = conditions[i];
-          if (cond === null) return segments[i]; // else branch
+          if (cond === null) return segments[i];
           if (evaluateCondition(cond, ctx)) return segments[i];
         }
         
@@ -525,7 +664,6 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
   while (condition.startsWith("(") && condition.endsWith(")")) {
     const inner = condition.slice(1, -1).trim();
     if (!inner) break;
-    // Make sure the parens are balanced (not part of separate sub-expressions)
     let depth = 0;
     let balanced = true;
     for (let i = 0; i < inner.length; i++) {
@@ -537,7 +675,7 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
     condition = inner;
   }
 
-  // Support leading operators used by some Neto templates: "or X or Y", "and X and Y"
+  // Support leading operators used by some Neto templates
   condition = condition.replace(/^or\s+/i, "").replace(/^and\s+/i, "").trim();
 
   // Logical OR / AND — split on word boundaries only
@@ -548,12 +686,49 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
   if (andParts.length > 1) return andParts.every((part) => evaluateCondition(part, ctx));
 
   // NOT / !
-  if (condition.startsWith("!") || condition.toUpperCase().startsWith("NOT ")) {
+  if (condition.startsWith("!") || /^NOT\s+/i.test(condition)) {
     const inner = condition.replace(/^!|^NOT\s+/i, "").trim();
     return !evaluateCondition(inner, ctx);
   }
 
-  // Comparison operators — use a more specific regex that avoids matching inside quoted strings
+  // "contains" operator: field contains 'value'
+  const containsMatch = condition.match(/^(.+?)\s+contains\s+['"]([^'"]*)['"]\s*$/i);
+  if (containsMatch) {
+    const left = String(resolveConditionOperand(containsMatch[1], ctx) || "");
+    return left.toLowerCase().includes(containsMatch[2].toLowerCase());
+  }
+
+  // "starts_with" operator
+  const startsMatch = condition.match(/^(.+?)\s+starts_with\s+['"]([^'"]*)['"]\s*$/i);
+  if (startsMatch) {
+    const left = String(resolveConditionOperand(startsMatch[1], ctx) || "");
+    return left.toLowerCase().startsWith(startsMatch[2].toLowerCase());
+  }
+
+  // "ends_with" operator
+  const endsMatch = condition.match(/^(.+?)\s+ends_with\s+['"]([^'"]*)['"]\s*$/i);
+  if (endsMatch) {
+    const left = String(resolveConditionOperand(endsMatch[1], ctx) || "");
+    return left.toLowerCase().endsWith(endsMatch[2].toLowerCase());
+  }
+
+  // "IN" operator: field IN 'val1,val2,val3'
+  const inMatch = condition.match(/^(.+?)\s+IN\s+['"]([^'"]*)['"]\s*$/i);
+  if (inMatch) {
+    const left = String(resolveConditionOperand(inMatch[1], ctx) || "");
+    const values = inMatch[2].split(",").map(v => v.trim().toLowerCase());
+    return values.includes(left.toLowerCase());
+  }
+
+  // "NOT IN" operator
+  const notInMatch = condition.match(/^(.+?)\s+NOT\s+IN\s+['"]([^'"]*)['"]\s*$/i);
+  if (notInMatch) {
+    const left = String(resolveConditionOperand(notInMatch[1], ctx) || "");
+    const values = notInMatch[2].split(",").map(v => v.trim().toLowerCase());
+    return !values.includes(left.toLowerCase());
+  }
+
+  // Comparison operators
   const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>=|<=|>|<)\s+(.+)$/i) ||
                     condition.match(/^(.+?)\s*(!=|==|>=|<=|>|<)\s*(.+)$/);
   if (compMatch) {
@@ -586,16 +761,13 @@ function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
 
 /** Split a condition string by a logical operator (AND/OR), respecting parentheses */
 function splitLogicalOp(condition: string, op: string): string[] {
-  const regex = new RegExp(`\\s+${op}\\s+`, "gi");
   const parts: string[] = [];
   let depth = 0;
   let lastIndex = 0;
-  let match;
   
-  // Reset regex
   const testRegex = new RegExp(`\\s+${op}\\s+`, "gi");
+  let match;
   while ((match = testRegex.exec(condition)) !== null) {
-    // Check parenthesis depth at this position
     depth = 0;
     for (let i = 0; i < match.index; i++) {
       if (condition[i] === '(') depth++;
@@ -643,7 +815,7 @@ function resolveTagValue(tag: string, ctx: TemplateContext): any {
   return resolveField(cleaned, ctx);
 }
 
-// ── Process [%format type:'date' format:'...'%]value[%/format%] ──
+// ── Process [%format type:'...' ...%]value[%/format%] ──
 function processFormatBlocks(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%format\s+([^\]]*?)%\]([\s\S]*?)\[%\/format%\]/gi, (_, attrs: string, content: string) => {
     const typeMatch = attrs.match(/type:'(\w+)'/i);
@@ -659,7 +831,6 @@ function processFormatBlocks(template: string, ctx: TemplateContext): string {
         if (fmt === "#D") return now.getDate().toString();
         if (fmt === "#M") return (now.getMonth() + 1).toString();
         if (fmt === "#Y") return now.getFullYear().toString();
-        // #Y-#M-#d format
         if (fmt.includes("#Y") || fmt.includes("#M") || fmt.includes("#d")) {
           return fmt
             .replace("#Y", now.getFullYear().toString())
@@ -692,9 +863,15 @@ function processFormatBlocks(template: string, ctx: TemplateContext): string {
       return content.trim();
     }
 
-    if (type === "percent") {
+    if (type === "percent" || type === "percentage") {
       const num = parseFloat(content.trim());
       if (!isNaN(num)) return `${Math.round(num)}%`;
+      return content.trim();
+    }
+
+    if (type === "number") {
+      const num = parseFloat(content.trim());
+      if (!isNaN(num)) return num.toLocaleString();
       return content.trim();
     }
 
@@ -707,6 +884,15 @@ function processFormatBlocks(template: string, ctx: TemplateContext): string {
       if (maxLenMatch) {
         const maxLen = parseInt(maxLenMatch[1]);
         if (result.length > maxLen) result = result.slice(0, maxLen) + "…";
+      }
+      const wordLenMatch = attrs.match(/wordlength:'(\d+)'/i);
+      if (wordLenMatch) {
+        const wLen = parseInt(wordLenMatch[1]);
+        const words = result.split(/\s+/);
+        if (words.length > wLen) result = words.slice(0, wLen).join(" ") + "…";
+      }
+      if (/nl2br:'1'/i.test(attrs)) {
+        result = result.replace(/\n/g, "<br>");
       }
       return result;
     }
@@ -776,12 +962,14 @@ function processFormatText(template: string): string {
       const maxLen = parseInt(maxLenMatch[1]);
       if (result.length > maxLen) result = result.slice(0, maxLen) + "…";
     }
-    // Handle trim:'LE2R' and wordlength:'N' — truncate by word
     const wordLenMatch = attrs.match(/wordlength:'(\d+)'/i);
     if (wordLenMatch) {
       const wLen = parseInt(wordLenMatch[1]);
       const words = result.split(/\s+/);
       if (words.length > wLen) result = words.slice(0, wLen).join(" ") + "…";
+    }
+    if (/nl2br:'1'/i.test(attrs)) {
+      result = result.replace(/\n/g, "<br>");
     }
     return result;
   });
@@ -826,10 +1014,12 @@ function processUrlInfo(template: string, ctx: TemplateContext): string {
     const defaultVal = defaultMatch?.[1] || "";
     
     switch (name) {
-      case "page_title": return ctx.store?.name || defaultVal || "Store";
+      case "page_title": return ctx.content?.title || ctx.store?.name || defaultVal || "Store";
       case "page_heading": return ctx.content?.title || defaultVal || "";
       case "meta_description": return ctx.store?.seo_description || ctx.content?.seo_description || defaultVal || "";
       case "meta_keywords": return ctx.content?.seo_keywords || defaultVal || "";
+      case "page_type": return ctx.pageType || defaultVal || "content";
+      case "canonical_url": return ctx.baseUrl || ctx.basePath || defaultVal || "";
       default: return defaultVal;
     }
   });
@@ -869,11 +1059,18 @@ function resolveUrlTag(attrs: string, base: string, basePath?: string): string {
       break;
     case "contact": url += "/contact-us"; break;
     case "wishlist": url += "/wishlist"; break;
+    case "compare": url += "/compare"; break;
     case "home": url = prefix || "/"; break;
     case "products": url += "/products"; break;
+    case "search": url += "/products"; break;
+    case "login": url += "/login"; break;
+    case "register": url += "/register"; break;
+    case "blog": url += "/blog"; break;
+    case "store-finder": url += "/store-finder"; break;
     default: url += "/" + page;
   }
   if (type === "write_review") url = `${prefix}/account/write_review`;
+  if (type === "track_order") url = `${prefix}/track-order`;
   if (qs) url += "?" + qs;
   return url;
 }
@@ -914,8 +1111,12 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
         html = html.replace(/\[@name@\]/gi, cat.name || "");
         html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
+        html = html.replace(/\[@slug@\]/gi, cat.slug || "");
+        html = html.replace(/\[@description@\]/gi, cat.description || "");
         html = html.replace(/\[@css_class@\]/gi, cat.css_class || "");
         html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
+        html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
+        html = html.replace(/\[@count@\]/gi, String(cat.product_count || 0));
         
         if (nextLevelHtml) {
           html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "$1");
@@ -974,6 +1175,8 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
       html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
       html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
       html = html.replace(/\[@slug@\]/gi, cat.slug || "");
+      html = html.replace(/\[@description@\]/gi, cat.description || "");
+      html = html.replace(/\[@count@\]/gi, String(cat.product_count || 0));
       html = html.replace(/alt="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/gi, `alt="${(cat.name || "Category").replace(/"/g, "&quot;")}"`);
       html = processAssetUrl(html, ctx, cat);
       return html;
@@ -1002,7 +1205,6 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
 
 /**
  * Collapse [%asset_url ...%]...[%/asset_url%] blocks into self-closing placeholders
- * so that nested [%param default%] inside them doesn't break outer param extraction.
  */
 function collapseAssetUrlBlocks(body: string): string {
   return body.replace(
@@ -1015,11 +1217,10 @@ function collapseAssetUrlBlocks(body: string): string {
 function processAssetUrl(template: string, ctx: TemplateContext, item?: any): string {
   let result = template;
   
-  // Block variant FIRST (longer match): [%asset_url ...%]...[%END asset_url%]
+  // Block variant FIRST
   result = result.replace(
     /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
     (_, attrs: string) => {
-      // Resolve any [@...@] tags in the attrs
       const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
         if (item && item[field] !== undefined) return String(item[field]);
         return String(resolveField(field, ctx) || "");
@@ -1028,7 +1229,7 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
     }
   );
   
-  // Self-closing variant: [%asset_url .../%]
+  // Self-closing variant
   result = result.replace(
     /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/\s*%\]/gi,
     (_, attrs: string) => {
@@ -1075,6 +1276,7 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
   switch (type.toLowerCase()) {
     case "adw":
     case "ad":
+    case "advert":
       if (item?.image_url) return resolveStorageUrl(item.image_url);
       const ad = (ctx.adverts || []).find(a => a.id === id || a.ad_id === id);
       if (ad?.image_url) return resolveStorageUrl(ad.image_url);
@@ -1085,17 +1287,20 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
       if (cat?.image_url) return resolveStorageUrl(cat.image_url);
       return defaultUrl || "/placeholder.svg";
     case "product":
-      // First check item context (current product in loop)
       if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
       if (item?.image_url) return item.image_url;
-      // Look up by ID
       const prodById = (ctx.products || []).find(p => p.id === id);
       if (prodById?.images?.[0]) return resolveStorageUrl(prodById.images[0]);
-      // Look up by SKU (Maropost themes use SKU as the id)
       const prodBySku = (ctx.products || []).find(p => p.sku === id);
       if (prodBySku?.images?.[0]) return resolveStorageUrl(prodBySku.images[0]);
       return defaultUrl || "/placeholder.svg";
+    case "logo":
+      return ctx.store?.logo_url || defaultUrl || "";
     default:
+      // Check if the id references a theme asset
+      if (id && ctx.themeAssetBaseUrl) {
+        return `${ctx.themeAssetBaseUrl}/${id}`;
+      }
       return defaultUrl || "";
   }
 }
@@ -1119,7 +1324,7 @@ function processFormatCurrency(template: string, ctx: TemplateContext): string {
 
 // ── Process [%format type:'percent'%]value[%/format%] ──
 function processFormatPercent(template: string): string {
-  return template.replace(/\[%(?:format|FORMAT)\s+type:'percent'%\]([\s\S]*?)\[%\/(?:format|FORMAT)%\]/gi, (_, content: string) => {
+  return template.replace(/\[%(?:format|FORMAT)\s+type:'percent(?:age)?'%\]([\s\S]*?)\[%\/(?:format|FORMAT)%\]/gi, (_, content: string) => {
     const value = content.trim();
     const num = parseFloat(value);
     if (!isNaN(num)) return `${Math.round(num)}%`;
@@ -1129,7 +1334,11 @@ function processFormatPercent(template: string): string {
 
 // ── Process [%SITE_VALUE id:'counter'%]...[%/SITE_VALUE%] — accumulator/counter blocks ──
 function processSiteValueBlocks(template: string): string {
-  let result = template.replace(/\[%site_value[^\]]*\/%\]/gi, "");
+  // Only strip site_value LOAD points here — accumulator SET blocks are handled in item loops
+  let result = template.replace(/\[%site_value[^\]]*type:'load'[^\]]*\/%\]/gi, "");
+  // Strip remaining load-only references
+  result = result.replace(/\[%site_value[^\]]*\/%\]/gi, "");
+  // Strip SET blocks that weren't processed by item loops
   result = result.replace(/\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi, "");
   return result;
 }
@@ -1151,6 +1360,9 @@ function processDataBlocks(template: string, item?: any): string {
         case "!=": match = itemValue !== value; break;
         case ">": match = Number(itemValue) > Number(value); break;
         case "<": match = Number(itemValue) < Number(value); break;
+        case ">=": match = Number(itemValue) >= Number(value); break;
+        case "<=": match = Number(itemValue) <= Number(value); break;
+        case "contains": match = itemValue.toLowerCase().includes(value.toLowerCase()); break;
         default: match = itemValue === value;
       }
       return match ? content : "";
@@ -1171,7 +1383,7 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
   // [%tracking_code%]
   result = result.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
   
-  // [%site_value%] blocks
+  // [%site_value%] blocks — MUST run AFTER item loops that accumulate counters
   result = processSiteValueBlocks(result);
   
   // [%content_zone%]
@@ -1201,6 +1413,15 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
   // [%thumb_list%]
   result = processThumbList(result, ctx);
   
+  // [%search%] — search form stub
+  result = processSearchBlock(result, ctx);
+  
+  // [%login%] — login form stub
+  result = processLoginBlock(result, ctx);
+  
+  // [%form%] — form stubs
+  result = processFormBlocks(result, ctx);
+  
   // [%paging%]
   result = result.replace(/\[%paging[^\]]*%\]([\s\S]*?)\[%\/paging%\]/gi, "");
   
@@ -1208,6 +1429,49 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
   result = result.replace(/\[%param\s+\*?\w+%\]([\s\S]*?)\[%\/param%\]/gi, "");
   
   return result;
+}
+
+// ── Process [%search%] — search form ──
+function processSearchBlock(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%search\s*([^\]]*?)%\]([\s\S]*?)\[%\/search%\]/gi, (_, _attrs: string, body: string) => {
+    // Just render the body with search URL resolved
+    let result = body;
+    result = result.replace(/\[@search_url@\]/gi, `${ctx.basePath || ""}/products`);
+    result = result.replace(/\[@search_query@\]/gi, ctx.queryParams?.q || "");
+    return result;
+  });
+}
+
+// ── Process [%login%] — login form stub ──
+function processLoginBlock(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%login\s*([^\]]*?)%\]([\s\S]*?)\[%\/login%\]/gi, (_, _attrs: string, body: string) => {
+    let result = body;
+    result = result.replace(/\[@login_url@\]/gi, `${ctx.basePath || ""}/login`);
+    result = result.replace(/\[@register_url@\]/gi, `${ctx.basePath || ""}/register`);
+    return result;
+  });
+}
+
+// ── Process [%form%] — generic form blocks ──
+function processFormBlocks(template: string, ctx: TemplateContext): string {
+  return template.replace(/\[%form\s+([^\]]*?)%\]([\s\S]*?)\[%\/form%\]/gi, (_, attrs: string, body: string) => {
+    const typeMatch = attrs.match(/type:'([^']+)'/i);
+    const type = typeMatch?.[1] || "contact";
+    let result = body;
+    
+    switch (type) {
+      case "newsletter":
+      case "subscribe":
+        result = result.replace(/\[@form_action@\]/gi, "#");
+        break;
+      case "contact":
+        result = result.replace(/\[@form_action@\]/gi, `${ctx.basePath || ""}/contact-us`);
+        break;
+      default:
+        result = result.replace(/\[@form_action@\]/gi, "#");
+    }
+    return result;
+  });
 }
 
 // ── Process breadcrumb blocks ──
@@ -1218,11 +1482,125 @@ function processBreadcrumb(template: string, ctx: TemplateContext): string {
     
     let html = "";
     if (headerMatch) html += headerMatch[1];
-    html = html.replace(/\[@config:home_url@\]/g, ctx.baseUrl || "/");
+    html = html.replace(/\[@config:home_url@\]/g, ctx.basePath || ctx.baseUrl || "/");
     if (footerMatch) html += footerMatch[1];
     
     return html;
   });
+}
+
+// ── Render items with a template (shared between advert/thumb_list) ──
+function renderItemsWithTemplate(
+  items: Record<string, any>[],
+  itemTemplate: string,
+  headerHtml: string | null,
+  footerHtml: string | null,
+  ctx: TemplateContext
+): string {
+  const counterHtml: string[] = [];
+  let itemsHtml = "";
+
+  if (itemTemplate) {
+    items.forEach((item, idx) => {
+      let rendered = itemTemplate;
+      
+      // Replace all [@field@] tags with item values
+      rendered = rendered.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
+        if (field === "count") return String(idx);
+        if (field === "index") return String(idx);
+        if (field === "total_showing") return String(items.length);
+        if (item[field] !== undefined && item[field] !== null) return String(item[field]);
+        if (field.startsWith("config:") || field.startsWith("CONFIG:")) {
+          return resolveConfig(field.replace(/^config:/i, ""), ctx);
+        }
+        const ctxVal = resolveField(field, ctx);
+        return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
+      });
+      
+      // Process format blocks after field resolution
+      rendered = processFormatCurrency(rendered, ctx);
+      rendered = processFormatPercent(rendered);
+      rendered = processFormatText(rendered);
+      rendered = processFormatBlocks(rendered, ctx);
+      
+      // Process asset_url tags within item template
+      rendered = processAssetUrl(rendered, ctx, item);
+      
+      // Process DATA blocks
+      rendered = processDataBlocks(rendered, item);
+      
+      // Process nohtml blocks
+      rendered = processNoHtml(rendered);
+      
+      // Process url_encode blocks
+      rendered = processUrlEncode(rendered);
+      
+      // Process inline conditionals
+      rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
+      
+      // Clean up per-item template tags
+      rendered = processSetAndWhile(rendered);
+      rendered = processCacheBlocks(rendered);
+      rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
+        return content
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      });
+      rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
+      rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
+      rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
+      
+      // Extract and accumulate SITE_VALUE counter content
+      const svRegex = /\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi;
+      let svMatch;
+      while ((svMatch = svRegex.exec(rendered)) !== null) {
+        let counterItem = svMatch[1];
+        counterItem = counterItem.replace(/\[@(\w+)@\]/gi, (__, f: string) => {
+          if (f === "count") return String(idx);
+          if (item[f] !== undefined) return String(item[f]);
+          return "";
+        });
+        counterItem = processDataBlocks(counterItem, { ...item, count: idx });
+        counterItem = processItemConditionals(counterItem, item, idx, items.length, ctx);
+        counterHtml.push(counterItem);
+      }
+      // Strip SITE_VALUE blocks from rendered output
+      rendered = rendered.replace(/\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi, "");
+      rendered = rendered.replace(/\[%site_value[^\]]*\/%\]/gi, "");
+      
+      // Clean remaining unresolved tags in item
+      rendered = rendered.replace(/\[@[\w:.]+@\]/g, "");
+      
+      itemsHtml += rendered;
+    });
+  }
+
+  // Build final HTML with header, items, footer
+  let html = "";
+  
+  if (headerHtml) {
+    let h = headerHtml;
+    h = h.replace(/\[@total_showing@\]/gi, String(items.length));
+    // Inject counter HTML into site_value load point
+    h = h.replace(/\[%site_value[^\]]*\/%\]/gi, counterHtml.join(""));
+    h = processInlineConditionals(h, items.length, ctx);
+    html += h;
+  }
+  
+  html += itemsHtml;
+  
+  if (footerHtml) {
+    let f = footerHtml;
+    f = f.replace(/\[@total_showing@\]/gi, String(items.length));
+    f = f.replace(/\[%site_value[^\]]*\/%\]/gi, counterHtml.join(""));
+    f = processInlineConditionals(f, items.length, ctx);
+    html += f;
+  }
+  
+  return html;
 }
 
 // ── Process [%advert%] blocks — the core carousel/product ad renderer ──
@@ -1238,14 +1616,12 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     const limit = parseInt(limitMatch?.[1] || "10");
     const adGroup = adGroupMatch?.[1] || "";
     
-    // Get items based on type
     let items: Record<string, any>[] = [];
     
     if (type === "product") {
       const bp = ctx.basePath || "";
       items = (ctx.products || []).slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
     } else {
-      // Text/banner adverts — filter by ad_group if specified
       let filteredAdverts = ctx.adverts || [];
       if (adGroup) {
         filteredAdverts = filteredAdverts.filter(a => (a.ad_group || a.placement || "") === adGroup);
@@ -1253,27 +1629,22 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       items = filteredAdverts.slice(0, limit).map((ad, idx) => buildMaropostAdvertItem(ad, idx));
     }
     
-    // Collapse nested asset_url blocks so param extraction doesn't break
     const processedBody = collapseAssetUrlBlocks(body);
     
-    // Extract param blocks from the advert body
     const headerMatch = processedBody.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
     const footerMatch = processedBody.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
     const bodyMatch = processedBody.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
-    // Resolve body template: if no *body param, use theme template file
     let itemTemplate = bodyMatch?.[1] || "";
     if (!itemTemplate && templateName) {
       itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
     }
     
-    // For product type without a template, try loading the theme's thumb template
     if (!itemTemplate && type === "product") {
       itemTemplate = resolveThemeTemplate("template", { ...ctx, themeFiles: filterThemeFilesByPath(ctx.themeFiles || {}, "thumbs/product") }) 
         || resolveThemeTemplate("thumbs/product/template", ctx)
         || "";
     }
-    // Ultimate fallback: default product card
     if (!itemTemplate && type === "product") {
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
@@ -1291,113 +1662,13 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     
     if (items.length === 0 && !headerMatch) return "";
     
-    // Render items and collect counter HTML
-    const counterHtml: string[] = [];
-    let itemsHtml = "";
-
-    if (itemTemplate) {
-      items.forEach((item, idx) => {
-        let rendered = itemTemplate;
-        
-        // Replace all [@field@] tags with item values
-        rendered = rendered.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
-          if (field === "count") return String(idx);
-          if (field === "index") return String(idx);
-          if (field === "total_showing") return String(items.length);
-          if (item[field] !== undefined && item[field] !== null) return String(item[field]);
-          // Try config fields
-          if (field.startsWith("config:") || field.startsWith("CONFIG:")) {
-            return resolveConfig(field.replace(/^config:/i, ""), ctx);
-          }
-          const ctxVal = resolveField(field, ctx);
-          return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
-        });
-        
-        // Process format blocks after field resolution
-        rendered = processFormatCurrency(rendered, ctx);
-        rendered = processFormatPercent(rendered);
-        rendered = processFormatText(rendered);
-        rendered = processFormatBlocks(rendered, ctx);
-        
-        // Process asset_url tags within item template
-        rendered = processAssetUrl(rendered, ctx, item);
-        
-        // Process DATA blocks
-        rendered = processDataBlocks(rendered, item);
-        
-        // Process inline conditionals
-        rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
-        
-        // Clean up per-item template tags
-        rendered = processSetAndWhile(rendered);
-        rendered = processCacheBlocks(rendered);
-        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
-          return content
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-        });
-        rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
-        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
-        rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
-        
-        // Extract and accumulate SITE_VALUE counter content
-        const svRegex = /\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi;
-        let svMatch;
-        while ((svMatch = svRegex.exec(rendered)) !== null) {
-          let counterItem = svMatch[1];
-          // Resolve item fields in counter
-          counterItem = counterItem.replace(/\[@(\w+)@\]/gi, (__, f: string) => {
-            if (f === "count") return String(idx);
-            if (item[f] !== undefined) return String(item[f]);
-            return "";
-          });
-          // Process DATA blocks in counter
-          counterItem = processDataBlocks(counterItem, { ...item, count: idx });
-          // Process conditionals in counter
-          counterItem = processItemConditionals(counterItem, item, idx, items.length, ctx);
-          counterHtml.push(counterItem);
-        }
-        // Strip SITE_VALUE blocks from rendered output
-        rendered = rendered.replace(/\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi, "");
-        rendered = rendered.replace(/\[%site_value[^\]]*\/%\]/gi, "");
-        
-        // Clean remaining unresolved tags in item
-        rendered = rendered.replace(/\[@[\w:.]+@\]/g, "");
-        
-        itemsHtml += rendered;
-      });
-    }
-
-    // Build final HTML with header, items, footer
-    let html = "";
-    
-    // Render header with total_showing and counter injection
-    if (headerMatch) {
-      let headerHtml = headerMatch[1];
-      headerHtml = headerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
-      
-      // Inject counter HTML into site_value load point
-      headerHtml = headerHtml.replace(/\[%site_value[^\]]*\/%\]/gi, counterHtml.join(""));
-      
-      // Process conditionals within header
-      headerHtml = processInlineConditionals(headerHtml, items.length, ctx);
-      html += headerHtml;
-    }
-    
-    html += itemsHtml;
-    
-    // Render footer
-    if (footerMatch) {
-      let footerHtml = footerMatch[1];
-      footerHtml = footerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
-      footerHtml = processInlineConditionals(footerHtml, items.length, ctx);
-      html += footerHtml;
-    }
-    
-    return html;
+    return renderItemsWithTemplate(
+      items,
+      itemTemplate,
+      headerMatch?.[1] || null,
+      footerMatch?.[1] || null,
+      ctx
+    );
   });
 }
 
@@ -1406,11 +1677,9 @@ function processItemConditionals(template: string, item: any, idx: number, total
   let result = template;
   let safety = 0;
 
-  // Build a merged context with item fields + special fields
   const mergedCtx: TemplateContext = {
     ...(ctx || {}),
   };
-  // Spread item fields onto merged context for field resolution
   if (item) {
     for (const [key, value] of Object.entries(item)) {
       (mergedCtx as any)[key] = value;
@@ -1437,7 +1706,6 @@ function processItemConditionals(template: string, item: any, idx: number, total
   while (result.includes("[%if ") && safety++ < 50) {
     const prev = result;
     result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      // Split by elseif/else
       const segments: string[] = [];
       const conditions: (string | null)[] = [cond];
       let remaining = body;
@@ -1465,7 +1733,7 @@ function processItemConditionals(template: string, item: any, idx: number, total
       
       for (let i = 0; i < segments.length && i < conditions.length; i++) {
         const c = conditions[i];
-        if (c === null) return segments[i]; // else branch
+        if (c === null) return segments[i];
         if (evaluateCondition(c, mergedCtx)) return segments[i];
       }
       return "";
@@ -1483,7 +1751,6 @@ function processInlineConditionals(template: string, totalShowing: number, ctx?:
 
   const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
 
-  // Pre-resolve [@total_showing@] and similar
   result = result.replace(/\[@total_showing@\]/gi, String(totalShowing));
 
   while (result.includes("[%if ") && safety++ < 30) {
@@ -1533,6 +1800,7 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     const typeMatch = attrs.match(/type:'(\w+)'/i);
     const limitMatch = attrs.match(/limit:'([^']+)'/i);
     const templateMatch = attrs.match(/template:'([^']*)'/i);
+    const sortMatch = attrs.match(/sort:'([^']*)'/i);
     const type = typeMatch?.[1] || "products";
     const limitStr = limitMatch?.[1] || "20";
     const limit = parseInt(limitStr) || 20;
@@ -1544,31 +1812,39 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     const bodyMatch = processedBody.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
     let items: Record<string, any>[] = [];
-    if (type === "products") {
+    if (type === "products" || type === "product") {
       const bp = ctx.basePath || "";
-      items = (ctx.products || []).slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
-    } else if (type === "content") {
-      return "";
-    } else if (type === "content_reviews") {
+      let prods = [...(ctx.products || [])];
+      // Sort if specified
+      const sort = sortMatch?.[1] || "";
+      if (sort === "newest" || sort === "date_desc") {
+        prods.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+      } else if (sort === "price_asc") {
+        prods.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+      } else if (sort === "price_desc") {
+        prods.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+      } else if (sort === "name" || sort === "name_asc") {
+        prods.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+      }
+      items = prods.slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
+    } else if (type === "content" || type === "content_reviews") {
       return "";
     }
     
     if (items.length === 0) return "";
     
-    // Resolve item template: body param or theme template file
+    // Resolve item template
     let itemTemplate = bodyMatch?.[1] || "";
     if (!itemTemplate && templateName) {
       itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
     }
     
-    // Try theme's thumb template
-    if (!itemTemplate && type === "products") {
+    if (!itemTemplate && (type === "products" || type === "product")) {
       itemTemplate = resolveThemeTemplate("template", { ...ctx, themeFiles: filterThemeFilesByPath(ctx.themeFiles || {}, "thumbs/product") })
         || resolveThemeTemplate("thumbs/product/template", ctx)
         || "";
     }
-    // Ultimate fallback
-    if (!itemTemplate && type === "products") {
+    if (!itemTemplate && (type === "products" || type === "product")) {
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
@@ -1583,56 +1859,13 @@ function processThumbList(template: string, ctx: TemplateContext): string {
         </div>`;
     }
     
-    let html = "";
-    if (headerMatch) html += headerMatch[1];
-    
-    if (itemTemplate) {
-      items.forEach((item, idx) => {
-        let rendered = itemTemplate;
-        
-        // Replace [@field@] tags
-        rendered = rendered.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
-          if (field === "count") return String(idx);
-          if (field === "index") return String(idx);
-          if (field === "total_showing") return String(items.length);
-          if (field.startsWith("config:") || field.startsWith("CONFIG:")) {
-            return resolveConfig(field.replace(/^config:/i, ""), ctx);
-          }
-          if (item[field] !== undefined && item[field] !== null) return String(item[field]);
-          const ctxVal = resolveField(field, ctx);
-          return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
-        });
-        
-        rendered = processFormatCurrency(rendered, ctx);
-        rendered = processFormatPercent(rendered);
-        rendered = processFormatText(rendered);
-        rendered = processFormatBlocks(rendered, ctx);
-        rendered = processAssetUrl(rendered, ctx, item);
-        rendered = processDataBlocks(rendered, item);
-        rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
-        rendered = processSetAndWhile(rendered);
-        rendered = processCacheBlocks(rendered);
-        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
-          return content
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#39;");
-        });
-        rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
-        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
-        rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
-        // Clean remaining unresolved tags
-        rendered = rendered.replace(/\[@[\w:.]+@\]/g, "");
-        
-        html += rendered;
-      });
-    }
-    
-    if (footerMatch) html += footerMatch[1];
-    
-    return html;
+    return renderItemsWithTemplate(
+      items,
+      itemTemplate,
+      headerMatch?.[1] || null,
+      footerMatch?.[1] || null,
+      ctx
+    );
   });
 }
 
@@ -1641,7 +1874,7 @@ function processBlocks(template: string, ctx: TemplateContext): string {
   const blockRegex = /\[%(\w+)%\]([\s\S]*?)\[%\/\1%\]/g;
 
   return template.replace(blockRegex, (match, blockName: string, innerTemplate: string) => {
-    const systemBlocks = ["ntheme_asset", "format", "nohtml", "filter", "parse", "breadcrumb", "advert", "thumb_list", "paging", "param", "cdn_asset", "ASSET_url", "asset_url", "if", "menu", "content_menu", "cache", "escape", "SITE_VALUE", "site_value", "content_zone"];
+    const systemBlocks = ["ntheme_asset", "format", "nohtml", "filter", "parse", "breadcrumb", "advert", "thumb_list", "paging", "param", "cdn_asset", "ASSET_url", "asset_url", "if", "menu", "content_menu", "cache", "escape", "SITE_VALUE", "site_value", "content_zone", "search", "login", "form", "url_encode"];
     if (systemBlocks.includes(blockName) || systemBlocks.includes(blockName.toLowerCase())) return match;
     
     let items: Record<string, any>[] = [];
@@ -1654,10 +1887,10 @@ function processBlocks(template: string, ctx: TemplateContext): string {
       case "specific": case "specifics": items = ctx.specifics || []; break;
       case "pricing_tier": case "pricing_tiers": items = ctx.pricing_tiers || []; break;
       case "images":
-        items = (ctx.product?.images || []).map((url: string, idx: number) => ({ url, index: idx + 1 }));
+        items = (ctx.product?.images || []).map((url: string, idx: number) => ({ url: resolveStorageUrl(url), image_url: resolveStorageUrl(url), index: idx + 1, count: idx }));
         break;
       case "tags":
-        items = (ctx.product?.tags || []).map((tag: string) => ({ name: tag }));
+        items = (ctx.product?.tags || []).map((tag: string, idx: number) => ({ name: tag, index: idx, count: idx }));
         break;
       case "adverts": items = ctx.adverts || []; break;
       case "thumb": case "thumblist": items = ctx.thumblist || []; break;
@@ -1667,7 +1900,9 @@ function processBlocks(template: string, ctx: TemplateContext): string {
     if (items.length === 0) return "";
 
     return items.map((item, index) => {
-      return innerTemplate.replace(/\[@(\w+)(?:\|(\w+))?@\]/g, (__, field, format) => {
+      let rendered = innerTemplate;
+      // First resolve tags
+      rendered = rendered.replace(/\[@(\w+)(?:\|(\w+))?@\]/g, (__, field, format) => {
         if (field === "index") return String(index + 1);
         if (field === "count") return String(items.length);
         if (field === "first") return index === 0 ? "true" : "";
@@ -1676,6 +1911,17 @@ function processBlocks(template: string, ctx: TemplateContext): string {
         if (val === undefined || val === null) return "";
         return format ? applyFormat(val, format) : String(val);
       });
+      // Process conditionals within block items
+      const mergedCtx: TemplateContext = { ...ctx };
+      for (const [k, v] of Object.entries(item)) {
+        (mergedCtx as any)[k] = v;
+      }
+      (mergedCtx as any).index = index + 1;
+      (mergedCtx as any).count = items.length;
+      rendered = processMaropostConditionals(rendered, mergedCtx);
+      // Process asset_url
+      rendered = processAssetUrl(rendered, ctx, item);
+      return rendered;
     }).join("");
   });
 }
@@ -1706,6 +1952,7 @@ function normalizeTemplateSyntax(template: string): string {
   result = result.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
   // [%/if%%] → [%/if%]
   result = result.replace(/%\]%\]/g, "%]");
+  // Normalize [%IF → [%if (case insensitive handling is already in regex, but normalize for consistency)
   return result;
 }
 
@@ -1733,7 +1980,7 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining system tags
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form)[^\]]*%\]/gi, "");
   // Remove IN_WISHLIST blocks entirely
   result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   // Remove remaining block tags
@@ -1741,8 +1988,9 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove leftover [@...@] value tags
   result = result.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
   // Remove leftover [%if%]...[%/if%] that couldn't be resolved
-  // (safety: only small blocks to avoid eating large sections)
   result = result.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
+  // Remove leftover [%param%] blocks
+  result = result.replace(/\[%param\s+[^\]]*%\]([\s\S]*?)\[%\/param%\]/gi, "");
   return result;
 }
 
@@ -1755,7 +2003,7 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 1. Strip comments
   result = stripComments(result);
 
-  // 1b. Normalize syntax variants (END tags, spaced closers, double percents)
+  // 1b. Normalize syntax variants
   result = normalizeTemplateSyntax(result);
 
   // 2. Strip cache wrappers
@@ -1801,7 +2049,7 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 12. Set/While stubs
   result = processSetAndWhile(result);
 
-  // 13. System tags (breadcrumb, advert, thumb_list, content_menu, etc.)
+  // 13. System tags (breadcrumb, advert, thumb_list, content_menu, search, login, form, etc.)
   result = processSystemTags(result, ctx);
 
   // 14. Maropost conditionals [%if%]...[%/if%]
@@ -1862,9 +2110,9 @@ export const SUPPORTED_BLOCKS = [
 ];
 
 export const SUPPORTED_FORMATS = [
-  "currency", "currency_no_symbol", "integer", "date", "datetime", "date_short",
+  "currency", "currency_no_symbol", "integer", "number", "decimal", "date", "datetime", "date_short",
   "uppercase", "lowercase", "capitalize", "url_encode", "strip_html",
-  "truncate_50", "truncate_100", "percentage", "json", "count", "first", "boolean",
+  "truncate_50", "truncate_100", "percentage", "json", "count", "first", "boolean", "nl2br",
 ];
 
 export const SUPPORTED_CONDITIONALS = [
@@ -1887,3 +2135,5 @@ export const EXAMPLE_TEMPLATES: Record<string, string> = {
   [%param *footer%]</div>[%/param%]
 [%/advert%]`,
 };
+
+export default renderTemplate;
