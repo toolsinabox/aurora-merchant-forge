@@ -148,11 +148,16 @@ export function buildIncludesMap(theme: ActiveTheme | null | undefined): Record<
   if (!theme) return {};
   const map: Record<string, string> = {};
   for (const f of theme.files) {
-    // Make all files available as includes by filename (without extension)
+    // Map by filename (without extension)
     const slug = f.file_name.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9-_]/g, "-");
     map[slug] = f.content || "";
-    // Also map by folder/filename for more specific includes
-    map[f.file_path?.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9-_/]/g, "-")] = f.content || "";
+    // Map by full file_path (with and without extension)
+    map[f.file_path] = f.content || "";
+    map[f.file_path.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9-_/]/g, "-")] = f.content || "";
+    // Map by folder/filename for legacy includes
+    const folderPath = `${f.folder}/${f.file_name}`;
+    map[folderPath] = f.content || "";
+    map[folderPath.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9-_/]/g, "-")] = f.content || "";
   }
   return map;
 }
