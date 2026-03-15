@@ -278,19 +278,31 @@ serve(async (req) => {
             }
           }
 
-          // Warehouse stock levels
+          // Warehouse stock levels — Maropost returns WarehouseQuantity as {WarehouseID, Quantity}
           if (p.WarehouseQuantity || p.WarehouseLocations) {
-            const whData = p.WarehouseLocations || p.WarehouseQuantity;
-            const warehouses = Array.isArray(whData) ? whData : (whData ? [whData] : []);
+            const whData = p.WarehouseQuantity || p.WarehouseLocations;
+            const warehouses = Array.isArray(whData) ? whData : (whData && typeof whData === "object" && whData.WarehouseID ? [whData] : []);
             for (const wh of warehouses) {
-              const whName = wh?.WarehouseName || wh?.Name || "Default";
+              if (!wh || typeof wh !== "object") continue;
+              const whId = wh?.WarehouseID;
+              const whName = wh?.WarehouseName || wh?.Name || (whId ? `Warehouse ${whId}` : "Default");
               const qty = toInt(wh?.Quantity || wh?.AvailableQuantity) || 0;
-              const { data: loc } = await supabase
+              // Try by name first, then create if needed
+              let loc: any = null;
+              const { data: existingLoc } = await supabase
                 .from("inventory_locations").select("id").eq("store_id", store_id).eq("name", whName).maybeSingle();
+              if (existingLoc) {
+                loc = existingLoc;
+              } else {
+                // Auto-create the warehouse location
+                const { data: newLoc } = await supabase
+                  .from("inventory_locations").insert({ store_id, name: whName, type: "warehouse" }).select("id").single();
+                loc = newLoc;
+              }
               if (loc?.id) {
                 await safe(supabase.from("inventory_stock").upsert({
                   store_id, product_id: productId, location_id: loc.id,
-                  quantity: qty, bin_location: wh?.BinLocation || wh?.PickZone || null,
+                  quantity: qty, bin_location: wh?.BinLocation || p.PickZone || null,
                 } as any, { onConflict: "product_id,location_id" }));
               }
             }
@@ -359,15 +371,22 @@ serve(async (req) => {
           }
 
           // Product relations — clear old then re-insert
+          // ⚠ Maropost nests as: UpsellProducts: [{UpsellProduct: [{SKU: "..."}]}]
           await safe(supabase.from("product_relations").delete().eq("product_id", productId).eq("store_id", store_id));
           for (const rel of [
-            { field: "CrossSellProducts", type: "cross_sell" },
-            { field: "UpsellProducts", type: "upsell" },
-            { field: "FreeGifts", type: "free_gift" },
+            { field: "CrossSellProducts", innerKey: "CrossSellProduct", type: "cross_sell" },
+            { field: "UpsellProducts", innerKey: "UpsellProduct", type: "upsell" },
+            { field: "FreeGifts", innerKey: "FreeGift", type: "free_gift" },
           ]) {
-            if (p[rel.field]) {
-              const relItems = Array.isArray(p[rel.field]) ? p[rel.field] : [p[rel.field]];
+            if (p[rel.field] && p[rel.field] !== "") {
+              let rawItems = p[rel.field];
+              // Unwrap outer array wrapper: [{UpsellProduct: [...]}] → [...]
+              if (Array.isArray(rawItems) && rawItems.length > 0 && rawItems[0]?.[rel.innerKey]) {
+                rawItems = rawItems[0][rel.innerKey];
+              }
+              const relItems = Array.isArray(rawItems) ? rawItems : [rawItems];
               for (const relItem of relItems) {
+                if (!relItem || relItem === "") continue;
                 const relSku = typeof relItem === "string" ? relItem : relItem?.SKU || relItem?.ParentSKU;
                 if (relSku) {
                   const { data: relProduct } = await supabase
@@ -588,11 +607,12 @@ serve(async (req) => {
             }
           }
 
-          // Communication logs
-          if (c.CustomerLog) {
-            const logs = Array.isArray(c.CustomerLog) ? c.CustomerLog : [c.CustomerLog];
+          // Communication logs — Maropost returns "CustomerLogs" (plural)
+          const custLogs = c.CustomerLogs || c.CustomerLog;
+          if (custLogs && custLogs !== "") {
+            const logs = Array.isArray(custLogs) ? custLogs : [custLogs];
             for (const log of logs) {
-              if (log && (log.Notes || log.Description || log.Subject)) {
+              if (log && typeof log === "object" && (log.Notes || log.Description || log.Subject)) {
                 await safe(supabase.from("customer_communications").insert({
                   customer_id: custId, store_id,
                   channel: log.Type || "note", direction: "inbound",
@@ -669,8 +689,25 @@ serve(async (req) => {
           const VALID_PAYMENT_STATUS = new Set(["pending", "paid", "refunded"]);
           
           const rawStatus = statusMap[o.Status] || statusMap[o.OrderStatus] || "pending";
-          const rawPayStatus = paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : "pending");
+          const rawPayStatus = paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : (o.DatePaid ? "paid" : "pending"));
           
+          // ⚠ CRITICAL: Maropost returns address fields as FLAT top-level fields
+          // NOT nested under ShipAddress/BillAddress objects!
+          const shipAddr = o.ShipAddress || {
+            ShipFirstName: o.ShipFirstName, ShipLastName: o.ShipLastName,
+            ShipStreetLine1: o.ShipStreetLine1, ShipStreetLine2: o.ShipStreetLine2,
+            ShipCity: o.ShipCity, ShipState: o.ShipState,
+            ShipPostCode: o.ShipPostCode, ShipCountry: o.ShipCountry,
+            ShipPhone: o.ShipPhone, ShipCompany: o.ShipCompany,
+          };
+          const billAddr = o.BillAddress || {
+            BillFirstName: o.BillFirstName, BillLastName: o.BillLastName,
+            BillStreetLine1: o.BillStreetLine1, BillStreetLine2: o.BillStreetLine2,
+            BillCity: o.BillCity, BillState: o.BillState,
+            BillPostCode: o.BillPostCode, BillCountry: o.BillCountry,
+            BillPhone: o.BillPhone, BillCompany: o.BillCompany,
+          };
+
           const orderData: Record<string, any> = {
             store_id,
             order_number: originalOrderNumber,
@@ -684,8 +721,8 @@ serve(async (req) => {
             total: grandTotal,
             items_count: lineItems.length,
             notes: o.InternalOrderNotes || o.CustomerOrderNotes || null,
-            shipping_address: o.ShipAddress || o.ShippingAddress ? JSON.stringify(o.ShipAddress || o.ShippingAddress) : null,
-            billing_address: o.BillAddress || o.BillingAddress ? JSON.stringify(o.BillAddress || o.BillingAddress) : null,
+            shipping_address: JSON.stringify(shipAddr),
+            billing_address: JSON.stringify(billAddr),
             order_channel: o.SalesChannel || o.Channel || "web",
             tags: o.Labels ? (Array.isArray(o.Labels) ? o.Labels : String(o.Labels).split(",").map((t: string) => t.trim()).filter(Boolean)) : [],
             created_at: sanitizeDate(o.DatePlaced || o.DateCreated || o.OrderDate) || new Date().toISOString(),
@@ -718,17 +755,12 @@ serve(async (req) => {
             if (cust) linkedCustomer = cust;
           }
 
-          // 4. Try building name from BillAddress fields
-          if (!linkedCustomer && (o.BillAddress || o.BillingAddress)) {
-            const ba = o.BillAddress || o.BillingAddress;
-            const baName = `${ba.FirstName || ""} ${ba.LastName || ba.Surname || ""}`.trim();
-            const baEmail = ba.Email || ba.EmailAddress || null;
-            if (baEmail) {
-              const { data: cust } = await supabase
-                .from("customers").select("id").eq("store_id", store_id).eq("email", baEmail).maybeSingle();
-              if (cust) linkedCustomer = cust;
-            }
-            if (!linkedCustomer && baName) {
+          // 4. Try building name from FLAT bill address fields (Maropost returns these at top level)
+          if (!linkedCustomer) {
+            const baFirstName = o.BillFirstName || (o.BillAddress && o.BillAddress.FirstName) || "";
+            const baLastName = o.BillLastName || (o.BillAddress && o.BillAddress.LastName) || "";
+            const baName = `${baFirstName} ${baLastName}`.trim();
+            if (baName) {
               const { data: cust } = await supabase
                 .from("customers").select("id").eq("store_id", store_id).eq("name", baName).maybeSingle();
               if (cust) linkedCustomer = cust;
@@ -787,15 +819,29 @@ serve(async (req) => {
                 }
               }
 
+              // ⚠ Maropost OrderLine may only have SKU+Quantity — look up product for title/price
+              let lineTitle = line.ProductName || line.ItemDescription || line.Description || null;
+              let lineUnitPrice = toFloat(line.UnitPrice);
+              
+              // If we found the product and are missing title/price, fill from product record
+              if (productId && (!lineTitle || lineUnitPrice === null)) {
+                const { data: prodInfo } = await supabase
+                  .from("products").select("title, price").eq("id", productId).single();
+                if (prodInfo) {
+                  if (!lineTitle) lineTitle = prodInfo.title;
+                  if (lineUnitPrice === null) lineUnitPrice = prodInfo.price;
+                }
+              }
+
               await safe(supabase.from("order_items").insert({
                 order_id: orderId, store_id,
                 product_id: productId,
                 variant_id: variantId,
-                title: line.ProductName || line.ItemDescription || line.Description || "Item",
+                title: lineTitle || lineSku || "Item",
                 sku: lineSku,
                 quantity: toInt(line.Quantity) || 1,
-                unit_price: toFloat(line.UnitPrice) || 0,
-                total: toFloat(line.LineTotal) || ((toFloat(line.UnitPrice) || 0) * (toInt(line.Quantity) || 1)),
+                unit_price: lineUnitPrice || 0,
+                total: toFloat(line.LineTotal) || ((lineUnitPrice || 0) * (toInt(line.Quantity) || 1)),
               } as any));
             }
           }
