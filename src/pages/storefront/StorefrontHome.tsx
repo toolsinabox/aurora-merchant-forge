@@ -128,7 +128,10 @@ export default function StorefrontHome() {
     const renderedHome = renderTemplate(homeTemplate.content, templateCtx);
     return (
       <ThemedStorefrontLayout storeName={store.name} extraContext={templateCtx}>
+        {/* Inject managed banners above template content */}
+        <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
         <div dangerouslySetInnerHTML={{ __html: renderedHome }} />
+        <AdvertBanner storeId={store.id} placement="homepage_bottom" basePath={basePath} />
       </ThemedStorefrontLayout>
     );
   }
