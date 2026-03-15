@@ -151,6 +151,22 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
+  // Build themeFiles map for [%load_template%] resolution
+  const themeFiles = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const f of theme.files) {
+      map[f.file_path] = f.content || "";
+      // Also map by folder/filename variants
+      map[`${f.folder}/${f.file_name}`] = f.content || "";
+      // And by includes-style paths (e.g., "headers/includes/head.template.html")
+      const parts = f.file_path.split("/");
+      if (parts.length > 1) {
+        map[parts.slice(0).join("/")] = f.content || "";
+      }
+    }
+    return map;
+  }, [theme.files]);
+
   const baseCtx: TemplateContext = useMemo(() => ({
     store: {
       name: store?.name || storeName || "Store",
@@ -159,20 +175,45 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
       ...(store || {}),
     },
     includes,
+    themeFiles,
+    baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
+    pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, extraContext]);
+  }), [store, storeName, includes, themeFiles, extraContext]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
 
-  const renderedHeader = useMemo(() => {
-    if (!headerFile?.content) return "";
-    return renderTemplate(headerFile.content, baseCtx);
+  // Render header — the Maropost header template contains <!DOCTYPE>, <html>, <head>, <body>
+  // We need to extract just the <body> content for rendering
+  const { headContent, bodyContent: renderedHeader } = useMemo(() => {
+    if (!headerFile?.content) return { headContent: "", bodyContent: "" };
+    const rendered = renderTemplate(headerFile.content, baseCtx);
+    
+    // Extract <head> content for CSS/meta injection
+    const headMatch = rendered.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+    const headContent = headMatch?.[1] || "";
+    
+    // Extract <body> content — everything after <body...>
+    const bodyMatch = rendered.match(/<body[^>]*>([\s\S]*$)/i);
+    let bodyContent = bodyMatch?.[1] || rendered;
+    
+    // Remove DOCTYPE, html, head tags if present at top level
+    bodyContent = bodyContent
+      .replace(/<!DOCTYPE[^>]*>/gi, "")
+      .replace(/<\/?html[^>]*>/gi, "")
+      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
+      .replace(/<\/?body[^>]*>/gi, "");
+    
+    return { headContent, bodyContent };
   }, [headerFile, baseCtx]);
 
   const renderedFooter = useMemo(() => {
     if (!footerFile?.content) return "";
-    return renderTemplate(footerFile.content, baseCtx);
+    let rendered = renderTemplate(footerFile.content, baseCtx);
+    // Clean up closing tags
+    rendered = rendered.replace(/<\/body>/gi, "").replace(/<\/html>/gi, "");
+    return rendered;
   }, [footerFile, baseCtx]);
 
   // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
@@ -187,7 +228,34 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
     return theme.jsFiles.map(f => f.content || "").filter(Boolean).join("\n");
   }, [theme.jsFiles]);
 
-  // Inject JS
+  // Inject external CSS/JS links from the theme's <head> content
+  useEffect(() => {
+    if (!headContent) return;
+    const addedElements: Element[] = [];
+    
+    // Extract and inject <link> stylesheet tags
+    const linkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*>/gi;
+    let match;
+    while ((match = linkRegex.exec(headContent)) !== null) {
+      const hrefMatch = match[0].match(/href=["']([^"']+)["']/);
+      if (hrefMatch && !document.querySelector(`link[href="${hrefMatch[1]}"]`)) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = hrefMatch[1];
+        link.setAttribute("data-theme-css", "true");
+        const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
+        if (mediaMatch) link.media = mediaMatch[1];
+        document.head.appendChild(link);
+        addedElements.push(link);
+      }
+    }
+    
+    return () => {
+      addedElements.forEach(el => el.remove());
+    };
+  }, [headContent]);
+
+  // Inject theme JS files
   useEffect(() => {
     if (!combinedJs) return;
     const script = document.createElement("script");
