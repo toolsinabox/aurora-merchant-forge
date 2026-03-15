@@ -539,7 +539,7 @@ function processUrlTags(template: string, ctx: TemplateContext): string {
   return result;
 }
 
-function resolveUrlTag(attrs: string, base: string): string {
+function resolveUrlTag(attrs: string, base: string, basePath?: string): string {
   const pageMatch = attrs.match(/page:'([^']+)'/i);
   const typeMatch = attrs.match(/type:'([^']+)'/i);
   const qsMatch = attrs.match(/qs:'([^']+)'/i);
@@ -547,18 +547,23 @@ function resolveUrlTag(attrs: string, base: string): string {
   const type = typeMatch?.[1] || "";
   const qs = qsMatch?.[1] || "";
   
-  let url = base;
+  // Use basePath for SPA navigation, fall back to base (domain URL)
+  const prefix = basePath || base;
+  
+  let url = prefix;
   switch (page) {
-    case "account": url += "/_myacct"; break;
+    case "account": url += "/account"; break;
     case "checkout":
       if (type === "cart") url += "/cart";
       else url += "/checkout";
       break;
     case "contact": url += "/contact-us"; break;
-    case "wishlist": url += "/_myacct/wishlist"; break;
+    case "wishlist": url += "/wishlist"; break;
+    case "home": url = prefix || "/"; break;
+    case "products": url += "/products"; break;
     default: url += "/" + page;
   }
-  if (type === "write_review") url = `${base}/_myacct/write_review`;
+  if (type === "write_review") url = `${prefix}/account/write_review`;
   if (qs) url += "?" + qs;
   return url;
 }
