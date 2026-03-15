@@ -431,7 +431,7 @@ export default function ThemeFiles() {
     toast.success("Theme exported");
   };
 
-  // ── File tree ──
+  // ── File tree — build a nested directory tree from file_path ──
   const toggleFolder = (key: string) => {
     setExpandedFolders(prev => {
       const next = new Set(prev);
@@ -440,20 +440,96 @@ export default function ThemeFiles() {
     });
   };
 
-  const groupedFiles: Record<string, any[]> = {};
-  for (const f of THEME_FOLDERS) groupedFiles[f.key] = [];
-  for (const f of files) {
-    const folder = f.folder || "templates";
-    if (!groupedFiles[folder]) groupedFiles[folder] = [];
-    groupedFiles[folder].push(f);
-  }
+  type TreeNode = {
+    name: string;
+    path: string; // full path key for expand/collapse
+    children: Record<string, TreeNode>;
+    files: any[];
+  };
 
-  const filteredFolders = THEME_FOLDERS.filter(f => {
-    if (!searchQuery) return groupedFiles[f.key]?.length > 0 || true; // show all folders
-    return groupedFiles[f.key]?.some((file: any) =>
-      file.file_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const buildFileTree = (fileList: any[]): TreeNode => {
+    const root: TreeNode = { name: activeTheme?.name || "Theme", path: "", children: {}, files: [] };
+    const filtered = searchQuery
+      ? fileList.filter((f: any) => f.file_name.toLowerCase().includes(searchQuery.toLowerCase()) || f.file_path?.toLowerCase().includes(searchQuery.toLowerCase()))
+      : fileList;
+
+    for (const f of filtered) {
+      const filePath = f.file_path || f.file_name;
+      const parts = filePath.split("/").filter(Boolean);
+      const fileName = parts.pop()!;
+      let current = root;
+      let pathSoFar = "";
+
+      for (const dir of parts) {
+        pathSoFar += "/" + dir;
+        if (!current.children[dir]) {
+          current.children[dir] = { name: dir, path: pathSoFar, children: {}, files: [] };
+        }
+        current = current.children[dir];
+      }
+      current.files.push(f);
+    }
+    return root;
+  };
+
+  const fileTree = buildFileTree(files);
+
+  const countAllFiles = (node: TreeNode): number => {
+    let count = node.files.length;
+    for (const child of Object.values(node.children)) count += countAllFiles(child);
+    return count;
+  };
+
+  const renderTreeNode = (node: TreeNode, depth: number = 0): React.ReactNode => {
+    const sortedDirs = Object.values(node.children).sort((a, b) => a.name.localeCompare(b.name));
+    const sortedFiles = [...node.files].sort((a: any, b: any) => (a.file_name || "").localeCompare(b.file_name || ""));
+    const isExpanded = expandedFolders.has(node.path);
+
+    return (
+      <div key={node.path} style={{ paddingLeft: depth > 0 ? 8 : 0 }}>
+        {depth > 0 && (
+          <button
+            className="flex items-center gap-1.5 w-full px-2 py-1 text-xs font-medium hover:bg-muted/50 rounded-sm group"
+            onClick={() => toggleFolder(node.path)}
+          >
+            {isExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
+            {isExpanded ? <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" /> : <FolderClosed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+            <span className="truncate">{node.name}</span>
+            <Badge variant="secondary" className="text-[9px] ml-auto h-4 px-1">{countAllFiles(node)}</Badge>
+          </button>
+        )}
+        {(depth === 0 || isExpanded) && (
+          <div className={depth > 0 ? "ml-3 border-l border-border/40 pl-1" : ""}>
+            {sortedDirs.map(child => renderTreeNode(child, depth + 1))}
+            {sortedFiles.map((file: any) => {
+              const FIcon = FILE_TYPE_ICONS[file.file_type] || File;
+              return (
+                <button
+                  key={file.id}
+                  className={`flex items-center gap-1.5 w-full px-2 py-1 text-xs hover:bg-muted/50 rounded-sm truncate group ${
+                    selectedFile?.id === file.id ? "bg-accent text-accent-foreground" : ""
+                  }`}
+                  onClick={() => openFile(file)}
+                >
+                  <FIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{file.file_name}</span>
+                  <button
+                    className="opacity-0 group-hover:opacity-100 ml-auto h-4 w-4 flex items-center justify-center text-destructive hover:bg-destructive/10 rounded"
+                    onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
+                  >
+                    <Trash2 className="h-2.5 w-2.5" />
+                  </button>
+                </button>
+              );
+            })}
+            {sortedDirs.length === 0 && sortedFiles.length === 0 && depth > 0 && (
+              <p className="text-[10px] text-muted-foreground px-3 py-1 italic">Empty</p>
+            )}
+          </div>
+        )}
+      </div>
     );
-  });
+  };
 
   const previewHtml = editContent ? renderTemplate(editContent, MOCK_PREVIEW) : "";
 
