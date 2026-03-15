@@ -275,6 +275,124 @@ ${SCOPE_SELECTOR} img[src="/placeholder.svg"] {
   border-radius: 8px;
   padding: 20px;
 }
+/* Slick product carousel fallback — display as horizontal scrollable grid */
+${SCOPE_SELECTOR} .slick-product:not(.slick-initialized) {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+${SCOPE_SELECTOR} .slick-product:not(.slick-initialized) > * {
+  flex: 0 0 calc(25% - 12px);
+  min-width: 220px;
+  max-width: calc(25% - 12px);
+  scroll-snap-align: start;
+}
+${SCOPE_SELECTOR} .slick-product:not(.slick-initialized) > * img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+}
+/* Bootstrap carousel full width banners */
+${SCOPE_SELECTOR} .carousel-item img {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: cover;
+}
+${SCOPE_SELECTOR} .carousel-inner {
+  width: 100%;
+}
+${SCOPE_SELECTOR} .carousel-item {
+  display: none;
+}
+${SCOPE_SELECTOR} .carousel-item.active {
+  display: block;
+}
+/* Carousel controls */
+${SCOPE_SELECTOR} .carousel-control-prev,
+${SCOPE_SELECTOR} .carousel-control-next {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15%;
+  color: #fff;
+  text-align: center;
+  opacity: 0.5;
+  cursor: pointer;
+  text-decoration: none;
+}
+${SCOPE_SELECTOR} .carousel-control-prev { left: 0; }
+${SCOPE_SELECTOR} .carousel-control-next { right: 0; }
+${SCOPE_SELECTOR} .carousel-control-prev-icon,
+${SCOPE_SELECTOR} .carousel-control-next-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: no-repeat center/100%;
+}
+${SCOPE_SELECTOR} .carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5L4.25 4l2.5-2.5L5.25 0z'/%3e%3c/svg%3e");
+}
+${SCOPE_SELECTOR} .carousel-control-next-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5L3.75 4l-2.5 2.5L2.75 8l4-4-4-4z'/%3e%3c/svg%3e");
+}
+${SCOPE_SELECTOR} .carousel-indicators {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  left: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  margin: 0;
+  list-style: none;
+}
+${SCOPE_SELECTOR} .carousel-indicators li {
+  width: 30px;
+  height: 3px;
+  margin: 0 3px;
+  background-color: rgba(255,255,255,.5);
+  cursor: pointer;
+  border: 0;
+}
+${SCOPE_SELECTOR} .carousel-indicators .active {
+  background-color: #fff;
+}
+/* Product card defaults */
+${SCOPE_SELECTOR} .product-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+${SCOPE_SELECTOR} .product-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+${SCOPE_SELECTOR} .product-card__info {
+  padding: 12px;
+}
+${SCOPE_SELECTOR} .product-card__title {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+${SCOPE_SELECTOR} .product-card__price {
+  font-weight: 700;
+  font-size: 15px;
+}
 @media (max-width: 767px) {
   ${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) > .hovercartmain {
     flex: 0 0 calc(50% - 16px);
@@ -283,6 +401,14 @@ ${SCOPE_SELECTOR} img[src="/placeholder.svg"] {
   ${SCOPE_SELECTOR} .js-usp:not(.slick-initialized) > .col-6 {
     flex: 0 0 50%;
     max-width: 50%;
+  }
+  ${SCOPE_SELECTOR} .slick-product:not(.slick-initialized) > * {
+    flex: 0 0 calc(50% - 8px);
+    min-width: 160px;
+    max-width: calc(50% - 8px);
+  }
+  ${SCOPE_SELECTOR} .carousel-item img {
+    max-height: 300px;
   }
 }
 `;

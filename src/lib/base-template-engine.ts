@@ -1066,16 +1066,82 @@ function processInlineConditionals(template: string, totalShowing: number): stri
 function processThumbList(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%thumb_list\s+([^\]]*?)%\]([\s\S]*?)\[%\/thumb_list%\]/gi, (_, attrs: string, body: string) => {
     const typeMatch = attrs.match(/type:'(\w+)'/i);
+    const limitMatch = attrs.match(/limit:'([^']+)'/i);
+    const templateMatch = attrs.match(/template:'([^']*)'/i);
     const type = typeMatch?.[1] || "products";
+    const limitStr = limitMatch?.[1] || "20";
+    const limit = parseInt(limitStr) || 20;
+    const templateName = templateMatch?.[1] || "";
     
     const headerMatch = body.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
     const footerMatch = body.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const bodyMatch = body.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i);
     
-    const items = type === "products" ? (ctx.products || []) : [];
+    let items: Record<string, any>[] = [];
+    if (type === "products") {
+      items = (ctx.products || []).slice(0, limit);
+    } else if (type === "content") {
+      // Content lists — not supported yet, return empty
+      return "";
+    } else if (type === "content_reviews") {
+      return "";
+    }
+    
     if (items.length === 0) return "";
+    
+    // Resolve item template: body param or theme template file
+    let itemTemplate = bodyMatch?.[1] || "";
+    if (!itemTemplate && templateName) {
+      itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
+    }
+    
+    // Default product card if no template
+    if (!itemTemplate && type === "products") {
+      itemTemplate = `
+        <div class="col-6 col-md-3 product-thumbnail">
+          <div class="product-card">
+            <a href="/product/[@id@]">
+              <img src="[@image_url@]" alt="[@title@]" class="img-fluid" loading="lazy" />
+              <div class="product-card__info">
+                <h3 class="product-card__title">[@title@]</h3>
+                <div class="product-card__price">$[@price@]</div>
+              </div>
+            </a>
+          </div>
+        </div>`;
+    }
     
     let html = "";
     if (headerMatch) html += headerMatch[1];
+    
+    if (itemTemplate) {
+      items.forEach((item, idx) => {
+        let rendered = itemTemplate;
+        // Prepare product item fields
+        const productItem = {
+          ...item,
+          image_url: resolveStorageUrl(item.images?.[0]) || "/placeholder.svg",
+          url: `/product/${item.id}`,
+          headline: item.title,
+          rrp: item.compare_at_price || item.price,
+        };
+        
+        rendered = rendered.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+          if (field === "count") return String(idx);
+          if (field === "index") return String(idx);
+          if (field === "total_showing") return String(items.length);
+          if (productItem[field] !== undefined && productItem[field] !== null) return String(productItem[field]);
+          const ctxVal = resolveField(field, ctx);
+          return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
+        });
+        
+        rendered = processAssetUrl(rendered, ctx, productItem);
+        rendered = processItemConditionals(rendered, productItem, idx, items.length);
+        
+        html += rendered;
+      });
+    }
+    
     if (footerMatch) html += footerMatch[1];
     
     return html;
