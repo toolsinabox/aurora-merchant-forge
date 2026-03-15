@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
@@ -6,6 +6,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { Calendar, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
+import { useActiveTheme, findThemeFile, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontBlog() {
   const { storeSlug: paramSlug } = useParams();
