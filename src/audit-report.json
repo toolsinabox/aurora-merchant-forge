@@ -1,0 +1,3242 @@
+{
+  "store": "toolsinabox.com.au",
+  "auditDate": "2026-03-15T16:13:40.809Z",
+  "entities": {
+    "products": {
+      "entity": "products",
+      "rawData": {
+        "Item": [
+          {
+            "SEOPageTitle": "Rounding",
+            "AutomaticURL": "False",
+            "Features": "",
+            "TaxCategory": "",
+            "QuantityPerScan": "1",
+            "IsActive": "True",
+            "Model": "Rounding",
+            "Approved": "False",
+            "CrossSellProducts": "",
+            "Type": "",
+            "ShippingHeight": "0.000",
+            "SubType": "",
+            "ProductURL": "",
+            "UnitOfMeasure": "",
+            "PickPriority": "FIFO",
+            "ShippingWidth": "0.000",
+            "ImageURL": "",
+            "CubicWeight": "0.000000000",
+            "ShortDescription": "",
+            "ItemLength": "0.000",
+            "CustomContent": "",
+            "TaxFreeItem": "False",
+            "SellUnitQuantity": "1",
+            "CommittedQuantity": "0",
+            "Brand": "TOOLS IN A BOX",
+            "SearchKeywords": "",
+            "PriceGroups": [
+              {
+                "PriceGroup": [
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "A",
+                    "GroupID": "1"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "B",
+                    "GroupID": "2"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "C",
+                    "GroupID": "3"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "D",
+                    "GroupID": "4"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "E",
+                    "GroupID": "5"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "F",
+                    "GroupID": "6"
+                  }
+                ]
+              }
+            ],
+            "Images": [],
+            "ItemSpecifics": [
+              {
+                "ItemSpecific": ""
+              }
+            ],
+            "DateAdded": "2016-02-09 00:00:00",
+            "ID": "169",
+            "PrimarySupplier": "",
+            "ShippingWeight": "0.0000",
+            "TermsAndConditions": "",
+            "PickZone": "",
+            "WarehouseLocations": [
+              {
+                "WarehouseLocation": ""
+              }
+            ],
+            "AvailableSellQuantity": "-14",
+            "ItemHeight": "0.000",
+            "BaseUnitOfMeasure": "",
+            "ShippingLength": "0.000",
+            "SEOPageHeading": "Rounding",
+            "SEOMetaDescription": "",
+            "FreeGifts": [
+              ""
+            ],
+            "Categories": [
+              ""
+            ],
+            "RRP": "0.00",
+            "TaxInclusive": "True",
+            "UpsellProducts": [
+              {
+                "UpsellProduct": [
+                  {
+                    "SKU": "W-STRIP-2M"
+                  },
+                  {
+                    "SKU": "TIAB-MKIT"
+                  },
+                  {
+                    "SKU": "TA3S1R-B"
+                  },
+                  {
+                    "SKU": "W-LED-AF"
+                  }
+                ]
+              }
+            ],
+            "eBayProductIDs": {
+              "eBayProductID": [
+                {
+                  "eBaySiteFullName": "eBay United States",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Canada (English)",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay UK",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Australia",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Germany",
+                  "eBayProductID": ""
+                }
+              ]
+            },
+            "ParentSKU": "",
+            "CostPrice": "0.00000000",
+            "WarehouseQuantity": {
+              "WarehouseID": "1",
+              "Quantity": "0"
+            },
+            "ItemWidth": "0.000",
+            "Warranty": "",
+            "AccountingCode": "ROUNDING",
+            "InventoryID": "169",
+            "DefaultPrice": "0.00",
+            "BuyUnitQuantity": "1",
+            "DateUpdated": "2025-01-16 21:59:26",
+            "Specifications": "",
+            "Description": "<p>For use with Neto POS and various accounting integrations.</p>\n",
+            "Name": "Rounding",
+            "SKU": "ROUNDING"
+          },
+          {
+            "SEOPageTitle": "1400 x 530 x 410mm Aluminium Ute Truck Tub Liner Toolbox Wheel Arch Tool Box Lockable 1454A",
+            "AutomaticURL": "False",
+            "Features": "<div class=\"n-responsive-content mb-4\">\n<section>\n<div class=\"text-center meg-h4\"><svg data-name=\"Group 1368\" height=\"22\" id=\"Group_1368\" viewbox=\"0 0 22 22\" width=\"22\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M67.705,348.738l-2.75-1.169a.687.687,0,0,0-.536,1.265L67.169,350a.687.687,0,0,0,.536-1.265Z\" data-name=\"Path 1772\" fill=\"#111\" id=\"Path_1772\" transform=\"translate(-61.249 -332.582)\"></path> <path d=\"M21.99,4.791a.7.7,0,0,0-.034-.21.617.617,0,0,0-.065-.1c-.015-.025-.026-.047-.043-.069a.66.66,0,0,0-.286-.221s-.006-.006-.01-.007l-11-4.124a.672.672,0,0,0-.511.01L.417,4.19c-.01,0-.014.015-.023.019a.666.666,0,0,0-.241.2A.718.718,0,0,0,.1,4.486a.56.56,0,0,0-.045.066A.69.69,0,0,0,0,4.821V17.2a.688.688,0,0,0,.417.633l9.625,4.125h0a.684.684,0,0,0,.27.055.7.7,0,0,0,.242-.044l.025-.01h0l10.974-4.116A.687.687,0,0,0,22,17.2V4.823C22,4.81,21.99,4.8,21.99,4.791ZM9.625,20.28l-8.25-3.535V5.866L9.625,9.4Zm.7-12.073-7.9-3.384,7.9-3.383,9.025,3.383L17.2,5.63,13.344,3.9a.676.676,0,0,0-.6.023l-2.7,1.145a.69.69,0,0,0,.007,1.272l2.5,1.033-2.223.832Zm4.8-.33L16.5,7.361v3.351l-1.375.516V7.877ZM14.44,6.665,12.089,5.7l.974-.414,2.31,1.034-.932.349Zm6.185,10.056L11,20.331V9.424l2.75-1.031v3.828a.687.687,0,0,0,.688.688.7.7,0,0,0,.242-.044l2.75-1.031a.689.689,0,0,0,.445-.644V6.845l2.75-1.031Z\" data-name=\"Path 1773\" fill=\"#111\" id=\"Path_1773\" transform=\"translate(0 -0.011)\"></path> </svg> PICKUP &amp; SHIPPING</div>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">Pick-up:</strong></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">NEW SOUTH WALES</strong></span></span></span></span></p>\n\n<ul>\n\t<li style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Unit 13, 340 Hoxton Park Rd, Prestons&nbsp;2170</span><br />\n\t<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Tel: 1300 026 937</span></span></span></span></span></li>\n</ul>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">All items are shipped w</span></span><span style=\"font-size:16px;\">ithin 24&nbsp;hours of order payment receipt, except; on weekends, as mutually agreed, during high-volume periods such as holiday and&nbsp;promotion periods, or as may be otherwise stated.<span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">&nbsp;</span></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Free pick-up (click and collect) is available from our Prestons NSW Warehouse.&nbsp;Please contact us to confirm stock is available&nbsp;prior to your arrival. You will need to present a&nbsp;government-issued I.D., for all prepaid pick-ups.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"color: rgb(40, 40, 40); font-size: 16px;\">Should you choose free pick-up and your item is not in stock at our Prestons warehouse, a free</span><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">&nbsp;stock t</span><span style=\"font-size: 16px;\">ransfer is available (for most items). Stock transfers&nbsp;occur on a weekly basis and will require additional handling time.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Items can be combined to reduce shipping costs. </span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Some remote areas will incur additional shipping charges. These include,&nbsp;but are not limited to;&nbsp;N.T., Far North QLD, and remote W.A. If you live in a remote area, please contact us to confirm whether additional shipping charges will apply to your order.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><br style=\"box-sizing: border-box; font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 14px;\" />\n<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Should you require any additional information, <a href=\"javascript:void(0); \" onclick=\"PodiumWebChat.open()\">click here</a>&nbsp;to email our customer service team, or phone 1300 026 937.</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\">&nbsp;</p>\n</section>\n\n<section>\n<div class=\"text-center meg-h4\"><svg height=\"21\" id=\"fi-bs-shield-check\" viewbox=\"0 0 17 21\" width=\"17\" xmlns=\"http://www.w3.org/2000/svg\"> <g data-name=\"Group 1431\" id=\"Group_1431\"> <path d=\"M10.572,11.129l-1.5-1.6L7.24,11.35l1.87,2A1.982,1.982,0,0,0,10.533,14h.031a1.983,1.983,0,0,0,1.413-.6L16.245,9l-1.8-1.857Z\" data-name=\"Path 1838\" fill=\"#111\" id=\"Path_1838\" transform=\"translate(-2.786 -0.911)\"></path> <path d=\"M10.434,21.03l-.451-.208C9.656,20.67,2,17.088,2,10.517V4.844A2.623,2.623,0,0,1,3.744,2.351L10.5.03l6.757,2.322A2.618,2.618,0,0,1,19,4.844v5.673C19,18,11.234,20.751,10.9,20.865ZM10.5,2.8,4.55,4.844v5.673c0,4.091,4.542,6.875,6.015,7.668,1.481-.637,5.885-2.931,5.885-7.668V4.844Z\" data-name=\"Path 1839\" fill=\"#111\" id=\"Path_1839\" transform=\"translate(-2 -0.03)\"></path> </g> </svg> RETURN &amp; WARRANTY</div>\n\n<p><span style=\"font-size:16px;\"><u style=\"font-size: 16px; font-family: arial, helvetica, sans-serif; color: rgb(40, 40, 40); box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">WARRANTY</strong></u></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-size:16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-family: arial, helvetica, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">For your total confidence, Tools In A Box offers a 1-year warranty on this product. We place a high value on customer service and aim to ensure you are completely satisfied with your purchase. If you require any assistance with your product, please contact us.</span></span></span></p>\n\n<p><span style=\"font-size:16px;\"><u><strong>RETURNS</strong></u></span></p>\n\n<p><span style=\"font-size:16px;\"><strong>CHANGED YOUR MIND?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">No problem! You may return or exchange any product within 30 days, as long as the item is in resalable condition and is returned in its original packaging. You will be responsible for the original and return shipping charges and a restocking fee of 10%. This also applies to orders cancelled during transit. If your original purchase price includes shipping, please contact us to confirm the original shipping cost. A refund, credit or replacement will be issued after we have received the package and confirm the item is in a resalable condition. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>FAULTY OR INCORRECT ITEM?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">The item needs to be returned and will be replaced or a full refund or credit provided. Please contact us ASAP if you would like to make a claim.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHAT CAN BE RETURNED?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">All our products are returnable.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHEN DO ITEMS NEED TO BE RETURNED BY?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Within 30 days of receipt. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>HOW TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">By post,&nbsp;courier or visit personally.&nbsp;</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHERE TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Unit 13, 340 Hoxton Park Rd, Prestons 2170 NSW</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>PACKAGING MATERIALS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Items need to be returned in original packaging.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>ADDITIONAL NOTES</strong></span></p>\n\n<p><span style=\"font-size:16px;\">If the product is damaged during installation, we are not responsible and will not issue a refund or credit.</span></p>\n\n<p><span style=\"font-size:16px;\">When you have received your package, please inspect your product for any manufacturer defects or shipping damage prior to installation. If you notice any damages or defects, please contact us ASAP.</span></p>\n\n<p><span style=\"font-size:16px;\">Before any returns or exchanges, please contact our customer service representatives via email at <a href=\"mailto:info@toolsinabox.com.au\">info@toolsinabox.com.au</a>. Please include your order number and&nbsp;specific description of damage/problem, photos&nbsp;and a clear explanation of your reason. If the return is authorised, you will receive an email with return instructions. All emails will be replied to within 24 business hours.</span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px 0px 0px 15px; list-style: none; line-height: 22px; position: relative;\">&nbsp;</p>\n</section>\n</div>\n",
+            "TaxCategory": "",
+            "QuantityPerScan": "1",
+            "IsActive": "True",
+            "Model": "1400 x 530 x 410mm Aluminium Ute Truck Tub Liner Toolbox Wheel Arch Tool Box Lockable 1454A",
+            "Approved": "True",
+            "CrossSellProducts": "",
+            "Type": "",
+            "ShippingHeight": "0.440",
+            "SubType": "",
+            "ProductURL": "",
+            "UnitOfMeasure": "",
+            "PickPriority": "FIFO",
+            "ShippingWidth": "0.560",
+            "ImageURL": "",
+            "CubicWeight": "0.352352000",
+            "ShortDescription": "",
+            "ItemLength": "1.400",
+            "CustomContent": "",
+            "TaxFreeItem": "False",
+            "SellUnitQuantity": "1",
+            "CommittedQuantity": "0",
+            "Brand": "TOOLS IN A BOX",
+            "SearchKeywords": "",
+            "PriceGroups": [
+              {
+                "PriceGroup": [
+                  {
+                    "Multiple": "",
+                    "Price": "430.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "A",
+                    "GroupID": "1"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "B",
+                    "GroupID": "2"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "500.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "C",
+                    "GroupID": "3"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "D",
+                    "GroupID": "4"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "E",
+                    "GroupID": "5"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "F",
+                    "GroupID": "6"
+                  }
+                ]
+              }
+            ],
+            "Images": [
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/full/1454A.jpg",
+                "Timestamp": "2024-12-19 13:08:05",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/thumb/1454A.jpg",
+                "MediumThumbURL": "https://www.toolsinabox.com.au/assets/thumbL/1454A.jpg",
+                "Name": "Main"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_1/1454A.jpg",
+                "Timestamp": "2023-06-09 07:15:43",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_1_thumb/1454A.jpg",
+                "Name": "Alt 1"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_2/1454A.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_2_thumb/1454A.jpg",
+                "Name": "Alt 2"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_3/1454A.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_3_thumb/1454A.jpg",
+                "Name": "Alt 3"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_4/1454A.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_4_thumb/1454A.jpg",
+                "Name": "Alt 4"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_5/1454A.gif",
+                "Timestamp": "2021-03-08 17:04:09",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_5_thumb/1454A.gif",
+                "Name": "Alt 5"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_6/1454A.png",
+                "Timestamp": "2021-03-08 17:03:41",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_6_thumb/1454A.png",
+                "Name": "Alt 6"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_7/1454A.png",
+                "Timestamp": "2021-03-08 17:03:41",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_7_thumb/1454A.png",
+                "Name": "Alt 7"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_9/1454A.jpg",
+                "Timestamp": "2021-03-08 17:03:41",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_9_thumb/1454A.jpg",
+                "Name": "Alt 9"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_10/1454A.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_10_thumb/1454A.jpg",
+                "Name": "Alt 10"
+              }
+            ],
+            "ItemSpecifics": [
+              {
+                "ItemSpecific": [
+                  {
+                    "Value": "Tools In A Box",
+                    "Name": "Brand"
+                  },
+                  {
+                    "Value": "Checker Plate Aluminium",
+                    "Name": "Material"
+                  },
+                  {
+                    "Value": "140 x 53 x 41cm",
+                    "Name": "Dimensions"
+                  },
+                  {
+                    "Value": "1400",
+                    "Name": "Size"
+                  }
+                ]
+              }
+            ],
+            "DateAdded": "0000-00-00 00:00:00",
+            "ID": "170",
+            "PrimarySupplier": "1",
+            "ShippingWeight": "26.0000",
+            "TermsAndConditions": "",
+            "PickZone": "Unit 13",
+            "WarehouseLocations": [
+              {
+                "WarehouseLocation": ""
+              }
+            ],
+            "AvailableSellQuantity": "3",
+            "ItemHeight": "0.410",
+            "BaseUnitOfMeasure": "",
+            "ShippingLength": "1.430",
+            "SEOPageHeading": "1400 x 530 x 410mm Aluminium Ute Truck Tub Liner Toolbox Wheel Arch Tool Box Lockable 1454A",
+            "SEOMetaDescription": "",
+            "FreeGifts": [
+              ""
+            ],
+            "Categories": [
+              {
+                "Category": [
+                  {
+                    "CategoryID": "180",
+                    "Priority": "0",
+                    "CategoryName": "All Toolboxes"
+                  },
+                  {
+                    "CategoryID": "188",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening Toolboxes"
+                  },
+                  {
+                    "CategoryID": "195",
+                    "Priority": "0",
+                    "CategoryName": "Tub Liner Toolboxes"
+                  },
+                  {
+                    "CategoryID": "386",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening"
+                  },
+                  {
+                    "CategoryID": "395",
+                    "Priority": "0",
+                    "CategoryName": "Tub Liner Boxes"
+                  },
+                  {
+                    "CategoryID": "399",
+                    "Priority": "0",
+                    "CategoryName": "Checker Plate"
+                  },
+                  {
+                    "CategoryID": "422",
+                    "Priority": "0",
+                    "CategoryName": "Aluminium Toolboxes"
+                  }
+                ]
+              }
+            ],
+            "RRP": "530.00",
+            "TaxInclusive": "True",
+            "UpsellProducts": [
+              {
+                "UpsellProduct": [
+                  {
+                    "SKU": "W-STRIP-2M"
+                  },
+                  {
+                    "SKU": "TIAB-MKIT"
+                  },
+                  {
+                    "SKU": "TA3S1R-B"
+                  },
+                  {
+                    "SKU": "W-LED-AF"
+                  }
+                ]
+              }
+            ],
+            "eBayProductIDs": {
+              "eBayProductID": [
+                {
+                  "eBaySiteFullName": "eBay United States",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Canada (English)",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay UK",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Germany",
+                  "eBayProductID": ""
+                }
+              ]
+            },
+            "ParentSKU": "",
+            "CostPrice": "309.06260000",
+            "WarehouseQuantity": {
+              "WarehouseID": "1",
+              "Quantity": "3"
+            },
+            "ItemWidth": "0.530",
+            "Warranty": "",
+            "AccountingCode": "1454A",
+            "InventoryID": "170",
+            "DefaultPrice": "430.00",
+            "BuyUnitQuantity": "1",
+            "DateUpdated": "2026-03-10 20:36:36",
+            "Specifications": "",
+            "Description": "<div class=\"n-responsive-content mb-4\">\n<section class=\"section15\">\n<table>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td colspan=\"2\">This is designed to lock up your valuables, The <a href=\"https://www.toolsinabox.com.au\">Ute Tool box</a> is hinged with Stainless Steel hinges with a Heavy Duty Stainless T-Locks with Spring Built into the lock to prevent T-Lock handle becoming lose. Our Boxes are Water/Dust Resistant with Fully welding seams.<br />\n\t\t\tOur toolboxes are built to the highest quality. Contact us today: <a href=\"tel:1300026937\">1300 026 937</a></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Thickness:</td>\n\t\t\t<td>3mm Including Checker<br />\n\t\t\t2.5mm Excluding Checker</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Locking System:</td>\n\t\t\t<td>2 T-Locks<br />\n\t\t\t(Upgrade to Compress Pad lockable T-Lock available)</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Welding:</td>\n\t\t\t<td>Full Welded Toolbox</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Rubber Seal:</td>\n\t\t\t<td>Curved Dust/Water Seal</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Gas Strut:</td>\n\t\t\t<td>2 Gas Strut</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Keys:</td>\n\t\t\t<td>4 Keys</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Hinge:</td>\n\t\t\t<td>Full Length Piano Hinge</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Box Size:</td>\n\t\t\t<td>- Length: 1400mm<br />\n\t\t\t- Width: 530mm<br />\n\t\t\t- Height: 410mm</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Opening Sizes:</td>\n\t\t\t<td>- Length: 920mm<br />\n\t\t\t- Height: 450mm</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>What You Get:</td>\n\t\t\t<td>1x 1454A Tub Toolbox</td>\n\t\t</tr>\n\t</tbody>\n</table>\n</section>\n</div>\n",
+            "Name": "1400 x 530 x 410mm Aluminium Ute Truck Tub Liner Toolbox Wheel Arch Tool Box Lockable 1454A",
+            "SKU": "1454A"
+          },
+          {
+            "SEOPageTitle": "1220 x 400 x 350mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Can",
+            "AutomaticURL": "False",
+            "Features": "<div class=\"n-responsive-content mb-4\">\n<section>\n<div class=\"text-center meg-h4\"><svg data-name=\"Group 1368\" height=\"22\" id=\"Group_1368\" viewbox=\"0 0 22 22\" width=\"22\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M67.705,348.738l-2.75-1.169a.687.687,0,0,0-.536,1.265L67.169,350a.687.687,0,0,0,.536-1.265Z\" data-name=\"Path 1772\" fill=\"#111\" id=\"Path_1772\" transform=\"translate(-61.249 -332.582)\"></path> <path d=\"M21.99,4.791a.7.7,0,0,0-.034-.21.617.617,0,0,0-.065-.1c-.015-.025-.026-.047-.043-.069a.66.66,0,0,0-.286-.221s-.006-.006-.01-.007l-11-4.124a.672.672,0,0,0-.511.01L.417,4.19c-.01,0-.014.015-.023.019a.666.666,0,0,0-.241.2A.718.718,0,0,0,.1,4.486a.56.56,0,0,0-.045.066A.69.69,0,0,0,0,4.821V17.2a.688.688,0,0,0,.417.633l9.625,4.125h0a.684.684,0,0,0,.27.055.7.7,0,0,0,.242-.044l.025-.01h0l10.974-4.116A.687.687,0,0,0,22,17.2V4.823C22,4.81,21.99,4.8,21.99,4.791ZM9.625,20.28l-8.25-3.535V5.866L9.625,9.4Zm.7-12.073-7.9-3.384,7.9-3.383,9.025,3.383L17.2,5.63,13.344,3.9a.676.676,0,0,0-.6.023l-2.7,1.145a.69.69,0,0,0,.007,1.272l2.5,1.033-2.223.832Zm4.8-.33L16.5,7.361v3.351l-1.375.516V7.877ZM14.44,6.665,12.089,5.7l.974-.414,2.31,1.034-.932.349Zm6.185,10.056L11,20.331V9.424l2.75-1.031v3.828a.687.687,0,0,0,.688.688.7.7,0,0,0,.242-.044l2.75-1.031a.689.689,0,0,0,.445-.644V6.845l2.75-1.031Z\" data-name=\"Path 1773\" fill=\"#111\" id=\"Path_1773\" transform=\"translate(0 -0.011)\"></path> </svg> PICKUP &amp; SHIPPING</div>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">Pick-up:</strong></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">NEW SOUTH WALES</strong></span></span></span></span></p>\n\n<ul>\n\t<li style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Unit 13, 340 Hoxton Park Rd, Prestons&nbsp;2170</span><br />\n\t<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Tel: 1300 026 937</span></span></span></span></span></li>\n</ul>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">All items are shipped w</span></span><span style=\"font-size:16px;\">ithin 24&nbsp;hours of order payment receipt, except; on weekends, as mutually agreed, during high-volume periods such as holiday and&nbsp;promotion periods, or as may be otherwise stated.<span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">&nbsp;</span></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Free pick-up (click and collect) is available from our Prestons NSW Warehouse.&nbsp;Please contact us to confirm stock is available&nbsp;prior to your arrival. You will need to present a&nbsp;government-issued I.D., for all prepaid pick-ups.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"color: rgb(40, 40, 40); font-size: 16px;\">Should you choose free pick-up and your item is not in stock at our Prestons warehouse, a free</span><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">&nbsp;stock t</span><span style=\"font-size: 16px;\">ransfer is available (for most items). Stock transfers&nbsp;occur on a weekly basis and will require additional handling time.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Items can be combined to reduce shipping costs. </span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Some remote areas will incur additional shipping charges. These include,&nbsp;but are not limited to;&nbsp;N.T., Far North QLD, and remote W.A. If you live in a remote area, please contact us to confirm whether additional shipping charges will apply to your order.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><br style=\"box-sizing: border-box; font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 14px;\" />\n<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Should you require any additional information, <a href=\"javascript:void(0); \" onclick=\"PodiumWebChat.open()\">click here</a>&nbsp;to email our customer service team, or phone 1300 026 937.</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\">&nbsp;</p>\n</section>\n\n<section>\n<div class=\"text-center meg-h4\"><svg height=\"21\" id=\"fi-bs-shield-check\" viewbox=\"0 0 17 21\" width=\"17\" xmlns=\"http://www.w3.org/2000/svg\"> <g data-name=\"Group 1431\" id=\"Group_1431\"> <path d=\"M10.572,11.129l-1.5-1.6L7.24,11.35l1.87,2A1.982,1.982,0,0,0,10.533,14h.031a1.983,1.983,0,0,0,1.413-.6L16.245,9l-1.8-1.857Z\" data-name=\"Path 1838\" fill=\"#111\" id=\"Path_1838\" transform=\"translate(-2.786 -0.911)\"></path> <path d=\"M10.434,21.03l-.451-.208C9.656,20.67,2,17.088,2,10.517V4.844A2.623,2.623,0,0,1,3.744,2.351L10.5.03l6.757,2.322A2.618,2.618,0,0,1,19,4.844v5.673C19,18,11.234,20.751,10.9,20.865ZM10.5,2.8,4.55,4.844v5.673c0,4.091,4.542,6.875,6.015,7.668,1.481-.637,5.885-2.931,5.885-7.668V4.844Z\" data-name=\"Path 1839\" fill=\"#111\" id=\"Path_1839\" transform=\"translate(-2 -0.03)\"></path> </g> </svg> RETURN &amp; WARRANTY</div>\n\n<p><span style=\"font-size:16px;\"><u style=\"font-size: 16px; font-family: arial, helvetica, sans-serif; color: rgb(40, 40, 40); box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">WARRANTY</strong></u></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-size:16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-family: arial, helvetica, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">For your total confidence, Tools In A Box offers a 1-year warranty on this product. We place a high value on customer service and aim to ensure you are completely satisfied with your purchase. If you require any assistance with your product, please contact us.</span></span></span></p>\n\n<p><span style=\"font-size:16px;\"><u><strong>RETURNS</strong></u></span></p>\n\n<p><span style=\"font-size:16px;\"><strong>CHANGED YOUR MIND?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">No problem! You may return or exchange any product within 30 days, as long as the item is in resalable condition and is returned in its original packaging. You will be responsible for the original and return shipping charges and a restocking fee of 10%. This also applies to orders cancelled during transit. If your original purchase price includes shipping, please contact us to confirm the original shipping cost. A refund, credit or replacement will be issued after we have received the package and confirm the item is in a resalable condition. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>FAULTY OR INCORRECT ITEM?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">The item needs to be returned and will be replaced or a full refund or credit provided. Please contact us ASAP if you would like to make a claim.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHAT CAN BE RETURNED?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">All our products are returnable.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHEN DO ITEMS NEED TO BE RETURNED BY?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Within 30 days of receipt. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>HOW TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">By post,&nbsp;courier or visit personally.&nbsp;</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHERE TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Unit 13, 340 Hoxton Park Rd, Prestons 2170 NSW</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>PACKAGING MATERIALS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Items need to be returned in original packaging.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>ADDITIONAL NOTES</strong></span></p>\n\n<p><span style=\"font-size:16px;\">If the product is damaged during installation, we are not responsible and will not issue a refund or credit.</span></p>\n\n<p><span style=\"font-size:16px;\">When you have received your package, please inspect your product for any manufacturer defects or shipping damage prior to installation. If you notice any damages or defects, please contact us ASAP.</span></p>\n\n<p><span style=\"font-size:16px;\">Before any returns or exchanges, please contact our customer service representatives via email at <a href=\"mailto:info@toolsinabox.com.au\">info@toolsinabox.com.au</a>. Please include your order number and&nbsp;specific description of damage/problem, photos&nbsp;and a clear explanation of your reason. If the return is authorised, you will receive an email with return instructions. All emails will be replied to within 24 business hours.</span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px 0px 0px 15px; list-style: none; line-height: 22px; position: relative;\">&nbsp;</p>\n</section>\n</div>\n",
+            "TaxCategory": "",
+            "QuantityPerScan": "1",
+            "IsActive": "True",
+            "Model": "1220 x 400 x 350mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Canopy 1243",
+            "Approved": "True",
+            "CrossSellProducts": "",
+            "Type": "",
+            "ShippingHeight": "0.380",
+            "SubType": "",
+            "ProductURL": "",
+            "UnitOfMeasure": "",
+            "PickPriority": "FIFO",
+            "ShippingWidth": "0.430",
+            "ImageURL": "",
+            "CubicWeight": "0.204250000",
+            "ShortDescription": "",
+            "ItemLength": "1.220",
+            "CustomContent": "",
+            "TaxFreeItem": "False",
+            "SellUnitQuantity": "1",
+            "CommittedQuantity": "3",
+            "Brand": "TOOLS IN A BOX",
+            "SearchKeywords": "",
+            "PriceGroups": [
+              {
+                "PriceGroup": [
+                  {
+                    "Multiple": "",
+                    "Price": "350.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "A",
+                    "GroupID": "1"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "B",
+                    "GroupID": "2"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "350.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "C",
+                    "GroupID": "3"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "D",
+                    "GroupID": "4"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "E",
+                    "GroupID": "5"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "F",
+                    "GroupID": "6"
+                  }
+                ]
+              }
+            ],
+            "Images": [
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/full/1243.png",
+                "Timestamp": "2024-12-19 13:08:05",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/thumb/1243.png",
+                "MediumThumbURL": "https://www.toolsinabox.com.au/assets/thumbL/1243.png",
+                "Name": "Main"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_1/1243.jpg",
+                "Timestamp": "2023-06-09 07:15:43",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_1_thumb/1243.jpg",
+                "Name": "Alt 1"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_2/1243.jpg",
+                "Timestamp": "2021-03-08 17:03:15",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_2_thumb/1243.jpg",
+                "Name": "Alt 2"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_3/1243.jpg",
+                "Timestamp": "2021-03-08 17:03:15",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_3_thumb/1243.jpg",
+                "Name": "Alt 3"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_4/1243.jpg",
+                "Timestamp": "2021-03-08 17:03:19",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_4_thumb/1243.jpg",
+                "Name": "Alt 4"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_5/1243.gif",
+                "Timestamp": "2021-03-08 17:04:15",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_5_thumb/1243.gif",
+                "Name": "Alt 5"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_6/1243.png",
+                "Timestamp": "2021-03-08 17:03:38",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_6_thumb/1243.png",
+                "Name": "Alt 6"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_7/1243.png",
+                "Timestamp": "2021-03-08 17:03:38",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_7_thumb/1243.png",
+                "Name": "Alt 7"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_9/1243.png",
+                "Timestamp": "2024-12-19 13:08:05",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_9_thumb/1243.png",
+                "Name": "Alt 9"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_10/1243.jpg",
+                "Timestamp": "2021-03-08 17:03:19",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_10_thumb/1243.jpg",
+                "Name": "Alt 10"
+              }
+            ],
+            "ItemSpecifics": [
+              {
+                "ItemSpecific": [
+                  {
+                    "Value": "Tools In A Box",
+                    "Name": "Brand"
+                  },
+                  {
+                    "Value": "Checker Plate Aluminium",
+                    "Name": "Material"
+                  },
+                  {
+                    "Value": "122 x 40 x 35cm",
+                    "Name": "Dimensions"
+                  },
+                  {
+                    "Value": "1220",
+                    "Name": "Size"
+                  }
+                ]
+              }
+            ],
+            "DateAdded": "0000-00-00 00:00:00",
+            "ID": "171",
+            "PrimarySupplier": "1",
+            "ShippingWeight": "16.0000",
+            "TermsAndConditions": "",
+            "PickZone": "Unit 13",
+            "WarehouseLocations": [
+              {
+                "WarehouseLocation": ""
+              }
+            ],
+            "AvailableSellQuantity": "-1",
+            "ItemHeight": "0.350",
+            "BaseUnitOfMeasure": "",
+            "ShippingLength": "1.250",
+            "SEOPageHeading": "1220 x 400 x 350mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Can",
+            "SEOMetaDescription": "",
+            "FreeGifts": [
+              ""
+            ],
+            "Categories": [
+              {
+                "Category": [
+                  {
+                    "CategoryID": "180",
+                    "Priority": "0",
+                    "CategoryName": "All Toolboxes"
+                  },
+                  {
+                    "CategoryID": "187",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Toolboxes"
+                  },
+                  {
+                    "CategoryID": "188",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening Toolboxes"
+                  },
+                  {
+                    "CategoryID": "386",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening"
+                  },
+                  {
+                    "CategoryID": "388",
+                    "Priority": "0",
+                    "CategoryName": "Rectangle"
+                  },
+                  {
+                    "CategoryID": "391",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Boxes"
+                  },
+                  {
+                    "CategoryID": "399",
+                    "Priority": "0",
+                    "CategoryName": "Checker Plate"
+                  },
+                  {
+                    "CategoryID": "422",
+                    "Priority": "0",
+                    "CategoryName": "Aluminium Toolboxes"
+                  }
+                ]
+              }
+            ],
+            "RRP": "390.00",
+            "TaxInclusive": "True",
+            "UpsellProducts": [
+              {
+                "UpsellProduct": [
+                  {
+                    "SKU": "W-STRIP-2M"
+                  },
+                  {
+                    "SKU": "TIAB-MKIT"
+                  },
+                  {
+                    "SKU": "TA3S1R-B"
+                  },
+                  {
+                    "SKU": "W-LED-AF"
+                  }
+                ]
+              }
+            ],
+            "eBayProductIDs": {
+              "eBayProductID": [
+                {
+                  "eBaySiteFullName": "eBay United States",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Canada (English)",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay UK",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Germany",
+                  "eBayProductID": ""
+                }
+              ]
+            },
+            "ParentSKU": "",
+            "CostPrice": "288.30470000",
+            "WarehouseQuantity": {
+              "WarehouseID": "1",
+              "Quantity": "2"
+            },
+            "ItemWidth": "0.400",
+            "Warranty": "",
+            "AccountingCode": "1243",
+            "InventoryID": "171",
+            "DefaultPrice": "350.00",
+            "BuyUnitQuantity": "1",
+            "DateUpdated": "2026-03-11 10:06:42",
+            "Specifications": "",
+            "Description": "<div class=\"n-responsive-content mb-4\">\n<section class=\"section15\">\n<table>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td colspan=\"2\">This is designed to lock up your valuables, The <a href=\"https://www.toolsinabox.com.au\">Ute Tool box</a> is hinged with Stainless Steel hinges with a Heavy Duty Stainless Push Locks with Spring Built into the lock to prevenPush Lock handle becoming lose. Our Boxes are Water/Dust Resistant with Fully welding seams.<br />\n\t\t\tOur toolboxes are built to the highest quality. Contact us today: <a href=\"tel:1300026937\">1300 026 937</a></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Thickness:</td>\n\t\t\t<td>3mm Including Checker<br />\n\t\t\t2.5mm Excluding Checker</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Locking System:</td>\n\t\t\t<td>2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Welding:</td>\n\t\t\t<td>Full Welded Toolbox</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Rubber Seal:</td>\n\t\t\t<td>Curved Dust/Water Seal</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Gas Strut:</td>\n\t\t\t<td>2 Gas Strut</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Keys:</td>\n\t\t\t<td>4 Keys</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Hinge:</td>\n\t\t\t<td>Full Length Piano Hinge</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Box Size:</td>\n\t\t\t<td>- Length: 1220mm<br />\n\t\t\t- Width: 400mm<br />\n\t\t\t- Height: 350mm</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Opening Sizes:</td>\n\t\t\t<td>- Length: 1130mm<br />\n\t\t\t- Height: 320mm</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>What You Get:</td>\n\t\t\t<td>1x 1243 Top Opening Toolbox</td>\n\t\t</tr>\n\t</tbody>\n</table>\n</section>\n</div>\n",
+            "Name": "1220 x 400 x 350mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Canopy 1243",
+            "SKU": "1243"
+          },
+          {
+            "SEOPageTitle": "1220 x 500 x 500mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Can",
+            "AutomaticURL": "False",
+            "Features": "<div class=\"n-responsive-content mb-4\">\n<section>\n<div class=\"text-center meg-h4\"><svg data-name=\"Group 1368\" height=\"22\" id=\"Group_1368\" viewbox=\"0 0 22 22\" width=\"22\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M67.705,348.738l-2.75-1.169a.687.687,0,0,0-.536,1.265L67.169,350a.687.687,0,0,0,.536-1.265Z\" data-name=\"Path 1772\" fill=\"#111\" id=\"Path_1772\" transform=\"translate(-61.249 -332.582)\"></path> <path d=\"M21.99,4.791a.7.7,0,0,0-.034-.21.617.617,0,0,0-.065-.1c-.015-.025-.026-.047-.043-.069a.66.66,0,0,0-.286-.221s-.006-.006-.01-.007l-11-4.124a.672.672,0,0,0-.511.01L.417,4.19c-.01,0-.014.015-.023.019a.666.666,0,0,0-.241.2A.718.718,0,0,0,.1,4.486a.56.56,0,0,0-.045.066A.69.69,0,0,0,0,4.821V17.2a.688.688,0,0,0,.417.633l9.625,4.125h0a.684.684,0,0,0,.27.055.7.7,0,0,0,.242-.044l.025-.01h0l10.974-4.116A.687.687,0,0,0,22,17.2V4.823C22,4.81,21.99,4.8,21.99,4.791ZM9.625,20.28l-8.25-3.535V5.866L9.625,9.4Zm.7-12.073-7.9-3.384,7.9-3.383,9.025,3.383L17.2,5.63,13.344,3.9a.676.676,0,0,0-.6.023l-2.7,1.145a.69.69,0,0,0,.007,1.272l2.5,1.033-2.223.832Zm4.8-.33L16.5,7.361v3.351l-1.375.516V7.877ZM14.44,6.665,12.089,5.7l.974-.414,2.31,1.034-.932.349Zm6.185,10.056L11,20.331V9.424l2.75-1.031v3.828a.687.687,0,0,0,.688.688.7.7,0,0,0,.242-.044l2.75-1.031a.689.689,0,0,0,.445-.644V6.845l2.75-1.031Z\" data-name=\"Path 1773\" fill=\"#111\" id=\"Path_1773\" transform=\"translate(0 -0.011)\"></path> </svg> PICKUP &amp; SHIPPING</div>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">Pick-up:</strong></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">NEW SOUTH WALES</strong></span></span></span></span></p>\n\n<ul>\n\t<li style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Unit 13, 340 Hoxton Park Rd, Prestons&nbsp;2170</span><br />\n\t<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Tel: 1300 026 937</span></span></span></span></span></li>\n</ul>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">All items are shipped w</span></span><span style=\"font-size:16px;\">ithin 24&nbsp;hours of order payment receipt, except; on weekends, as mutually agreed, during high-volume periods such as holiday and&nbsp;promotion periods, or as may be otherwise stated.<span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">&nbsp;</span></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Free pick-up (click and collect) is available from our Prestons NSW Warehouse.&nbsp;Please contact us to confirm stock is available&nbsp;prior to your arrival. You will need to present a&nbsp;government-issued I.D., for all prepaid pick-ups.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"color: rgb(40, 40, 40); font-size: 16px;\">Should you choose free pick-up and your item is not in stock at our Prestons warehouse, a free</span><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">&nbsp;stock t</span><span style=\"font-size: 16px;\">ransfer is available (for most items). Stock transfers&nbsp;occur on a weekly basis and will require additional handling time.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Items can be combined to reduce shipping costs. </span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Some remote areas will incur additional shipping charges. These include,&nbsp;but are not limited to;&nbsp;N.T., Far North QLD, and remote W.A. If you live in a remote area, please contact us to confirm whether additional shipping charges will apply to your order.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><br style=\"box-sizing: border-box; font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 14px;\" />\n<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Should you require any additional information, <a href=\"javascript:void(0); \" onclick=\"PodiumWebChat.open()\">click here</a>&nbsp;to email our customer service team, or phone 1300 026 937.</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\">&nbsp;</p>\n</section>\n\n<section>\n<div class=\"text-center meg-h4\"><svg height=\"21\" id=\"fi-bs-shield-check\" viewbox=\"0 0 17 21\" width=\"17\" xmlns=\"http://www.w3.org/2000/svg\"> <g data-name=\"Group 1431\" id=\"Group_1431\"> <path d=\"M10.572,11.129l-1.5-1.6L7.24,11.35l1.87,2A1.982,1.982,0,0,0,10.533,14h.031a1.983,1.983,0,0,0,1.413-.6L16.245,9l-1.8-1.857Z\" data-name=\"Path 1838\" fill=\"#111\" id=\"Path_1838\" transform=\"translate(-2.786 -0.911)\"></path> <path d=\"M10.434,21.03l-.451-.208C9.656,20.67,2,17.088,2,10.517V4.844A2.623,2.623,0,0,1,3.744,2.351L10.5.03l6.757,2.322A2.618,2.618,0,0,1,19,4.844v5.673C19,18,11.234,20.751,10.9,20.865ZM10.5,2.8,4.55,4.844v5.673c0,4.091,4.542,6.875,6.015,7.668,1.481-.637,5.885-2.931,5.885-7.668V4.844Z\" data-name=\"Path 1839\" fill=\"#111\" id=\"Path_1839\" transform=\"translate(-2 -0.03)\"></path> </g> </svg> RETURN &amp; WARRANTY</div>\n\n<p><span style=\"font-size:16px;\"><u style=\"font-size: 16px; font-family: arial, helvetica, sans-serif; color: rgb(40, 40, 40); box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">WARRANTY</strong></u></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-size:16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-family: arial, helvetica, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">For your total confidence, Tools In A Box offers a 1-year warranty on this product. We place a high value on customer service and aim to ensure you are completely satisfied with your purchase. If you require any assistance with your product, please contact us.</span></span></span></p>\n\n<p><span style=\"font-size:16px;\"><u><strong>RETURNS</strong></u></span></p>\n\n<p><span style=\"font-size:16px;\"><strong>CHANGED YOUR MIND?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">No problem! You may return or exchange any product within 30 days, as long as the item is in resalable condition and is returned in its original packaging. You will be responsible for the original and return shipping charges and a restocking fee of 10%. This also applies to orders cancelled during transit. If your original purchase price includes shipping, please contact us to confirm the original shipping cost. A refund, credit or replacement will be issued after we have received the package and confirm the item is in a resalable condition. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>FAULTY OR INCORRECT ITEM?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">The item needs to be returned and will be replaced or a full refund or credit provided. Please contact us ASAP if you would like to make a claim.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHAT CAN BE RETURNED?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">All our products are returnable.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHEN DO ITEMS NEED TO BE RETURNED BY?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Within 30 days of receipt. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>HOW TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">By post,&nbsp;courier or visit personally.&nbsp;</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHERE TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Unit 13, 340 Hoxton Park Rd, Prestons 2170 NSW</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>PACKAGING MATERIALS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Items need to be returned in original packaging.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>ADDITIONAL NOTES</strong></span></p>\n\n<p><span style=\"font-size:16px;\">If the product is damaged during installation, we are not responsible and will not issue a refund or credit.</span></p>\n\n<p><span style=\"font-size:16px;\">When you have received your package, please inspect your product for any manufacturer defects or shipping damage prior to installation. If you notice any damages or defects, please contact us ASAP.</span></p>\n\n<p><span style=\"font-size:16px;\">Before any returns or exchanges, please contact our customer service representatives via email at <a href=\"mailto:info@toolsinabox.com.au\">info@toolsinabox.com.au</a>. Please include your order number and&nbsp;specific description of damage/problem, photos&nbsp;and a clear explanation of your reason. If the return is authorised, you will receive an email with return instructions. All emails will be replied to within 24 business hours.</span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px 0px 0px 15px; list-style: none; line-height: 22px; position: relative;\">&nbsp;</p>\n</section>\n</div>\n",
+            "TaxCategory": "",
+            "QuantityPerScan": "1",
+            "IsActive": "True",
+            "Model": "1220 x 500 x 500mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Canopy 1255",
+            "Approved": "True",
+            "CrossSellProducts": "",
+            "Type": "",
+            "ShippingHeight": "0.530",
+            "SubType": "",
+            "ProductURL": "",
+            "UnitOfMeasure": "",
+            "PickPriority": "FIFO",
+            "ShippingWidth": "0.530",
+            "ImageURL": "",
+            "CubicWeight": "0.351125000",
+            "ShortDescription": "",
+            "ItemLength": "1.220",
+            "CustomContent": "",
+            "TaxFreeItem": "False",
+            "SellUnitQuantity": "1",
+            "CommittedQuantity": "0",
+            "Brand": "TOOLS IN A BOX",
+            "SearchKeywords": "",
+            "PriceGroups": [
+              {
+                "PriceGroup": [
+                  {
+                    "Multiple": "",
+                    "Price": "450.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "A",
+                    "GroupID": "1"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "B",
+                    "GroupID": "2"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "450.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "C",
+                    "GroupID": "3"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "D",
+                    "GroupID": "4"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "E",
+                    "GroupID": "5"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "F",
+                    "GroupID": "6"
+                  }
+                ]
+              }
+            ],
+            "Images": [
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/full/1255.jpg",
+                "Timestamp": "2024-12-19 13:08:05",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/thumb/1255.jpg",
+                "MediumThumbURL": "https://www.toolsinabox.com.au/assets/thumbL/1255.jpg",
+                "Name": "Main"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_1/1255.jpg",
+                "Timestamp": "2023-06-09 07:15:43",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_1_thumb/1255.jpg",
+                "Name": "Alt 1"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_2/1255.jpg",
+                "Timestamp": "2021-03-08 17:03:15",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_2_thumb/1255.jpg",
+                "Name": "Alt 2"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_3/1255.jpg",
+                "Timestamp": "2021-03-08 17:03:15",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_3_thumb/1255.jpg",
+                "Name": "Alt 3"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_4/1255.jpg",
+                "Timestamp": "2021-03-08 17:03:15",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_4_thumb/1255.jpg",
+                "Name": "Alt 4"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_5/1255.gif",
+                "Timestamp": "2021-03-08 17:04:09",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_5_thumb/1255.gif",
+                "Name": "Alt 5"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_6/1255.png",
+                "Timestamp": "2021-03-08 17:03:53",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_6_thumb/1255.png",
+                "Name": "Alt 6"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_7/1255.png",
+                "Timestamp": "2021-03-08 17:03:38",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_7_thumb/1255.png",
+                "Name": "Alt 7"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_9/1255.jpg",
+                "Timestamp": "2021-03-08 17:03:41",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_9_thumb/1255.jpg",
+                "Name": "Alt 9"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_10/1255.jpg",
+                "Timestamp": "2021-03-08 17:03:19",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_10_thumb/1255.jpg",
+                "Name": "Alt 10"
+              }
+            ],
+            "ItemSpecifics": [
+              {
+                "ItemSpecific": [
+                  {
+                    "Value": "Tools In A Box",
+                    "Name": "Brand"
+                  },
+                  {
+                    "Value": "Checker Plate Aluminium",
+                    "Name": "Material"
+                  },
+                  {
+                    "Value": "122 x 50 x 50cm",
+                    "Name": "Dimensions"
+                  },
+                  {
+                    "Value": "1220",
+                    "Name": "Size"
+                  }
+                ]
+              }
+            ],
+            "DateAdded": "0000-00-00 00:00:00",
+            "ID": "172",
+            "PrimarySupplier": "1",
+            "ShippingWeight": "26.5000",
+            "TermsAndConditions": "",
+            "PickZone": "Unit 13",
+            "WarehouseLocations": [
+              {
+                "WarehouseLocation": ""
+              }
+            ],
+            "AvailableSellQuantity": "1",
+            "ItemHeight": "0.500",
+            "BaseUnitOfMeasure": "",
+            "ShippingLength": "1.250",
+            "SEOPageHeading": "1220 x 500 x 500mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Can",
+            "SEOMetaDescription": "",
+            "FreeGifts": [
+              ""
+            ],
+            "Categories": [
+              {
+                "Category": [
+                  {
+                    "CategoryID": "180",
+                    "Priority": "0",
+                    "CategoryName": "All Toolboxes"
+                  },
+                  {
+                    "CategoryID": "187",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Toolboxes"
+                  },
+                  {
+                    "CategoryID": "188",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening Toolboxes"
+                  },
+                  {
+                    "CategoryID": "386",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening"
+                  },
+                  {
+                    "CategoryID": "388",
+                    "Priority": "0",
+                    "CategoryName": "Rectangle"
+                  },
+                  {
+                    "CategoryID": "391",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Boxes"
+                  },
+                  {
+                    "CategoryID": "399",
+                    "Priority": "0",
+                    "CategoryName": "Checker Plate"
+                  },
+                  {
+                    "CategoryID": "422",
+                    "Priority": "0",
+                    "CategoryName": "Aluminium Toolboxes"
+                  }
+                ]
+              }
+            ],
+            "RRP": "510.00",
+            "TaxInclusive": "True",
+            "UpsellProducts": [
+              {
+                "UpsellProduct": [
+                  {
+                    "SKU": "W-STRIP-2M"
+                  },
+                  {
+                    "SKU": "TIAB-MKIT"
+                  },
+                  {
+                    "SKU": "TA3S1R-B"
+                  },
+                  {
+                    "SKU": "W-LED-AF"
+                  }
+                ]
+              }
+            ],
+            "eBayProductIDs": {
+              "eBayProductID": [
+                {
+                  "eBaySiteFullName": "eBay United States",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Canada (English)",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay UK",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Australia",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Germany",
+                  "eBayProductID": ""
+                }
+              ]
+            },
+            "ParentSKU": "",
+            "CostPrice": "359.80430000",
+            "WarehouseQuantity": {
+              "WarehouseID": "1",
+              "Quantity": "1"
+            },
+            "ItemWidth": "0.500",
+            "Warranty": "",
+            "AccountingCode": "1255",
+            "InventoryID": "172",
+            "DefaultPrice": "450.00",
+            "BuyUnitQuantity": "1",
+            "DateUpdated": "2026-03-05 23:54:36",
+            "Specifications": "",
+            "Description": "<div class=\"n-responsive-content mb-4\"><section class=\"section15\"><table><tbody><tr><td colspan=\"2\">This is designed to lock up your valuables, The <a href=\"https://www.toolsinabox.com.au\">Ute Tool box</a> is hinged with Stainless Steel hinges with a Heavy Duty Stainless T-Locks with Spring Built into the lock to prevent T-Lock handle becoming lose. Our Boxes are Water/Dust Resistant with Fully welding seams.<br/> Our toolboxes are built to the highest quality. Contact us today: <a href=\"tel:1300026937\">1300 026 937</a></td></tr><tr><td>Thickness:</td><td>3mm Including Checker<br/> 2.5mm Excluding Checker</td></tr><tr><td>Locking System:</td><td>2 T-Locks<br/> (Upgrade to Compress Pad lockable T-Lock available)</td></tr><tr><td>Welding:</td><td>Full Welded Toolbox</td></tr><tr><td>Rubber Seal:</td><td>Curved Dust/Water Seal</td></tr><tr><td>Gas Strut:</td><td>2 Gas Strut</td></tr><tr><td>Keys:</td><td>4 Keys</td></tr><tr><td>Hinge:</td><td>Full Length Piano Hinge</td></tr><tr><td>Box Size:</td><td>- Length: 1220mm<br/> - Width: 500mm<br/> - Height: 500mm</td></tr><tr><td>Opening Sizes:</td><td> - Length: 1130mm <br/> - Height: 410mm</td></tr><tr><td>What You Get:</td><td>1x 1255 Top Opening Toolbox</td></tr></tbody></table></section></div> ",
+            "Name": "1220 x 500 x 500mm Aluminium Checker Top Opening Ute Tool box 4 Your Truck Ute Trailer Toolbox & Canopy 1255",
+            "SKU": "1255"
+          },
+          {
+            "SEOPageTitle": "1200 x 500 x 500mm Aluminium Checker Toolbox Trailer Draw Bar Storage DrawBar Tool Box 1255D",
+            "AutomaticURL": "False",
+            "Features": "<div class=\"n-responsive-content mb-4\">\n<section>\n<div class=\"text-center meg-h4\"><svg data-name=\"Group 1368\" height=\"22\" id=\"Group_1368\" viewbox=\"0 0 22 22\" width=\"22\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M67.705,348.738l-2.75-1.169a.687.687,0,0,0-.536,1.265L67.169,350a.687.687,0,0,0,.536-1.265Z\" data-name=\"Path 1772\" fill=\"#111\" id=\"Path_1772\" transform=\"translate(-61.249 -332.582)\"></path> <path d=\"M21.99,4.791a.7.7,0,0,0-.034-.21.617.617,0,0,0-.065-.1c-.015-.025-.026-.047-.043-.069a.66.66,0,0,0-.286-.221s-.006-.006-.01-.007l-11-4.124a.672.672,0,0,0-.511.01L.417,4.19c-.01,0-.014.015-.023.019a.666.666,0,0,0-.241.2A.718.718,0,0,0,.1,4.486a.56.56,0,0,0-.045.066A.69.69,0,0,0,0,4.821V17.2a.688.688,0,0,0,.417.633l9.625,4.125h0a.684.684,0,0,0,.27.055.7.7,0,0,0,.242-.044l.025-.01h0l10.974-4.116A.687.687,0,0,0,22,17.2V4.823C22,4.81,21.99,4.8,21.99,4.791ZM9.625,20.28l-8.25-3.535V5.866L9.625,9.4Zm.7-12.073-7.9-3.384,7.9-3.383,9.025,3.383L17.2,5.63,13.344,3.9a.676.676,0,0,0-.6.023l-2.7,1.145a.69.69,0,0,0,.007,1.272l2.5,1.033-2.223.832Zm4.8-.33L16.5,7.361v3.351l-1.375.516V7.877ZM14.44,6.665,12.089,5.7l.974-.414,2.31,1.034-.932.349Zm6.185,10.056L11,20.331V9.424l2.75-1.031v3.828a.687.687,0,0,0,.688.688.7.7,0,0,0,.242-.044l2.75-1.031a.689.689,0,0,0,.445-.644V6.845l2.75-1.031Z\" data-name=\"Path 1773\" fill=\"#111\" id=\"Path_1773\" transform=\"translate(0 -0.011)\"></path> </svg> PICKUP &amp; SHIPPING</div>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">Pick-up:</strong></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">NEW SOUTH WALES</strong></span></span></span></span></p>\n\n<ul>\n\t<li style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Unit 13, 340 Hoxton Park Rd, Prestons&nbsp;2170</span><br />\n\t<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Tel: 1300 026 937</span></span></span></span></span></li>\n</ul>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">All items are shipped w</span></span><span style=\"font-size:16px;\">ithin 24&nbsp;hours of order payment receipt, except; on weekends, as mutually agreed, during high-volume periods such as holiday and&nbsp;promotion periods, or as may be otherwise stated.<span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">&nbsp;</span></span></span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Free pick-up (click and collect) is available from our Prestons NSW Warehouse.&nbsp;Please contact us to confirm stock is available&nbsp;prior to your arrival. You will need to present a&nbsp;government-issued I.D., for all prepaid pick-ups.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"color: rgb(40, 40, 40); font-size: 16px;\">Should you choose free pick-up and your item is not in stock at our Prestons warehouse, a free</span><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">&nbsp;stock t</span><span style=\"font-size: 16px;\">ransfer is available (for most items). Stock transfers&nbsp;occur on a weekly basis and will require additional handling time.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Items can be combined to reduce shipping costs. </span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Some remote areas will incur additional shipping charges. These include,&nbsp;but are not limited to;&nbsp;N.T., Far North QLD, and remote W.A. If you live in a remote area, please contact us to confirm whether additional shipping charges will apply to your order.&nbsp;</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><br style=\"box-sizing: border-box; font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 14px;\" />\n<span style=\"font-family:Arial,Helvetica,sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-size: 16px;\">Should you require any additional information, <a href=\"javascript:void(0); \" onclick=\"PodiumWebChat.open()\">click here</a>&nbsp;to email our customer service team, or phone 1300 026 937.</span></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\">&nbsp;</p>\n</section>\n\n<section>\n<div class=\"text-center meg-h4\"><svg height=\"21\" id=\"fi-bs-shield-check\" viewbox=\"0 0 17 21\" width=\"17\" xmlns=\"http://www.w3.org/2000/svg\"> <g data-name=\"Group 1431\" id=\"Group_1431\"> <path d=\"M10.572,11.129l-1.5-1.6L7.24,11.35l1.87,2A1.982,1.982,0,0,0,10.533,14h.031a1.983,1.983,0,0,0,1.413-.6L16.245,9l-1.8-1.857Z\" data-name=\"Path 1838\" fill=\"#111\" id=\"Path_1838\" transform=\"translate(-2.786 -0.911)\"></path> <path d=\"M10.434,21.03l-.451-.208C9.656,20.67,2,17.088,2,10.517V4.844A2.623,2.623,0,0,1,3.744,2.351L10.5.03l6.757,2.322A2.618,2.618,0,0,1,19,4.844v5.673C19,18,11.234,20.751,10.9,20.865ZM10.5,2.8,4.55,4.844v5.673c0,4.091,4.542,6.875,6.015,7.668,1.481-.637,5.885-2.931,5.885-7.668V4.844Z\" data-name=\"Path 1839\" fill=\"#111\" id=\"Path_1839\" transform=\"translate(-2 -0.03)\"></path> </g> </svg> RETURN &amp; WARRANTY</div>\n\n<p><span style=\"font-size:16px;\"><u style=\"font-size: 16px; font-family: arial, helvetica, sans-serif; color: rgb(40, 40, 40); box-sizing: border-box; margin: 0px; padding: 0px;\"><strong style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">WARRANTY</strong></u></span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px; max-width: 100%; line-height: 22px; font-size: 14px; color: rgb(40, 40, 40); font-family: &quot;Titillium Web&quot;, sans-serif;\"><span style=\"font-size:16px;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px; font-family: arial, helvetica, sans-serif;\"><span style=\"box-sizing: border-box; margin: 0px; padding: 0px;\">For your total confidence, Tools In A Box offers a 1-year warranty on this product. We place a high value on customer service and aim to ensure you are completely satisfied with your purchase. If you require any assistance with your product, please contact us.</span></span></span></p>\n\n<p><span style=\"font-size:16px;\"><u><strong>RETURNS</strong></u></span></p>\n\n<p><span style=\"font-size:16px;\"><strong>CHANGED YOUR MIND?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">No problem! You may return or exchange any product within 30 days, as long as the item is in resalable condition and is returned in its original packaging. You will be responsible for the original and return shipping charges and a restocking fee of 10%. This also applies to orders cancelled during transit. If your original purchase price includes shipping, please contact us to confirm the original shipping cost. A refund, credit or replacement will be issued after we have received the package and confirm the item is in a resalable condition. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>FAULTY OR INCORRECT ITEM?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">The item needs to be returned and will be replaced or a full refund or credit provided. Please contact us ASAP if you would like to make a claim.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHAT CAN BE RETURNED?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">All our products are returnable.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHEN DO ITEMS NEED TO BE RETURNED BY?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Within 30 days of receipt. Returns will not be accepted if you contact us after 30 days of receiving the item.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>HOW TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">By post,&nbsp;courier or visit personally.&nbsp;</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>WHERE TO RETURN ITEMS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Unit 13, 340 Hoxton Park Rd, Prestons 2170 NSW</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>PACKAGING MATERIALS?</strong></span></p>\n\n<p><span style=\"font-size:16px;\">Items need to be returned in original packaging.</span></p>\n\n<p><span style=\"font-size:16px;\"><strong>ADDITIONAL NOTES</strong></span></p>\n\n<p><span style=\"font-size:16px;\">If the product is damaged during installation, we are not responsible and will not issue a refund or credit.</span></p>\n\n<p><span style=\"font-size:16px;\">When you have received your package, please inspect your product for any manufacturer defects or shipping damage prior to installation. If you notice any damages or defects, please contact us ASAP.</span></p>\n\n<p><span style=\"font-size:16px;\">Before any returns or exchanges, please contact our customer service representatives via email at <a href=\"mailto:info@toolsinabox.com.au\">info@toolsinabox.com.au</a>. Please include your order number and&nbsp;specific description of damage/problem, photos&nbsp;and a clear explanation of your reason. If the return is authorised, you will receive an email with return instructions. All emails will be replied to within 24 business hours.</span></p>\n\n<p style=\"box-sizing: border-box; margin: 0px 0px 10px; padding: 0px 0px 0px 15px; list-style: none; line-height: 22px; position: relative;\">&nbsp;</p>\n</section>\n</div>\n",
+            "TaxCategory": "",
+            "QuantityPerScan": "1",
+            "IsActive": "True",
+            "Model": "1200 x 500 x 500mm Aluminium Checker Toolbox Trailer Draw Bar Storage DrawBar Tool Box 1255D",
+            "Approved": "True",
+            "CrossSellProducts": "",
+            "Type": "",
+            "ShippingHeight": "0.530",
+            "SubType": "",
+            "ProductURL": "",
+            "UnitOfMeasure": "",
+            "PickPriority": "FIFO",
+            "ShippingWidth": "0.530",
+            "ImageURL": "",
+            "CubicWeight": "0.345507000",
+            "ShortDescription": "",
+            "ItemLength": "1.200",
+            "CustomContent": "",
+            "TaxFreeItem": "False",
+            "SellUnitQuantity": "1",
+            "CommittedQuantity": "0",
+            "Brand": "TOOLS IN A BOX",
+            "SearchKeywords": "",
+            "PriceGroups": [
+              {
+                "PriceGroup": [
+                  {
+                    "Multiple": "",
+                    "Price": "480.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "A",
+                    "GroupID": "1"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "B",
+                    "GroupID": "2"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "480.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "C",
+                    "GroupID": "3"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "D",
+                    "GroupID": "4"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "E",
+                    "GroupID": "5"
+                  },
+                  {
+                    "Multiple": "",
+                    "Price": "0.00",
+                    "MaximumQuantity": "",
+                    "MinimumQuantity": "",
+                    "MultipleStartQuantity": "",
+                    "Group": "F",
+                    "GroupID": "6"
+                  }
+                ]
+              }
+            ],
+            "Images": [
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/full/1255D.jpg",
+                "Timestamp": "2024-12-19 13:08:05",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/thumb/1255D.jpg",
+                "MediumThumbURL": "https://www.toolsinabox.com.au/assets/thumbL/1255D.jpg",
+                "Name": "Main"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_1/1255D.jpg",
+                "Timestamp": "2023-06-09 07:15:43",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_1_thumb/1255D.jpg",
+                "Name": "Alt 1"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_2/1255D.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_2_thumb/1255D.jpg",
+                "Name": "Alt 2"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_3/1255D.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_3_thumb/1255D.jpg",
+                "Name": "Alt 3"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_4/1255D.jpg",
+                "Timestamp": "2021-03-08 17:03:24",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_4_thumb/1255D.jpg",
+                "Name": "Alt 4"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_5/1255D.gif",
+                "Timestamp": "2021-03-08 17:04:04",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_5_thumb/1255D.gif",
+                "Name": "Alt 5"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_6/1255D.png",
+                "Timestamp": "2021-03-08 17:03:38",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_6_thumb/1255D.png",
+                "Name": "Alt 6"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_7/1255D.png",
+                "Timestamp": "2021-03-08 17:03:38",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_7_thumb/1255D.png",
+                "Name": "Alt 7"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_9/1255D.jpg",
+                "Timestamp": "2021-03-08 17:03:41",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_9_thumb/1255D.jpg",
+                "Name": "Alt 9"
+              },
+              {
+                "URL": "https://www.toolsinabox.com.au/assets/alt_10/1255D.jpg",
+                "Timestamp": "2021-03-08 17:03:20",
+                "ThumbURL": "https://www.toolsinabox.com.au/assets/alt_10_thumb/1255D.jpg",
+                "Name": "Alt 10"
+              }
+            ],
+            "ItemSpecifics": [
+              {
+                "ItemSpecific": [
+                  {
+                    "Value": "Tools In A Box",
+                    "Name": "Brand"
+                  },
+                  {
+                    "Value": "Checker Plate Aluminium",
+                    "Name": "Material"
+                  },
+                  {
+                    "Value": "120 x 50 x 50cm",
+                    "Name": "Dimensions"
+                  },
+                  {
+                    "Value": "1200",
+                    "Name": "Size"
+                  }
+                ]
+              }
+            ],
+            "DateAdded": "0000-00-00 00:00:00",
+            "ID": "173",
+            "PrimarySupplier": "1",
+            "ShippingWeight": "23.0000",
+            "TermsAndConditions": "",
+            "PickZone": "Unit 13",
+            "WarehouseLocations": [
+              {
+                "WarehouseLocation": ""
+              }
+            ],
+            "AvailableSellQuantity": "2",
+            "ItemHeight": "0.500",
+            "BaseUnitOfMeasure": "",
+            "ShippingLength": "1.230",
+            "SEOPageHeading": "1200 x 500 x 500mm Aluminium Checker Toolbox Trailer Draw Bar Storage DrawBar Tool Box 1255D",
+            "SEOMetaDescription": "",
+            "FreeGifts": [
+              ""
+            ],
+            "Categories": [
+              {
+                "Category": [
+                  {
+                    "CategoryID": "180",
+                    "Priority": "0",
+                    "CategoryName": "All Toolboxes"
+                  },
+                  {
+                    "CategoryID": "187",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Toolboxes"
+                  },
+                  {
+                    "CategoryID": "188",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening Toolboxes"
+                  },
+                  {
+                    "CategoryID": "196",
+                    "Priority": "0",
+                    "CategoryName": "Camper Toolboxes"
+                  },
+                  {
+                    "CategoryID": "374",
+                    "Priority": "0",
+                    "CategoryName": "Camper & Trailer Boxes"
+                  },
+                  {
+                    "CategoryID": "386",
+                    "Priority": "0",
+                    "CategoryName": "Top Opening"
+                  },
+                  {
+                    "CategoryID": "391",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Boxes"
+                  },
+                  {
+                    "CategoryID": "396",
+                    "Priority": "0",
+                    "CategoryName": "Trailer Boxes"
+                  },
+                  {
+                    "CategoryID": "399",
+                    "Priority": "0",
+                    "CategoryName": "Checker Plate"
+                  },
+                  {
+                    "CategoryID": "422",
+                    "Priority": "0",
+                    "CategoryName": "Aluminium Toolboxes"
+                  }
+                ]
+              }
+            ],
+            "RRP": "530.00",
+            "TaxInclusive": "True",
+            "UpsellProducts": [
+              {
+                "UpsellProduct": [
+                  {
+                    "SKU": "W-STRIP-2M"
+                  },
+                  {
+                    "SKU": "TIAB-MKIT"
+                  },
+                  {
+                    "SKU": "TA3S1R-B"
+                  },
+                  {
+                    "SKU": "W-LED-AF"
+                  }
+                ]
+              }
+            ],
+            "eBayProductIDs": {
+              "eBayProductID": [
+                {
+                  "eBaySiteFullName": "eBay United States",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Canada (English)",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay UK",
+                  "eBayProductID": ""
+                },
+                {
+                  "eBaySiteFullName": "eBay Germany",
+                  "eBayProductID": ""
+                }
+              ]
+            },
+            "ParentSKU": "",
+            "CostPrice": "295.22400000",
+            "WarehouseQuantity": {
+              "WarehouseID": "1",
+              "Quantity": "2"
+            },
+            "ItemWidth": "0.500",
+            "Warranty": "",
+            "AccountingCode": "1255D",
+            "InventoryID": "173",
+            "DefaultPrice": "480.00",
+            "BuyUnitQuantity": "1",
+            "DateUpdated": "2026-03-10 22:03:10",
+            "Specifications": "",
+            "Description": "<div class=\"n-responsive-content mb-4\">\n<section class=\"section15\">\n<table>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td colspan=\"2\">This is designed to lock up your valuables, The <a href=\"https://www.toolsinabox.com.au\">Ute Tool box</a> is hinged with Stainless Steel hinges with a Heavy Duty Stainless T-Locks with Spring Built into the lock to prevent T-Lock handle becoming lose. Our Boxes are Water/Dust Resistant with Fully welding seams.<br />\n\t\t\tOur toolboxes are built to the highest quality. Contact us today: <a href=\"tel:1300026937\">1300 026 937</a></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Thickness:</td>\n\t\t\t<td>3mm Including Checker<br />\n\t\t\t2.5mm Excluding Checker</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Locking System:</td>\n\t\t\t<td>T-Lock<br />\n\t\t\t(Upgrade to Compress Pad lockable T-Lock available)</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Welding:</td>\n\t\t\t<td>Full Welded Toolbox</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Rubber Seal:</td>\n\t\t\t<td>Curved Dust/Water Seal</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Gas Strut:</td>\n\t\t\t<td>2 Gas Strut</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Keys:</td>\n\t\t\t<td>2 Keys</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Hinge:</td>\n\t\t\t<td>Full Length Piano Hinge</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Box Size:</td>\n\t\t\t<td>- Length: 1200mm<br />\n\t\t\t- Width: 500mm<br />\n\t\t\t- Height: 500mm</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Opening Sizes:</td>\n\t\t\t<td>- Length: 1070mm / 720mm<br />\n\t\t\t- Height: 410mm</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>What You Get:</td>\n\t\t\t<td>1x 1255D Trailer Toolbox</td>\n\t\t</tr>\n\t</tbody>\n</table>\n</section>\n</div>\n",
+            "Name": "1200 x 500 x 500mm Aluminium Checker Toolbox Trailer Draw Bar Storage DrawBar Tool Box 1255D",
+            "SKU": "1255D"
+          }
+        ],
+        "CurrentTime": "2026-03-15 16:13:30",
+        "Ack": "Success"
+      },
+      "fields": [
+        "AccountingCode",
+        "Approved",
+        "AutomaticURL",
+        "AvailableSellQuantity",
+        "BaseUnitOfMeasure",
+        "Brand",
+        "BuyUnitQuantity",
+        "Categories",
+        "Categories[0].Category",
+        "Categories[0].Category[0].CategoryID",
+        "Categories[0].Category[0].CategoryName",
+        "Categories[0].Category[0].Priority",
+        "CommittedQuantity",
+        "CostPrice",
+        "CrossSellProducts",
+        "CubicWeight",
+        "CustomContent",
+        "DateAdded",
+        "DateUpdated",
+        "DefaultPrice",
+        "Description",
+        "Features",
+        "FreeGifts",
+        "ID",
+        "ImageURL",
+        "Images",
+        "Images[0].MediumThumbURL",
+        "Images[0].Name",
+        "Images[0].ThumbURL",
+        "Images[0].Timestamp",
+        "Images[0].URL",
+        "InventoryID",
+        "IsActive",
+        "ItemHeight",
+        "ItemLength",
+        "ItemSpecifics",
+        "ItemSpecifics[0].ItemSpecific",
+        "ItemSpecifics[0].ItemSpecific[0].Name",
+        "ItemSpecifics[0].ItemSpecific[0].Value",
+        "ItemWidth",
+        "Model",
+        "Name",
+        "ParentSKU",
+        "PickPriority",
+        "PickZone",
+        "PriceGroups",
+        "PriceGroups[0].PriceGroup",
+        "PriceGroups[0].PriceGroup[0].Group",
+        "PriceGroups[0].PriceGroup[0].GroupID",
+        "PriceGroups[0].PriceGroup[0].MaximumQuantity",
+        "PriceGroups[0].PriceGroup[0].MinimumQuantity",
+        "PriceGroups[0].PriceGroup[0].Multiple",
+        "PriceGroups[0].PriceGroup[0].MultipleStartQuantity",
+        "PriceGroups[0].PriceGroup[0].Price",
+        "PrimarySupplier",
+        "ProductURL",
+        "QuantityPerScan",
+        "RRP",
+        "SEOMetaDescription",
+        "SEOPageHeading",
+        "SEOPageTitle",
+        "SKU",
+        "SearchKeywords",
+        "SellUnitQuantity",
+        "ShippingHeight",
+        "ShippingLength",
+        "ShippingWeight",
+        "ShippingWidth",
+        "ShortDescription",
+        "Specifications",
+        "SubType",
+        "TaxCategory",
+        "TaxFreeItem",
+        "TaxInclusive",
+        "TermsAndConditions",
+        "Type",
+        "UnitOfMeasure",
+        "UpsellProducts",
+        "UpsellProducts[0].UpsellProduct",
+        "UpsellProducts[0].UpsellProduct[0].SKU",
+        "WarehouseLocations",
+        "WarehouseLocations[0].WarehouseLocation",
+        "WarehouseQuantity",
+        "WarehouseQuantity.Quantity",
+        "WarehouseQuantity.WarehouseID",
+        "Warranty",
+        "eBayProductIDs",
+        "eBayProductIDs.eBayProductID",
+        "eBayProductIDs.eBayProductID[0].eBayProductID",
+        "eBayProductIDs.eBayProductID[0].eBaySiteFullName"
+      ],
+      "sampleItem": {
+        "SEOPageTitle": "Rounding",
+        "AutomaticURL": "False",
+        "Features": "",
+        "TaxCategory": "",
+        "QuantityPerScan": "1",
+        "IsActive": "True",
+        "Model": "Rounding",
+        "Approved": "False",
+        "CrossSellProducts": "",
+        "Type": "",
+        "ShippingHeight": "0.000",
+        "SubType": "",
+        "ProductURL": "",
+        "UnitOfMeasure": "",
+        "PickPriority": "FIFO",
+        "ShippingWidth": "0.000",
+        "ImageURL": "",
+        "CubicWeight": "0.000000000",
+        "ShortDescription": "",
+        "ItemLength": "0.000",
+        "CustomContent": "",
+        "TaxFreeItem": "False",
+        "SellUnitQuantity": "1",
+        "CommittedQuantity": "0",
+        "Brand": "TOOLS IN A BOX",
+        "SearchKeywords": "",
+        "PriceGroups": [
+          {
+            "PriceGroup": [
+              {
+                "Multiple": "",
+                "Price": "0.00",
+                "MaximumQuantity": "",
+                "MinimumQuantity": "",
+                "MultipleStartQuantity": "",
+                "Group": "A",
+                "GroupID": "1"
+              },
+              {
+                "Multiple": "",
+                "Price": "0.00",
+                "MaximumQuantity": "",
+                "MinimumQuantity": "",
+                "MultipleStartQuantity": "",
+                "Group": "B",
+                "GroupID": "2"
+              },
+              {
+                "Multiple": "",
+                "Price": "0.00",
+                "MaximumQuantity": "",
+                "MinimumQuantity": "",
+                "MultipleStartQuantity": "",
+                "Group": "C",
+                "GroupID": "3"
+              },
+              {
+                "Multiple": "",
+                "Price": "0.00",
+                "MaximumQuantity": "",
+                "MinimumQuantity": "",
+                "MultipleStartQuantity": "",
+                "Group": "D",
+                "GroupID": "4"
+              },
+              {
+                "Multiple": "",
+                "Price": "0.00",
+                "MaximumQuantity": "",
+                "MinimumQuantity": "",
+                "MultipleStartQuantity": "",
+                "Group": "E",
+                "GroupID": "5"
+              },
+              {
+                "Multiple": "",
+                "Price": "0.00",
+                "MaximumQuantity": "",
+                "MinimumQuantity": "",
+                "MultipleStartQuantity": "",
+                "Group": "F",
+                "GroupID": "6"
+              }
+            ]
+          }
+        ],
+        "Images": [],
+        "ItemSpecifics": [
+          {
+            "ItemSpecific": ""
+          }
+        ],
+        "DateAdded": "2016-02-09 00:00:00",
+        "ID": "169",
+        "PrimarySupplier": "",
+        "ShippingWeight": "0.0000",
+        "TermsAndConditions": "",
+        "PickZone": "",
+        "WarehouseLocations": [
+          {
+            "WarehouseLocation": ""
+          }
+        ],
+        "AvailableSellQuantity": "-14",
+        "ItemHeight": "0.000",
+        "BaseUnitOfMeasure": "",
+        "ShippingLength": "0.000",
+        "SEOPageHeading": "Rounding",
+        "SEOMetaDescription": "",
+        "FreeGifts": [
+          ""
+        ],
+        "Categories": [
+          ""
+        ],
+        "RRP": "0.00",
+        "TaxInclusive": "True",
+        "UpsellProducts": [
+          {
+            "UpsellProduct": [
+              {
+                "SKU": "W-STRIP-2M"
+              },
+              {
+                "SKU": "TIAB-MKIT"
+              },
+              {
+                "SKU": "TA3S1R-B"
+              },
+              {
+                "SKU": "W-LED-AF"
+              }
+            ]
+          }
+        ],
+        "eBayProductIDs": {
+          "eBayProductID": [
+            {
+              "eBaySiteFullName": "eBay United States",
+              "eBayProductID": ""
+            },
+            {
+              "eBaySiteFullName": "eBay Canada (English)",
+              "eBayProductID": ""
+            },
+            {
+              "eBaySiteFullName": "eBay UK",
+              "eBayProductID": ""
+            },
+            {
+              "eBaySiteFullName": "eBay Australia",
+              "eBayProductID": ""
+            },
+            {
+              "eBaySiteFullName": "eBay Germany",
+              "eBayProductID": ""
+            }
+          ]
+        },
+        "ParentSKU": "",
+        "CostPrice": "0.00000000",
+        "WarehouseQuantity": {
+          "WarehouseID": "1",
+          "Quantity": "0"
+        },
+        "ItemWidth": "0.000",
+        "Warranty": "",
+        "AccountingCode": "ROUNDING",
+        "InventoryID": "169",
+        "DefaultPrice": "0.00",
+        "BuyUnitQuantity": "1",
+        "DateUpdated": "2025-01-16 21:59:26",
+        "Specifications": "",
+        "Description": "<p>For use with Neto POS and various accounting integrations.</p>\n",
+        "Name": "Rounding",
+        "SKU": "ROUNDING"
+      },
+      "count": 5
+    },
+    "categories": {
+      "entity": "categories",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:31",
+        "Ack": "Success",
+        "Category": [
+          {
+            "OnSiteMap": "True",
+            "ExternalReference3": "",
+            "CategoryID": "179",
+            "ExternalReference2": "",
+            "ParentCategoryID": "0",
+            "CategoryName": "Package Deals",
+            "ExternalReference1": "Aluminium Toolbox Accessories | Buy Accessories for Utes | Tools In A Box",
+            "ExternalSource": "",
+            "OnMenu": "True",
+            "SortOrder": "94",
+            "Active": "True",
+            "CategoryReference": ""
+          },
+          {
+            "OnSiteMap": "True",
+            "ExternalReference3": "",
+            "CategoryID": "180",
+            "ExternalReference2": "",
+            "ParentCategoryID": "0",
+            "CategoryName": "All Toolboxes",
+            "ExternalReference1": "Trundle Drawers | Buy Aluminium Ute Trundle Trays Australia | Tools In A Box",
+            "ExternalSource": "",
+            "OnMenu": "True",
+            "SortOrder": "100",
+            "Active": "True",
+            "CategoryReference": ""
+          },
+          {
+            "OnSiteMap": "True",
+            "ExternalReference3": "",
+            "CategoryID": "181",
+            "ExternalReference2": "",
+            "ParentCategoryID": "0",
+            "CategoryName": "Accessories",
+            "ExternalReference1": "Ute Canopies | Aluminium Canopies for Ute Australia | Tools In A Box",
+            "ExternalSource": "",
+            "OnMenu": "True",
+            "SortOrder": "95",
+            "Active": "True",
+            "CategoryReference": ""
+          },
+          {
+            "OnSiteMap": "True",
+            "ExternalReference3": "",
+            "CategoryID": "182",
+            "ExternalReference2": "",
+            "ParentCategoryID": "0",
+            "CategoryName": "Trundle Trays",
+            "ExternalReference1": "Drawer Tool Boxes | Ute Tool Chests, Cabinets & Storage Drawers | Tools In A Box",
+            "ExternalSource": "",
+            "OnMenu": "True",
+            "SortOrder": "91",
+            "Active": "True",
+            "CategoryReference": ""
+          },
+          {
+            "OnSiteMap": "True",
+            "ExternalReference3": "",
+            "CategoryID": "183",
+            "ExternalReference2": "",
+            "ParentCategoryID": "0",
+            "CategoryName": "Ute Canopies",
+            "ExternalReference1": "Aluminium Under Tray Tool Boxes | Under Ute Tray Toolbox | Tools In A Box",
+            "ExternalSource": "",
+            "OnMenu": "True",
+            "SortOrder": "78",
+            "Active": "True",
+            "CategoryReference": ""
+          }
+        ]
+      },
+      "fields": [
+        "Active",
+        "CategoryID",
+        "CategoryName",
+        "CategoryReference",
+        "ExternalReference1",
+        "ExternalReference2",
+        "ExternalReference3",
+        "ExternalSource",
+        "OnMenu",
+        "OnSiteMap",
+        "ParentCategoryID",
+        "SortOrder"
+      ],
+      "sampleItem": {
+        "OnSiteMap": "True",
+        "ExternalReference3": "",
+        "CategoryID": "179",
+        "ExternalReference2": "",
+        "ParentCategoryID": "0",
+        "CategoryName": "Package Deals",
+        "ExternalReference1": "Aluminium Toolbox Accessories | Buy Accessories for Utes | Tools In A Box",
+        "ExternalSource": "",
+        "OnMenu": "True",
+        "SortOrder": "94",
+        "Active": "True",
+        "CategoryReference": ""
+      },
+      "count": 5
+    },
+    "customers": {
+      "entity": "customers",
+      "rawData": {
+        "Customer": [
+          {
+            "DateAdded": "2020-02-04 05:35:08",
+            "IdentificationDetails": "",
+            "AvailableCredit": "0.00",
+            "NewsletterSubscriber": "True",
+            "EmailAddress": "craig.shephard@outlook.com",
+            "Type": "Customer",
+            "AccountBalance": "0.00",
+            "Username": "0066royston",
+            "Active": "True",
+            "UserGroup": "A",
+            "OnCreditHold": "False",
+            "ABN": "",
+            "CustomerLogs": "",
+            "IdentificationType": "",
+            "BillingAddress": {
+              "BillLastName": "Shephard",
+              "BillStreetLine1": "242 Ormans Lane",
+              "BillCountry": "AU",
+              "BillState": "NSW",
+              "BillPhone": "0455495017",
+              "BillPostCode": "2352",
+              "BillStreetLine2": "",
+              "BillFax": "",
+              "BillFirstName": "Pen",
+              "BillCompany": "",
+              "BillCity": "KOOTINGAL"
+            },
+            "DateUpdated": "2020-02-04 08:06:31",
+            "ShippingAddress": {
+              "ShipCompany": "",
+              "ShipFax": "",
+              "ShipStreetLine1": "242 Ormans Lane",
+              "ShipState": "NSW",
+              "ShipCity": "KOOTINGAL",
+              "ShipCountry": "AU",
+              "ShipLastName": "Shephard",
+              "ShipFirstName": "Pen",
+              "ShipStreetLine2": "",
+              "ShipPostCode": "2352",
+              "ShipPhone": "0455495017"
+            },
+            "CreditLimit": "0.00"
+          },
+          {
+            "DateAdded": "2023-08-22 20:32:25",
+            "IdentificationDetails": "",
+            "AvailableCredit": "0.00",
+            "NewsletterSubscriber": "False",
+            "EmailAddress": "018f882de1e95a7f2923@members.ebay.com",
+            "Type": "Customer",
+            "AccountBalance": "0.00",
+            "Username": "007kala",
+            "Active": "True",
+            "UserGroup": "A",
+            "OnCreditHold": "False",
+            "ABN": "",
+            "CustomerLogs": "",
+            "IdentificationType": "",
+            "BillingAddress": {
+              "BillLastName": "CHMET",
+              "BillStreetLine1": "2 NELSON ROAD,",
+              "BillCountry": "AU",
+              "BillState": "NSW",
+              "BillPhone": "0419238393",
+              "BillPostCode": "2206",
+              "BillStreetLine2": "",
+              "BillFax": "",
+              "BillFirstName": "JOHN",
+              "BillCompany": "",
+              "BillCity": "EARLWOOD"
+            },
+            "DateUpdated": "2025-09-29 13:03:28",
+            "ShippingAddress": {
+              "ShipCompany": "",
+              "ShipFax": "",
+              "ShipStreetLine1": "2 NELSON ROAD,",
+              "ShipState": "NSW",
+              "ShipCity": "EARLWOOD",
+              "ShipCountry": "AU",
+              "ShipLastName": "CHMET",
+              "ShipFirstName": "JOHN",
+              "ShipStreetLine2": "",
+              "ShipPostCode": "2206",
+              "ShipPhone": "0419238393"
+            },
+            "CreditLimit": "0.00"
+          },
+          {
+            "DateAdded": "2020-01-07 16:14:00",
+            "IdentificationDetails": "",
+            "AvailableCredit": "0.00",
+            "NewsletterSubscriber": "False",
+            "EmailAddress": "lewazz2000@gmail.com",
+            "Type": "Customer",
+            "AccountBalance": "0.00",
+            "Username": "00rg0zc2iLAdzle",
+            "Active": "True",
+            "UserGroup": "A",
+            "OnCreditHold": "False",
+            "ABN": "",
+            "CustomerLogs": "",
+            "IdentificationType": "",
+            "BillingAddress": {
+              "BillLastName": "Azzopardi",
+              "BillStreetLine1": "-",
+              "BillCountry": "AU",
+              "BillState": "NSW",
+              "BillPhone": "0402779886",
+              "BillPostCode": "2557",
+              "BillStreetLine2": "-",
+              "BillFax": "",
+              "BillFirstName": "Lewis",
+              "BillCompany": "",
+              "BillCity": "Catherine Field"
+            },
+            "DateUpdated": "2020-01-07 16:14:03",
+            "ShippingAddress": {
+              "ShipCompany": "",
+              "ShipFax": "",
+              "ShipStreetLine1": "-",
+              "ShipState": "NSW",
+              "ShipCity": "Catherine Field",
+              "ShipCountry": "AU",
+              "ShipLastName": "Azzopardi",
+              "ShipFirstName": "Lewis",
+              "ShipStreetLine2": "-",
+              "ShipPostCode": "2557",
+              "ShipPhone": ""
+            },
+            "CreditLimit": "0.00"
+          },
+          {
+            "DateAdded": "2016-12-03 00:02:22",
+            "IdentificationDetails": "",
+            "AvailableCredit": "0.00",
+            "NewsletterSubscriber": "False",
+            "EmailAddress": "stewart1942@live.com",
+            "Type": "Prospect",
+            "AccountBalance": "0.00",
+            "Username": "0145918366",
+            "Active": "True",
+            "UserGroup": "A",
+            "OnCreditHold": "False",
+            "ABN": "",
+            "CustomerLogs": "",
+            "IdentificationType": "",
+            "BillingAddress": {
+              "BillLastName": "",
+              "BillStreetLine1": "",
+              "BillCountry": "",
+              "BillState": "",
+              "BillPhone": "",
+              "BillPostCode": "",
+              "BillStreetLine2": "",
+              "BillFax": "",
+              "BillFirstName": "",
+              "BillCompany": "",
+              "BillCity": ""
+            },
+            "DateUpdated": "2020-03-27 20:42:25",
+            "ShippingAddress": {
+              "ShipCompany": "",
+              "ShipFax": "",
+              "ShipStreetLine1": "",
+              "ShipState": "",
+              "ShipCity": "",
+              "ShipCountry": "",
+              "ShipLastName": "",
+              "ShipFirstName": "",
+              "ShipStreetLine2": "",
+              "ShipPostCode": "",
+              "ShipPhone": ""
+            },
+            "CreditLimit": "0.00"
+          },
+          {
+            "DateAdded": "2020-11-25 10:12:37",
+            "IdentificationDetails": "",
+            "AvailableCredit": "0.00",
+            "NewsletterSubscriber": "False",
+            "EmailAddress": "01michaelhughes@gmail.com",
+            "Type": "Customer",
+            "AccountBalance": "0.00",
+            "Username": "01michaelhughes",
+            "Active": "True",
+            "UserGroup": "A",
+            "OnCreditHold": "False",
+            "ABN": "",
+            "CustomerLogs": "",
+            "IdentificationType": "",
+            "BillingAddress": {
+              "BillLastName": "Hughes",
+              "BillStreetLine1": "27 Kauper st",
+              "BillCountry": "AU",
+              "BillState": "ACT",
+              "BillPhone": "0409965599",
+              "BillPostCode": "2614",
+              "BillStreetLine2": "",
+              "BillFax": "",
+              "BillFirstName": "Michael",
+              "BillCompany": "",
+              "BillCity": "SCULLIN"
+            },
+            "DateUpdated": "2020-11-27 07:05:30",
+            "ShippingAddress": {
+              "ShipCompany": "",
+              "ShipFax": "",
+              "ShipStreetLine1": "27 Kauper st",
+              "ShipState": "ACT",
+              "ShipCity": "SCULLIN",
+              "ShipCountry": "AU",
+              "ShipLastName": "Hughes",
+              "ShipFirstName": "Michael",
+              "ShipStreetLine2": "",
+              "ShipPostCode": "2614",
+              "ShipPhone": "0409965599"
+            },
+            "CreditLimit": "0.00"
+          }
+        ],
+        "CurrentTime": "2026-03-15 16:13:32",
+        "Ack": "Success"
+      },
+      "fields": [
+        "ABN",
+        "AccountBalance",
+        "Active",
+        "AvailableCredit",
+        "BillingAddress",
+        "BillingAddress.BillCity",
+        "BillingAddress.BillCompany",
+        "BillingAddress.BillCountry",
+        "BillingAddress.BillFax",
+        "BillingAddress.BillFirstName",
+        "BillingAddress.BillLastName",
+        "BillingAddress.BillPhone",
+        "BillingAddress.BillPostCode",
+        "BillingAddress.BillState",
+        "BillingAddress.BillStreetLine1",
+        "BillingAddress.BillStreetLine2",
+        "CreditLimit",
+        "CustomerLogs",
+        "DateAdded",
+        "DateUpdated",
+        "EmailAddress",
+        "IdentificationDetails",
+        "IdentificationType",
+        "NewsletterSubscriber",
+        "OnCreditHold",
+        "ShippingAddress",
+        "ShippingAddress.ShipCity",
+        "ShippingAddress.ShipCompany",
+        "ShippingAddress.ShipCountry",
+        "ShippingAddress.ShipFax",
+        "ShippingAddress.ShipFirstName",
+        "ShippingAddress.ShipLastName",
+        "ShippingAddress.ShipPhone",
+        "ShippingAddress.ShipPostCode",
+        "ShippingAddress.ShipState",
+        "ShippingAddress.ShipStreetLine1",
+        "ShippingAddress.ShipStreetLine2",
+        "Type",
+        "UserGroup",
+        "Username"
+      ],
+      "sampleItem": {
+        "DateAdded": "2020-02-04 05:35:08",
+        "IdentificationDetails": "",
+        "AvailableCredit": "0.00",
+        "NewsletterSubscriber": "True",
+        "EmailAddress": "craig.shephard@outlook.com",
+        "Type": "Customer",
+        "AccountBalance": "0.00",
+        "Username": "0066royston",
+        "Active": "True",
+        "UserGroup": "A",
+        "OnCreditHold": "False",
+        "ABN": "",
+        "CustomerLogs": "",
+        "IdentificationType": "",
+        "BillingAddress": {
+          "BillLastName": "Shephard",
+          "BillStreetLine1": "242 Ormans Lane",
+          "BillCountry": "AU",
+          "BillState": "NSW",
+          "BillPhone": "0455495017",
+          "BillPostCode": "2352",
+          "BillStreetLine2": "",
+          "BillFax": "",
+          "BillFirstName": "Pen",
+          "BillCompany": "",
+          "BillCity": "KOOTINGAL"
+        },
+        "DateUpdated": "2020-02-04 08:06:31",
+        "ShippingAddress": {
+          "ShipCompany": "",
+          "ShipFax": "",
+          "ShipStreetLine1": "242 Ormans Lane",
+          "ShipState": "NSW",
+          "ShipCity": "KOOTINGAL",
+          "ShipCountry": "AU",
+          "ShipLastName": "Shephard",
+          "ShipFirstName": "Pen",
+          "ShipStreetLine2": "",
+          "ShipPostCode": "2352",
+          "ShipPhone": "0455495017"
+        },
+        "CreditLimit": "0.00"
+      },
+      "count": 5
+    },
+    "orders": {
+      "entity": "orders",
+      "rawData": {
+        "Order": [
+          {
+            "DateInvoiced": "2021-05-25",
+            "DatePaid": "2021-05-25 01:01:29",
+            "Username": "acrFufarnaoraoA",
+            "DeliveryInstruction": "",
+            "ShipPhone": "Not Provided",
+            "Email": "aaron.farquhar12@gmail.com",
+            "ShipCompany": "Not Provided",
+            "ShippingOption": "",
+            "BillLastName": "Farquhar",
+            "ShipStreetLine1": "Unit 13/340 Hoxton Park",
+            "ShipState": "NSW",
+            "ShipCity": "PRESTONS",
+            "SalesChannel": "Neto POS",
+            "InternalOrderNotes": "still owe him one box and one toolbox kit.. his waiting for shipping",
+            "OrderPayment": [
+              {
+                "Amount": "1200.00",
+                "Id": "14633",
+                "DatePaid": "2021-05-25 01:01:29"
+              }
+            ],
+            "DatePlaced": "2021-05-25 01:01:34",
+            "DateRequired": "2021-05-25 01:01:00",
+            "GrandTotal": "650.00",
+            "DateCompleted": "2021-07-06",
+            "BillStreetLine1": "Unit 13/340 Hoxton Park",
+            "BillState": "NSW",
+            "BillCountry": "AU",
+            "BillPostCode": "2170",
+            "OrderID": "5-1",
+            "ShipFirstName": "POS",
+            "ShipLastName": "User",
+            "CustomerRef2": "",
+            "OrderLine": [
+              {
+                "Quantity": "1",
+                "SKU": "1458FD",
+                "OrderLineID": "5-1-1"
+              },
+              {
+                "Quantity": "1",
+                "SKU": "624RLN",
+                "OrderLineID": "5-1-2"
+              },
+              {
+                "Quantity": "2",
+                "SKU": "TA3S1R-B",
+                "OrderLineID": "5-1-3"
+              }
+            ],
+            "BillFirstName": "Aaron",
+            "BillCity": "PRESTONS",
+            "BillPhone": "0404773336",
+            "ShipCountry": "AU",
+            "ShippingTotal": "0.00",
+            "SurchargeTotal": "0.00",
+            "CustomerRef1": "",
+            "DateUpdated": "2021-09-12 15:46:37",
+            "ShipPostCode": "2170"
+          },
+          {
+            "DateInvoiced": "2021-05-26",
+            "DatePaid": "2021-06-03 00:23:08",
+            "Username": "pomojdbcdsoJaoo",
+            "DeliveryInstruction": "",
+            "ShipPhone": "Not Provided",
+            "Email": "jabood@cope.com.au",
+            "ShipCompany": "Not Provided",
+            "ShippingOption": "Pickup - In Store",
+            "BillLastName": "Abood",
+            "ShipStreetLine1": "Unit 13/340 Hoxton Park",
+            "ShipState": "NSW",
+            "ShipCity": "PRESTONS",
+            "SalesChannel": "Neto POS",
+            "InternalOrderNotes": "Payment Cleared",
+            "OrderPayment": [
+              {
+                "Amount": "2698.00",
+                "Id": "14771",
+                "DatePaid": "2021-06-03 00:23:08"
+              }
+            ],
+            "DatePlaced": "2021-05-26 01:14:26",
+            "DateRequired": "2021-05-26 01:14:00",
+            "GrandTotal": "2698.00",
+            "DateCompleted": "2021-06-03",
+            "BillStreetLine1": "Unit 13/340 Hoxton Park",
+            "BillState": "NSW",
+            "BillCountry": "AU",
+            "BillPostCode": "2170",
+            "OrderID": "5-10",
+            "ShipFirstName": "POS",
+            "ShipLastName": "User",
+            "CustomerRef2": "",
+            "OrderLine": [
+              {
+                "Quantity": "2",
+                "SKU": "M-1468A-A",
+                "OrderLineID": "5-10-0"
+              },
+              {
+                "Quantity": "2",
+                "SKU": "TA3S1R-B",
+                "OrderLineID": "5-10-1"
+              }
+            ],
+            "BillFirstName": "Justin",
+            "BillCity": "PRESTONS",
+            "BillPhone": "0476838067",
+            "ShipCountry": "AU",
+            "ShippingTotal": "0.00",
+            "SurchargeTotal": "0.00",
+            "CustomerRef1": "",
+            "DateUpdated": "2021-06-03 03:15:59",
+            "ShipPostCode": "2170",
+            "BillCompany": "Cope Transport"
+          },
+          {
+            "DateInvoiced": "2021-06-10",
+            "DatePaid": "2021-06-10 03:07:44",
+            "Username": "i3yeiokaRtmrmdm",
+            "DeliveryInstruction": "",
+            "ShipPhone": "Not Provided",
+            "Email": "r33skida@hotmail.com",
+            "ShipCompany": "Not Provided",
+            "ShippingOption": "",
+            "BillLastName": "Timney",
+            "ShipStreetLine1": "Unit 13/340 Hoxton Park",
+            "ShipState": "NSW",
+            "ShipCity": "PRESTONS",
+            "SalesChannel": "Neto POS",
+            "InternalOrderNotes": "",
+            "OrderPayment": [
+              {
+                "Amount": "350.00",
+                "Id": "14871",
+                "DatePaid": "2021-06-10 03:07:44"
+              }
+            ],
+            "DatePlaced": "2021-06-10 03:07:56",
+            "DateRequired": "2021-06-10 03:07:56",
+            "GrandTotal": "350.00",
+            "DateCompleted": "2021-06-10",
+            "BillStreetLine1": "Unit 13/340 Hoxton Park",
+            "BillState": "NSW",
+            "BillCountry": "AU",
+            "BillPostCode": "2170",
+            "OrderID": "5-100",
+            "ShipFirstName": "POS",
+            "ShipLastName": "User",
+            "CustomerRef2": "",
+            "OrderLine": [
+              {
+                "Quantity": "1",
+                "SKU": "1255D",
+                "OrderLineID": "5-100-0"
+              }
+            ],
+            "BillFirstName": "Rodney",
+            "BillCity": "PRESTONS",
+            "BillPhone": "0435595583",
+            "ShipCountry": "AU",
+            "ShippingTotal": "0.00",
+            "SurchargeTotal": "0.00",
+            "CustomerRef1": "",
+            "DateUpdated": "2021-06-10 03:08:31",
+            "ShipPostCode": "2170"
+          },
+          {
+            "DateInvoiced": "2021-06-10",
+            "DatePaid": "2021-06-10 03:20:50",
+            "Username": "mohoamtkseminpc",
+            "DeliveryInstruction": "",
+            "ShipPhone": "Not Provided",
+            "Email": "mike_p92@hotmail.com",
+            "ShipCompany": "Not Provided",
+            "ShippingOption": "",
+            "BillLastName": "Panovski",
+            "ShipStreetLine1": "Unit 13/340 Hoxton Park",
+            "ShipState": "NSW",
+            "ShipCity": "PRESTONS",
+            "SalesChannel": "Neto POS",
+            "InternalOrderNotes": "",
+            "OrderPayment": [
+              {
+                "Amount": "490.00",
+                "Id": "14873",
+                "DatePaid": "2021-06-10 03:20:50"
+              }
+            ],
+            "DatePlaced": "2021-06-10 03:21:02",
+            "DateRequired": "2021-06-10 03:21:02",
+            "GrandTotal": "490.00",
+            "DateCompleted": "2021-06-10",
+            "BillStreetLine1": "Unit 13/340 Hoxton Park",
+            "BillState": "NSW",
+            "BillCountry": "AU",
+            "BillPostCode": "2170",
+            "OrderID": "5-101",
+            "ShipFirstName": "POS",
+            "ShipLastName": "User",
+            "CustomerRef2": "",
+            "OrderLine": [
+              {
+                "Quantity": "1",
+                "SKU": "1268FD",
+                "OrderLineID": "5-101-0"
+              }
+            ],
+            "BillFirstName": "Michael",
+            "BillCity": "PRESTONS",
+            "BillPhone": "0415743200",
+            "ShipCountry": "AU",
+            "ShippingTotal": "0.00",
+            "SurchargeTotal": "0.00",
+            "CustomerRef1": "",
+            "DateUpdated": "2021-06-10 03:21:12",
+            "ShipPostCode": "2170"
+          },
+          {
+            "DateInvoiced": "2021-06-10",
+            "DatePaid": "2021-06-10 04:08:15",
+            "Username": "CmfilllokamrroF",
+            "DeliveryInstruction": "",
+            "ShipPhone": "Not Provided",
+            "Email": "fcirillo78@gmail.com",
+            "ShipCompany": "Not Provided",
+            "ShippingOption": "",
+            "BillLastName": "Cirillo",
+            "ShipStreetLine1": "Unit 13/340 Hoxton Park",
+            "ShipState": "NSW",
+            "ShipCity": "PRESTONS",
+            "SalesChannel": "Neto POS",
+            "InternalOrderNotes": "",
+            "OrderPayment": [
+              {
+                "Amount": "950.00",
+                "Id": "14876",
+                "DatePaid": "2021-06-10 04:08:15"
+              }
+            ],
+            "DatePlaced": "2021-06-10 04:08:39",
+            "DateRequired": "2021-06-10 04:08:00",
+            "GrandTotal": "950.00",
+            "DateCompleted": "2022-04-28",
+            "BillStreetLine1": "Unit 13/340 Hoxton Park",
+            "BillState": "NSW",
+            "BillCountry": "AU",
+            "BillPostCode": "2170",
+            "OrderID": "5-102",
+            "ShipFirstName": "POS",
+            "ShipLastName": "User",
+            "CustomerRef2": "",
+            "OrderLine": [
+              {
+                "Quantity": "1",
+                "SKU": "1465",
+                "OrderLineID": "5-102-0"
+              },
+              {
+                "Quantity": "1",
+                "SKU": "1772",
+                "OrderLineID": "5-102-1"
+              }
+            ],
+            "BillFirstName": "Frank",
+            "BillCity": "PRESTONS",
+            "BillPhone": "0401414489",
+            "ShipCountry": "AU",
+            "ShippingTotal": "0.00",
+            "SurchargeTotal": "0.00",
+            "CustomerRef1": "",
+            "DateUpdated": "2022-04-27 23:42:27",
+            "ShipPostCode": "2170",
+            "BillCompany": "John Street Mechanical Repairs"
+          }
+        ],
+        "CurrentTime": "2026-03-15 16:13:32",
+        "Ack": "Success"
+      },
+      "fields": [
+        "BillCity",
+        "BillCompany",
+        "BillCountry",
+        "BillFirstName",
+        "BillLastName",
+        "BillPhone",
+        "BillPostCode",
+        "BillState",
+        "BillStreetLine1",
+        "CustomerRef1",
+        "CustomerRef2",
+        "DateCompleted",
+        "DateInvoiced",
+        "DatePaid",
+        "DatePlaced",
+        "DateRequired",
+        "DateUpdated",
+        "DeliveryInstruction",
+        "Email",
+        "GrandTotal",
+        "InternalOrderNotes",
+        "OrderID",
+        "OrderLine",
+        "OrderLine[0].OrderLineID",
+        "OrderLine[0].Quantity",
+        "OrderLine[0].SKU",
+        "OrderPayment",
+        "OrderPayment[0].Amount",
+        "OrderPayment[0].DatePaid",
+        "OrderPayment[0].Id",
+        "SalesChannel",
+        "ShipCity",
+        "ShipCompany",
+        "ShipCountry",
+        "ShipFirstName",
+        "ShipLastName",
+        "ShipPhone",
+        "ShipPostCode",
+        "ShipState",
+        "ShipStreetLine1",
+        "ShippingOption",
+        "ShippingTotal",
+        "SurchargeTotal",
+        "Username"
+      ],
+      "sampleItem": {
+        "DateInvoiced": "2021-05-25",
+        "DatePaid": "2021-05-25 01:01:29",
+        "Username": "acrFufarnaoraoA",
+        "DeliveryInstruction": "",
+        "ShipPhone": "Not Provided",
+        "Email": "aaron.farquhar12@gmail.com",
+        "ShipCompany": "Not Provided",
+        "ShippingOption": "",
+        "BillLastName": "Farquhar",
+        "ShipStreetLine1": "Unit 13/340 Hoxton Park",
+        "ShipState": "NSW",
+        "ShipCity": "PRESTONS",
+        "SalesChannel": "Neto POS",
+        "InternalOrderNotes": "still owe him one box and one toolbox kit.. his waiting for shipping",
+        "OrderPayment": [
+          {
+            "Amount": "1200.00",
+            "Id": "14633",
+            "DatePaid": "2021-05-25 01:01:29"
+          }
+        ],
+        "DatePlaced": "2021-05-25 01:01:34",
+        "DateRequired": "2021-05-25 01:01:00",
+        "GrandTotal": "650.00",
+        "DateCompleted": "2021-07-06",
+        "BillStreetLine1": "Unit 13/340 Hoxton Park",
+        "BillState": "NSW",
+        "BillCountry": "AU",
+        "BillPostCode": "2170",
+        "OrderID": "5-1",
+        "ShipFirstName": "POS",
+        "ShipLastName": "User",
+        "CustomerRef2": "",
+        "OrderLine": [
+          {
+            "Quantity": "1",
+            "SKU": "1458FD",
+            "OrderLineID": "5-1-1"
+          },
+          {
+            "Quantity": "1",
+            "SKU": "624RLN",
+            "OrderLineID": "5-1-2"
+          },
+          {
+            "Quantity": "2",
+            "SKU": "TA3S1R-B",
+            "OrderLineID": "5-1-3"
+          }
+        ],
+        "BillFirstName": "Aaron",
+        "BillCity": "PRESTONS",
+        "BillPhone": "0404773336",
+        "ShipCountry": "AU",
+        "ShippingTotal": "0.00",
+        "SurchargeTotal": "0.00",
+        "CustomerRef1": "",
+        "DateUpdated": "2021-09-12 15:46:37",
+        "ShipPostCode": "2170"
+      },
+      "count": 5
+    },
+    "content": {
+      "entity": "content",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:33",
+        "Content": [
+          {
+            "SEOPageTitle": "Terms & Conditions",
+            "ContentType": "2",
+            "ContentID": "1",
+            "ContentName": "Website Terms of Use",
+            "Active": "True",
+            "SEOPageHeading": "Tools In A Box - Terms & Conditions",
+            "SEOMetaDescription": "Terms & Conditions Tools In A Box - Toolboxes for trucks and utes",
+            "Author": "",
+            "ContentReference": "",
+            "SEOMetaKeywords": "Terms & Conditions tools in a box aluminium toolboxes",
+            "OnSiteMap": "False",
+            "DatePosted": "0000-00-00 00:00:00",
+            "OnMenu": "True",
+            "SortOrder": "0",
+            "ParentContentID": "0",
+            "DateUpdated": "2023-07-10 18:30:33"
+          },
+          {
+            "SEOPageTitle": "Privacy Policy",
+            "ContentType": "2",
+            "ContentID": "2",
+            "ContentName": "Privacy Policy",
+            "Active": "True",
+            "SEOPageHeading": "Tools In A Box - Privacy Policy",
+            "SEOMetaDescription": "Privacy Policy Tools In A Box - Toolboxes for trucks and utes",
+            "Author": "",
+            "ContentReference": "",
+            "SEOMetaKeywords": "Privacy Policy Tools In A Box Aluminium Toolboxes",
+            "OnSiteMap": "False",
+            "DatePosted": "0000-00-00 00:00:00",
+            "OnMenu": "True",
+            "SortOrder": "0",
+            "ParentContentID": "0",
+            "DateUpdated": "2019-04-10 16:10:51"
+          },
+          {
+            "SEOPageTitle": "Returns Policy",
+            "ContentType": "2",
+            "ContentID": "3",
+            "ContentName": "Returns Policy",
+            "Active": "True",
+            "SEOPageHeading": "Tools In A Box - Returns Policy",
+            "SEOMetaDescription": "Return Policy Tools In A Box - toolboxes for trucks and utes",
+            "Author": "",
+            "ContentReference": "",
+            "SEOMetaKeywords": "Returns Policy tools in a box aluminium toolboxes",
+            "OnSiteMap": "False",
+            "DatePosted": "0000-00-00 00:00:00",
+            "OnMenu": "True",
+            "SortOrder": "0",
+            "ParentContentID": "0",
+            "DateUpdated": "2023-07-10 18:35:51"
+          },
+          {
+            "SEOPageTitle": "About Us",
+            "ContentType": "2",
+            "ContentID": "11",
+            "ContentName": "About Us",
+            "Active": "True",
+            "SEOPageHeading": "Tools In A Box - About Us",
+            "SEOMetaDescription": "Tools In A Box is a family owned business that sells toolboxes, canopies, dog boxes, under tray toolboxes, and much more ute products. Shop at TIAB for the best aluminium toolbox. toolboxes for trucks and utes",
+            "Author": "",
+            "ContentReference": "",
+            "SEOMetaKeywords": "about tools in a box aluminium toolboxes tool boxes tool boxes for utes toolboxes sydney tool boxes perth toolboxes for sale tool boxes brisbane tool boxes melbourne toolboxes flexible learning tool boxes masters tool boxes dandenong toolboxes bunnings",
+            "OnSiteMap": "False",
+            "DatePosted": "0000-00-00 00:00:00",
+            "OnMenu": "True",
+            "SortOrder": "0",
+            "ParentContentID": "0",
+            "DateUpdated": "2024-02-29 00:24:53"
+          },
+          {
+            "SEOPageTitle": "Security Policy",
+            "ContentType": "2",
+            "ContentID": "12",
+            "ContentName": "Security Policy",
+            "Active": "True",
+            "SEOPageHeading": "Tools In A Box - Security Policy",
+            "SEOMetaDescription": "Security Policy Tools In A Box - Toolboxes for trucks and utes",
+            "Author": "",
+            "ContentReference": "",
+            "SEOMetaKeywords": "Security Policy tools in a box aluminium toolboxes",
+            "OnSiteMap": "False",
+            "DatePosted": "0000-00-00 00:00:00",
+            "OnMenu": "True",
+            "SortOrder": "0",
+            "ParentContentID": "0",
+            "DateUpdated": "2019-04-10 16:13:11"
+          }
+        ],
+        "Ack": "Success"
+      },
+      "fields": [
+        "Active",
+        "Author",
+        "ContentID",
+        "ContentName",
+        "ContentReference",
+        "ContentType",
+        "DatePosted",
+        "DateUpdated",
+        "OnMenu",
+        "OnSiteMap",
+        "ParentContentID",
+        "SEOMetaDescription",
+        "SEOMetaKeywords",
+        "SEOPageHeading",
+        "SEOPageTitle",
+        "SortOrder"
+      ],
+      "sampleItem": {
+        "SEOPageTitle": "Terms & Conditions",
+        "ContentType": "2",
+        "ContentID": "1",
+        "ContentName": "Website Terms of Use",
+        "Active": "True",
+        "SEOPageHeading": "Tools In A Box - Terms & Conditions",
+        "SEOMetaDescription": "Terms & Conditions Tools In A Box - Toolboxes for trucks and utes",
+        "Author": "",
+        "ContentReference": "",
+        "SEOMetaKeywords": "Terms & Conditions tools in a box aluminium toolboxes",
+        "OnSiteMap": "False",
+        "DatePosted": "0000-00-00 00:00:00",
+        "OnMenu": "True",
+        "SortOrder": "0",
+        "ParentContentID": "0",
+        "DateUpdated": "2023-07-10 18:30:33"
+      },
+      "count": 5
+    },
+    "vouchers": {
+      "entity": "vouchers",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:34",
+        "Ack": "Error",
+        "Messages": {
+          "Error": {
+            "Message": "Request Error",
+            "SeverityCode": "Error",
+            "Description": "No white listed fields passed at /opt/release/Neto6.361.0/commonlib/Service/Voucher.pm line 98.\n"
+          }
+        }
+      },
+      "fields": [],
+      "sampleItem": null,
+      "count": 0
+    },
+    "suppliers": {
+      "entity": "suppliers",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:35",
+        "Supplier": [
+          {
+            "ID": "1",
+            "SupplierID": "1"
+          },
+          {
+            "ID": "2",
+            "SupplierID": "2"
+          }
+        ],
+        "Ack": "Success"
+      },
+      "fields": [
+        "ID",
+        "SupplierID"
+      ],
+      "sampleItem": {
+        "ID": "1",
+        "SupplierID": "1"
+      },
+      "count": 2
+    },
+    "warehouses": {
+      "entity": "warehouses",
+      "rawData": {
+        "Warehouse": [
+          {
+            "ID": "1",
+            "WarehouseID": "1"
+          }
+        ],
+        "CurrentTime": "2026-03-15 16:13:36",
+        "Ack": "Success"
+      },
+      "fields": [
+        "ID",
+        "WarehouseID"
+      ],
+      "sampleItem": {
+        "ID": "1",
+        "WarehouseID": "1"
+      },
+      "count": 1
+    },
+    "shipping": {
+      "entity": "shipping",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:36",
+        "Ack": "Success",
+        "ShippingMethods": {
+          "ShippingMethod": [
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Pickup - In Store",
+              "id": "334",
+              "description": "Pickup From:\nUnit 13/340 Hoxton Park Road, Prestons, NSW 2170"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "FedEx (Residential Road Delivery)",
+              "id": "342",
+              "description": "Residential Home Delivery"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Toll iPec (Commercial Locations Only)",
+              "id": "343",
+              "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+            },
+            {
+              "visibility": {
+                "ebay": "false",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Same Day Delivery",
+              "id": "449",
+              "description": "(Order Before 11am Mon-Fri For Same Day) or (Order After 11am for Next Business Day)"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "FedEx (Commercial Locations Only)",
+              "id": "764",
+              "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Parcel Delivery",
+              "id": "765",
+              "description": "For Both Commercial & Residential Locations"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Inactive",
+              "name": "TFM (Commercial Locations Only)",
+              "id": "766",
+              "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "StarTrack",
+              "id": "767",
+              "description": "For Both Commercial & Residential Locations"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Inactive",
+              "name": "TFM (Residential Road Delivery)",
+              "id": "768",
+              "description": "Residential Home Delivery"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "CRL (Commercial Locations Only)",
+              "id": "769",
+              "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Toll iPec (Residential Road Delivery)",
+              "id": "770",
+              "description": "Residential Home Delivery"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Inactive",
+              "name": "CRL (Residential Road Delivery)",
+              "id": "771",
+              "description": "Residential Home Delivery"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Hi-Trans (Commercial Locations Only)",
+              "id": "772",
+              "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "CRL (Depot Delivery)",
+              "id": "777",
+              "description": "Collect from Shipping Depot Nearest You."
+            },
+            {
+              "visibility": {
+                "ebay": "false",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Fedex (Depot Delivery)",
+              "id": "778",
+              "description": "Collect from Shipping Depot Nearest You."
+            },
+            {
+              "visibility": {
+                "ebay": "false",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "Hi-Trans (Depot Delivery)",
+              "id": "779",
+              "description": "Collect from Shipping Depot Nearest You."
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "TFM (Depot Delivery)",
+              "id": "780",
+              "description": "Collect from Shipping Depot Nearest You."
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "XFM (Commercial Locations Only)",
+              "id": "782",
+              "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "XFM (Residential Road Delivery)",
+              "id": "783",
+              "description": "Residential Home Delivery"
+            },
+            {
+              "visibility": {
+                "ebay": "true",
+                "staff": "true",
+                "customers": "true"
+              },
+              "status": "Active",
+              "name": "XFM (Depot Delivery)",
+              "id": "793",
+              "description": "Collect from Shipping Depot Nearest You."
+            }
+          ]
+        }
+      },
+      "fields": [
+        "ShippingMethod",
+        "ShippingMethod[0].description",
+        "ShippingMethod[0].id",
+        "ShippingMethod[0].name",
+        "ShippingMethod[0].status",
+        "ShippingMethod[0].visibility",
+        "ShippingMethod[0].visibility.customers",
+        "ShippingMethod[0].visibility.ebay",
+        "ShippingMethod[0].visibility.staff"
+      ],
+      "sampleItem": {
+        "ShippingMethod": [
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Pickup - In Store",
+            "id": "334",
+            "description": "Pickup From:\nUnit 13/340 Hoxton Park Road, Prestons, NSW 2170"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "FedEx (Residential Road Delivery)",
+            "id": "342",
+            "description": "Residential Home Delivery"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Toll iPec (Commercial Locations Only)",
+            "id": "343",
+            "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+          },
+          {
+            "visibility": {
+              "ebay": "false",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Same Day Delivery",
+            "id": "449",
+            "description": "(Order Before 11am Mon-Fri For Same Day) or (Order After 11am for Next Business Day)"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "FedEx (Commercial Locations Only)",
+            "id": "764",
+            "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Parcel Delivery",
+            "id": "765",
+            "description": "For Both Commercial & Residential Locations"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Inactive",
+            "name": "TFM (Commercial Locations Only)",
+            "id": "766",
+            "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "StarTrack",
+            "id": "767",
+            "description": "For Both Commercial & Residential Locations"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Inactive",
+            "name": "TFM (Residential Road Delivery)",
+            "id": "768",
+            "description": "Residential Home Delivery"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "CRL (Commercial Locations Only)",
+            "id": "769",
+            "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Toll iPec (Residential Road Delivery)",
+            "id": "770",
+            "description": "Residential Home Delivery"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Inactive",
+            "name": "CRL (Residential Road Delivery)",
+            "id": "771",
+            "description": "Residential Home Delivery"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Hi-Trans (Commercial Locations Only)",
+            "id": "772",
+            "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "CRL (Depot Delivery)",
+            "id": "777",
+            "description": "Collect from Shipping Depot Nearest You."
+          },
+          {
+            "visibility": {
+              "ebay": "false",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Fedex (Depot Delivery)",
+            "id": "778",
+            "description": "Collect from Shipping Depot Nearest You."
+          },
+          {
+            "visibility": {
+              "ebay": "false",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "Hi-Trans (Depot Delivery)",
+            "id": "779",
+            "description": "Collect from Shipping Depot Nearest You."
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "TFM (Depot Delivery)",
+            "id": "780",
+            "description": "Collect from Shipping Depot Nearest You."
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "XFM (Commercial Locations Only)",
+            "id": "782",
+            "description": "Commercial Delivery Use (Forklift Is Required at Delivery Address)"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "XFM (Residential Road Delivery)",
+            "id": "783",
+            "description": "Residential Home Delivery"
+          },
+          {
+            "visibility": {
+              "ebay": "true",
+              "staff": "true",
+              "customers": "true"
+            },
+            "status": "Active",
+            "name": "XFM (Depot Delivery)",
+            "id": "793",
+            "description": "Collect from Shipping Depot Nearest You."
+          }
+        ]
+      },
+      "count": 1
+    },
+    "rma": {
+      "entity": "rma",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:37",
+        "Rma": [
+          {
+            "RmaID": "1"
+          },
+          {
+            "RmaID": "2"
+          },
+          {
+            "RmaID": "4"
+          },
+          {
+            "RmaID": "5"
+          },
+          {
+            "RmaID": "6"
+          }
+        ],
+        "Ack": "Success"
+      },
+      "fields": [
+        "RmaID"
+      ],
+      "sampleItem": {
+        "RmaID": "1"
+      },
+      "count": 5
+    },
+    "payments": {
+      "entity": "payments",
+      "rawData": {
+        "Payment": [
+          {
+            "ID": "1",
+            "PaymentID": "1",
+            "OrderID": "N11003"
+          },
+          {
+            "ID": "2",
+            "PaymentID": "2",
+            "OrderID": "N11004"
+          },
+          {
+            "ID": "3",
+            "PaymentID": "3",
+            "OrderID": "N11008"
+          },
+          {
+            "ID": "4",
+            "PaymentID": "4",
+            "OrderID": "N11009"
+          },
+          {
+            "ID": "5",
+            "PaymentID": "5",
+            "OrderID": "N11010"
+          }
+        ],
+        "CurrentTime": "2026-03-15 16:13:38",
+        "Ack": "Success"
+      },
+      "fields": [
+        "ID",
+        "OrderID",
+        "PaymentID"
+      ],
+      "sampleItem": {
+        "ID": "1",
+        "PaymentID": "1",
+        "OrderID": "N11003"
+      },
+      "count": 5
+    },
+    "currency": {
+      "entity": "currency",
+      "rawData": {
+        "CurrentTime": "2026-03-15 16:13:39",
+        "Ack": "Error",
+        "Messages": {
+          "Error": {
+            "Message": "Request Error",
+            "SeverityCode": "Error",
+            "Description": "Internal server error."
+          }
+        }
+      },
+      "fields": [],
+      "sampleItem": null,
+      "count": 0
+    }
+  },
+  "themeAudit": null,
+  "summary": {
+    "totalFields": 219,
+    "mappedFields": 137,
+    "missingFields": 37
+  }
+}
