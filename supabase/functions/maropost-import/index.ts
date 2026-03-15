@@ -16,6 +16,9 @@ interface ImportRequest {
   dry_run?: boolean;
 }
 
+// Supabase JS v2 PromiseLike doesn't have .catch(), wrap in try/catch
+const safe = async (p: PromiseLike<any>) => { try { await p; } catch {} };
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -40,13 +43,13 @@ serve(async (req) => {
 
     const logEntity = async (entityType: string, sourceId: string, targetId: string) => {
       if (migration_job_id) {
-        await supabase.from("migration_entity_logs").insert({
+        await safe(supabase.from("migration_entity_logs").insert({
           migration_job_id,
           entity_type: entityType,
           source_id: sourceId,
           target_id: targetId,
           status: "success",
-        } as any).catch(() => {});
+        } as any));
       }
     };
 
@@ -55,13 +58,12 @@ serve(async (req) => {
       const items = source_data?.Item || source_data || [];
       const products = Array.isArray(items) ? items : [items];
 
-      // Helper to download and re-host an image to Supabase Storage
       const rehostImage = async (imageUrl: string, productSlug: string, index: number): Promise<string> => {
         try {
           if (!imageUrl || imageUrl.startsWith("data:")) return imageUrl;
           const fullUrl = imageUrl.startsWith("http") ? imageUrl : `https:${imageUrl}`;
           const response = await fetch(fullUrl);
-          if (!response.ok) return fullUrl; // Fallback to original URL
+          if (!response.ok) return fullUrl;
           const blob = await response.blob();
           const ext = fullUrl.split(".").pop()?.split("?")[0]?.toLowerCase() || "jpg";
           const path = `${store_id}/${productSlug}/${index}.${ext}`;
@@ -72,13 +74,12 @@ serve(async (req) => {
           const { data: publicUrl } = supabase.storage.from("product-images").getPublicUrl(path);
           return publicUrl.publicUrl;
         } catch {
-          return imageUrl; // Fallback to original
+          return imageUrl;
         }
       };
 
       for (const p of products) {
         try {
-          // Build images array - download and re-host to our storage
           let imagesArr: string[] = [];
           const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
 
@@ -93,8 +94,6 @@ serve(async (req) => {
               }
             }
           }
-
-          // slug already computed above for image paths
 
           const productData: Record<string, any> = {
             store_id,
@@ -126,7 +125,6 @@ serve(async (req) => {
             model_number: p.Model || null,
           };
 
-          // Check if product with same SKU exists
           let productId: string;
           if (p.ParentSKU) {
             const { data: existing } = await supabase
@@ -154,7 +152,7 @@ serve(async (req) => {
 
           // Import product shipping dimensions
           if (p.ShippingLength || p.ShippingWidth || p.ShippingHeight || p.ShippingWeight) {
-            await supabase.from("product_shipping").upsert({
+            await safe(supabase.from("product_shipping").upsert({
               product_id: productId,
               store_id,
               shipping_length: parseFloat(p.ShippingLength) || null,
@@ -165,7 +163,7 @@ serve(async (req) => {
               actual_length: parseFloat(p.ItemLength) || null,
               actual_width: parseFloat(p.ItemWidth) || null,
               actual_height: parseFloat(p.ItemHeight) || null,
-            } as any, { onConflict: "product_id" }).catch(() => {});
+            } as any, { onConflict: "product_id" }));
           }
 
           // Import pricing tiers
@@ -175,14 +173,14 @@ serve(async (req) => {
               const groups = pgItem?.PriceGroup ? (Array.isArray(pgItem.PriceGroup) ? pgItem.PriceGroup : [pgItem.PriceGroup]) : [];
               for (const pg of groups) {
                 if (parseFloat(pg.Price) > 0) {
-                  await supabase.from("product_pricing_tiers").insert({
+                  await safe(supabase.from("product_pricing_tiers").insert({
                     product_id: productId,
                     store_id,
                     tier_name: pg.Group || "Default",
                     min_quantity: parseInt(pg.MinimumQuantity) || 1,
                     price: parseFloat(pg.Price) || 0,
                     user_group: pg.Group || null,
-                  } as any).catch(() => {});
+                  } as any));
                 }
               }
             }
@@ -209,9 +207,9 @@ serve(async (req) => {
                     .eq("sku", v.SKU)
                     .maybeSingle();
                   if (existingVar) {
-                    await supabase.from("product_variants").update(variantData as any).eq("id", existingVar.id).catch(() => {});
+                    await safe(supabase.from("product_variants").update(variantData as any).eq("id", existingVar.id));
                   } else {
-                    await supabase.from("product_variants").insert(variantData as any).catch(() => {});
+                    await safe(supabase.from("product_variants").insert(variantData as any));
                   }
                 }
               }
@@ -226,7 +224,6 @@ serve(async (req) => {
               const whName = wh?.WarehouseName || wh?.Name || "Default";
               const qty = parseInt(wh?.Quantity || wh?.AvailableQuantity || "0") || 0;
               if (qty > 0 || whName) {
-                // Find or create inventory location
                 const { data: loc } = await supabase
                   .from("inventory_locations")
                   .select("id")
@@ -236,13 +233,13 @@ serve(async (req) => {
                 
                 const locationId = loc?.id;
                 if (locationId) {
-                  await supabase.from("inventory_stock").upsert({
+                  await safe(supabase.from("inventory_stock").upsert({
                     store_id,
                     product_id: productId,
                     location_id: locationId,
                     quantity: qty,
                     bin_location: wh?.BinLocation || wh?.PickZone || null,
-                  } as any, { onConflict: "product_id,location_id" }).catch(() => {});
+                  } as any, { onConflict: "product_id,location_id" }));
                 }
               }
             }
@@ -254,12 +251,12 @@ serve(async (req) => {
             for (const specItem of specsRoot) {
               const spec = specItem?.ItemSpecific || specItem;
               if (spec && typeof spec === "object" && spec.Name && spec.Value) {
-                await supabase.from("product_specifics").insert({
+                await safe(supabase.from("product_specifics").insert({
                   product_id: productId,
                   store_id,
                   name: spec.Name || spec.Label || "Spec",
                   value: spec.Value || "",
-                } as any).catch(() => {});
+                } as any));
               }
             }
           }
@@ -270,20 +267,17 @@ serve(async (req) => {
             for (const catItem of cats) {
               const catId = catItem?.CategoryID || catItem?.Category?.CategoryID || (typeof catItem === "string" ? catItem : null);
               if (catId) {
-                // Try to find the category by matching source CategoryID stored during category import
-                // We search by name or slug that would have been generated from the CategoryName
                 const catName = catItem?.CategoryName || catItem?.Category?.CategoryName;
                 if (catName) {
-                  const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const catSlug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
                   const { data: foundCat } = await supabase
                     .from("categories")
                     .select("id")
                     .eq("store_id", store_id)
-                    .eq("slug", slug)
+                    .eq("slug", catSlug)
                     .maybeSingle();
                   if (foundCat) {
-                    // Update product's category_id (first category becomes primary)
-                    await supabase.from("products").update({ category_id: foundCat.id }).eq("id", productId).catch(() => {});
+                    await safe(supabase.from("products").update({ category_id: foundCat.id }).eq("id", productId));
                   }
                 }
               }
@@ -309,12 +303,12 @@ serve(async (req) => {
                     .eq("sku", relSku)
                     .maybeSingle();
                   if (relProduct) {
-                    await supabase.from("product_relations").insert({
+                    await safe(supabase.from("product_relations").insert({
                       product_id: productId,
                       related_product_id: relProduct.id,
                       store_id,
                       relation_type: rel.type,
-                    }).catch(() => {});
+                    }));
                   }
                 }
               }
@@ -340,7 +334,6 @@ serve(async (req) => {
         try {
           const slug = (c.CategoryReference || c.CategoryName || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `cat-${Date.now()}`;
 
-          // Check if exists by slug
           const { data: existing } = await supabase
             .from("categories")
             .select("id")
@@ -381,7 +374,7 @@ serve(async (req) => {
       // Second pass: link parent/child
       for (const c of categories) {
         if (c.ParentCategoryID && c.ParentCategoryID !== "0" && idMap[c.CategoryID] && idMap[c.ParentCategoryID]) {
-          await supabase.from("categories").update({ parent_id: idMap[c.ParentCategoryID] }).eq("id", idMap[c.CategoryID]).catch(() => {});
+          await safe(supabase.from("categories").update({ parent_id: idMap[c.ParentCategoryID] }).eq("id", idMap[c.CategoryID]));
         }
       }
     }
@@ -391,7 +384,6 @@ serve(async (req) => {
       const items = source_data?.Customer || source_data || [];
       const customers = Array.isArray(items) ? items : [items];
 
-      // First: auto-create customer groups from unique UserGroup values
       const groupMap: Record<string, string> = {};
       const uniqueGroups = [...new Set(customers.map((c: any) => c.UserGroup).filter(Boolean))];
       for (const groupName of uniqueGroups) {
@@ -430,12 +422,10 @@ serve(async (req) => {
             credit_limit: parseFloat(c.CreditLimit) || null,
             tags: c.UserGroup ? [c.UserGroup] : [],
           };
-          // Link to customer group if found
           if (c.UserGroup && groupMap[c.UserGroup]) {
             custData.customer_group_id = groupMap[c.UserGroup];
           }
 
-          // Dedup: check if customer with same email already exists
           let inserted: { id: string } | null = null;
           if (custEmail) {
             const { data: existing } = await supabase
@@ -463,7 +453,7 @@ serve(async (req) => {
               const addresses = Array.isArray(addr) ? addr : [addr];
               for (const a of addresses) {
                 if (a && (a.StreetAddress1 || a.Address1 || a.City)) {
-                  await supabase.from("customer_addresses").insert({
+                  await safe(supabase.from("customer_addresses").insert({
                     customer_id: inserted.id,
                     store_id,
                     address_type: addrType === "BillingAddress" ? "billing" : "shipping",
@@ -478,7 +468,7 @@ serve(async (req) => {
                     country: a.Country || "AU",
                     phone: a.Phone || c.Phone || null,
                     is_default: true,
-                  }).catch(() => {});
+                  }));
                 }
               }
             }
@@ -489,7 +479,7 @@ serve(async (req) => {
             const logs = Array.isArray(c.CustomerLog) ? c.CustomerLog : [c.CustomerLog];
             for (const log of logs) {
               if (log && (log.Notes || log.Description || log.Subject)) {
-                await supabase.from("customer_communications").insert({
+                await safe(supabase.from("customer_communications").insert({
                   customer_id: inserted.id,
                   store_id,
                   channel: log.Type || "note",
@@ -498,25 +488,18 @@ serve(async (req) => {
                   body: log.Notes || log.Description || "",
                   status: "delivered",
                   created_at: log.DateCreated || log.Date || new Date().toISOString(),
-                }).catch(() => {});
+                }));
               }
             }
           }
 
           // Import newsletter subscriber
           if (c.NewsletterSubscriber === "True" && (c.EmailAddress || c.Email)) {
-            await supabase.from("newsletter_subscribers").upsert({
+            await safe(supabase.from("newsletter_subscribers").upsert({
               store_id,
               email: c.EmailAddress || c.Email,
               is_active: true,
-            } as any, { onConflict: "store_id,email" }).catch(() => {
-              // May not have unique constraint, try insert
-              supabase.from("newsletter_subscribers").insert({
-                store_id,
-                email: c.EmailAddress || c.Email,
-                is_active: true,
-              }).catch(() => {});
-            });
+            } as any, { onConflict: "store_id,email" }));
           }
 
           await logEntity("customer", c.Username || c.EmailAddress || c.Email, inserted.id);
@@ -560,11 +543,9 @@ serve(async (req) => {
             created_at: o.DatePlaced || new Date().toISOString(),
           };
 
-          // Link shipping/billing address as JSON
           if (o.ShipAddress) orderData.shipping_address = o.ShipAddress;
           if (o.BillAddress) orderData.billing_address = o.BillAddress;
 
-          // Link to existing customer by email
           const orderEmail = o.Email || o.Username;
           if (orderEmail) {
             const { data: cust } = await supabase
@@ -576,7 +557,6 @@ serve(async (req) => {
             if (cust) orderData.customer_id = cust.id;
           }
 
-          // Dedup: check if order with same order_number exists
           const orderNumber = `MP-${o.OrderID}`;
           const { data: existingOrder } = await supabase
             .from("orders")
@@ -604,7 +584,7 @@ serve(async (req) => {
           if (o.OrderLine && !dry_run && orderId !== "dry-run") {
             const lines = Array.isArray(o.OrderLine) ? o.OrderLine : [o.OrderLine];
             for (const line of lines) {
-              await supabase.from("order_items").insert({
+              await safe(supabase.from("order_items").insert({
                 order_id: orderId,
                 store_id,
                 title: line.ProductName || line.ItemDescription || "Item",
@@ -612,7 +592,7 @@ serve(async (req) => {
                 quantity: parseInt(line.Quantity) || 1,
                 unit_price: parseFloat(line.UnitPrice) || 0,
                 total: parseFloat(line.LineTotal) || (parseFloat(line.UnitPrice || "0") * parseInt(line.Quantity || "1")),
-              } as any).catch(() => {});
+              } as any));
             }
           }
 
@@ -620,13 +600,13 @@ serve(async (req) => {
           if (o.OrderPayment && !dry_run && orderId !== "dry-run") {
             const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
             for (const pay of payments) {
-              await supabase.from("order_payments").insert({
+              await safe(supabase.from("order_payments").insert({
                 order_id: orderId,
                 store_id,
                 amount: parseFloat(pay.Amount) || 0,
                 payment_method: pay.PaymentMethod || "unknown",
                 reference: pay.TransactionID || null,
-              } as any).catch(() => {});
+              } as any));
             }
           }
 
@@ -811,19 +791,18 @@ serve(async (req) => {
           const fromPath = r.OldURL || r.FromPath || r.old_url;
           const toPath = r.NewURL || r.ToPath || r.new_url;
           if (fromPath && toPath) {
-            await supabase.from("redirects").upsert({
+            const redirectData = {
               store_id,
               from_path: fromPath.startsWith("/") ? fromPath : `/${fromPath}`,
               to_path: toPath.startsWith("/") ? toPath : toPath.startsWith("http") ? toPath : `/${toPath}`,
               is_active: true,
-            } as any, { onConflict: "store_id,from_path" }).catch(() => {
-              return supabase.from("redirects").insert({
-                store_id,
-                from_path: fromPath.startsWith("/") ? fromPath : `/${fromPath}`,
-                to_path: toPath.startsWith("/") ? toPath : toPath.startsWith("http") ? toPath : `/${toPath}`,
-                is_active: true,
-              });
-            });
+            };
+            const { error: upsertErr } = await supabase.from("redirects").upsert(
+              redirectData as any, { onConflict: "store_id,from_path" }
+            );
+            if (upsertErr) {
+              await safe(supabase.from("redirects").insert(redirectData as any));
+            }
             imported++;
           }
         } catch (err: any) {
@@ -838,7 +817,7 @@ serve(async (req) => {
       try {
         if (source_data.templates) {
           for (const tpl of source_data.templates) {
-            await supabase.from("store_templates").upsert({
+            const tplData = {
               store_id,
               slug: tpl.slug,
               name: tpl.name,
@@ -846,17 +825,13 @@ serve(async (req) => {
               content: tpl.content,
               custom_css: tpl.custom_css || null,
               is_active: true,
-            } as any, { onConflict: "store_id,slug" }).catch(() => {
-              return supabase.from("store_templates").insert({
-                store_id,
-                slug: tpl.slug,
-                name: tpl.name,
-                template_type: tpl.template_type || "page",
-                content: tpl.content,
-                custom_css: tpl.custom_css || null,
-                is_active: true,
-              } as any);
-            });
+            };
+            const { error: upsertErr } = await supabase.from("store_templates").upsert(
+              tplData as any, { onConflict: "store_id,slug" }
+            );
+            if (upsertErr) {
+              await safe(supabase.from("store_templates").insert(tplData as any));
+            }
             imported++;
           }
         }
@@ -874,7 +849,6 @@ serve(async (req) => {
       for (const c of currencies) {
         try {
           const currCode = c.CurrencyCode || c.Code || "AUD";
-          // Store currencies in the store settings or currencies table
           const { data: existing } = await supabase
             .from("currencies")
             .select("id")
@@ -908,9 +882,9 @@ serve(async (req) => {
 
     // Update migration job progress
     if (migration_job_id) {
-      await supabase.from("migration_jobs").update({
+      await safe(supabase.from("migration_jobs").update({
         progress: { imported, failed, errors: errors.slice(0, 50) },
-      } as any).eq("id", migration_job_id).catch(() => {});
+      } as any).eq("id", migration_job_id));
     }
 
     return new Response(JSON.stringify({
