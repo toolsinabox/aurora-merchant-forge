@@ -1351,6 +1351,12 @@ function processThumbList(template: string, ctx: TemplateContext): string {
         rendered = processFormatText(rendered);
         rendered = processAssetUrl(rendered, ctx, item);
         rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
+        rendered = processSetAndWhile(rendered);
+        rendered = processCacheBlocks(rendered);
+        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, "$1");
+        rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
+        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
+        rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
         
         html += rendered;
       });
