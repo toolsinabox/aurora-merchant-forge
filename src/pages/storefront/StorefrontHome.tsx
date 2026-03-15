@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { StorefrontLayout } from "@/components/storefront/StorefrontLayout";
+import { ThemedStorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Star, Truck, ShieldCheck, RotateCcw, ShoppingCart, Heart } from "lucide-react";
@@ -10,6 +10,8 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { AdvertBanner } from "@/components/storefront/AdvertBanner";
+import { useActiveTheme, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -53,32 +55,62 @@ export default function StorefrontHome() {
     load();
   }, [storeSlug]);
 
+  const { data: theme } = useActiveTheme(store?.id);
+
+  // Check if there's an index/home template in the theme
+  const homeTemplate = useMemo(() => {
+    if (!theme) return null;
+    return findThemeFile(theme, "templates", "index") 
+      || findThemeFile(theme, "templates", "home")
+      || findThemeFile(theme, "templates", "homepage");
+  }, [theme]);
+
+  // Build context for template rendering
+  const templateCtx: TemplateContext = useMemo(() => {
+    const includes = theme ? buildIncludesMap(theme) : {};
+    return {
+      store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
+      includes,
+    };
+  }, [store, theme]);
+
   if (loading) {
     return (
-      <StorefrontLayout>
+      <ThemedStorefrontLayout>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Skeleton className="h-[340px] w-full rounded-2xl mb-10" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="aspect-square rounded-xl" />)}
           </div>
         </div>
-      </StorefrontLayout>
+      </ThemedStorefrontLayout>
     );
   }
 
   if (!store) {
     return (
-      <StorefrontLayout>
+      <ThemedStorefrontLayout>
         <div className="max-w-7xl mx-auto px-4 py-24 text-center">
           <h1 className="text-2xl font-bold mb-2">Store not found</h1>
           <p className="text-muted-foreground">The store you're looking for doesn't exist.</p>
         </div>
-      </StorefrontLayout>
+      </ThemedStorefrontLayout>
     );
   }
 
+  // If we have a B@SE home template, render it fully
+  if (homeTemplate?.content && theme) {
+    const renderedHome = renderTemplate(homeTemplate.content, templateCtx);
+    return (
+      <ThemedStorefrontLayout storeName={store.name} extraContext={templateCtx}>
+        <div dangerouslySetInnerHTML={{ __html: renderedHome }} />
+      </ThemedStorefrontLayout>
+    );
+  }
+
+  // Fallback: default React-rendered home page
   return (
-    <StorefrontLayout storeName={store.name}>
+    <ThemedStorefrontLayout storeName={store.name}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Advert Banner */}
         <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
@@ -121,7 +153,7 @@ export default function StorefrontHome() {
           ))}
         </section>
 
-        {/* Categories (if any) */}
+        {/* Categories */}
         {categories.length > 0 && (
           <section className="my-8 sm:my-10">
             <div className="flex items-center justify-between mb-5">
@@ -226,9 +258,8 @@ export default function StorefrontHome() {
           </div>
         )}
 
-        {/* Spacer before footer */}
         <div className="h-8" />
       </div>
-    </StorefrontLayout>
+    </ThemedStorefrontLayout>
   );
 }
