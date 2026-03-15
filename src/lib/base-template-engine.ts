@@ -105,6 +105,7 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "social_linkedin": () => "",
     // Footer fields
     "abn": () => store.abn || "",
+    "company_abn": () => store.abn || store.company_abn || "",
     "copyright_year": () => new Date().getFullYear().toString(),
   };
   const resolver = configMap[k];
