@@ -447,7 +447,7 @@ serve(async (req) => {
             email: custEmail,
             phone: c.Phone || c.Mobile || null,
             abn_vat_number: c.ABN || null,
-            segment: c.Type === "Wholesale" ? "wholesale" : "regular",
+            segment: normalizeCustomerSegment(c),
             notes: c.IdentificationDetails || null,
             credit_limit: parseFloat(c.CreditLimit) || null,
             tags: c.UserGroup ? [c.UserGroup] : [],
