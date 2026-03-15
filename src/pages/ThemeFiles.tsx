@@ -213,7 +213,17 @@ export default function ThemeFiles() {
     await supabase.from("theme_packages" as any).update({ is_active: false }).eq("store_id", currentStore.id);
     await supabase.from("theme_packages" as any).update({ is_active: true }).eq("id", themeId);
     qc.invalidateQueries({ queryKey: ["theme_packages"] });
+    qc.invalidateQueries({ queryKey: ["active_theme"] });
     toast.success("Active theme updated");
+  };
+
+  const setDefaultTheme = async () => {
+    if (!currentStore) return;
+    // Deactivate all themes — storefront will use the built-in default layout
+    await supabase.from("theme_packages" as any).update({ is_active: false }).eq("store_id", currentStore.id);
+    qc.invalidateQueries({ queryKey: ["theme_packages"] });
+    qc.invalidateQueries({ queryKey: ["active_theme"] });
+    toast.success("Switched to Default theme");
   };
 
   const duplicateTheme = async (theme: any) => {
@@ -585,6 +595,23 @@ export default function ThemeFiles() {
           <>
             {/* Theme selector bar */}
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Default (built-in) theme option */}
+              {(() => {
+                const noActiveTheme = !themes.some((t: any) => t.is_active);
+                return (
+                  <Button
+                    variant={noActiveTheme ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs gap-1.5"
+                    onClick={setDefaultTheme}
+                  >
+                    <Palette className="h-3.5 w-3.5" />
+                    Default
+                    {noActiveTheme && <Badge variant="secondary" className="text-[8px] h-4 px-1 ml-1 bg-primary/20 text-primary">Active</Badge>}
+                  </Button>
+                );
+              })()}
+
               {themes.map((theme: any) => (
                 <div key={theme.id} className="flex items-center">
                   <Button

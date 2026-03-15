@@ -111,9 +111,10 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   const [storeId, setStoreId] = useState<string>("");
   const [store, setStore] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
+  const [storeResolved, setStoreResolved] = useState(false);
 
   useEffect(() => {
-    if (!storeSlug) return;
+    if (!storeSlug) { setStoreResolved(true); return; }
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
       if (s) {
         setStoreId(s.id);
@@ -125,17 +126,30 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
           .order("sort_order")
           .then(({ data }) => {
             if (data) setCategories(data);
+            setStoreResolved(true);
           });
+      } else {
+        setStoreResolved(true);
       }
     });
   }, [storeSlug]);
 
   const { data: theme, isLoading } = useActiveTheme(storeId);
 
-  if (!storeId || isLoading) {
-    return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
+  // Show a minimal loading skeleton while store + theme resolve — never flash the default layout
+  if (!storeResolved || (!theme && isLoading)) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="h-16 bg-muted/30 animate-pulse" />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="h-8 w-48 bg-muted/30 rounded animate-pulse mb-6" />
+          <div className="h-[300px] bg-muted/20 rounded-xl animate-pulse" />
+        </div>
+      </div>
+    );
   }
 
+  // No active theme package → use default React layout
   if (!theme) {
     return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
   }
