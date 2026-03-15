@@ -3,6 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const resolveUrl = (path: string | null) => {
+  if (!path) return "";
+  if (path.startsWith("http")) return path;
+  return `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
+};
+
 interface AdvertBannerProps {
   storeId: string;
   placement: string;
@@ -70,7 +77,7 @@ export function AdvertBanner({ storeId, placement, basePath = "" }: AdvertBanner
       <a href={linkUrl || "#"} className="block">
         {ad.image_url ? (
           <div className="relative">
-            <img src={ad.image_url} alt={ad.title || ad.name} className="w-full h-[200px] sm:h-[280px] object-cover rounded-xl" />
+            <img src={resolveUrl(ad.image_url)} alt={ad.title || ad.name} className="w-full h-[200px] sm:h-[280px] object-cover rounded-xl" />
             {(ad.title || ad.subtitle || ad.button_text) && (
               <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center rounded-xl">
                 <div className="px-8 py-6 max-w-md">
