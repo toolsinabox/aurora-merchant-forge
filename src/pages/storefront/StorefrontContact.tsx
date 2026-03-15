@@ -86,6 +86,43 @@ export default function StorefrontContact() {
     );
   }
 
+  // Theme-based contact page rendering
+  if (contactTemplate?.content && theme && store && !submitted) {
+    const includes = buildIncludesMap(theme);
+    const themeFiles: Record<string, string> = {};
+    for (const f of theme.files) {
+      themeFiles[f.file_path] = f.content || "";
+      themeFiles[`${f.folder}/${f.file_name}`] = f.content || "";
+      themeFiles[f.file_name] = f.content || "";
+    }
+    const contactCtx: TemplateContext = {
+      store: { name: store.name, ...store },
+      includes,
+      themeFiles,
+      themeAssetBaseUrl,
+      basePath: basePath || "",
+      pageType: "contact",
+    };
+
+    let rendered = renderTemplate(contactTemplate.content, contactCtx);
+
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      rendered = rendered.replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+        if (!assetExt.test(path)) return match;
+        if (/^(\/placeholder\.|\/assets\/|\/favicon)/i.test(path)) return match;
+        const cleanPath = path.replace(/^\/+/, "");
+        return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+      });
+    }
+
+    return (
+      <StorefrontLayout storeName={store.name} extraContext={contactCtx}>
+        <div dangerouslySetInnerHTML={{ __html: rendered }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
     <StorefrontLayout storeName={storeName}>
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
