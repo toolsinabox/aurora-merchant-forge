@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { toast } from "sonner";
 import { Mail, Check, Loader2 } from "lucide-react";
+import { useActiveTheme, findThemeFile, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontContact() {
   const { storeSlug: paramSlug } = useParams();
@@ -19,11 +23,26 @@ export default function StorefrontContact() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [store, setStore] = useState<any>(null);
+
+  // Theme hooks (must be before early returns)
+  const { data: theme } = useActiveTheme(store?.id);
+
+  const contactTemplate = useMemo(() => {
+    if (!theme) return null;
+    return findThemeFile(theme, "templates", "contact")
+      || findMainThemeFile(theme, "contact");
+  }, [theme]);
+
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
 
   useEffect(() => {
     if (!storeSlug) return;
     resolveStoreBySlug(storeSlug, supabase).then((s) => {
-      if (s) { setStoreId(s.id); setStoreName(s.name); }
+      if (s) { setStoreId(s.id); setStoreName(s.name); setStore(s); }
     });
   }, [storeSlug]);
 
@@ -63,6 +82,43 @@ export default function StorefrontContact() {
           <h1 className="text-2xl font-bold mb-2">Message Sent!</h1>
           <p className="text-muted-foreground">Thank you for reaching out. We'll get back to you as soon as possible.</p>
         </div>
+      </StorefrontLayout>
+    );
+  }
+
+  // Theme-based contact page rendering
+  if (contactTemplate?.content && theme && store && !submitted) {
+    const includes = buildIncludesMap(theme);
+    const themeFiles: Record<string, string> = {};
+    for (const f of theme.files) {
+      themeFiles[f.file_path] = f.content || "";
+      themeFiles[`${f.folder}/${f.file_name}`] = f.content || "";
+      themeFiles[f.file_name] = f.content || "";
+    }
+    const contactCtx: TemplateContext = {
+      store: { name: store.name, ...store },
+      includes,
+      themeFiles,
+      themeAssetBaseUrl,
+      basePath: basePath || "",
+      pageType: "contact",
+    };
+
+    let rendered = renderTemplate(contactTemplate.content, contactCtx);
+
+    if (themeAssetBaseUrl) {
+      const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      rendered = rendered.replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
+        if (!assetExt.test(path)) return match;
+        if (/^(\/placeholder\.|\/assets\/|\/favicon)/i.test(path)) return match;
+        const cleanPath = path.replace(/^\/+/, "");
+        return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
+      });
+    }
+
+    return (
+      <StorefrontLayout storeName={store.name} extraContext={contactCtx}>
+        <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </StorefrontLayout>
     );
   }

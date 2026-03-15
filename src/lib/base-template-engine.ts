@@ -1915,6 +1915,22 @@ function processThumbList(template: string, ctx: TemplateContext): string {
         prods.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
       }
       items = prods.slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
+    } else if (type === "category" || type === "categories") {
+      const bp = ctx.basePath || "";
+      items = (ctx.categories || []).slice(0, limit).map((cat: any, idx: number) => ({
+        ...cat,
+        URL: cat.url || `${bp}/products?category=${cat.slug}`,
+        url: cat.url || `${bp}/products?category=${cat.slug}`,
+        image_url: resolveStorageUrl(cat.image_url) || "/placeholder.svg",
+        thumb_url: resolveStorageUrl(cat.image_url) || "/placeholder.svg",
+        name: cat.name || "",
+        headline: cat.name || "",
+        description: cat.description || "",
+        count: idx,
+        index: idx,
+        product_count: cat.product_count || 0,
+        rndm: Math.random().toString(36).substring(2, 8),
+      }));
     } else if (type === "content" || type === "content_reviews") {
       return "";
     }
@@ -2030,8 +2046,21 @@ function processBlocks(template: string, ctx: TemplateContext): string {
       case "adverts": items = ctx.adverts || []; break;
       case "thumb": case "thumblist": items = ctx.thumblist || []; break;
       case "reviews": case "review":
-        // Reviews would come from context if provided
         items = ctx.reviews || [];
+        break;
+      case "categories": case "category_list": case "category":
+        items = (ctx.categories || []).map((cat: any, idx: number) => ({
+          ...cat,
+          URL: cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}`,
+          url: cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}`,
+          image_url: resolveStorageUrl(cat.image_url) || "/placeholder.svg",
+          name: cat.name || "",
+          headline: cat.name || "",
+          description: cat.description || "",
+          count: idx,
+          index: idx,
+          product_count: cat.product_count || 0,
+        }));
         break;
       default: return "";
     }
