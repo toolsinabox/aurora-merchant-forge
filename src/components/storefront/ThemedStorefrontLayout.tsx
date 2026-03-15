@@ -415,40 +415,30 @@ ${SCOPE_SELECTOR} .product-card__price {
     return scoped + fallbackCss;
   }, [theme.cssFiles]);
 
-  // Inject external CSS/JS links from the theme's <head> content
+  // Inject Font Awesome CSS (required by theme icons)
   useEffect(() => {
-    if (!headContent) return;
+    const faHref = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+    if (document.querySelector(`link[href="${faHref}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = faHref;
+    link.setAttribute("data-theme-fa", "true");
+    document.head.appendChild(link);
+    return () => { link.remove(); };
+  }, []);
+
+  // Inject external CSS links from the theme's <head> content (CDN only)
+  useEffect(() => {
+    if (!headContent && !renderedHeader) return;
     const addedElements: Element[] = [];
     
-    // Extract and inject <link> stylesheet tags — only external CDN ones
-    const linkRegex = /<link[^>]*(?:rel=["']stylesheet["']|type=["']text\/css["'])[^>]*>/gi;
+    const allCssHtml = (headContent || "") + (renderedHeader || "");
+    const linkRegex = /<link[^>]*href=["']((?:https?:)?\/\/[^"']+)["'][^>]*>/gi;
     let match;
-    while ((match = linkRegex.exec(headContent)) !== null) {
-      const hrefMatch = match[0].match(/href=["']([^"']+)["']/);
-      if (!hrefMatch) continue;
-      const href = hrefMatch[1];
-      // Skip theme asset CSS (already injected via scoped <style>)
-      if (href.includes("/assets/themes/") || href.includes("ntheme_asset")) continue;
-      if (!href.startsWith("http") && !href.startsWith("//")) continue;
+    while ((match = linkRegex.exec(allCssHtml)) !== null) {
+      const href = match[1];
+      if (href.includes("/assets/themes/")) continue;
       if (document.querySelector(`link[href="${href}"]`)) continue;
-      
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      link.setAttribute("data-theme-css", "true");
-      const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
-      if (mediaMatch) link.media = mediaMatch[1];
-      document.head.appendChild(link);
-      addedElements.push(link);
-    }
-
-    // Also inject CSS links from body (the header template has <link> tags)
-    const bodyLinkRegex = /<link[^>]*href=["'](https?:\/\/[^"']+)["'][^>]*>/gi;
-    const bodyHtml = renderedHeader || "";
-    let bm;
-    while ((bm = bodyLinkRegex.exec(bodyHtml)) !== null) {
-      const href = bm[1];
-      if (href.includes("/assets/themes/") || document.querySelector(`link[href="${href}"]`)) continue;
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = href;
@@ -457,103 +447,97 @@ ${SCOPE_SELECTOR} .product-card__price {
       addedElements.push(link);
     }
     
-    return () => {
-      addedElements.forEach(el => el.remove());
-    };
+    return () => { addedElements.forEach(el => el.remove()); };
   }, [headContent, renderedHeader]);
 
-  // Inject external scripts from rendered header/footer (CDN jQuery, Bootstrap, etc.)
+  // Inject theme JS files from database (not from CDN — those are stored in theme_files)
   useEffect(() => {
+    if (!theme.jsFiles || theme.jsFiles.length === 0) return;
     const addedScripts: HTMLScriptElement[] = [];
-    const allHtml = (renderedHeader || "") + (renderedFooter || "");
     
-    // Extract <script src="..."> tags for external scripts
-    const scriptSrcRegex = /<script[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
-    let sm;
-    while ((sm = scriptSrcRegex.exec(allHtml)) !== null) {
-      const src = sm[1];
-      // Skip tracking/analytics scripts
-      if (src.includes("google-analytics") || src.includes("googletagmanager")) continue;
-      if (document.querySelector(`script[src="${src}"]`)) continue;
-      
-      const script = document.createElement("script");
-      script.src = src;
-      script.setAttribute("data-theme-ext-js", "true");
-      // Load jQuery first, others after
-      if (src.includes("jquery") && !src.includes("jquery-ui") && !src.includes("jquery.")) {
-        script.async = false;
-        document.head.appendChild(script);
-      } else {
-        script.async = false;
+    const skipFiles = ["gulpfile.js"];
+    const priorityOrder = ["jquery", "vendor", "bootstrap", "slick", "fancybox", "instafeed", "lazyload", "custom", "ba_custom"];
+    
+    const sorted = [...theme.jsFiles]
+      .filter(f => !skipFiles.includes(f.file_name) && f.content)
+      .sort((a, b) => {
+        const aIdx = priorityOrder.findIndex(p => a.file_name.toLowerCase().includes(p));
+        const bIdx = priorityOrder.findIndex(p => b.file_name.toLowerCase().includes(p));
+        return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
+      });
+    
+    // Use a small delay to inject scripts after DOM render
+    const timer = setTimeout(() => {
+      sorted.forEach(f => {
+        const script = document.createElement("script");
+        script.textContent = f.content;
+        script.setAttribute("data-theme-js", f.file_name);
         document.body.appendChild(script);
-      }
-      addedScripts.push(script);
-    }
+        addedScripts.push(script);
+      });
+    }, 500);
     
     return () => {
+      clearTimeout(timer);
       addedScripts.forEach(el => el.remove());
     };
-  }, [renderedHeader, renderedFooter]);
+  }, [theme.jsFiles]);
 
-  // Initialize Bootstrap-style carousel with vanilla JS (no jQuery dependency)
+  // Initialize Bootstrap-style carousel with vanilla JS (fallback if jQuery/Bootstrap not loaded)
   useEffect(() => {
-    const container = document.getElementById("neto-theme");
-    if (!container) return;
-    
-    const carousels = container.querySelectorAll(".carousel.slide");
-    const timers: number[] = [];
-    
-    carousels.forEach((carousel) => {
-      const items = carousel.querySelectorAll(".carousel-item");
-      if (items.length <= 1) return;
+    // Wait for DOM to render with theme content
+    const timer = setTimeout(() => {
+      const container = document.getElementById("neto-theme");
+      if (!container) return;
       
-      const showSlide = (index: number) => {
-        items.forEach((item, i) => {
-          item.classList.toggle("active", i === index);
-        });
-        // Update indicators
-        const indicators = carousel.querySelectorAll(".carousel-indicators li");
-        indicators.forEach((ind, i) => {
-          ind.classList.toggle("active", i === index);
-        });
-      };
-      
-      let currentIdx = 0;
-      
-      // Auto-rotate every 5 seconds
-      const timer = window.setInterval(() => {
-        currentIdx = (currentIdx + 1) % items.length;
-        showSlide(currentIdx);
-      }, 5000);
-      timers.push(timer);
-      
-      // Prev/Next controls
-      const prevBtn = carousel.querySelector(".carousel-control-prev");
-      const nextBtn = carousel.querySelector(".carousel-control-next");
-      
-      prevBtn?.addEventListener("click", (e) => {
-        e.preventDefault();
-        currentIdx = (currentIdx - 1 + items.length) % items.length;
-        showSlide(currentIdx);
-      });
-      nextBtn?.addEventListener("click", (e) => {
-        e.preventDefault();
-        currentIdx = (currentIdx + 1) % items.length;
-        showSlide(currentIdx);
-      });
-      
-      // Indicator clicks
-      const indicators = carousel.querySelectorAll(".carousel-indicators li");
-      indicators.forEach((ind, i) => {
-        ind.addEventListener("click", () => {
-          currentIdx = i;
+      const carousels = container.querySelectorAll(".carousel.slide");
+      carousels.forEach((carousel) => {
+        const items = carousel.querySelectorAll(".carousel-item");
+        if (items.length <= 1) return;
+        
+        // Check if Bootstrap carousel is already initialized
+        if ((carousel as any)._carouselInit) return;
+        (carousel as any)._carouselInit = true;
+        
+        let currentIdx = 0;
+        
+        const showSlide = (index: number) => {
+          items.forEach((item, i) => item.classList.toggle("active", i === index));
+          carousel.querySelectorAll(".carousel-indicators li").forEach((ind, i) => {
+            ind.classList.toggle("active", i === index);
+          });
+        };
+        
+        const autoTimer = setInterval(() => {
+          currentIdx = (currentIdx + 1) % items.length;
+          showSlide(currentIdx);
+        }, 5000);
+        
+        carousel.querySelector(".carousel-control-prev")?.addEventListener("click", (e) => {
+          e.preventDefault();
+          currentIdx = (currentIdx - 1 + items.length) % items.length;
           showSlide(currentIdx);
         });
+        carousel.querySelector(".carousel-control-next")?.addEventListener("click", (e) => {
+          e.preventDefault();
+          currentIdx = (currentIdx + 1) % items.length;
+          showSlide(currentIdx);
+        });
+        
+        carousel.querySelectorAll(".carousel-indicators li").forEach((ind, i) => {
+          ind.addEventListener("click", () => { currentIdx = i; showSlide(currentIdx); });
+        });
+        
+        // Store timer for cleanup
+        (carousel as any)._autoTimer = autoTimer;
       });
-    });
+    }, 300);
     
     return () => {
-      timers.forEach(t => clearInterval(t));
+      clearTimeout(timer);
+      document.getElementById("neto-theme")?.querySelectorAll(".carousel.slide").forEach((c) => {
+        clearInterval((c as any)?._autoTimer);
+      });
     };
   }, [renderedHeader, renderedFooter]);
 

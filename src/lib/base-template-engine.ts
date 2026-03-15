@@ -446,6 +446,38 @@ function processEscape(template: string): string {
   });
 }
 
+// ── Process [%url_encode%]...[%/url_encode%] — URL encoding ──
+function processUrlEncode(template: string): string {
+  return template.replace(/\[%url_encode%\]([\s\S]*?)\[%\/url_encode%\]/gi, (_, content: string) => {
+    return encodeURIComponent(content.trim());
+  });
+}
+
+// ── Process [%FORMAT type:'date'%]value[%/FORMAT%] (uppercase variant) ──
+function processFormatDate(template: string): string {
+  return template.replace(/\[%FORMAT\s+type:'date'%\]([\s\S]*?)\[%\/FORMAT%\]/gi, (_, content: string) => {
+    const val = content.trim();
+    if (!val || val === "0000-00-00 00:00:00") return "";
+    try {
+      return new Date(val).toLocaleDateString();
+    } catch {
+      return val;
+    }
+  });
+}
+
+// ── Process [%format type:'text' rmhtml:'1'%]...[%/format%] ──
+function processFormatText(template: string): string {
+  return template.replace(/\[%format\s+type:'text'[^%]*rmhtml:'1'[^%]*%\]([\s\S]*?)\[%\/format%\]/gi, (_, content: string) => {
+    return content.replace(/<[^>]*>/g, "");
+  });
+}
+
+// ── Process [%ajax_loader%]...[%/ajax_loader%] — keep content ──
+function processAjaxLoader(template: string): string {
+  return template.replace(/\[%\/?ajax_loader%\]/gi, "");
+}
+
 // ── Process [%calc expr /%] — simple math ──
 function processCalc(template: string): string {
   return template.replace(/\[%calc\s+([^\]]*?)\s*\/?%\]/gi, (_, expr: string) => {
@@ -1236,8 +1268,11 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining [%tag%]...[%/tag%] pairs that weren't handled
-  // Only remove simple known-safe ones
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|url_encode)[^\]]*%\]/gi, "");
+  // Remove remaining [%tag ...%]...[%END tag%] blocks
+  result = result.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
+  // Remove leftover [@...@] value tags
+  result = result.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
   return result;
 }
 
@@ -1272,6 +1307,14 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   result = processFormatBlocks(result, ctx);
   result = processFormatCurrency(result, ctx);
   result = processFormatPercent(result);
+  result = processFormatDate(result);
+  result = processFormatText(result);
+
+  // 8b. URL encode blocks [%url_encode%]
+  result = processUrlEncode(result);
+
+  // 8c. Ajax loader — strip wrappers
+  result = processAjaxLoader(result);
 
   // 9. NoHTML blocks [%nohtml%]
   result = processNoHtml(result);
