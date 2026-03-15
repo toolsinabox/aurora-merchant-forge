@@ -45,7 +45,7 @@ const SCAN_SELECTORS: Record<string, string[]> = {
 // Full selectors for actual data import
 const OUTPUT_SELECTORS: Record<string, string[]> = {
   get_products: [
-    "ParentSKU", "ID", "Brand", "Model", "Name", "PrimarySupplier",
+    "ParentSKU", "SKU", "ID", "Brand", "Model", "Name", "PrimarySupplier",
     "Approved", "IsActive", "FreeGifts", "CrossSellProducts", "UpsellProducts",
     "PriceGroups", "ItemLength", "ItemWidth", "ItemHeight", "ShippingLength",
     "ShippingWidth", "ShippingHeight", "ShippingWeight", "CubicWeight",

@@ -341,7 +341,7 @@ serve(async (req) => {
           imported++;
         } catch (err: any) {
           failed++;
-          errors.push(`Product ${p.Name || p.ParentSKU}: ${err.message}`);
+          errors.push(`Product ${p.Name || p.SKU || p.ParentSKU}: ${err.message}`);
         }
       }
     }
