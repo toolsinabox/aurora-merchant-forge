@@ -140,7 +140,9 @@ export function findThemeFiles(
   folder: string
 ): ThemeFile[] {
   if (!theme) return [];
-  return theme.files.filter(f => f.folder === folder);
+  return theme.files.filter(f =>
+    f.folder === folder || f.file_path.match(new RegExp(`(?:^|/)${folder}/`, "i"))
+  );
 }
 
 /** Build an includes map from snippets for the B@SE engine */
