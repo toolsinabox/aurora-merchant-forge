@@ -1313,6 +1313,15 @@ function stripComments(template: string): string {
   return template.replace(/\[#[^#]*#\]/g, "");
 }
 
+// ── Normalize Maropost syntax variants (END tags, spaced closing tags, malformed close tokens) ──
+function normalizeTemplateSyntax(template: string): string {
+  let result = template;
+  result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  result = result.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  result = result.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
+  return result;
+}
+
 // ── Process simple value tags: [@field@] and [@field|format@] ──
 function processValueTags(template: string, ctx: TemplateContext): string {
   return template.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
