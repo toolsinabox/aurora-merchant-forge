@@ -1316,8 +1316,11 @@ function stripComments(template: string): string {
 // ── Normalize Maropost syntax variants (END tags, spaced closing tags, malformed close tokens) ──
 function normalizeTemplateSyntax(template: string): string {
   let result = template;
-  result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  // [%END asset_url%] or [%end param%] → [%/asset_url%] or [%/param%]
+  result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/gi, "[%/$1%]");
+  // [% / param %] → [%/param%]
   result = result.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  // [%/param%%] → [%/param%]
   result = result.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
   return result;
 }
