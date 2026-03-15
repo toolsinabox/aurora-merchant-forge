@@ -1112,7 +1112,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     if (footerMatch) {
       let footerHtml = footerMatch[1];
       footerHtml = footerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
-      footerHtml = processInlineConditionals(footerHtml, items.length);
+      footerHtml = processInlineConditionals(footerHtml, items.length, ctx);
       html += footerHtml;
     }
     
