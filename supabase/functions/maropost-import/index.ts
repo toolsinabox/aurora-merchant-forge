@@ -968,8 +968,53 @@ serve(async (req) => {
     }
 
     // ══════════════════════════════════════════════════════════
-    // ── IMPORT REDIRECTS (301) ──
+    // ── IMPORT PAYMENTS (standalone — link to orders by OrderID) ──
     // ══════════════════════════════════════════════════════════
+    else if (action === "import_payments") {
+      const items = source_data?.Payment || source_data || [];
+      const payments = Array.isArray(items) ? items : [items];
+
+      const { data: storeOwner } = await supabase
+        .from("stores").select("owner_id").eq("id", store_id).single();
+      const recordedBy = storeOwner?.owner_id;
+
+      for (const pay of payments) {
+        try {
+          if (!recordedBy) { failed++; errors.push(`Payment: No store owner for recorded_by`); continue; }
+          const orderRef = pay.OrderID || pay.OrderNumber;
+          if (!orderRef) { failed++; errors.push(`Payment ${pay.PaymentID}: No OrderID`); continue; }
+
+          const { data: order } = await supabase
+            .from("orders").select("id").eq("store_id", store_id).eq("order_number", String(orderRef)).maybeSingle();
+          if (!order) { failed++; errors.push(`Payment ${pay.PaymentID}: Order ${orderRef} not found`); continue; }
+
+          const ref = String(pay.TransactionID || pay.PaymentID || pay.ReceiptNumber || `pay-${Date.now()}`);
+          const { data: existingPay } = await supabase
+            .from("order_payments").select("id").eq("order_id", order.id).eq("reference", ref).maybeSingle();
+
+          const payData: Record<string, any> = {
+            order_id: order.id, store_id,
+            amount: toFloat(pay.Amount) || toFloat(pay.TotalAmount) || 0,
+            payment_method: pay.PaymentMethod || pay.PaymentType || pay.Gateway || "unknown",
+            reference: ref, recorded_by: recordedBy,
+            created_at: sanitizeDate(pay.DatePaid || pay.DateCreated || pay.PaymentDate) || new Date().toISOString(),
+          };
+
+          if (existingPay) {
+            await supabase.from("order_payments").update(payData).eq("id", existingPay.id);
+          } else {
+            const { error } = await supabase.from("order_payments").insert(payData);
+            if (error) throw error;
+          }
+          imported++;
+        } catch (err: any) {
+          failed++;
+          errors.push(`Payment ${pay.PaymentID || "unknown"}: ${err.message}`);
+        }
+      }
+    }
+
+    //
     else if (action === "import_redirects") {
       const items = source_data?.Redirect || source_data || [];
       const redirects = Array.isArray(items) ? items : [items];
