@@ -792,8 +792,9 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
  */
 function collapseAssetUrlBlocks(body: string): string {
   // Match asset_url block form (with potential nested [%param%] and [%cdn_asset%] inside)
+  // Support both [%/asset_url%] and [%END asset_url%] closing tags
   return body.replace(
-    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%\/asset_url%\]/gi,
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url)%\]/gi,
     (_, attrs: string) => `[%asset_url ${attrs}/%]`
   );
 }
