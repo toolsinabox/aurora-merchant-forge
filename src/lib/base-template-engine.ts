@@ -642,22 +642,38 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
   // Also [%asset_url type:'category' id:'[@id@]'%]...[%end param%][%END asset_url%]
   let result = template;
   
-  // Self-closing variant
-  result = result.replace(/\[%asset_url\s+([^\]]*?)\/?%\]/gi, (full, attrs: string) => {
-    return resolveAssetUrlAttrs(attrs, ctx, item);
-  });
-  
-  // Block variant: [%asset_url ...%]...[%END asset_url%] or [%/asset_url%] or [%/ASSET_url%]
-  result = result.replace(/\[%asset_url\s+([^\]]*?)%\]([\s\S]*?)\[%(?:END\s+asset_url|\/asset_url|\/ASSET_url)%\]/gi, (_, attrs: string, body: string) => {
-    const url = resolveAssetUrlAttrs(attrs, ctx, item);
+  // Block variant FIRST (longer match): [%asset_url ...%]...[%END asset_url%]
+  // Use ((?:[^\[\]]|\[@[^\]]*@\])*) to allow [@...@] tags inside attrs
+  result = result.replace(/\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:END\s+asset_url|\/asset_url|\/ASSET_url|end\s+asset_url)%\]/gi, (_, attrs: string, body: string) => {
+    // Pre-resolve [@...@] tags in attrs using item context
+    const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+      if (item && item[field] !== undefined) return String(item[field]);
+      return String(resolveField(field, ctx) || "");
+    });
+    const url = resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
     if (url) return url;
     // If no URL resolved, check for a default param
     const defaultMatch = body.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
     if (defaultMatch) {
       // The default content might contain cdn_asset — resolve it
-      return defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1");
+      const defaultVal = defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+      // If it's just a filename (not a full URL/path), use placeholder
+      if (defaultVal && !defaultVal.startsWith("/") && !defaultVal.startsWith("http")) {
+        return "/placeholder.svg";
+      }
+      return defaultVal || "/placeholder.svg";
     }
-    return "";
+    return "/placeholder.svg";
+  });
+  
+  // Self-closing variant — also allow [@...@] inside attrs
+  result = result.replace(/\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/?%\]/gi, (full, attrs: string) => {
+    // Pre-resolve [@...@] tags in attrs using item context
+    const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+      if (item && item[field] !== undefined) return String(item[field]);
+      return String(resolveField(field, ctx) || "");
+    });
+    return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
   });
   
   return result;
