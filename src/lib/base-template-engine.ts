@@ -2124,10 +2124,35 @@ function normalizeTemplateSyntax(template: string): string {
 // ── Process simple value tags: [@field@] and [@field|format@] ──
 function processValueTags(template: string, ctx: TemplateContext): string {
   return template.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
+    // Check __variables first
+    if ((ctx as any).__variables?.[field] !== undefined) {
+      const val = (ctx as any).__variables[field];
+      return format ? applyFormat(val, format) : String(val);
+    }
     const value = resolveField(field, ctx);
     if (value === undefined || value === null) return "";
     return format ? applyFormat(value, format) : String(value);
   });
+}
+
+// ── Process inline tags: [%rndm%], [%config:key%], [%now%] ──
+function processInlineTags(template: string, ctx: TemplateContext): string {
+  let result = template;
+  // [%rndm%] — random string
+  result = result.replace(/\[%rndm%\]/gi, () => Math.random().toString(36).substring(2, 8));
+  // [%now%] — current timestamp
+  result = result.replace(/\[%now%\]/gi, () => new Date().toISOString());
+  // [%today%] — current date
+  result = result.replace(/\[%today%\]/gi, () => new Date().toLocaleDateString());
+  // [%year%] — current year
+  result = result.replace(/\[%year%\]/gi, () => new Date().getFullYear().toString());
+  // [%config:key%] — inline config values
+  result = result.replace(/\[%config:([^\]%]+)%\]/gi, (_, key: string) => resolveConfig(key.trim(), ctx));
+  // [%var:name%] — variable references
+  result = result.replace(/\[%var:([^\]%]+)%\]/gi, (_, name: string) => {
+    return (ctx as any).__variables?.[name.trim()] ?? "";
+  });
+  return result;
 }
 
 // ── Process legacy includes: [!include slug!] ──
