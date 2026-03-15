@@ -691,16 +691,25 @@ serve(async (req) => {
             }
           }
 
-          // Order payments
+          // Order payments — get store owner as recorded_by (required NOT NULL field)
           if (o.OrderPayment && !dry_run && orderId !== "dry-run") {
-            const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
-            for (const pay of payments) {
-              await safe(supabase.from("order_payments").insert({
-                order_id: orderId, store_id,
-                amount: toFloat(pay.Amount) || 0,
-                payment_method: pay.PaymentMethod || pay.PaymentType || "unknown",
-                reference: pay.TransactionID || pay.PaymentID || null,
-              } as any));
+            // Get store owner for recorded_by
+            const { data: storeOwner } = await supabase
+              .from("stores").select("owner_id").eq("id", store_id).single();
+            const recordedBy = storeOwner?.owner_id;
+            
+            if (recordedBy) {
+              const payments = Array.isArray(o.OrderPayment) ? o.OrderPayment : [o.OrderPayment];
+              for (const pay of payments) {
+                await safe(supabase.from("order_payments").insert({
+                  order_id: orderId, store_id,
+                  amount: toFloat(pay.Amount) || 0,
+                  payment_method: pay.PaymentMethod || pay.PaymentType || "unknown",
+                  reference: pay.TransactionID || pay.PaymentID || null,
+                  recorded_by: recordedBy,
+                  created_at: sanitizeDate(pay.DatePaid || pay.DateCreated) || new Date().toISOString(),
+                } as any));
+              }
             }
           }
 
