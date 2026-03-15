@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { MapPin, Phone, Clock, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontStoreFinder() {
   const { storeSlug: paramSlug } = useParams();
@@ -32,11 +36,52 @@ export default function StorefrontStoreFinder() {
     });
   }, [storeSlug]);
 
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+
+    const templateFile =
+      findMainThemeFile(activeTheme, "store-finder") ||
+      findMainThemeFile(activeTheme, "store_finder") ||
+      findMainThemeFile(activeTheme, "locations");
+    if (!templateFile?.content) return null;
+
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const basePath = storeSlug ? `/store/${storeSlug}` : "";
+
+    const ctx: TemplateContext = {
+      store,
+      locations,
+      basePath,
+      pageType: "store-finder",
+      themeFiles: themeFilesMap,
+      themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Store Finder", description: "Find a store or warehouse location near you" },
+    };
+
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi,
+      (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, locations, storeSlug]);
+
   const filtered = locations.filter((l) => {
     if (!search) return true;
     const q = search.toLowerCase();
     return l.name.toLowerCase().includes(q) || (l.address || "").toLowerCase().includes(q);
   });
+
+  if (themeHtml && !loading) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
 
   return (
     <StorefrontLayout storeName={store?.name}>

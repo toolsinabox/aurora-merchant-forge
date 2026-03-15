@@ -19,6 +19,11 @@ export interface TemplateContext {
   store?: Record<string, any>;
   order?: Record<string, any>;
   customer?: Record<string, any>;
+  cart?: Record<string, any>;
+  cart_items?: Record<string, any>[];
+  wishlist_items?: Record<string, any>[];
+  locations?: Record<string, any>[];
+  addresses?: Record<string, any>[];
   includes?: Record<string, string>;
   /** Theme file contents keyed by relative path for load_template */
   themeFiles?: Record<string, string>;
@@ -2062,6 +2067,82 @@ function processBlocks(template: string, ctx: TemplateContext): string {
           product_count: cat.product_count || 0,
         }));
         break;
+      case "order_lines": case "order_line": case "order_items": case "order_item":
+        items = (ctx.order?.items || ctx.order?.line_items || []).map((item: any, idx: number) => ({
+          ...item,
+          index: idx,
+          count: idx,
+          SKU: item.sku || "",
+          sku: item.sku || "",
+          name: item.title || item.product_name || "",
+          headline: item.title || item.product_name || "",
+          quantity: item.quantity || 1,
+          unit_price: item.price || item.unit_price || 0,
+          store_price: item.price || item.unit_price || 0,
+          line_total: (item.quantity || 1) * (item.price || item.unit_price || 0),
+          subtotal: (item.quantity || 1) * (item.price || item.unit_price || 0),
+          image_url: resolveStorageUrl(item.image || item.images?.[0]) || "/placeholder.svg",
+          URL: `${ctx.basePath || ""}/product/${item.product_slug || item.product_id || ""}`,
+        }));
+        break;
+      case "cart_items": case "cart_item": case "cart_line": case "cart_lines":
+        items = (ctx.cart?.items || ctx.cart_items || []).map((item: any, idx: number) => ({
+          ...item,
+          index: idx,
+          count: idx,
+          SKU: item.sku || "",
+          sku: item.sku || "",
+          name: item.title || item.product_name || "",
+          headline: item.title || item.product_name || "",
+          quantity: item.quantity || 1,
+          unit_price: item.price || item.unit_price || 0,
+          store_price: item.price || item.unit_price || 0,
+          line_total: (item.quantity || 1) * (item.price || item.unit_price || 0),
+          subtotal: (item.quantity || 1) * (item.price || item.unit_price || 0),
+          image_url: resolveStorageUrl(item.image || item.images?.[0]) || "/placeholder.svg",
+          URL: `${ctx.basePath || ""}/product/${item.product_slug || item.product_id || ""}`,
+          remove_url: "#",
+        }));
+        break;
+      case "wishlist_items": case "wishlist_item": case "wishlist":
+        items = (ctx.wishlist_items || []).map((item: any, idx: number) => ({
+          ...item,
+          index: idx,
+          count: idx,
+          SKU: item.sku || "",
+          sku: item.sku || "",
+          name: item.title || "",
+          headline: item.title || "",
+          store_price: item.price || 0,
+          image_url: resolveStorageUrl(item.images?.[0] || item.image_url) || "/placeholder.svg",
+          URL: `${ctx.basePath || ""}/product/${item.slug || item.id}`,
+          remove_url: "#",
+        }));
+        break;
+      case "locations": case "location": case "store_locations": case "store_finder":
+        items = (ctx.locations || []).map((loc: any, idx: number) => ({
+          ...loc,
+          index: idx,
+          count: idx,
+          name: loc.name || "",
+          address: loc.address || "",
+          phone: loc.phone || "",
+          email: loc.email || "",
+          type: loc.type || "store",
+          hours: loc.hours || "Mon-Fri 9am-5pm",
+          lat: loc.lat || loc.latitude || "",
+          lng: loc.lng || loc.longitude || "",
+        }));
+        break;
+      case "addresses": case "address": case "customer_addresses":
+        items = (ctx.customer?.addresses || ctx.addresses || []).map((addr: any, idx: number) => ({
+          ...addr,
+          index: idx,
+          count: idx,
+          full_address: [addr.address_1, addr.address_2, addr.city, addr.state, addr.postcode, addr.country].filter(Boolean).join(", "),
+          is_default: addr.is_default ? 1 : 0,
+        }));
+        break;
       default: return "";
     }
 
@@ -2311,6 +2392,8 @@ export const SUPPORTED_TAGS = [
 export const SUPPORTED_BLOCKS = [
   "crosssell", "upsell", "free_gift", "variant", "specific",
   "pricing_tier", "images", "tags", "adverts", "thumb",
+  "order_lines", "cart_items", "wishlist_items", "locations", "addresses",
+  "reviews", "categories",
 ];
 
 export const SUPPORTED_FORMATS = [
