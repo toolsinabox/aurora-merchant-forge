@@ -1322,13 +1322,13 @@ function processThumbList(template: string, ctx: TemplateContext): string {
           if (field === "count") return String(idx);
           if (field === "index") return String(idx);
           if (field === "total_showing") return String(items.length);
-          if (productItem[field] !== undefined && productItem[field] !== null) return String(productItem[field]);
+          if (item[field] !== undefined && item[field] !== null) return String(item[field]);
           const ctxVal = resolveField(field, ctx);
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
         });
         
-        rendered = processAssetUrl(rendered, ctx, productItem);
-        rendered = processItemConditionals(rendered, productItem, idx, items.length, ctx);
+        rendered = processAssetUrl(rendered, ctx, item);
+        rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         
         html += rendered;
       });
