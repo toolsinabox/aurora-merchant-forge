@@ -247,23 +247,40 @@ function resolveField(field: string, ctx: TemplateContext): any {
 // ── Process Maropost [%load_template file:'path'/%] ──
 function processLoadTemplate(template: string, ctx: TemplateContext, depth = 0): string {
   if (depth > 10) return template;
-  return template.replace(/\[%load_template\s+file:'([^']+)'\/?%\]/gi, (_, filePath: string) => {
+  return template.replace(/\[%load_template\s+file:\s*(['"])([^'"]+)\1\s*\/?%\]/gi, (_, _quote: string, filePath: string) => {
     const files = ctx.themeFiles || {};
     const includes = ctx.includes || {};
-    
-    if (files[filePath]) return processLoadTemplate(files[filePath], ctx, depth + 1);
-    
-    const fileName = filePath.split("/").pop() || filePath;
+    const cleanPath = filePath.trim().replace(/^\/+/, "");
+
+    const directCandidates = [
+      cleanPath,
+      `templates/${cleanPath}`,
+      `templates/${cleanPath}.template.html`,
+      `templates/${cleanPath}.html`,
+    ];
+
+    for (const candidate of directCandidates) {
+      if (files[candidate]) return processLoadTemplate(files[candidate], ctx, depth + 1);
+    }
+
+    const fileName = cleanPath.split("/").pop() || cleanPath;
     const slug = fileName.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9-_]/g, "-");
     if (includes[slug]) return processLoadTemplate(includes[slug], ctx, depth + 1);
-    
+
+    const lowerPath = cleanPath.toLowerCase();
     for (const key of Object.keys(files)) {
-      if (key.endsWith(filePath) || key.includes(filePath)) {
+      const lowerKey = key.toLowerCase();
+      if (
+        lowerKey === lowerPath ||
+        lowerKey.endsWith(`/${lowerPath}`) ||
+        lowerKey.endsWith(`/${lowerPath}.template.html`) ||
+        lowerKey.endsWith(`/${lowerPath}.html`)
+      ) {
         return processLoadTemplate(files[key], ctx, depth + 1);
       }
     }
-    
-    return `<!-- load_template "${filePath}" not found -->`;
+
+    return `<!-- load_template "${cleanPath}" not found -->`;
   });
 }
 
@@ -272,27 +289,44 @@ function resolveThemeTemplate(templateName: string, ctx: TemplateContext): strin
   if (!templateName) return null;
   const files = ctx.themeFiles || {};
   const includes = ctx.includes || {};
-  
-  // Try direct path
+  const clean = templateName.trim().replace(/^\/+/, "");
+  const hasExt = /\.(html?|template\.html)$/i.test(clean);
+
   const paths = [
-    `templates/${templateName}.template.html`,
-    `templates/${templateName}.html`,
-    templateName,
+    clean,
+    `templates/${clean}`,
+    `templates/thumbs/advert/${clean}`,
+    `templates/thumbs/product/${clean}`,
+    `templates/thumbs/content/${clean}`,
+    ...(hasExt ? [] : [
+      `templates/${clean}.template.html`,
+      `templates/${clean}.html`,
+      `templates/thumbs/advert/${clean}.template.html`,
+      `templates/thumbs/product/${clean}.template.html`,
+      `templates/thumbs/content/${clean}.template.html`,
+    ]),
   ];
-  
+
   for (const p of paths) {
     if (files[p]) return files[p];
   }
-  
-  // Try slug match in includes
-  const slug = templateName.toLowerCase().replace(/[^a-z0-9-_]/g, "-");
+
+  const slug = clean.toLowerCase().replace(/[^a-z0-9-_]/g, "-");
   if (includes[slug]) return includes[slug];
-  
-  // Try partial match in files
+
+  const lowerClean = clean.toLowerCase();
   for (const key of Object.keys(files)) {
-    if (key.includes(templateName)) return files[key];
+    const lowerKey = key.toLowerCase();
+    if (
+      lowerKey === lowerClean ||
+      lowerKey.endsWith(`/${lowerClean}`) ||
+      (!hasExt && lowerKey.endsWith(`/${lowerClean}.template.html`)) ||
+      (!hasExt && lowerKey.endsWith(`/${lowerClean}.html`))
+    ) {
+      return files[key];
+    }
   }
-  
+
   return null;
 }
 
@@ -378,32 +412,77 @@ function processMaropostConditionals(template: string, ctx: TemplateContext): st
 
 function evaluateCondition(condition: string, ctx: TemplateContext): boolean {
   condition = condition.trim();
-  
+  if (!condition) return false;
+
+  // Trim wrapping parentheses repeatedly
+  while (condition.startsWith("(") && condition.endsWith(")")) {
+    const inner = condition.slice(1, -1).trim();
+    if (!inner) break;
+    condition = inner;
+  }
+
+  // Support leading operators used by some Neto templates: "or X or Y", "and X and Y"
+  condition = condition.replace(/^or\s+/i, "").replace(/^and\s+/i, "").trim();
+
+  // Logical OR / AND
+  const orParts = condition.split(/\s+OR\s+/i);
+  if (orParts.length > 1) return orParts.some((part) => evaluateCondition(part, ctx));
+
+  const andParts = condition.split(/\s+AND\s+/i);
+  if (andParts.length > 1) return andParts.every((part) => evaluateCondition(part, ctx));
+
+  // NOT / !
   if (condition.startsWith("!") || condition.toUpperCase().startsWith("NOT ")) {
     const inner = condition.replace(/^!|^NOT\s+/i, "").trim();
     return !evaluateCondition(inner, ctx);
   }
-  
+
   // Comparison operators
-  const compMatch = condition.match(/^(.+?)\s+(eq|ne|!=|==|>|<|>=|<=)\s+(.+)$/i);
+  const compMatch = condition.match(/^(.+?)\s*(eq|ne|!=|==|>|<|>=|<=)\s*(.+)$/i);
   if (compMatch) {
-    let left = resolveTagValue(compMatch[1].trim(), ctx);
+    const left = resolveConditionOperand(compMatch[1], ctx);
+    const right = resolveConditionOperand(compMatch[3], ctx);
     const op = compMatch[2].toLowerCase();
-    let right = compMatch[3].trim().replace(/^['"]|['"]$/g, "");
-    
+
     switch (op) {
-      case "eq": case "==": return String(left) === right;
-      case "ne": case "!=": return String(left) !== right;
-      case ">": return Number(left) > Number(right);
-      case "<": return Number(left) < Number(right);
-      case ">=": return Number(left) >= Number(right);
-      case "<=": return Number(left) <= Number(right);
+      case "eq":
+      case "==":
+        return String(left) === String(right);
+      case "ne":
+      case "!=":
+        return String(left) !== String(right);
+      case ">":
+        return Number(left) > Number(right);
+      case "<":
+        return Number(left) < Number(right);
+      case ">=":
+        return Number(left) >= Number(right);
+      case "<=":
+        return Number(left) <= Number(right);
     }
   }
-  
-  const value = resolveTagValue(condition, ctx);
-  return value !== null && value !== undefined && value !== false && value !== 0 && 
-         value !== "" && value !== "0" && value !== "false";
+
+  const value = resolveConditionOperand(condition, ctx);
+  return value !== null && value !== undefined && value !== false && value !== 0 &&
+         value !== "" && value !== "0" && String(value).toLowerCase() !== "false";
+}
+
+function resolveConditionOperand(raw: string, ctx: TemplateContext): any {
+  const operand = raw.trim();
+
+  // Quoted string literal
+  if ((operand.startsWith("'") && operand.endsWith("'")) || (operand.startsWith('"') && operand.endsWith('"'))) {
+    return operand.slice(1, -1);
+  }
+
+  // Tagged / field values
+  const tagValue = resolveTagValue(operand, ctx);
+  if (tagValue !== undefined && tagValue !== null && tagValue !== "") return tagValue;
+
+  if (/^(true|false)$/i.test(operand)) return operand.toLowerCase() === "true";
+  if (/^-?\d+(?:\.\d+)?$/.test(operand)) return Number(operand);
+
+  return operand;
 }
 
 function resolveTagValue(tag: string, ctx: TemplateContext): any {
@@ -612,7 +691,7 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
         html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
         html = html.replace(/\[@css_class@\]/gi, cat.css_class || "");
-        html = html.replace(/\[@image_url@\]/gi, cat.image_url || "");
+        html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
         
         if (nextLevelHtml) {
           html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "$1");
@@ -667,7 +746,8 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
         html = html.replace(/\[@name@\]/gi, cat.name || "");
         html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
-        html = html.replace(/\[@image@\]/gi, cat.image_url || "");
+        html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
+        html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
         html = html.replace(/\[@slug@\]/gi, cat.slug || "");
         // Process any asset_url for category images within the template
         html = processAssetUrl(html, ctx, cat);
@@ -969,7 +1049,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       let headerHtml = headerMatch[1];
       headerHtml = headerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
       // Process conditionals within header (e.g., [%if [@total_showing@] > 1%])
-      headerHtml = processInlineConditionals(headerHtml, items.length);
+      headerHtml = processInlineConditionals(headerHtml, items.length, ctx);
       html += headerHtml;
     }
     
@@ -995,7 +1075,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
         rendered = processAssetUrl(rendered, ctx, item);
         
         // Process inline conditionals (e.g., [%if [@count@] eq '0'%])
-        rendered = processItemConditionals(rendered, item, idx, items.length);
+        rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         
         // Extract and accumulate SITE_VALUE counter content
         const svRegex = /\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi;
@@ -1007,7 +1087,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
             if (item[f] !== undefined) return String(item[f]);
             return "";
           });
-          counterItem = processItemConditionals(counterItem, item, idx, items.length);
+          counterItem = processItemConditionals(counterItem, item, idx, items.length, ctx);
           counterHtml.push(counterItem);
         }
         // Strip SITE_VALUE blocks from rendered output
@@ -1032,7 +1112,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     if (footerMatch) {
       let footerHtml = footerMatch[1];
       footerHtml = footerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
-      footerHtml = processInlineConditionals(footerHtml, items.length);
+      footerHtml = processInlineConditionals(footerHtml, items.length, ctx);
       html += footerHtml;
     }
     
@@ -1041,76 +1121,48 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
 }
 
 // Process inline [%if%] conditionals with known values for items
-function processItemConditionals(template: string, item: any, idx: number, total: number): string {
+function processItemConditionals(template: string, item: any, idx: number, total: number, ctx?: TemplateContext): string {
   let result = template;
   let safety = 0;
-  
-  while (result.includes("[%if ") && safety++ < 20) {
+
+  while (result.includes("[%if ") && safety++ < 30) {
     const prev = result;
-    result = result.replace(/\[%if\s+([^\]]+?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      // Handle [%else%]
+    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
       const parts = body.split(/\[%else%\]/i);
-      const ifBody = parts[0];
-      const elseBody = parts[1] || "";
-      
-      // Evaluate the condition with item context
-      const resolved = cond
-        .replace(/\[@count@\]/gi, String(idx))
-        .replace(/\[@index@\]/gi, String(idx))
-        .replace(/\[@total_showing@\]/gi, String(total))
-        .replace(/\[@(\w+)@\]/gi, (__, f: string) => {
-          if (item[f] !== undefined) return String(item[f]);
-          return "";
-        });
-      
-      // Simple condition evaluation
-      const eqMatch = resolved.match(/^(.+?)\s+eq\s+'([^']*)'$/i);
-      if (eqMatch) {
-        return eqMatch[1].trim() === eqMatch[2] ? ifBody : elseBody;
-      }
-      
-      const neMatch = resolved.match(/^(.+?)\s+ne\s+'([^']*)'$/i);
-      if (neMatch) {
-        return neMatch[1].trim() !== neMatch[2] ? ifBody : elseBody;
-      }
-      
-      const gtMatch = resolved.match(/^(.+?)\s*>\s*(.+)$/);
-      if (gtMatch) {
-        return Number(gtMatch[1].trim()) > Number(gtMatch[2].trim()) ? ifBody : elseBody;
-      }
-      
-      // Truthy check
-      const val = resolved.trim();
-      const isTruthy = val && val !== "0" && val !== "false" && val !== "";
-      return isTruthy ? ifBody : elseBody;
+      const ifBody = parts[0] || "";
+      const elseBody = parts.slice(1).join("[%else%]") || "";
+      const evalCtx = {
+        ...(ctx || {}),
+        ...(item || {}),
+        count: idx,
+        index: idx,
+        total_showing: total,
+      } as TemplateContext;
+      return evaluateCondition(cond, evalCtx) ? ifBody : elseBody;
     });
     if (result === prev) break;
   }
-  
+
   return result;
 }
 
 // Process [%if%] blocks where we only know total_showing
-function processInlineConditionals(template: string, totalShowing: number): string {
+function processInlineConditionals(template: string, totalShowing: number, ctx?: TemplateContext): string {
   let result = template;
   let safety = 0;
-  
-  while (result.includes("[%if ") && safety++ < 20) {
+
+  while (result.includes("[%if ") && safety++ < 30) {
     const prev = result;
-    result = result.replace(/\[%if\s+([^\]]+?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
-      const resolved = cond.replace(/\[@total_showing@\]/gi, String(totalShowing));
-      
-      const gtMatch = resolved.match(/^(.+?)\s*>\s*(.+)$/);
-      if (gtMatch) {
-        return Number(gtMatch[1].trim()) > Number(gtMatch[2].trim()) ? body : "";
-      }
-      
-      // Default: show content
-      return body;
+    result = result.replace(/\[%if\s+([\s\S]*?)%\]([\s\S]*?)\[%\/if%\]/i, (_, cond: string, body: string) => {
+      const parts = body.split(/\[%else%\]/i);
+      const ifBody = parts[0] || "";
+      const elseBody = parts.slice(1).join("[%else%]") || "";
+      const evalCtx = { ...(ctx || {}), total_showing: totalShowing } as TemplateContext;
+      return evaluateCondition(cond, evalCtx) ? ifBody : elseBody;
     });
     if (result === prev) break;
   }
-  
+
   return result;
 }
 
@@ -1190,7 +1242,7 @@ function processThumbList(template: string, ctx: TemplateContext): string {
         });
         
         rendered = processAssetUrl(rendered, ctx, productItem);
-        rendered = processItemConditionals(rendered, productItem, idx, items.length);
+        rendered = processItemConditionals(rendered, productItem, idx, items.length, ctx);
         
         html += rendered;
       });
@@ -1261,6 +1313,15 @@ function stripComments(template: string): string {
   return template.replace(/\[#[^#]*#\]/g, "");
 }
 
+// ── Normalize Maropost syntax variants (END tags, spaced closing tags, malformed close tokens) ──
+function normalizeTemplateSyntax(template: string): string {
+  let result = template;
+  result = result.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  result = result.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  result = result.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
+  return result;
+}
+
 // ── Process simple value tags: [@field@] and [@field|format@] ──
 function processValueTags(template: string, ctx: TemplateContext): string {
   return template.replace(/\[@([\w:.]+)(?:\|(\w+))?@\]/g, (_, field: string, format?: string) => {
@@ -1301,6 +1362,9 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
 
   // 1. Strip comments
   result = stripComments(result);
+
+  // 1b. Normalize syntax variants (END tags, spaced closers)
+  result = normalizeTemplateSyntax(result);
 
   // 2. Strip cache wrappers
   result = processCacheBlocks(result);
@@ -1345,11 +1409,11 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 12. Set/While stubs
   result = processSetAndWhile(result);
 
-  // 13. Maropost conditionals [%if%]...[%/if%]
-  result = processMaropostConditionals(result, ctx);
-
-  // 14. System tags (breadcrumb, advert, thumb_list, content_menu, etc.)
+  // 13. System tags (breadcrumb, advert, thumb_list, content_menu, etc.)
   result = processSystemTags(result, ctx);
+
+  // 14. Maropost conditionals [%if%]...[%/if%] (after system tags to avoid breaking nested advert/thumb templates)
+  result = processMaropostConditionals(result, ctx);
 
   // 15. Block iterators [%crosssell%], etc.
   result = processBlocks(result, ctx);
