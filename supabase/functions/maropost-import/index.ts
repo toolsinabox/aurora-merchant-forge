@@ -371,15 +371,22 @@ serve(async (req) => {
           }
 
           // Product relations — clear old then re-insert
+          // ⚠ Maropost nests as: UpsellProducts: [{UpsellProduct: [{SKU: "..."}]}]
           await safe(supabase.from("product_relations").delete().eq("product_id", productId).eq("store_id", store_id));
           for (const rel of [
-            { field: "CrossSellProducts", type: "cross_sell" },
-            { field: "UpsellProducts", type: "upsell" },
-            { field: "FreeGifts", type: "free_gift" },
+            { field: "CrossSellProducts", innerKey: "CrossSellProduct", type: "cross_sell" },
+            { field: "UpsellProducts", innerKey: "UpsellProduct", type: "upsell" },
+            { field: "FreeGifts", innerKey: "FreeGift", type: "free_gift" },
           ]) {
-            if (p[rel.field]) {
-              const relItems = Array.isArray(p[rel.field]) ? p[rel.field] : [p[rel.field]];
+            if (p[rel.field] && p[rel.field] !== "") {
+              let rawItems = p[rel.field];
+              // Unwrap outer array wrapper: [{UpsellProduct: [...]}] → [...]
+              if (Array.isArray(rawItems) && rawItems.length > 0 && rawItems[0]?.[rel.innerKey]) {
+                rawItems = rawItems[0][rel.innerKey];
+              }
+              const relItems = Array.isArray(rawItems) ? rawItems : [rawItems];
               for (const relItem of relItems) {
+                if (!relItem || relItem === "") continue;
                 const relSku = typeof relItem === "string" ? relItem : relItem?.SKU || relItem?.ParentSKU;
                 if (relSku) {
                   const { data: relProduct } = await supabase
