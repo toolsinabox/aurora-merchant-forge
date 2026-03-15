@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useCart } from "@/contexts/CartContext";
@@ -8,6 +8,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Heart, ShoppingCart, Trash2, Package } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { getSubdomainSlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontWishlist() {
   const { storeSlug } = useParams();
@@ -16,6 +20,7 @@ export default function StorefrontWishlist() {
   const { addItem } = useCart();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [storeId, setStoreId] = useState<string | undefined>();
 
   useEffect(() => {
     if (wishlistIds.length === 0) {
@@ -31,11 +36,49 @@ export default function StorefrontWishlist() {
       .eq("status", "active")
       .then(({ data }) => {
         setProducts(data || []);
+        if (data?.[0]?.store_id) setStoreId(data[0].store_id);
         setLoading(false);
       });
   }, [wishlistIds]);
 
   const basePath = slug ? `/store/${slug}` : "";
+  const { data: activeTheme } = useActiveTheme(storeId);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !storeId) return null;
+
+    const templateFile =
+      findMainThemeFile(activeTheme, "wishlist") ||
+      findMainThemeFile(activeTheme, "wish_list");
+    if (!templateFile?.content) return null;
+
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${storeId}`;
+
+    const ctx: TemplateContext = {
+      basePath,
+      pageType: "wishlist",
+      wishlist_items: products,
+      themeFiles: themeFilesMap,
+      themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "My Wishlist" },
+    };
+
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi,
+      (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, storeId, products, basePath]);
+
+  if (themeHtml && !loading) {
+    return (
+      <StorefrontLayout>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
 
   return (
     <StorefrontLayout>

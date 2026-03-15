@@ -19,6 +19,11 @@ export interface TemplateContext {
   store?: Record<string, any>;
   order?: Record<string, any>;
   customer?: Record<string, any>;
+  cart?: Record<string, any>;
+  cart_items?: Record<string, any>[];
+  wishlist_items?: Record<string, any>[];
+  locations?: Record<string, any>[];
+  addresses?: Record<string, any>[];
   includes?: Record<string, string>;
   /** Theme file contents keyed by relative path for load_template */
   themeFiles?: Record<string, string>;
