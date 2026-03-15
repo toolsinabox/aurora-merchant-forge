@@ -19,6 +19,32 @@ interface ImportRequest {
 // Supabase JS v2 PromiseLike doesn't have .catch(), wrap in try/catch
 const safe = async (p: PromiseLike<any>) => { try { await p; } catch {} };
 
+const VALID_CUSTOMER_SEGMENTS = new Set(["new", "returning", "vip"]);
+
+const normalizeCustomerSegment = (customer: any): "new" | "returning" | "vip" => {
+  const rawValues = [
+    customer?.segment,
+    customer?.Segment,
+    customer?.Type,
+    customer?.CustomerType,
+    customer?.UserGroup,
+  ]
+    .filter(Boolean)
+    .map((value: any) => String(value).trim().toLowerCase());
+
+  for (const value of rawValues) {
+    if (VALID_CUSTOMER_SEGMENTS.has(value)) return value as "new" | "returning" | "vip";
+    if (value.includes("vip") || value.includes("wholesale") || value.includes("trade")) return "vip";
+    if (value.includes("return")) return "returning";
+    if (value.includes("new")) return "new";
+  }
+
+  const orderCount = Number(customer?.TotalOrders ?? customer?.OrderCount ?? customer?.OrdersCount ?? 0);
+  if (Number.isFinite(orderCount) && orderCount > 0) return "returning";
+
+  return "new";
+};
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
