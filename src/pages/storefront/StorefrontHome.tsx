@@ -10,7 +10,7 @@ import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { AdvertBanner } from "@/components/storefront/AdvertBanner";
-import { useActiveTheme, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useActiveTheme, findMainThemeFile, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
