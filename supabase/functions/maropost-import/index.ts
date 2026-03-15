@@ -121,11 +121,20 @@ serve(async (req) => {
             for (let i = 0; i < imgs.length; i++) {
               const img = imgs[i];
               if (!img) continue;
-              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL || img?.MediumURL || img?.SmallURL;
+              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL || img?.MediumURL || img?.SmallURL || img?.LargeURL;
               if (url) {
                 const rehostedUrl = await rehostImage(url, slug, i);
                 imagesArr.push(rehostedUrl);
               }
+            }
+          }
+
+          // Fallback: check top-level image fields if Images array is empty
+          if (imagesArr.length === 0) {
+            const fallbackUrl = p.ThumbURL || p.ImageURL || p.DefaultImageURL || p.MainImageURL || p.Thumbnail || p.ImageSmallURL || p.ImageLargeURL;
+            if (fallbackUrl) {
+              const rehostedUrl = await rehostImage(fallbackUrl, slug, 0);
+              imagesArr.push(rehostedUrl);
             }
           }
 
@@ -302,17 +311,48 @@ serve(async (req) => {
             }
           }
 
-          // Link to categories
+          // Link to categories — try multiple matching strategies
           if (p.Categories) {
             const cats = Array.isArray(p.Categories) ? p.Categories : [p.Categories];
             for (const catItem of cats) {
-              const catName = catItem?.CategoryName || catItem?.Category?.CategoryName;
-              if (catName) {
-                const catSlug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-                const { data: foundCat } = await supabase
-                  .from("categories").select("id").eq("store_id", store_id).eq("slug", catSlug).maybeSingle();
+              const catName = catItem?.CategoryName || catItem?.Category?.CategoryName || (typeof catItem === "string" ? catItem : null);
+              const catRef = catItem?.CategoryReference || catItem?.Category?.CategoryReference;
+              if (catName || catRef) {
+                let foundCat: any = null;
+
+                // 1. Try slug from CategoryReference (matches how categories are imported)
+                if (catRef && !foundCat) {
+                  const refSlug = catRef.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).eq("slug", refSlug).maybeSingle();
+                  foundCat = data;
+                }
+
+                // 2. Try slug from CategoryName
+                if (catName && !foundCat) {
+                  const nameSlug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).eq("slug", nameSlug).maybeSingle();
+                  foundCat = data;
+                }
+
+                // 3. Try exact name match
+                if (catName && !foundCat) {
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).eq("name", catName).maybeSingle();
+                  foundCat = data;
+                }
+
+                // 4. Try case-insensitive name match (ilike)
+                if (catName && !foundCat) {
+                  const { data } = await supabase
+                    .from("categories").select("id").eq("store_id", store_id).ilike("name", catName).maybeSingle();
+                  foundCat = data;
+                }
+
                 if (foundCat) {
                   await safe(supabase.from("products").update({ category_id: foundCat.id }).eq("id", productId));
+                  break; // Use first matched category as primary
                 }
               }
             }
@@ -620,13 +660,50 @@ serve(async (req) => {
             updated_at: sanitizeDate(o.DateUpdated || o.DateModified) || new Date().toISOString(),
           };
 
-          // Link to customer by email
-          const orderEmail = o.Email || o.EmailAddress || o.Username;
-          if (orderEmail) {
+          // Link to customer — try email first, then Username as email, then Username as name
+          const orderEmail = o.Email || o.EmailAddress || null;
+          const orderUsername = o.Username || null;
+          let linkedCustomer: any = null;
+
+          // 1. Try exact email match
+          if (orderEmail && !linkedCustomer) {
             const { data: cust } = await supabase
               .from("customers").select("id").eq("store_id", store_id).eq("email", orderEmail).maybeSingle();
-            if (cust) orderData.customer_id = cust.id;
+            if (cust) linkedCustomer = cust;
           }
+
+          // 2. Try Username as email (Maropost often uses email as username)
+          if (orderUsername && !linkedCustomer) {
+            const { data: cust } = await supabase
+              .from("customers").select("id").eq("store_id", store_id).eq("email", orderUsername).maybeSingle();
+            if (cust) linkedCustomer = cust;
+          }
+
+          // 3. Try Username as customer name match
+          if (orderUsername && !linkedCustomer) {
+            const { data: cust } = await supabase
+              .from("customers").select("id").eq("store_id", store_id).eq("name", orderUsername).maybeSingle();
+            if (cust) linkedCustomer = cust;
+          }
+
+          // 4. Try building name from BillAddress fields
+          if (!linkedCustomer && (o.BillAddress || o.BillingAddress)) {
+            const ba = o.BillAddress || o.BillingAddress;
+            const baName = `${ba.FirstName || ""} ${ba.LastName || ba.Surname || ""}`.trim();
+            const baEmail = ba.Email || ba.EmailAddress || null;
+            if (baEmail) {
+              const { data: cust } = await supabase
+                .from("customers").select("id").eq("store_id", store_id).eq("email", baEmail).maybeSingle();
+              if (cust) linkedCustomer = cust;
+            }
+            if (!linkedCustomer && baName) {
+              const { data: cust } = await supabase
+                .from("customers").select("id").eq("store_id", store_id).eq("name", baName).maybeSingle();
+              if (cust) linkedCustomer = cust;
+            }
+          }
+
+          if (linkedCustomer) orderData.customer_id = linkedCustomer.id;
 
           // UPSERT: Check for existing by BOTH old MP-prefixed AND exact number
           let orderId: string;
