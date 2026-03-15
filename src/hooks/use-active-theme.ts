@@ -79,7 +79,9 @@ export function findThemeFile(
 ): ThemeFile | undefined {
   if (!theme) return undefined;
   return theme.files.find(f => {
-    if (f.folder !== folder) return false;
+    // Match by folder field OR by file_path containing the folder directory
+    const folderMatch = f.folder === folder || f.file_path.match(new RegExp(`(?:^|/)${folder}s?/`, "i"));
+    if (!folderMatch) return false;
     if (typeof nameMatch === "string") {
       return f.file_name.toLowerCase().includes(nameMatch.toLowerCase());
     }
