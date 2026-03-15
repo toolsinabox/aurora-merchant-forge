@@ -1242,7 +1242,7 @@ function processThumbList(template: string, ctx: TemplateContext): string {
         });
         
         rendered = processAssetUrl(rendered, ctx, productItem);
-        rendered = processItemConditionals(rendered, productItem, idx, items.length);
+        rendered = processItemConditionals(rendered, productItem, idx, items.length, ctx);
         
         html += rendered;
       });
