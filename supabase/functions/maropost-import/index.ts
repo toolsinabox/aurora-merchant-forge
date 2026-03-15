@@ -62,7 +62,11 @@ serve(async (req) => {
         try {
           if (!imageUrl || imageUrl.startsWith("data:")) return imageUrl;
           const fullUrl = imageUrl.startsWith("http") ? imageUrl : `https:${imageUrl}`;
-          const response = await fetch(fullUrl);
+          // Add 10s timeout to prevent hanging on slow image downloads
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 10000);
+          const response = await fetch(fullUrl, { signal: controller.signal });
+          clearTimeout(timeout);
           if (!response.ok) return fullUrl;
           const blob = await response.blob();
           const ext = fullUrl.split(".").pop()?.split("?")[0]?.toLowerCase() || "jpg";
