@@ -495,6 +495,68 @@ ${SCOPE_SELECTOR} .product-card__price {
     };
   }, [renderedHeader, renderedFooter]);
 
+  // Initialize Bootstrap-style carousel with vanilla JS (no jQuery dependency)
+  useEffect(() => {
+    const container = document.getElementById("neto-theme");
+    if (!container) return;
+    
+    const carousels = container.querySelectorAll(".carousel.slide");
+    const timers: number[] = [];
+    
+    carousels.forEach((carousel) => {
+      const items = carousel.querySelectorAll(".carousel-item");
+      if (items.length <= 1) return;
+      
+      const showSlide = (index: number) => {
+        items.forEach((item, i) => {
+          item.classList.toggle("active", i === index);
+        });
+        // Update indicators
+        const indicators = carousel.querySelectorAll(".carousel-indicators li");
+        indicators.forEach((ind, i) => {
+          ind.classList.toggle("active", i === index);
+        });
+      };
+      
+      let currentIdx = 0;
+      
+      // Auto-rotate every 5 seconds
+      const timer = window.setInterval(() => {
+        currentIdx = (currentIdx + 1) % items.length;
+        showSlide(currentIdx);
+      }, 5000);
+      timers.push(timer);
+      
+      // Prev/Next controls
+      const prevBtn = carousel.querySelector(".carousel-control-prev");
+      const nextBtn = carousel.querySelector(".carousel-control-next");
+      
+      prevBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        currentIdx = (currentIdx - 1 + items.length) % items.length;
+        showSlide(currentIdx);
+      });
+      nextBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        currentIdx = (currentIdx + 1) % items.length;
+        showSlide(currentIdx);
+      });
+      
+      // Indicator clicks
+      const indicators = carousel.querySelectorAll(".carousel-indicators li");
+      indicators.forEach((ind, i) => {
+        ind.addEventListener("click", () => {
+          currentIdx = i;
+          showSlide(currentIdx);
+        });
+      });
+    });
+    
+    return () => {
+      timers.forEach(t => clearInterval(t));
+    };
+  }, [renderedHeader, renderedFooter]);
+
   return (
     <>
       {/* Scoped Theme CSS — only applies inside #neto-theme */}
