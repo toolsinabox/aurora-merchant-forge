@@ -746,7 +746,8 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
         html = html.replace(/\[@name@\]/gi, cat.name || "");
         html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
-        html = html.replace(/\[@image@\]/gi, cat.image_url || "");
+        html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
+        html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
         html = html.replace(/\[@slug@\]/gi, cat.slug || "");
         // Process any asset_url for category images within the template
         html = processAssetUrl(html, ctx, cat);
