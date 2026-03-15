@@ -682,8 +682,25 @@ serve(async (req) => {
           const VALID_PAYMENT_STATUS = new Set(["pending", "paid", "refunded"]);
           
           const rawStatus = statusMap[o.Status] || statusMap[o.OrderStatus] || "pending";
-          const rawPayStatus = paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : "pending");
+          const rawPayStatus = paymentStatusMap[o.PaymentStatus] || (toBool(o.Paid) ? "paid" : (o.DatePaid ? "paid" : "pending"));
           
+          // ⚠ CRITICAL: Maropost returns address fields as FLAT top-level fields
+          // NOT nested under ShipAddress/BillAddress objects!
+          const shipAddr = o.ShipAddress || {
+            ShipFirstName: o.ShipFirstName, ShipLastName: o.ShipLastName,
+            ShipStreetLine1: o.ShipStreetLine1, ShipStreetLine2: o.ShipStreetLine2,
+            ShipCity: o.ShipCity, ShipState: o.ShipState,
+            ShipPostCode: o.ShipPostCode, ShipCountry: o.ShipCountry,
+            ShipPhone: o.ShipPhone, ShipCompany: o.ShipCompany,
+          };
+          const billAddr = o.BillAddress || {
+            BillFirstName: o.BillFirstName, BillLastName: o.BillLastName,
+            BillStreetLine1: o.BillStreetLine1, BillStreetLine2: o.BillStreetLine2,
+            BillCity: o.BillCity, BillState: o.BillState,
+            BillPostCode: o.BillPostCode, BillCountry: o.BillCountry,
+            BillPhone: o.BillPhone, BillCompany: o.BillCompany,
+          };
+
           const orderData: Record<string, any> = {
             store_id,
             order_number: originalOrderNumber,
@@ -697,8 +714,8 @@ serve(async (req) => {
             total: grandTotal,
             items_count: lineItems.length,
             notes: o.InternalOrderNotes || o.CustomerOrderNotes || null,
-            shipping_address: o.ShipAddress || o.ShippingAddress ? JSON.stringify(o.ShipAddress || o.ShippingAddress) : null,
-            billing_address: o.BillAddress || o.BillingAddress ? JSON.stringify(o.BillAddress || o.BillingAddress) : null,
+            shipping_address: JSON.stringify(shipAddr),
+            billing_address: JSON.stringify(billAddr),
             order_channel: o.SalesChannel || o.Channel || "web",
             tags: o.Labels ? (Array.isArray(o.Labels) ? o.Labels : String(o.Labels).split(",").map((t: string) => t.trim()).filter(Boolean)) : [],
             created_at: sanitizeDate(o.DatePlaced || o.DateCreated || o.OrderDate) || new Date().toISOString(),
