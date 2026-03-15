@@ -187,10 +187,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     },
     includes,
     themeFiles,
+    categories: categories || [],
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
     pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, extraContext]);
+  }), [store, storeName, includes, themeFiles, extraContext, categories]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
