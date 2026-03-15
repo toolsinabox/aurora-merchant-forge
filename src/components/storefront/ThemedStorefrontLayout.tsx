@@ -75,8 +75,8 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
   }), [store, storeName, includes, extraContext]);
 
   // Find header template
-  const headerFile = findThemeFile(theme, "headers", "header");
-  const footerFile = findThemeFile(theme, "footers", "footer");
+  const headerFile = findMainThemeFile(theme, "headers");
+  const footerFile = findMainThemeFile(theme, "footers");
 
   const renderedHeader = useMemo(() => {
     if (!headerFile?.content) return "";
