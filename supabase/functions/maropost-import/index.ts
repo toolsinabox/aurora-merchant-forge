@@ -278,19 +278,31 @@ serve(async (req) => {
             }
           }
 
-          // Warehouse stock levels
+          // Warehouse stock levels — Maropost returns WarehouseQuantity as {WarehouseID, Quantity}
           if (p.WarehouseQuantity || p.WarehouseLocations) {
-            const whData = p.WarehouseLocations || p.WarehouseQuantity;
-            const warehouses = Array.isArray(whData) ? whData : (whData ? [whData] : []);
+            const whData = p.WarehouseQuantity || p.WarehouseLocations;
+            const warehouses = Array.isArray(whData) ? whData : (whData && typeof whData === "object" && whData.WarehouseID ? [whData] : []);
             for (const wh of warehouses) {
-              const whName = wh?.WarehouseName || wh?.Name || "Default";
+              if (!wh || typeof wh !== "object") continue;
+              const whId = wh?.WarehouseID;
+              const whName = wh?.WarehouseName || wh?.Name || (whId ? `Warehouse ${whId}` : "Default");
               const qty = toInt(wh?.Quantity || wh?.AvailableQuantity) || 0;
-              const { data: loc } = await supabase
+              // Try by name first, then create if needed
+              let loc: any = null;
+              const { data: existingLoc } = await supabase
                 .from("inventory_locations").select("id").eq("store_id", store_id).eq("name", whName).maybeSingle();
+              if (existingLoc) {
+                loc = existingLoc;
+              } else {
+                // Auto-create the warehouse location
+                const { data: newLoc } = await supabase
+                  .from("inventory_locations").insert({ store_id, name: whName, type: "warehouse" }).select("id").single();
+                loc = newLoc;
+              }
               if (loc?.id) {
                 await safe(supabase.from("inventory_stock").upsert({
                   store_id, product_id: productId, location_id: loc.id,
-                  quantity: qty, bin_location: wh?.BinLocation || wh?.PickZone || null,
+                  quantity: qty, bin_location: wh?.BinLocation || p.PickZone || null,
                 } as any, { onConflict: "product_id,location_id" }));
               }
             }
