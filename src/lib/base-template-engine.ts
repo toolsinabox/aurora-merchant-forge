@@ -1210,3 +1210,24 @@ export const SUPPORTED_FORMATS = [
   "uppercase", "lowercase", "capitalize", "url_encode", "strip_html",
   "truncate_50", "truncate_100", "percentage", "json", "count", "first", "boolean",
 ];
+
+export const SUPPORTED_CONDITIONALS = [
+  "has_variants", "has_promo", "has_cross_sells", "has_upsells",
+  "is_active", "tax_free", "tax_inclusive", "virtual_product", "is_kit", "track_inventory",
+];
+
+export const EXAMPLE_TEMPLATES: Record<string, string> = {
+  product_card: `<div class="product-card">
+  <h2>[@title@]</h2>
+  <p>[@description@]</p>
+  <span>[@price|currency@]</span>
+</div>`,
+  product_list: `[%thumb_list type:'products' limit:'12'%]
+  [%param *header%]<div class="product-grid">[%/param%]
+  [%param *footer%]</div>[%/param%]
+[%/thumb_list%]`,
+  banner_carousel: `[%advert type:'text' template:'carousel' limit:'5'%]
+  [%param *header%]<div class="carousel">[%/param%]
+  [%param *footer%]</div>[%/param%]
+[%/advert%]`,
+};
