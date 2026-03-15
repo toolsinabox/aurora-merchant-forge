@@ -1338,6 +1338,9 @@ function processThumbList(template: string, ctx: TemplateContext): string {
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
         });
         
+        rendered = processFormatCurrency(rendered, ctx);
+        rendered = processFormatPercent(rendered);
+        rendered = processFormatText(rendered);
         rendered = processAssetUrl(rendered, ctx, item);
         rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
         
