@@ -770,43 +770,57 @@ export function renderTemplate(template: string, ctx: TemplateContext): string {
   // 1. Strip comments
   result = stripComments(result);
 
-  // 2. Load sub-templates [%load_template%]
+  // 2. Strip cache wrappers
+  result = processCacheBlocks(result);
+
+  // 3. Load sub-templates [%load_template%]
   result = processLoadTemplate(result, ctx);
 
-  // 3. Legacy includes [!include!]
+  // 4. Legacy includes [!include!]
   result = processLegacyIncludes(result, ctx);
 
-  // 4. Theme asset URLs [%ntheme_asset%]
+  // 5. Theme asset URLs [%ntheme_asset%]
   result = processThemeAssets(result, ctx);
 
-  // 5. Format blocks [%format%]
-  result = processFormatBlocks(result, ctx);
+  // 6. URL tags [%url page:'...'/%]
+  result = processUrlTags(result, ctx);
 
-  // 6. NoHTML blocks [%nohtml%]
+  // 7. Menu blocks [%menu%] — must run BEFORE param stripping
+  result = processMenuBlocks(result, ctx);
+
+  // 8. Format blocks [%format%] and [%FORMAT%]
+  result = processFormatBlocks(result, ctx);
+  result = processFormatCurrency(result, ctx);
+  result = processFormatPercent(result);
+
+  // 9. NoHTML blocks [%nohtml%]
   result = processNoHtml(result);
 
-  // 7. Filter blocks [%filter%]
+  // 10. Filter blocks [%filter%]
   result = processFilters(result, ctx);
 
-  // 8. URL info tags [%url_info%]
+  // 11. URL info tags [%url_info%]
   result = processUrlInfo(result, ctx);
 
-  // 9. Maropost conditionals [%if%]...[%/if%]
+  // 12. Set/While stubs
+  result = processSetAndWhile(result);
+
+  // 13. Maropost conditionals [%if%]...[%/if%]
   result = processMaropostConditionals(result, ctx);
 
-  // 10. System tags (breadcrumb, advert, thumb_list, etc.)
+  // 14. System tags (breadcrumb, advert, thumb_list, etc.)
   result = processSystemTags(result, ctx);
 
-  // 11. Block iterators [%crosssell%], etc.
+  // 15. Block iterators [%crosssell%], etc.
   result = processBlocks(result, ctx);
 
-  // 12. Legacy conditionals [?condition?]
+  // 16. Legacy conditionals [?condition?]
   result = processLegacyConditionals(result, ctx);
 
-  // 13. Value tags [@field@]
+  // 17. Value tags [@field@]
   result = processValueTags(result, ctx);
 
-  // 14. Clean up unresolved tags
+  // 18. Clean up unresolved tags
   result = cleanupUnresolvedTags(result);
 
   return result;
