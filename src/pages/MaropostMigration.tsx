@@ -435,7 +435,8 @@ export default function MaropostMigration() {
         let totalImported = 0;
         let totalFailed = 0;
         const allErrors: string[] = [];
-        const batchSize = 50;
+        // Products have image rehosting which is slow — use smaller batches
+        const batchSize = entity.entity === "products" ? 5 : entity.entity === "orders" ? 20 : 50;
 
         for (let i = 0; i < sourceItems.length; i += batchSize) {
           // Check pause at batch level
