@@ -180,7 +180,7 @@ serve(async (req) => {
 
           // Upsert by SKU — always update existing to FIX bad imports
           let productId: string;
-          const lookupSku = p.ParentSKU || p.Model;
+          const lookupSku = p.SKU || p.ParentSKU;
           if (lookupSku) {
             const { data: existing } = await supabase
               .from("products").select("id").eq("store_id", store_id).eq("sku", lookupSku).maybeSingle();
