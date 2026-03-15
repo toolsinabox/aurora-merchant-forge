@@ -112,10 +112,16 @@ serve(async (req) => {
           const slug = (p.ProductURL || p.Model || p.Name || `product-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `p-${Date.now()}`;
 
           if (p.Images) {
-            const imgs = Array.isArray(p.Images) ? p.Images : [p.Images];
+            // Maropost returns Images as {Image: [{URL:..., ThumbURL:...}]} or direct array
+            let rawImgs = p.Images;
+            if (rawImgs && !Array.isArray(rawImgs) && rawImgs.Image) {
+              rawImgs = rawImgs.Image; // unwrap nested {Image: [...]}
+            }
+            const imgs = Array.isArray(rawImgs) ? rawImgs : [rawImgs];
             for (let i = 0; i < imgs.length; i++) {
               const img = imgs[i];
-              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL;
+              if (!img) continue;
+              const url = typeof img === "string" ? img : img?.URL || img?.ThumbURL || img?.MediumURL || img?.SmallURL;
               if (url) {
                 const rehostedUrl = await rehostImage(url, slug, i);
                 imagesArr.push(rehostedUrl);
