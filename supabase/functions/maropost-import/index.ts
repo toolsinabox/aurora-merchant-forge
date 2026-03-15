@@ -16,6 +16,9 @@ interface ImportRequest {
   dry_run?: boolean;
 }
 
+// Helper: Supabase JS v2 PromiseLike doesn't have .catch(), so wrap in try/catch
+const safe = async (p: PromiseLike<any>) => { try { await p; } catch {} };
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
