@@ -524,7 +524,7 @@ serve(async (req) => {
                   subject: log.Subject || log.Type || "Log Entry",
                   body: log.Notes || log.Description || "",
                   status: "delivered",
-                  created_at: log.DateCreated || log.Date || new Date().toISOString(),
+                  created_at: sanitizeDate(log.DateCreated || log.Date) || new Date().toISOString(),
                 }));
               }
             }
