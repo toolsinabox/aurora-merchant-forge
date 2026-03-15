@@ -140,9 +140,9 @@ serve(async (req) => {
             promo_start: sanitizeDate(p.PromotionStartDate || p.PromotionStartDateLocal),
             promo_end: sanitizeDate(p.PromotionExpiryDate || p.PromotionExpiryDateLocal),
             promo_tag: p.PromotionLabel || p.PromotionID || null,
-            status: toBool(p.IsActive) ? "active" : "draft",
+            status: toBool(p.IsActive) ? "active" : "draft", // constraint: draft, active, archived
             is_active: toBool(p.IsActive),
-            is_approved: toBool(p.Approved) || toBool(p.IsApproved) || true,
+            is_approved: toBool(p.Approved) || toBool(p.IsApproved),
             seo_title: p.SEOPageTitle || null,
             seo_description: p.SEOMetaDescription || null,
             seo_keywords: p.SEOMetaKeywords || null,
