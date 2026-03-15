@@ -102,7 +102,7 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "Phone", "Fax", "Mobile", "ABN", "Active",
     "DateAdded", "DateUpdated", "Type", "IdentificationType",
     "IdentificationDetails", "NewsletterSubscriber", "BillingAddress",
-    "ShippingAddress", "CustomerLog", "UserGroup", "AccountBalance",
+    "ShippingAddress", "CustomerLog", "CustomerLogs", "UserGroup", "AccountBalance",
     "AvailableCredit", "OnCreditHold", "CreditLimit"
   ],
   get_content: [
