@@ -606,10 +606,19 @@ function processFormatDate(template: string): string {
   });
 }
 
-// ── Process [%format type:'text' rmhtml:'1'%]...[%/format%] ──
+// ── Process [%format type:'text' rmhtml:'1' maxlength:'50'%]...[%/format%] ──
 function processFormatText(template: string): string {
-  return template.replace(/\[%format\s+type:'text'[^%]*rmhtml:'1'[^%]*%\]([\s\S]*?)\[%\/format%\]/gi, (_, content: string) => {
-    return content.replace(/<[^>]*>/g, "");
+  return template.replace(/\[%(?:format|FORMAT)\s+type:'text'([^%]*)%\]([\s\S]*?)\[%\/(?:format|FORMAT)%\]/gi, (_, attrs: string, content: string) => {
+    let result = content.trim();
+    if (/rmhtml:'1'/i.test(attrs)) {
+      result = result.replace(/<[^>]*>/g, "");
+    }
+    const maxLenMatch = attrs.match(/maxlength:'(\d+)'/i);
+    if (maxLenMatch) {
+      const maxLen = parseInt(maxLenMatch[1]);
+      if (result.length > maxLen) result = result.slice(0, maxLen) + "…";
+    }
+    return result;
   });
 }
 
