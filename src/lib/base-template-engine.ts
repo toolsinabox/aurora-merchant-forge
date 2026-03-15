@@ -1049,7 +1049,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       let headerHtml = headerMatch[1];
       headerHtml = headerHtml.replace(/\[@total_showing@\]/gi, String(items.length));
       // Process conditionals within header (e.g., [%if [@total_showing@] > 1%])
-      headerHtml = processInlineConditionals(headerHtml, items.length);
+      headerHtml = processInlineConditionals(headerHtml, items.length, ctx);
       html += headerHtml;
     }
     
