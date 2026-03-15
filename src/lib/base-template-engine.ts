@@ -284,7 +284,59 @@ function processLoadTemplate(template: string, ctx: TemplateContext, depth = 0):
   });
 }
 
-// ── Resolve a theme template file by name ──
+/** Build a Maropost-compatible product item object from our DB product */
+function buildMaropostProductItem(p: Record<string, any>, idx: number, basePath: string): Record<string, any> {
+  const save = p.compare_at_price && p.price ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
+  const imageUrl = resolveStorageUrl(p.images?.[0]) || "/placeholder.svg";
+  return {
+    ...p,
+    // Maropost field mappings
+    ad_id: p.id,
+    inventory_id: p.id,
+    SKU: p.sku || "",
+    sku: p.sku || "",
+    name: p.title || "",
+    model: p.title || p.model_number || "",
+    headline: p.title || "",
+    URL: `${basePath}/product/${p.slug || p.id}`,
+    url: `${basePath}/product/${p.slug || p.id}`,
+    image_url: imageUrl,
+    thumb: imageUrl,
+    store_price: p.price || 0,
+    retail: p.compare_at_price || p.price || 0,
+    rrp: p.compare_at_price || p.price || 0,
+    save: save,
+    inpromo: p.promo_price ? 1 : 0,
+    promo_price: p.promo_price || p.price,
+    store_quantity: p.stock_on_hand ?? 10, // Default to in-stock
+    preorder: p.preorder ? 1 : 0,
+    has_child: (p.has_variants || p.variant_count > 0) ? 1 : 0,
+    editable_bundle: p.is_kit ? 1 : 0,
+    reviews: p.review_count || 0,
+    "data:rating": p.average_rating || 0,
+    rndm: Math.random().toString(36).substring(2, 8),
+    count: idx,
+    index: idx,
+    // Misc fields (dimensions etc.)
+    misc40: p.misc40 || p.dimensions || "",
+    misc45: p.misc45 || p.length || "",
+  };
+}
+
+/** Filter themeFiles to only include files under a specific path */
+function filterThemeFilesByPath(files: Record<string, string>, pathPrefix: string): Record<string, string> {
+  const filtered: Record<string, string> = {};
+  for (const [key, value] of Object.entries(files)) {
+    if (key.toLowerCase().includes(pathPrefix.toLowerCase())) {
+      // Re-key to just the filename for resolution
+      const parts = key.split("/");
+      filtered[parts[parts.length - 1]] = value;
+      filtered[key] = value;
+    }
+  }
+  return filtered;
+}
+
 function resolveThemeTemplate(templateName: string, ctx: TemplateContext): string | null {
   if (!templateName) return null;
   const files = ctx.themeFiles || {};
@@ -554,10 +606,19 @@ function processFormatDate(template: string): string {
   });
 }
 
-// ── Process [%format type:'text' rmhtml:'1'%]...[%/format%] ──
+// ── Process [%format type:'text' rmhtml:'1' maxlength:'50'%]...[%/format%] ──
 function processFormatText(template: string): string {
-  return template.replace(/\[%format\s+type:'text'[^%]*rmhtml:'1'[^%]*%\]([\s\S]*?)\[%\/format%\]/gi, (_, content: string) => {
-    return content.replace(/<[^>]*>/g, "");
+  return template.replace(/\[%(?:format|FORMAT)\s+type:'text'([^%]*)%\]([\s\S]*?)\[%\/(?:format|FORMAT)%\]/gi, (_, attrs: string, content: string) => {
+    let result = content.trim();
+    if (/rmhtml:'1'/i.test(attrs)) {
+      result = result.replace(/<[^>]*>/g, "");
+    }
+    const maxLenMatch = attrs.match(/maxlength:'(\d+)'/i);
+    if (maxLenMatch) {
+      const maxLen = parseInt(maxLenMatch[1]);
+      if (result.length > maxLen) result = result.slice(0, maxLen) + "…";
+    }
+    return result;
   });
 }
 
@@ -884,9 +945,15 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
       if (cat?.image_url) return resolveStorageUrl(cat.image_url);
       return "/placeholder.svg";
     case "product":
+      // First check item context (current product in loop)
       if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
-      const prod = (ctx.products || []).find(p => p.id === id);
-      if (prod?.images?.[0]) return resolveStorageUrl(prod.images[0]);
+      if (item?.image_url) return item.image_url;
+      // Look up by ID
+      const prodById = (ctx.products || []).find(p => p.id === id);
+      if (prodById?.images?.[0]) return resolveStorageUrl(prodById.images[0]);
+      // Look up by SKU (Maropost themes use SKU as the id)
+      const prodBySku = (ctx.products || []).find(p => p.sku === id);
+      if (prodBySku?.images?.[0]) return resolveStorageUrl(prodBySku.images[0]);
       return "/placeholder.svg";
     default:
       return "";
@@ -1022,17 +1089,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     
     if (type === "product") {
       const bp = ctx.basePath || "";
-      items = (ctx.products || []).slice(0, limit).map((p, idx) => ({
-        ...p,
-        ad_id: p.id,
-        headline: p.title,
-        url: `${bp}/product/${p.id}`,
-        image_url: resolveStorageUrl(p.images?.[0]) || "/placeholder.svg",
-        price: p.price,
-        rrp: p.compare_at_price || p.price,
-        count: idx,
-        index: idx,
-      }));
+      items = (ctx.products || []).slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
     } else {
       // Text/banner adverts — filter by ad_group if specified
       let filteredAdverts = ctx.adverts || [];
@@ -1064,8 +1121,15 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
       itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
     }
     
-    // For product type without a template, generate a default product card
+    // For product type without a template, try loading the theme's thumb template
     if (!itemTemplate && type === "product") {
+      itemTemplate = resolveThemeTemplate("template", { ...ctx, themeFiles: filterThemeFilesByPath(ctx.themeFiles || {}, "thumbs/product") }) 
+        || resolveThemeTemplate("thumbs/product/template", ctx)
+        || "";
+    }
+    // Ultimate fallback: default product card
+    if (!itemTemplate && type === "product") {
+      const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
@@ -1110,11 +1174,24 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
         });
         
+        // Process format blocks after field resolution
+        rendered = processFormatCurrency(rendered, ctx);
+        rendered = processFormatPercent(rendered);
+        rendered = processFormatText(rendered);
+        
         // Process asset_url tags within item template
         rendered = processAssetUrl(rendered, ctx, item);
         
         // Process inline conditionals (e.g., [%if [@count@] eq '0'%])
         rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
+        
+        // Clean up per-item template tags
+        rendered = processSetAndWhile(rendered);
+        rendered = processCacheBlocks(rendered);
+        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, "$1");
+        rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
+        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
+        rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
         
         // Extract and accumulate SITE_VALUE counter content
         const svRegex = /\[%SITE_VALUE[^\]]*%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi;
@@ -1223,9 +1300,9 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     
     let items: Record<string, any>[] = [];
     if (type === "products") {
-      items = (ctx.products || []).slice(0, limit);
+      const bp = ctx.basePath || "";
+      items = (ctx.products || []).slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
     } else if (type === "content") {
-      // Content lists — not supported yet, return empty
       return "";
     } else if (type === "content_reviews") {
       return "";
@@ -1239,16 +1316,22 @@ function processThumbList(template: string, ctx: TemplateContext): string {
       itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
     }
     
-    // Default product card if no template
+    // Try theme's thumb template
+    if (!itemTemplate && type === "products") {
+      itemTemplate = resolveThemeTemplate("template", { ...ctx, themeFiles: filterThemeFilesByPath(ctx.themeFiles || {}, "thumbs/product") })
+        || resolveThemeTemplate("thumbs/product/template", ctx)
+        || "";
+    }
+    // Ultimate fallback
     if (!itemTemplate && type === "products") {
       const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
-            <a href="${bp}/product/[@id@]">
-              <img src="[@image_url@]" alt="[@title@]" class="img-fluid" loading="lazy" />
+            <a href="[@url@]">
+              <img src="[@image_url@]" alt="[@name@]" class="img-fluid" loading="lazy" />
               <div class="product-card__info">
-                <h3 class="product-card__title">[@title@]</h3>
+                <h3 class="product-card__title">[@name@]</h3>
                 <div class="product-card__price">$[@price@]</div>
               </div>
             </a>
@@ -1262,27 +1345,27 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     if (itemTemplate) {
       items.forEach((item, idx) => {
         let rendered = itemTemplate;
-        // Prepare product item fields
-        const bp = ctx.basePath || "";
-        const productItem = {
-          ...item,
-          image_url: resolveStorageUrl(item.images?.[0]) || "/placeholder.svg",
-          url: `${bp}/product/${item.id}`,
-          headline: item.title,
-          rrp: item.compare_at_price || item.price,
-        };
         
         rendered = rendered.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
           if (field === "count") return String(idx);
           if (field === "index") return String(idx);
           if (field === "total_showing") return String(items.length);
-          if (productItem[field] !== undefined && productItem[field] !== null) return String(productItem[field]);
+          if (item[field] !== undefined && item[field] !== null) return String(item[field]);
           const ctxVal = resolveField(field, ctx);
           return ctxVal !== undefined && ctxVal !== null ? String(ctxVal) : "";
         });
         
-        rendered = processAssetUrl(rendered, ctx, productItem);
-        rendered = processItemConditionals(rendered, productItem, idx, items.length, ctx);
+        rendered = processFormatCurrency(rendered, ctx);
+        rendered = processFormatPercent(rendered);
+        rendered = processFormatText(rendered);
+        rendered = processAssetUrl(rendered, ctx, item);
+        rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
+        rendered = processSetAndWhile(rendered);
+        rendered = processCacheBlocks(rendered);
+        rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, "$1");
+        rendered = rendered.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
+        rendered = rendered.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
+        rendered = rendered.replace(/\[%\/?IN_WISHLIST[^\]]*%\]/gi, "");
         
         html += rendered;
       });
@@ -1389,7 +1472,9 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining [%tag%]...[%/tag%] pairs that weren't handled
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|url_encode)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode)[^\]]*%\]/gi, "");
+  // Remove IN_WISHLIST blocks entirely (wishlist handled by React context)
+  result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%\/\s*IN_WISHLIST\s*%\]/gi, "");
   // Remove remaining [%tag ...%]...[%END tag%] blocks
   result = result.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
   // Remove leftover [@...@] value tags
