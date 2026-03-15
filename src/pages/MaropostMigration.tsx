@@ -388,11 +388,7 @@ export default function MaropostMigration() {
   };
 
   const togglePause = () => {
-    const newPaused = !paused;
-    setPaused(newPaused);
-    pauseRef.current = newPaused;
-    addLog(newPaused ? "⏸ Migration paused" : "▶ Migration resumed");
-    toast(newPaused ? "Migration paused" : "Migration resumed");
+    migration.togglePause();
   };
 
   const startImport = async () => {
