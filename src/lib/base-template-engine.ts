@@ -658,7 +658,7 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
       return children.map(cat => {
         let html = tmpl;
         html = html.replace(/\[@name@\]/gi, cat.name || "");
-        html = html.replace(/\[@url@\]/gi, cat.url || `/products?category=${cat.slug}` || "#");
+        html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
         html = html.replace(/\[@image@\]/gi, cat.image_url || "");
         html = html.replace(/\[@slug@\]/gi, cat.slug || "");
