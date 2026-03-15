@@ -280,8 +280,10 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<\/body>/gi, "")
       .replace(/<\/html>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+    // Rewrite relative asset paths to storage bucket URLs
+    rendered = rewriteAssetUrls(rendered, themeAssetBaseUrl);
     return rendered;
-  }, [footerFile, baseCtx]);
+  }, [footerFile, baseCtx, themeAssetBaseUrl]);
 
   // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
   const scopedCss = useMemo(() => {
