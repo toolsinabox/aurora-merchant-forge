@@ -691,7 +691,7 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
         html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
         html = html.replace(/\[@css_class@\]/gi, cat.css_class || "");
-        html = html.replace(/\[@image_url@\]/gi, cat.image_url || "");
+        html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
         
         if (nextLevelHtml) {
           html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "$1");
