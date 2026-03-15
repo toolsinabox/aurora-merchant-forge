@@ -127,6 +127,7 @@ import Refunds from "./pages/Refunds.tsx";
 import SalesChannels from "./pages/SalesChannels.tsx";
 import MaropostMigration from "./pages/MaropostMigration.tsx";
 import MaropostTransferAudit from "./pages/MaropostTransferAudit.tsx";
+import MaropostApiLog from "./pages/MaropostApiLog.tsx";
 // Platform admin pages
 import PlatformLogin from "./pages/platform/PlatformLogin.tsx";
 import PlatformDashboard from "./pages/platform/PlatformDashboard.tsx";
@@ -271,6 +272,7 @@ const App = () => (
                    <Route path="/_cpanel/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-migration" element={<RequireAuth><MaropostMigration /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
+                   <Route path="/_cpanel/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -382,6 +384,7 @@ const App = () => (
                    <Route path="/sales-channels" element={<RequireAuth><SalesChannels /></RequireAuth>} />
                    <Route path="/maropost-migration" element={<RequireAuth><MaropostMigration /></RequireAuth>} />
                    <Route path="/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
+                   <Route path="/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
