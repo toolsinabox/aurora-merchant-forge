@@ -642,62 +642,7 @@ export default function ThemeFiles() {
                       {filesLoading ? (
                         <div className="space-y-2 p-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-5 w-full" />)}</div>
                       ) : (
-                        filteredFolders.map(folder => {
-                          const folderFiles = (groupedFiles[folder.key] || []).filter((f: any) =>
-                            !searchQuery || f.file_name.toLowerCase().includes(searchQuery.toLowerCase())
-                          );
-                          const isExpanded = expandedFolders.has(folder.key);
-                          const Icon = folder.icon;
-
-                          return (
-                            <div key={folder.key}>
-                              <button
-                                className="flex items-center gap-1.5 w-full px-2 py-1.5 text-xs font-medium hover:bg-muted/50 rounded-sm group"
-                                onClick={() => toggleFolder(folder.key)}
-                              >
-                                {isExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
-                                {isExpanded ? <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" /> : <FolderClosed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
-                                <span>{folder.label}</span>
-                                <Badge variant="secondary" className="text-[9px] ml-auto h-4 px-1">{folderFiles.length}</Badge>
-                                <button
-                                  className="opacity-0 group-hover:opacity-100 h-4 w-4 flex items-center justify-center hover:bg-muted rounded"
-                                  onClick={(e) => { e.stopPropagation(); setNewFileFolder(folder.key); setNewFileDialog(true); }}
-                                >
-                                  <Plus className="h-2.5 w-2.5" />
-                                </button>
-                              </button>
-                              {isExpanded && (
-                                <div className="ml-4 border-l border-border/40 pl-1">
-                                  {folderFiles.length === 0 ? (
-                                    <p className="text-[10px] text-muted-foreground px-3 py-1 italic">Empty folder</p>
-                                  ) : (
-                                    folderFiles.map((file: any) => {
-                                      const FIcon = FILE_TYPE_ICONS[file.file_type] || File;
-                                      return (
-                                        <button
-                                          key={file.id}
-                                          className={`flex items-center gap-1.5 w-full px-2 py-1 text-xs hover:bg-muted/50 rounded-sm truncate group ${
-                                            selectedFile?.id === file.id ? "bg-accent text-accent-foreground" : ""
-                                          }`}
-                                          onClick={() => openFile(file)}
-                                        >
-                                          <FIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
-                                          <span className="truncate">{file.file_name}</span>
-                                          <button
-                                            className="opacity-0 group-hover:opacity-100 ml-auto h-4 w-4 flex items-center justify-center text-destructive hover:bg-destructive/10 rounded"
-                                            onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
-                                          >
-                                            <Trash2 className="h-2.5 w-2.5" />
-                                          </button>
-                                        </button>
-                                      );
-                                    })
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
+                        renderTreeNode(fileTree, 0)
                       )}
                     </div>
                   </ScrollArea>
