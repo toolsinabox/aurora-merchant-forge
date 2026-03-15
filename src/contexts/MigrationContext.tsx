@@ -200,12 +200,13 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     return { totalImported, totalFailed, allErrors };
   };
 
-  const startBackgroundImport = useCallback(({ entities: ents, storeDomain: domain, apiKey: key, storeId, dryRun = false }: {
+  const startBackgroundImport = useCallback(({ entities: ents, storeDomain: domain, apiKey: key, storeId, dryRun = false, testMode = false }: {
     entities: MigrationEntity[];
     storeDomain: string;
     apiKey: string;
     storeId: string;
     dryRun?: boolean;
+    testMode?: boolean;
   }) => {
     const selected = ents.filter(e => e.selected);
     if (selected.length === 0) { toast.error("Select at least one entity to import"); return; }
@@ -218,7 +219,7 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     setDismissed(false);
     pauseRef.current = false;
     setOverallProgress(0);
-    addLog("═══ Starting Migration (Background) ═══");
+    addLog(testMode ? "═══ Starting TEST Import (3 items per entity) ═══" : "═══ Starting Migration (Background) ═══");
 
     // Run the import in the background (not awaited)
     (async () => {
