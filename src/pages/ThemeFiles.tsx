@@ -370,12 +370,25 @@ export default function ThemeFiles() {
       }
 
       const entries: { path: string; content: string }[] = [];
+      const binaryEntries: { path: string; blob: Blob; mimeType: string }[] = [];
       const promises: Promise<void>[] = [];
+      const binaryExtensions = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|pdf)$/i;
+      const mimeMap: Record<string, string> = {
+        png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
+        svg: "image/svg+xml", webp: "image/webp", ico: "image/x-icon",
+        woff: "font/woff", woff2: "font/woff2", ttf: "font/ttf", eot: "application/vnd.ms-fontobject",
+        pdf: "application/pdf",
+      };
       zip.forEach((path, entry) => {
         if (entry.dir || path.startsWith("__MACOSX") || path.startsWith(".")) return;
-        // Skip binary files
-        if (path.match(/\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|pdf)$/i)) return;
-        promises.push(entry.async("string").then(content => { entries.push({ path, content }); }));
+        if (binaryExtensions.test(path)) {
+          const ext = path.split(".").pop()?.toLowerCase() || "";
+          promises.push(entry.async("blob").then(blob => {
+            binaryEntries.push({ path, blob: new Blob([blob], { type: mimeMap[ext] || "application/octet-stream" }), mimeType: mimeMap[ext] || "application/octet-stream" });
+          }));
+        } else {
+          promises.push(entry.async("string").then(content => { entries.push({ path, content }); }));
+        }
       });
       await Promise.all(promises);
 
