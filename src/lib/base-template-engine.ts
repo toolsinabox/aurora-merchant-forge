@@ -679,6 +679,20 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
   return result;
 }
 
+/** Resolve a storage path to a full public URL */
+function resolveStorageUrl(path: string | undefined | null): string {
+  if (!path) return "";
+  if (path.startsWith("http") || path.startsWith("//") || path.startsWith("/")) return path;
+  // Assume it's a Supabase storage path in the product-images bucket
+  const supabaseUrl = typeof window !== "undefined"
+    ? (window as any).__VITE_SUPABASE_URL || ""
+    : "";
+  if (supabaseUrl) {
+    return `${supabaseUrl}/storage/v1/object/public/product-images/${path}`;
+  }
+  return path;
+}
+
 function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): string {
   const typeMatch = attrs.match(/type:'(\w+)'/i);
   const idMatch = attrs.match(/id:'([^']+)'/i);
@@ -695,21 +709,21 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
     case "adw":
     case "ad":
       // Return the advert image URL from the item
-      if (item?.image_url) return item.image_url;
+      if (item?.image_url) return resolveStorageUrl(item.image_url);
       // Fallback: look up in adverts
       const ad = (ctx.adverts || []).find(a => a.id === id || a.ad_id === id);
-      if (ad?.image_url) return ad.image_url;
+      if (ad?.image_url) return resolveStorageUrl(ad.image_url);
       return "";
     case "category":
       // Return category image
-      if (item?.image_url) return item.image_url;
+      if (item?.image_url) return resolveStorageUrl(item.image_url);
       const cat = (ctx.categories || []).find(c => c.id === id);
-      if (cat?.image_url) return cat.image_url;
+      if (cat?.image_url) return resolveStorageUrl(cat.image_url);
       return "/placeholder.svg";
     case "product":
-      if (item?.images?.[0]) return item.images[0];
+      if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
       const prod = (ctx.products || []).find(p => p.id === id);
-      if (prod?.images?.[0]) return prod.images[0];
+      if (prod?.images?.[0]) return resolveStorageUrl(prod.images[0]);
       return "/placeholder.svg";
     default:
       return "";
