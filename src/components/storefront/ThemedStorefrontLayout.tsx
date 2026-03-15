@@ -551,18 +551,8 @@ ${SCOPE_SELECTOR} .hovercart .view {
       link.setAttribute("data-theme-css", "true");
       document.head.appendChild(link);
       addedElements.push(link);
-}
-/* Dropdown navigation hover behavior */
-${SCOPE_SELECTOR} .mega-menu .nav { display: flex; flex-wrap: wrap; list-style: none; padding: 0; margin: 0; justify-content: center; }
-${SCOPE_SELECTOR} .mega-menu .nav > li { position: relative; }
-${SCOPE_SELECTOR} .mega-menu .nav > li > .nav-link { display: block; padding: 10px 12px; color: #111; text-decoration: none; font-weight: 600; font-size: 13px; text-transform: uppercase; white-space: nowrap; }
-${SCOPE_SELECTOR} .mega-menu .nav > li > .nav-link:hover { color: #a2ce46; }
-${SCOPE_SELECTOR} .mega-menu .dropdown > .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; min-width: 220px; background: #fff; border: 1px solid #eee; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; padding: 8px 0; }
-${SCOPE_SELECTOR} .mega-menu .dropdown-hover:hover > .dropdown-menu { display: block; }
-${SCOPE_SELECTOR} .mega-menu .dropdown-menu .nav-link { display: block; padding: 6px 16px; color: #333; text-decoration: none; font-size: 13px; }
-${SCOPE_SELECTOR} .mega-menu .dropdown-menu .nav-link:hover { background: #f5f5f5; color: #a2ce46; }
-${SCOPE_SELECTOR} .mega-menu .dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
-${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-align: middle; }
+    }
+    
     return () => { addedElements.forEach(el => el.remove()); };
   }, [headContent, renderedHeader]);
 
