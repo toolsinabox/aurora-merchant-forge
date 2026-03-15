@@ -215,7 +215,8 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<!DOCTYPE[^>]*>/gi, "")
       .replace(/<\/?html[^>]*>/gi, "")
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
-      .replace(/<\/?body[^>]*>/gi, "");
+      .replace(/<\/?body[^>]*>/gi, "")
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
     
     return { headContent, bodyContent };
   }, [headerFile, baseCtx]);
