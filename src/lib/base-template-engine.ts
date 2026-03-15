@@ -2170,7 +2170,7 @@ function cleanupUnresolvedTags(template: string): string {
   // Remove remaining self-closing tags
   let result = template.replace(/\[%[^\]]+\/%\]/g, "");
   // Remove remaining system tags
-  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form)[^\]]*%\]/gi, "");
+  result = result.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|config:[^\]]*)[^\]]*%\]/gi, "");
   // Remove IN_WISHLIST blocks entirely
   result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   // Remove remaining block tags
@@ -2181,6 +2181,8 @@ function cleanupUnresolvedTags(template: string): string {
   result = result.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
   // Remove leftover [%param%] blocks
   result = result.replace(/\[%param\s+[^\]]*%\]([\s\S]*?)\[%\/param%\]/gi, "");
+  // Remove leftover [%var:...%] tags
+  result = result.replace(/\[%var:[^\]]*%\]/gi, "");
   return result;
 }
 
