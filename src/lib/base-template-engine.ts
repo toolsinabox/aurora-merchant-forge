@@ -754,6 +754,8 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
         html = html.replace(/\[@image@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
         html = html.replace(/\[@image_url@\]/gi, resolveStorageUrl(cat.image_url) || "/placeholder.svg");
         html = html.replace(/\[@slug@\]/gi, cat.slug || "");
+        // Fix alt attributes that ended up with raw UUIDs — replace with category name
+        html = html.replace(/alt="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"/gi, `alt="${(cat.name || "Category").replace(/"/g, "&quot;")}"`);
         // Process any asset_url for category images within the template
         html = processAssetUrl(html, ctx, cat);
         return html;

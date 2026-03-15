@@ -173,9 +173,12 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
   // Rewrite src="..." and href="..." that are relative paths to theme assets
   // Match common asset extensions
   const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+  // Paths that should NOT be rewritten (app-level or already resolved)
+  const skipPaths = /^(\/placeholder\.|\/assets\/|\/favicon)/i;
   return html
     .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
       if (!assetExt.test(path)) return match;
+      if (skipPaths.test(path)) return match;
       const cleanPath = path.replace(/^\/+/, "");
       return `${attr}="${assetBase}/${cleanPath}"`;
     })

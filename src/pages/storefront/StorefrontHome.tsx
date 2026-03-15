@@ -142,9 +142,11 @@ export default function StorefrontHome() {
     // Rewrite relative asset paths to storage bucket URLs
     if (themeAssetBaseUrl) {
       const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
+      const skipPaths = /^(\/placeholder\.|\/assets\/|\/favicon)/i;
       renderedHome = renderedHome
         .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
           if (!assetExt.test(path)) return match;
+          if (skipPaths.test(path)) return match;
           const cleanPath = path.replace(/^\/+/, "");
           return `${attr}="${themeAssetBaseUrl}/${cleanPath}"`;
         });
