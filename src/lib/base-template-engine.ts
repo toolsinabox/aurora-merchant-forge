@@ -2046,8 +2046,21 @@ function processBlocks(template: string, ctx: TemplateContext): string {
       case "adverts": items = ctx.adverts || []; break;
       case "thumb": case "thumblist": items = ctx.thumblist || []; break;
       case "reviews": case "review":
-        // Reviews would come from context if provided
         items = ctx.reviews || [];
+        break;
+      case "categories": case "category_list": case "category":
+        items = (ctx.categories || []).map((cat: any, idx: number) => ({
+          ...cat,
+          URL: cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}`,
+          url: cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}`,
+          image_url: resolveStorageUrl(cat.image_url) || "/placeholder.svg",
+          name: cat.name || "",
+          headline: cat.name || "",
+          description: cat.description || "",
+          count: idx,
+          index: idx,
+          product_count: cat.product_count || 0,
+        }));
         break;
       default: return "";
     }
