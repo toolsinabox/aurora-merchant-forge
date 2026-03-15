@@ -23,6 +23,21 @@ export default function StorefrontContact() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [store, setStore] = useState<any>(null);
+
+  // Theme hooks (must be before early returns)
+  const { data: theme } = useActiveTheme(store?.id);
+
+  const contactTemplate = useMemo(() => {
+    if (!theme) return null;
+    return findThemeFile(theme, "templates", "contact")
+      || findMainThemeFile(theme, "contact");
+  }, [theme]);
+
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
 
   useEffect(() => {
     if (!storeSlug) return;
