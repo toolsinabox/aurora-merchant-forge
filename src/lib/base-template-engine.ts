@@ -23,8 +23,10 @@ export interface TemplateContext {
   themeFiles?: Record<string, string>;
   /** Base URL for theme assets */
   themeAssetBaseUrl?: string;
-  /** Store base URL */
+  /** Store base URL (full domain, e.g. https://mystore.example.com) */
   baseUrl?: string;
+  /** SPA base path for internal links (e.g. /store/my-store) */
+  basePath?: string;
   /** Current page type */
   pageType?: string;
   /** URL query params */
@@ -70,8 +72,8 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
   const configMap: Record<string, () => string> = {
     "company_name": () => store.name || "",
     "website_name": () => store.name || "",
-    "home_url": () => ctx.baseUrl || "/",
-    "canonical_url": () => ctx.baseUrl || "",
+    "home_url": () => ctx.basePath || ctx.baseUrl || "/",
+    "canonical_url": () => ctx.baseUrl || ctx.basePath || "",
     "current_page_type": () => ctx.pageType || "content",
     "templatelang": () => "en-AU",
     "neto_css_version": () => Date.now().toString(),
@@ -296,9 +298,22 @@ function resolveThemeTemplate(templateName: string, ctx: TemplateContext): strin
 
 // ── Process [%ntheme_asset%]path[%/ntheme_asset%] ──
 function processThemeAssets(template: string, ctx: TemplateContext): string {
-  const baseUrl = ctx.themeAssetBaseUrl || "/assets/themes/skeletal/";
+  // Theme CSS/JS are already injected via scoped <style> and <script> tags
+  // For image references, try to resolve from theme files or use placeholder
   return template.replace(/\[%ntheme_asset%\]([\s\S]*?)\[%\/ntheme_asset%\]/gi, (_, path: string) => {
-    return `${baseUrl}${path.trim()}`;
+    const trimmed = path.trim();
+    // CSS/JS files are already injected — return empty for <link>/<script> src references
+    if (trimmed.endsWith(".css") || trimmed.endsWith(".js")) return "";
+    // For images, check if we have it in theme files (unlikely) or use a storage path
+    const themeFiles = ctx.themeFiles || {};
+    for (const key of Object.keys(themeFiles)) {
+      if (key.endsWith(trimmed)) {
+        // If it's an image stored as content, we can't inline it — return placeholder
+        return "/placeholder.svg";
+      }
+    }
+    // Try resolving as a storage URL
+    return resolveStorageUrl(trimmed) || "/placeholder.svg";
   });
 }
 
@@ -531,13 +546,14 @@ function processCacheBlocks(template: string): string {
 // ── Process [%url page:'...' type:'...'/%] ──
 function processUrlTags(template: string, ctx: TemplateContext): string {
   const base = ctx.baseUrl || "";
-  let result = template.replace(/\[%url\s+([^\]]*?)\/?%\]\[%\/url%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base));
-  result = result.replace(/\[%url\s+([^\]]*?)\/%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base));
-  result = result.replace(/\[%URL\s+([^\]]*?)%\]\[%\/URL%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base));
+  const bp = ctx.basePath;
+  let result = template.replace(/\[%url\s+([^\]]*?)\/?%\]\[%\/url%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base, bp));
+  result = result.replace(/\[%url\s+([^\]]*?)\/%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base, bp));
+  result = result.replace(/\[%URL\s+([^\]]*?)%\]\[%\/URL%\]/gi, (_, attrs: string) => resolveUrlTag(attrs, base, bp));
   return result;
 }
 
-function resolveUrlTag(attrs: string, base: string): string {
+function resolveUrlTag(attrs: string, base: string, basePath?: string): string {
   const pageMatch = attrs.match(/page:'([^']+)'/i);
   const typeMatch = attrs.match(/type:'([^']+)'/i);
   const qsMatch = attrs.match(/qs:'([^']+)'/i);
@@ -545,18 +561,23 @@ function resolveUrlTag(attrs: string, base: string): string {
   const type = typeMatch?.[1] || "";
   const qs = qsMatch?.[1] || "";
   
-  let url = base;
+  // Use basePath for SPA navigation, fall back to base (domain URL)
+  const prefix = basePath || base;
+  
+  let url = prefix;
   switch (page) {
-    case "account": url += "/_myacct"; break;
+    case "account": url += "/account"; break;
     case "checkout":
       if (type === "cart") url += "/cart";
       else url += "/checkout";
       break;
     case "contact": url += "/contact-us"; break;
-    case "wishlist": url += "/_myacct/wishlist"; break;
+    case "wishlist": url += "/wishlist"; break;
+    case "home": url = prefix || "/"; break;
+    case "products": url += "/products"; break;
     default: url += "/" + page;
   }
-  if (type === "write_review") url = `${base}/_myacct/write_review`;
+  if (type === "write_review") url = `${prefix}/account/write_review`;
   if (qs) url += "?" + qs;
   return url;
 }
@@ -594,7 +615,7 @@ function processMenuBlocks(template: string, ctx: TemplateContext): string {
         const nextLevelHtml = renderLevel(cat.id, level + 1);
         let html = tmpl;
         html = html.replace(/\[@name@\]/gi, cat.name || "");
-        html = html.replace(/\[@url@\]/gi, cat.url || `/${cat.slug}` || "#");
+        html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
         html = html.replace(/\[@css_class@\]/gi, cat.css_class || "");
         html = html.replace(/\[@image_url@\]/gi, cat.image_url || "");
@@ -650,7 +671,7 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
       return children.map(cat => {
         let html = tmpl;
         html = html.replace(/\[@name@\]/gi, cat.name || "");
-        html = html.replace(/\[@url@\]/gi, cat.url || `/products?category=${cat.slug}` || "#");
+        html = html.replace(/\[@url@\]/gi, cat.url || `${ctx.basePath || ""}/products?category=${cat.slug}` || "#");
         html = html.replace(/\[@id@\]/gi, cat.id || "");
         html = html.replace(/\[@image@\]/gi, cat.image_url || "");
         html = html.replace(/\[@slug@\]/gi, cat.slug || "");
@@ -890,12 +911,12 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
     let items: Record<string, any>[] = [];
     
     if (type === "product") {
-      // Product adverts use the products list
+      const bp = ctx.basePath || "";
       items = (ctx.products || []).slice(0, limit).map((p, idx) => ({
         ...p,
         ad_id: p.id,
         headline: p.title,
-        url: `/product/${p.id}`,
+        url: `${bp}/product/${p.id}`,
         image_url: resolveStorageUrl(p.images?.[0]) || "/placeholder.svg",
         price: p.price,
         rrp: p.compare_at_price || p.price,
@@ -1134,10 +1155,11 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     
     // Default product card if no template
     if (!itemTemplate && type === "products") {
+      const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
-            <a href="/product/[@id@]">
+            <a href="${bp}/product/[@id@]">
               <img src="[@image_url@]" alt="[@title@]" class="img-fluid" loading="lazy" />
               <div class="product-card__info">
                 <h3 class="product-card__title">[@title@]</h3>
@@ -1155,10 +1177,11 @@ function processThumbList(template: string, ctx: TemplateContext): string {
       items.forEach((item, idx) => {
         let rendered = itemTemplate;
         // Prepare product item fields
+        const bp = ctx.basePath || "";
         const productItem = {
           ...item,
           image_url: resolveStorageUrl(item.images?.[0]) || "/placeholder.svg",
-          url: `/product/${item.id}`,
+          url: `${bp}/product/${item.id}`,
           headline: item.title,
           rrp: item.compare_at_price || item.price,
         };

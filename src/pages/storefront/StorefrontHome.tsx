@@ -95,9 +95,10 @@ export default function StorefrontHome() {
       products,
       adverts,
       baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
+      basePath: basePath || "",
       pageType: "home",
     };
-  }, [store, theme, themeFiles, categories, products, adverts]);
+  }, [store, theme, themeFiles, categories, products, adverts, basePath]);
 
   if (loading) {
     return (

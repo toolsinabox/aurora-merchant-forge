@@ -107,7 +107,7 @@ function scopeCss(css: string, scopeSelector: string): string {
  */
 export function ThemedStorefrontLayout({ children, storeName, extraContext }: ThemedStorefrontLayoutProps) {
   const { storeSlug: paramSlug } = useParams();
-  const { storeSlug } = useStoreSlug(paramSlug);
+  const { storeSlug, basePath } = useStoreSlug(paramSlug);
   const [storeId, setStoreId] = useState<string>("");
   const [store, setStore] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
@@ -118,7 +118,6 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
       if (s) {
         setStoreId(s.id);
         setStore(s);
-        // Fetch categories for menu rendering
         supabase
           .from("categories")
           .select("id, name, slug, parent_id, sort_order, image_url")
@@ -133,7 +132,6 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
   const { data: theme, isLoading } = useActiveTheme(storeId);
 
-  // If no theme or still loading, fall back to default layout
   if (!storeId || isLoading) {
     return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
   }
@@ -143,7 +141,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   }
 
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories}>
+    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath}>
       {children}
     </ThemedShell>
   );
@@ -152,24 +150,22 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 const SCOPE_SELECTOR = "#neto-theme";
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext, categories }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
   children: ReactNode;
   extraContext?: Partial<TemplateContext>;
   categories?: any[];
+  basePath?: string;
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
-  // Build themeFiles map for [%load_template%] resolution
   const themeFiles = useMemo(() => {
     const map: Record<string, string> = {};
     for (const f of theme.files) {
       map[f.file_path] = f.content || "";
-      // Also map by folder/filename variants
       map[`${f.folder}/${f.file_name}`] = f.content || "";
-      // And by includes-style paths (e.g., "headers/includes/head.template.html")
       const parts = f.file_path.split("/");
       if (parts.length > 1) {
         map[parts.slice(0).join("/")] = f.content || "";
@@ -189,9 +185,10 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     themeFiles,
     categories: categories || [],
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
+    basePath: basePath || "",
     pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, extraContext, categories]);
+  }), [store, storeName, includes, themeFiles, extraContext, categories, basePath]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
@@ -217,7 +214,9 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<\/?body[^>]*>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-      .replace(/<link[^>]*>/gi, "");
+      // Strip local theme asset links but preserve CDN links (Google Fonts, etc.)
+      .replace(/<link[^>]*href=["'][^"']*\/assets\/themes\/[^"']*["'][^>]*>/gi, "")
+      .replace(/<link[^>]*href=["'](?!https?:\/\/|\/\/)[^"']*["'][^>]*>/gi, "");
     
     return { headContent, bodyContent };
   }, [headerFile, baseCtx]);
