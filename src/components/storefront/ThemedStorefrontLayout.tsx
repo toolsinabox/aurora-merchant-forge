@@ -287,8 +287,15 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
 
   // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
   const scopedCss = useMemo(() => {
-    const raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
+    let raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
     if (!raw) return "";
+    // Rewrite relative url() paths in CSS to storage bucket
+    if (themeAssetBaseUrl) {
+      raw = raw.replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (_, path) => {
+        const cleanPath = path.replace(/^\.?\/+/, "").trim();
+        return `url("${themeAssetBaseUrl}/${cleanPath}")`;
+      });
+    }
     const scoped = scopeCss(raw, SCOPE_SELECTOR);
     
     // Add CSS fallbacks for Slick carousel wrappers that need JS to layout
