@@ -1272,9 +1272,9 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     
     let items: Record<string, any>[] = [];
     if (type === "products") {
-      items = (ctx.products || []).slice(0, limit);
+      const bp = ctx.basePath || "";
+      items = (ctx.products || []).slice(0, limit).map((p, idx) => buildMaropostProductItem(p, idx, bp));
     } else if (type === "content") {
-      // Content lists — not supported yet, return empty
       return "";
     } else if (type === "content_reviews") {
       return "";
@@ -1288,16 +1288,22 @@ function processThumbList(template: string, ctx: TemplateContext): string {
       itemTemplate = resolveThemeTemplate(templateName, ctx) || "";
     }
     
-    // Default product card if no template
+    // Try theme's thumb template
+    if (!itemTemplate && type === "products") {
+      itemTemplate = resolveThemeTemplate("template", { ...ctx, themeFiles: filterThemeFilesByPath(ctx.themeFiles || {}, "thumbs/product") })
+        || resolveThemeTemplate("thumbs/product/template", ctx)
+        || "";
+    }
+    // Ultimate fallback
     if (!itemTemplate && type === "products") {
       const bp = ctx.basePath || "";
       itemTemplate = `
         <div class="col-6 col-md-3 product-thumbnail">
           <div class="product-card">
-            <a href="${bp}/product/[@id@]">
-              <img src="[@image_url@]" alt="[@title@]" class="img-fluid" loading="lazy" />
+            <a href="[@url@]">
+              <img src="[@image_url@]" alt="[@name@]" class="img-fluid" loading="lazy" />
               <div class="product-card__info">
-                <h3 class="product-card__title">[@title@]</h3>
+                <h3 class="product-card__title">[@name@]</h3>
                 <div class="product-card__price">$[@price@]</div>
               </div>
             </a>
@@ -1311,15 +1317,6 @@ function processThumbList(template: string, ctx: TemplateContext): string {
     if (itemTemplate) {
       items.forEach((item, idx) => {
         let rendered = itemTemplate;
-        // Prepare product item fields
-        const bp = ctx.basePath || "";
-        const productItem = {
-          ...item,
-          image_url: resolveStorageUrl(item.images?.[0]) || "/placeholder.svg",
-          url: `${bp}/product/${item.id}`,
-          headline: item.title,
-          rrp: item.compare_at_price || item.price,
-        };
         
         rendered = rendered.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
           if (field === "count") return String(idx);
