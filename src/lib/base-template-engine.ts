@@ -656,9 +656,14 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
     const defaultMatch = body.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
     if (defaultMatch) {
       // The default content might contain cdn_asset — resolve it
-      return defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1");
+      const defaultVal = defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+      // If it's just a filename (not a full URL/path), use placeholder
+      if (defaultVal && !defaultVal.startsWith("/") && !defaultVal.startsWith("http")) {
+        return "/placeholder.svg";
+      }
+      return defaultVal || "/placeholder.svg";
     }
-    return "";
+    return "/placeholder.svg";
   });
   
   // Self-closing variant — also allow [@...@] inside attrs
