@@ -266,8 +266,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<link[^>]*href=["'][^"']*\/assets\/themes\/[^"']*["'][^>]*>/gi, "")
       .replace(/<link[^>]*href=["'](?!https?:\/\/|\/\/)[^"']*["'][^>]*>/gi, "");
     
+    // Rewrite relative asset paths to storage bucket URLs
+    bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
+    
     return { headContent, bodyContent };
-  }, [headerFile, baseCtx]);
+  }, [headerFile, baseCtx, themeAssetBaseUrl]);
 
   const renderedFooter = useMemo(() => {
     if (!footerFile?.content) return "";
