@@ -82,29 +82,6 @@ export default function StorefrontBlog() {
     );
   }
 
-  //
-  }, [theme]);
-
-  const themeFiles = useMemo(() => {
-    if (!theme) return {};
-    const map: Record<string, string> = {};
-    for (const f of theme.files) {
-      map[f.file_path] = f.content || "";
-      map[`${f.folder}/${f.file_name}`] = f.content || "";
-      map[f.file_name] = f.content || "";
-      const parts = f.file_path.split("/");
-      for (let i = 0; i < parts.length; i++) {
-        map[parts.slice(i).join("/")] = f.content || "";
-      }
-    }
-    return map;
-  }, [theme]);
-
-  const themeAssetBaseUrl = useMemo(() => {
-    if (!store?.id || !theme?.id) return "";
-    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
-  }, [store?.id, theme?.id]);
-
   if (blogTemplate?.content && theme && store) {
     const includes = buildIncludesMap(theme);
     const blogCtx: TemplateContext = {
