@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { toast } from "sonner";
 import { Mail, Check, Loader2 } from "lucide-react";
+import { useActiveTheme, findThemeFile, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontContact() {
   const { storeSlug: paramSlug } = useParams();
