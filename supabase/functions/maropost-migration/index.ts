@@ -39,6 +39,13 @@ const SCAN_SELECTORS: Record<string, string[]> = {
   get_customers: ["Username", "EmailAddress"],
   get_orders: ["OrderID", "GrandTotal"],
   get_content: ["ContentID", "ContentName"],
+  get_rma: ["RmaID", "OrderID", "Status"],
+  get_payments: ["PaymentID", "OrderID", "Amount"],
+  get_vouchers: ["VoucherCode", "Value", "Balance"],
+  get_suppliers: ["SupplierID", "SupplierName"],
+  get_warehouses: ["WarehouseID", "WarehouseName"],
+  get_shipping: ["ShippingMethodName"],
+  get_currency: ["CurrencyCode", "CurrencyName"],
   test_connection: ["ID", "Name", "Model"],
 };
 
@@ -95,7 +102,7 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "Phone", "Fax", "Mobile", "ABN", "Active",
     "DateAdded", "DateUpdated", "Type", "IdentificationType",
     "IdentificationDetails", "NewsletterSubscriber", "BillingAddress",
-    "ShippingAddress", "CustomerLog", "UserGroup", "AccountBalance",
+    "ShippingAddress", "CustomerLog", "CustomerLogs", "UserGroup", "AccountBalance",
     "AvailableCredit", "OnCreditHold", "CreditLimit"
   ],
   get_content: [
@@ -105,6 +112,33 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "Author", "ContentFileIdentifier", "SEOPageTitle",
     "SEOPageHeading", "SEOMetaDescription", "SEOMetaKeywords",
     "DatePosted", "DateUpdated"
+  ],
+  get_rma: [
+    "RmaID", "OrderID", "OrderNumber", "Status", "DateCreated", "DateUpdated",
+    "Reason", "ReturnReason", "CustomerNotes", "AdminNotes", "StaffNotes",
+    "RefundAmount", "Action", "Resolution", "DateRequested", "DateResolved",
+    "RmaLine", "RmaLine.SKU", "RmaLine.Quantity", "RmaLine.Reason"
+  ],
+  get_payments: [
+    "PaymentID", "ID", "OrderID", "OrderNumber", "Amount", "TotalAmount",
+    "PaymentMethod", "PaymentType", "Gateway", "TransactionID",
+    "ReceiptNumber", "DatePaid", "DateCreated", "PaymentDate",
+    "CardType", "CardNumber", "Status"
+  ],
+  get_vouchers: [
+    "VoucherCode", "Code", "Value", "Balance", "Active",
+    "ExpiryDate", "RecipientEmail", "RecipientName", "SenderName",
+    "Message", "DateCreated", "DateRedeemed"
+  ],
+  get_suppliers: [
+    "SupplierID", "SupplierName", "CompanyName", "ContactName", "Contact",
+    "Email", "EmailAddress", "Phone", "PhoneNumber", "Fax",
+    "Address1", "Address2", "City", "State", "PostCode", "Country",
+    "LeadTime", "Notes", "Website", "AccountCode"
+  ],
+  get_warehouses: [
+    "WarehouseID", "WarehouseName", "Name", "Address1", "Address2",
+    "City", "State", "PostCode", "Country", "Phone", "IsActive"
   ],
   test_connection: ["ID", "Name", "Model"],
 };
