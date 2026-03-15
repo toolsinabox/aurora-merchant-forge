@@ -228,7 +228,34 @@ function ThemedShell({ theme, store, storeName, children, extraContext }: {
     return theme.jsFiles.map(f => f.content || "").filter(Boolean).join("\n");
   }, [theme.jsFiles]);
 
-  // Inject JS
+  // Inject external CSS/JS links from the theme's <head> content
+  useEffect(() => {
+    if (!headContent) return;
+    const addedElements: Element[] = [];
+    
+    // Extract and inject <link> stylesheet tags
+    const linkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*>/gi;
+    let match;
+    while ((match = linkRegex.exec(headContent)) !== null) {
+      const hrefMatch = match[0].match(/href=["']([^"']+)["']/);
+      if (hrefMatch && !document.querySelector(`link[href="${hrefMatch[1]}"]`)) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = hrefMatch[1];
+        link.setAttribute("data-theme-css", "true");
+        const mediaMatch = match[0].match(/media=["']([^"']+)["']/);
+        if (mediaMatch) link.media = mediaMatch[1];
+        document.head.appendChild(link);
+        addedElements.push(link);
+      }
+    }
+    
+    return () => {
+      addedElements.forEach(el => el.remove());
+    };
+  }, [headContent]);
+
+  // Inject theme JS files
   useEffect(() => {
     if (!combinedJs) return;
     const script = document.createElement("script");
