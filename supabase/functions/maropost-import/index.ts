@@ -620,13 +620,50 @@ serve(async (req) => {
             updated_at: sanitizeDate(o.DateUpdated || o.DateModified) || new Date().toISOString(),
           };
 
-          // Link to customer by email
-          const orderEmail = o.Email || o.EmailAddress || o.Username;
-          if (orderEmail) {
+          // Link to customer — try email first, then Username as email, then Username as name
+          const orderEmail = o.Email || o.EmailAddress || null;
+          const orderUsername = o.Username || null;
+          let linkedCustomer: any = null;
+
+          // 1. Try exact email match
+          if (orderEmail && !linkedCustomer) {
             const { data: cust } = await supabase
               .from("customers").select("id").eq("store_id", store_id).eq("email", orderEmail).maybeSingle();
-            if (cust) orderData.customer_id = cust.id;
+            if (cust) linkedCustomer = cust;
           }
+
+          // 2. Try Username as email (Maropost often uses email as username)
+          if (orderUsername && !linkedCustomer) {
+            const { data: cust } = await supabase
+              .from("customers").select("id").eq("store_id", store_id).eq("email", orderUsername).maybeSingle();
+            if (cust) linkedCustomer = cust;
+          }
+
+          // 3. Try Username as customer name match
+          if (orderUsername && !linkedCustomer) {
+            const { data: cust } = await supabase
+              .from("customers").select("id").eq("store_id", store_id).eq("name", orderUsername).maybeSingle();
+            if (cust) linkedCustomer = cust;
+          }
+
+          // 4. Try building name from BillAddress fields
+          if (!linkedCustomer && (o.BillAddress || o.BillingAddress)) {
+            const ba = o.BillAddress || o.BillingAddress;
+            const baName = `${ba.FirstName || ""} ${ba.LastName || ba.Surname || ""}`.trim();
+            const baEmail = ba.Email || ba.EmailAddress || null;
+            if (baEmail) {
+              const { data: cust } = await supabase
+                .from("customers").select("id").eq("store_id", store_id).eq("email", baEmail).maybeSingle();
+              if (cust) linkedCustomer = cust;
+            }
+            if (!linkedCustomer && baName) {
+              const { data: cust } = await supabase
+                .from("customers").select("id").eq("store_id", store_id).eq("name", baName).maybeSingle();
+              if (cust) linkedCustomer = cust;
+            }
+          }
+
+          if (linkedCustomer) orderData.customer_id = linkedCustomer.id;
 
           // UPSERT: Check for existing by BOTH old MP-prefixed AND exact number
           let orderId: string;
