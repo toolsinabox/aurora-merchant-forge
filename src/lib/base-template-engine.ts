@@ -1704,7 +1704,7 @@ function renderItemsWithTemplate(
       rendered = processItemConditionals(rendered, item, idx, items.length, ctx);
       
       // Clean up per-item template tags
-      rendered = processSetAndWhile(rendered);
+      rendered = processSetAndWhile(rendered, ctx);
       rendered = processCacheBlocks(rendered);
       rendered = rendered.replace(/\[%escape%\]([\s\S]*?)\[%\/escape%\]/gi, (__, content: string) => {
         return content
