@@ -440,16 +440,23 @@ ${SCOPE_SELECTOR} .product-card__price {
     return scoped + fallbackCss;
   }, [theme.cssFiles]);
 
-  // Inject Font Awesome CSS (required by theme icons)
+  // Inject Font Awesome + Bootstrap CSS (required by most Maropost themes)
   useEffect(() => {
-    const faHref = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
-    if (document.querySelector(`link[href="${faHref}"]`)) return;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = faHref;
-    link.setAttribute("data-theme-fa", "true");
-    document.head.appendChild(link);
-    return () => { link.remove(); };
+    const cdnLinks = [
+      { href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", attr: "data-theme-fa" },
+      { href: "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css", attr: "data-theme-bs" },
+    ];
+    const addedLinks: HTMLLinkElement[] = [];
+    for (const { href, attr } of cdnLinks) {
+      if (document.querySelector(`link[${attr}]`)) continue;
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = href;
+      link.setAttribute(attr, "true");
+      document.head.appendChild(link);
+      addedLinks.push(link);
+    }
+    return () => { addedLinks.forEach(l => l.remove()); };
   }, []);
 
   // Inject external CSS links from the theme's <head> content (CDN only)
