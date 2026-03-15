@@ -128,7 +128,7 @@ serve(async (req) => {
             store_id,
             title: p.Name || p.Model || "Untitled Product",
             slug,
-            sku: p.ParentSKU || p.Model || null,
+            sku: p.SKU || p.ParentSKU || null,
             barcode: p.Barcode || null,
             brand: p.Brand || null,
             description: p.Description || null,
