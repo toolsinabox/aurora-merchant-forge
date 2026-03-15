@@ -305,38 +305,8 @@ export default function StorefrontProductDetail() {
     );
   }
 
-  const allRelated = crossSells.length > 0 ? crossSells : relatedProducts;
 
-  // ── Theme-based product detail rendering ──
-  const { data: theme } = useActiveTheme(store?.id);
 
-  const productTemplate = useMemo(() => {
-    if (!theme) return null;
-    // Look for product detail template in common Maropost locations
-    return findThemeFile(theme, "templates", "product")
-      || findMainThemeFile(theme, "product")
-      || findThemeFile(theme, "templates", "item");
-  }, [theme]);
-
-  const themeFiles = useMemo(() => {
-    if (!theme) return {};
-    const map: Record<string, string> = {};
-    for (const f of theme.files) {
-      map[f.file_path] = f.content || "";
-      map[`${f.folder}/${f.file_name}`] = f.content || "";
-      map[f.file_name] = f.content || "";
-      const parts = f.file_path.split("/");
-      for (let i = 0; i < parts.length; i++) {
-        map[parts.slice(i).join("/")] = f.content || "";
-      }
-    }
-    return map;
-  }, [theme]);
-
-  const themeAssetBaseUrl = useMemo(() => {
-    if (!store?.id || !theme?.id) return "";
-    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
-  }, [store?.id, theme?.id]);
 
   // If there's a theme product template, render it via B@SE engine
   if (productTemplate?.content && theme && product) {
