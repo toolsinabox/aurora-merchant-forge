@@ -111,6 +111,7 @@ const contentNav = [
   { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
   { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
+  { title: "Theme Files", url: `${prefix}/theme-files`, icon: Palette },
   { title: "Store Locator", url: `${prefix}/store-locator`, icon: Navigation },
 ];
 
