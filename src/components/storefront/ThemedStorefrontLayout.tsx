@@ -193,6 +193,12 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return map;
   }, [theme.files]);
 
+  const themeAssetBaseUrl = useMemo(() => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl || !store?.id || !theme.id) return "";
+    return `${supabaseUrl}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme.id]);
+
   const baseCtx: TemplateContext = useMemo(() => ({
     store: {
       name: store?.name || storeName || "Store",
@@ -202,12 +208,13 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     },
     includes,
     themeFiles,
+    themeAssetBaseUrl,
     categories: categories || [],
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
     basePath: basePath || "",
     pageType: "content",
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, extraContext, categories, basePath]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");

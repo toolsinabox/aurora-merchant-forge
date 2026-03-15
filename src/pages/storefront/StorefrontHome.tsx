@@ -91,12 +91,18 @@ export default function StorefrontHome() {
   }, [theme]);
 
   // Build context for template rendering with ALL required data
+  const themeAssetBaseUrl = useMemo(() => {
+    if (!store?.id || !theme?.id) return "";
+    return `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}/${theme.id}`;
+  }, [store?.id, theme?.id]);
+
   const templateCtx: TemplateContext = useMemo(() => {
     const includes = theme ? buildIncludesMap(theme) : {};
     return {
       store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
       includes,
       themeFiles,
+      themeAssetBaseUrl,
       categories,
       products,
       adverts,
@@ -104,7 +110,7 @@ export default function StorefrontHome() {
       basePath: basePath || "",
       pageType: "home",
     };
-  }, [store, theme, themeFiles, categories, products, adverts, basePath]);
+  }, [store, theme, themeFiles, themeAssetBaseUrl, categories, products, adverts, basePath]);
 
   if (loading) {
     return (
