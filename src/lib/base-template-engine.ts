@@ -23,8 +23,10 @@ export interface TemplateContext {
   themeFiles?: Record<string, string>;
   /** Base URL for theme assets */
   themeAssetBaseUrl?: string;
-  /** Store base URL */
+  /** Store base URL (full domain, e.g. https://mystore.example.com) */
   baseUrl?: string;
+  /** SPA base path for internal links (e.g. /store/my-store) */
+  basePath?: string;
   /** Current page type */
   pageType?: string;
   /** URL query params */
