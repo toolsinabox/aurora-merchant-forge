@@ -214,6 +214,7 @@ const App = () => (
                   <Route path="/_cpanel/products/import" element={<RequireAuth><ImportWizard /></RequireAuth>} />
                   <Route path="/_cpanel/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/_cpanel/templates" element={<RequireAuth><Templates /></RequireAuth>} />
+                  <Route path="/_cpanel/theme-files" element={<RequireAuth><ThemeFiles /></RequireAuth>} />
                   <Route path="/_cpanel/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
                   <Route path="/_cpanel/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
                   <Route path="/_cpanel/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
