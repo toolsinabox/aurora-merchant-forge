@@ -1087,7 +1087,7 @@ function processAdvertBlocks(template: string, ctx: TemplateContext): string {
             if (item[f] !== undefined) return String(item[f]);
             return "";
           });
-          counterItem = processItemConditionals(counterItem, item, idx, items.length);
+          counterItem = processItemConditionals(counterItem, item, idx, items.length, ctx);
           counterHtml.push(counterItem);
         }
         // Strip SITE_VALUE blocks from rendered output
