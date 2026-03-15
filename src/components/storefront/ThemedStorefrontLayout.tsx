@@ -246,7 +246,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     const addedElements: Element[] = [];
     
     // Extract and inject <link> stylesheet tags
-    const linkRegex = /<link[^>]*rel=["']stylesheet["'][^>]*>/gi;
+    const linkRegex = /<link[^>]*(?:rel=["']stylesheet["']|type=["']text\/css["'])[^>]*>/gi;
     let match;
     while ((match = linkRegex.exec(headContent)) !== null) {
       const hrefMatch = match[0].match(/href=["']([^"']+)["']/);
@@ -267,17 +267,38 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     };
   }, [headContent]);
 
-  // Inject theme JS files
+  // Inject external scripts from rendered header/footer (CDN jQuery, Bootstrap, etc.)
   useEffect(() => {
-    if (!combinedJs) return;
-    const script = document.createElement("script");
-    script.setAttribute("data-theme-js", "true");
-    script.textContent = combinedJs;
-    document.body.appendChild(script);
+    const addedScripts: HTMLScriptElement[] = [];
+    const allHtml = (renderedHeader || "") + (renderedFooter || "");
+    
+    // Extract <script src="..."> tags for external scripts
+    const scriptSrcRegex = /<script[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi;
+    let sm;
+    while ((sm = scriptSrcRegex.exec(allHtml)) !== null) {
+      const src = sm[1];
+      // Skip tracking/analytics scripts
+      if (src.includes("google-analytics") || src.includes("googletagmanager")) continue;
+      if (document.querySelector(`script[src="${src}"]`)) continue;
+      
+      const script = document.createElement("script");
+      script.src = src;
+      script.setAttribute("data-theme-ext-js", "true");
+      // Load jQuery first, others after
+      if (src.includes("jquery") && !src.includes("jquery-ui") && !src.includes("jquery.")) {
+        script.async = false;
+        document.head.appendChild(script);
+      } else {
+        script.async = false;
+        document.body.appendChild(script);
+      }
+      addedScripts.push(script);
+    }
+    
     return () => {
-      document.querySelectorAll("script[data-theme-js]").forEach(el => el.remove());
+      addedScripts.forEach(el => el.remove());
     };
-  }, [combinedJs]);
+  }, [renderedHeader, renderedFooter]);
 
   return (
     <>
