@@ -239,11 +239,6 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return scopeCss(raw, SCOPE_SELECTOR);
   }, [theme.cssFiles]);
 
-  // Combine all JS files
-  const combinedJs = useMemo(() => {
-    return theme.jsFiles.map(f => f.content || "").filter(Boolean).join("\n");
-  }, [theme.jsFiles]);
-
   // Inject external CSS/JS links from the theme's <head> content
   useEffect(() => {
     if (!headContent) return;
