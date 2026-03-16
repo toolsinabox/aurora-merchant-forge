@@ -727,7 +727,7 @@ export default function CustomerDetail() {
                     <Button size="sm" className="h-7 text-xs gap-1" onClick={async () => {
                       const { error } = await supabase.from("customers").update({ is_approved: true }).eq("id", customer.id);
                       if (error) { toast.error("Failed to approve"); return; }
-                      queryClient.invalidateQueries({ queryKey: ["customer", customer.id] });
+                      qc.invalidateQueries({ queryKey: ["customer", customer.id] });
                       toast.success("Customer approved for wholesale");
                     }}>
                       Approve
