@@ -91,19 +91,34 @@ const SCOPE_SELECTOR = "#neto-theme";
  */
 function rewriteAssetUrls(html: string, assetBase: string): string {
   if (!assetBase) return html;
-  // Rewrite src="..." and href="..." that are relative paths to theme assets
-  // Match common asset extensions
-  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)(\?[^"']*)?/i;
-  // Paths that should NOT be rewritten (app-level or already resolved)
-  const skipPaths = /^(\/placeholder\.|\/assets\/|\/favicon)/i;
+  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|css)(\?[^"']*)?/i;
+  // Paths that should NOT be rewritten
+  const skipPaths = /^(\/placeholder\.|\/favicon)/i;
+  
   return html
     .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
       if (!assetExt.test(path)) return match;
       if (skipPaths.test(path)) return match;
+      
+      // Rewrite /assets/themes/THEME_NAME/... to storage bucket
+      const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
+      if (themePathMatch) {
+        return `${attr}="${assetBase}/${themePathMatch[1]}"`;
+      }
+      
+      // Skip other /assets/ paths (product images, marketing, cms — already absolute)
+      if (/^\/assets\//i.test(path)) return match;
+      
       const cleanPath = path.replace(/^\/+/, "");
       return `${attr}="${assetBase}/${cleanPath}"`;
     })
     .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
+      // Rewrite /assets/themes/... in CSS url()
+      const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
+      if (themePathMatch) {
+        return `url("${assetBase}/${themePathMatch[1].trim()}")`;
+      }
+      if (/^\/assets\//i.test(path)) return match;
       const cleanPath = path.replace(/^\/+/, "").trim();
       return `url("${assetBase}/${cleanPath}")`;
     });
