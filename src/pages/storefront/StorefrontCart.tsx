@@ -115,6 +115,14 @@ export default function StorefrontCart() {
     setCouponCode("");
   };
 
+  if (themeHtml && items.length > 0) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   if (items.length === 0 && savedItems.length === 0) {
     return (
       <StorefrontLayout>

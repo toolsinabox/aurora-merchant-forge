@@ -316,6 +316,35 @@ export default function StorefrontProducts() {
     setPriceRange([0, maxPrice]);
   };
 
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile = findMainThemeFile(activeTheme, "products") || findMainThemeFile(activeTheme, "category") || findMainThemeFile(activeTheme, "product-list");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const ctx: TemplateContext = {
+      store, basePath, pageType: "category", products,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      categories,
+      content: { title: "All Products" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath, products, categories]);
+
+  if (!loading && themeHtml) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   if (loading) {
     return (
       <StorefrontLayout>

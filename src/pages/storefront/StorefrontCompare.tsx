@@ -1,9 +1,13 @@
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { useCompare } from "@/contexts/CompareContext";
 import { Button } from "@/components/ui/button";
 import { X, ArrowLeft } from "lucide-react";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { supabase } from "@/integrations/supabase/client";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
