@@ -14,7 +14,7 @@ import {
   useShippingZones, useCreateShippingZone, useDeleteShippingZone, useTeamMembers,
   useCustomerGroups, useCreateCustomerGroup, useDeleteCustomerGroup,
 } from "@/hooks/use-data";
-import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell, CreditCard, Scissors, Shield, Clock } from "lucide-react";
+import { Save, Plus, Trash2, Mail, Palette, Type, Layout, Paintbrush, Users, Globe, Bell, CreditCard, Scissors, Shield, Clock, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -1066,6 +1066,52 @@ export default function SettingsPage() {
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
 
+  // Advanced config state
+  const [configSearch, setConfigSearch] = useState("");
+  const advancedConfigKeys: { key: string; label: string; type: "text" | "boolean" | "select"; default: string; options?: string[] }[] = [
+    { key: "allow_guest_checkout", label: "Allow Guest Checkout", type: "boolean", default: "1" },
+    { key: "allow_nostock_checkout", label: "Allow Out-of-Stock Checkout", type: "boolean", default: "0" },
+    { key: "min_order_amount", label: "Minimum Order Amount", type: "text", default: "0" },
+    { key: "max_order_amount", label: "Maximum Order Amount", type: "text", default: "99999" },
+    { key: "items_per_page", label: "Products Per Page", type: "text", default: "24" },
+    { key: "default_sort", label: "Default Product Sort", type: "select", default: "relevance", options: ["relevance", "price_asc", "price_desc", "newest", "name_asc", "name_desc", "bestselling"] },
+    { key: "tax_mode", label: "Tax Calculation Mode", type: "select", default: "gst", options: ["gst", "vat", "sales_tax", "none"] },
+    { key: "tax_inclusive_pricing", label: "Tax Inclusive Pricing", type: "boolean", default: "1" },
+    { key: "show_price", label: "Show Prices", type: "boolean", default: "1" },
+    { key: "show_rrp", label: "Show RRP / Compare-at Price", type: "boolean", default: "1" },
+    { key: "show_addcart", label: "Show Add to Cart Button", type: "boolean", default: "1" },
+    { key: "show_wishlist", label: "Show Wishlist Button", type: "boolean", default: "1" },
+    { key: "show_compare", label: "Show Compare Button", type: "boolean", default: "1" },
+    { key: "show_reviews", label: "Show Product Reviews", type: "boolean", default: "1" },
+    { key: "show_sku", label: "Show SKU on Product Page", type: "boolean", default: "1" },
+    { key: "show_stock", label: "Show Stock Level", type: "boolean", default: "1" },
+    { key: "show_brand", label: "Show Brand on Product Page", type: "boolean", default: "1" },
+    { key: "show_breadcrumbs", label: "Show Breadcrumbs", type: "boolean", default: "1" },
+    { key: "show_shipping_calculator", label: "Show Shipping Calculator", type: "boolean", default: "1" },
+    { key: "free_shipping_threshold", label: "Free Shipping Threshold ($)", type: "text", default: "0" },
+    { key: "webstore_use_preorder_quantity", label: "Allow Pre-order Quantity", type: "boolean", default: "0" },
+    { key: "low_stock_threshold", label: "Low Stock Alert Threshold", type: "text", default: "10" },
+    { key: "cart_reservation_minutes", label: "Cart Reservation (minutes)", type: "text", default: "15" },
+    { key: "max_quantity_per_item", label: "Max Quantity Per Item", type: "text", default: "99" },
+    { key: "enable_backorders", label: "Enable Backorders", type: "boolean", default: "0" },
+    { key: "auto_confirm_orders", label: "Auto-Confirm Orders", type: "boolean", default: "0" },
+    { key: "require_phone", label: "Require Phone at Checkout", type: "boolean", default: "0" },
+    { key: "require_company", label: "Require Company at Checkout", type: "boolean", default: "0" },
+    { key: "enable_click_collect", label: "Enable Click & Collect", type: "boolean", default: "1" },
+    { key: "enable_same_day_delivery", label: "Enable Same-Day Delivery", type: "boolean", default: "0" },
+    { key: "same_day_cutoff_hour", label: "Same-Day Cutoff Hour (24h)", type: "text", default: "14" },
+    { key: "enable_split_shipping", label: "Enable Split Shipping", type: "boolean", default: "1" },
+    { key: "enable_shipping_insurance", label: "Enable Shipping Insurance", type: "boolean", default: "1" },
+    { key: "newsletter_popup_delay", label: "Newsletter Popup Delay (ms)", type: "text", default: "5000" },
+    { key: "enable_age_verification", label: "Enable Age Verification", type: "boolean", default: "0" },
+    { key: "minimum_age", label: "Minimum Age Required", type: "text", default: "18" },
+    { key: "maintenance_mode", label: "Maintenance Mode", type: "boolean", default: "0" },
+    { key: "robots_txt", label: "Robots.txt Override", type: "text", default: "" },
+  ];
+  const [advancedConfig, setAdvancedConfig] = useState<Record<string, string>>(() => {
+    try { return JSON.parse(localStorage.getItem("advanced_config") || "{}"); } catch { return {}; }
+  });
+
   // Theme builder state
   const [themeForm, setThemeForm] = useState({
     primary_color: "#2563eb",
@@ -1935,8 +1981,74 @@ export default function SettingsPage() {
             })()}
           </TabsContent>
 
-          {/* Config Export/Import */}
-          <TabsContent value="config">
+          {/* Advanced Config */}
+          <TabsContent value="config" className="space-y-4">
+            {/* Key-Value Config Manager */}
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Advanced Configuration</CardTitle>
+                <p className="text-xs text-muted-foreground">Maropost-style key-value settings — control store behavior at a granular level</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="relative">
+                  <Input
+                    className="h-8 text-xs pl-8"
+                    placeholder="Search config keys..."
+                    value={configSearch}
+                    onChange={(e) => setConfigSearch(e.target.value)}
+                  />
+                  <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <div className="border rounded-md divide-y max-h-[450px] overflow-y-auto">
+                  {advancedConfigKeys
+                    .filter(c => !configSearch || c.key.toLowerCase().includes(configSearch.toLowerCase()) || c.label.toLowerCase().includes(configSearch.toLowerCase()))
+                    .map(conf => {
+                      const val = advancedConfig[conf.key] ?? conf.default;
+                      return (
+                        <div key={conf.key} className="flex items-center justify-between gap-3 px-3 py-2 hover:bg-muted/30">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium">{conf.label}</p>
+                            <p className="text-[10px] text-muted-foreground font-mono">{conf.key}</p>
+                          </div>
+                          {conf.type === "boolean" ? (
+                            <Switch
+                              checked={val === "1" || val === "true"}
+                              onCheckedChange={(v) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: v ? "1" : "0" }))}
+                            />
+                          ) : conf.type === "select" ? (
+                            <select
+                              className="h-7 text-xs border rounded px-2 bg-background min-w-[120px]"
+                              value={String(val)}
+                              onChange={(e) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: e.target.value }))}
+                            >
+                              {conf.options?.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          ) : (
+                            <Input
+                              className="h-7 text-xs w-36"
+                              value={String(val)}
+                              onChange={(e) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: e.target.value }))}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+                <div className="flex justify-between items-center">
+                  <p className="text-[10px] text-muted-foreground">
+                    {advancedConfigKeys.filter(c => !configSearch || c.key.toLowerCase().includes(configSearch.toLowerCase()) || c.label.toLowerCase().includes(configSearch.toLowerCase())).length} of {advancedConfigKeys.length} settings
+                  </p>
+                  <Button size="sm" className="text-xs gap-1.5" onClick={() => {
+                    localStorage.setItem("advanced_config", JSON.stringify(advancedConfig));
+                    toast.success("Configuration saved");
+                  }}>
+                    <Save className="h-3 w-3" /> Save Config
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Export / Import */}
             <Card>
               <CardHeader className="p-4 pb-2">
                 <CardTitle className="text-sm">Configuration Export / Import</CardTitle>
@@ -1946,11 +2058,12 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Export Configuration</Label>
-                    <p className="text-[10px] text-muted-foreground">Downloads store settings, branding, scripts, and local preferences as a JSON file.</p>
+                    <p className="text-[10px] text-muted-foreground">Downloads all settings as a JSON file.</p>
                     <Button size="sm" className="gap-1.5 w-full" onClick={() => {
                       const config = {
                         exportedAt: new Date().toISOString(),
                         storeName: currentStore?.name,
+                        advancedConfig,
                         settings: {
                           customHeadScripts: localStorage.getItem("custom_head_scripts") || "",
                           customBodyScripts: localStorage.getItem("custom_body_scripts") || "",
@@ -1971,7 +2084,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Import Configuration</Label>
-                    <p className="text-[10px] text-muted-foreground">Upload a previously exported JSON config file to restore settings.</p>
+                    <p className="text-[10px] text-muted-foreground">Upload a previously exported JSON config file.</p>
                     <Button size="sm" variant="outline" className="gap-1.5 w-full" onClick={() => {
                       const input = document.createElement("input");
                       input.type = "file";
@@ -1983,14 +2096,19 @@ export default function SettingsPage() {
                         reader.onload = (ev) => {
                           try {
                             const config = JSON.parse(ev.target?.result as string);
-                            if (!config.settings) throw new Error("Invalid config");
-                            const s = config.settings;
-                            if (s.customHeadScripts) localStorage.setItem("custom_head_scripts", s.customHeadScripts);
-                            if (s.customBodyScripts) localStorage.setItem("custom_body_scripts", s.customBodyScripts);
-                            if (s.quoteTemplates) localStorage.setItem("quote_templates", JSON.stringify(s.quoteTemplates));
-                            if (s.scheduledPriceChanges) localStorage.setItem("scheduled_price_changes", JSON.stringify(s.scheduledPriceChanges));
-                            if (s.cycleCountSchedules) localStorage.setItem("cycle_count_schedules", JSON.stringify(s.cycleCountSchedules));
-                            if (s.inventorySnapshots) localStorage.setItem("inventory_snapshots", JSON.stringify(s.inventorySnapshots));
+                            if (config.advancedConfig) {
+                              setAdvancedConfig(config.advancedConfig);
+                              localStorage.setItem("advanced_config", JSON.stringify(config.advancedConfig));
+                            }
+                            if (config.settings) {
+                              const s = config.settings;
+                              if (s.customHeadScripts) localStorage.setItem("custom_head_scripts", s.customHeadScripts);
+                              if (s.customBodyScripts) localStorage.setItem("custom_body_scripts", s.customBodyScripts);
+                              if (s.quoteTemplates) localStorage.setItem("quote_templates", JSON.stringify(s.quoteTemplates));
+                              if (s.scheduledPriceChanges) localStorage.setItem("scheduled_price_changes", JSON.stringify(s.scheduledPriceChanges));
+                              if (s.cycleCountSchedules) localStorage.setItem("cycle_count_schedules", JSON.stringify(s.cycleCountSchedules));
+                              if (s.inventorySnapshots) localStorage.setItem("inventory_snapshots", JSON.stringify(s.inventorySnapshots));
+                            }
                             toast.success(`Configuration imported from ${config.exportedAt ? new Date(config.exportedAt).toLocaleDateString() : 'backup'}`);
                           } catch {
                             toast.error("Invalid configuration file");

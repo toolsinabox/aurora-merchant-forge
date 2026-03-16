@@ -52,6 +52,7 @@ const ExportWizard = lazy(() => import("./pages/ExportWizard.tsx"));
 const Templates = lazy(() => import("./pages/Templates.tsx"));
 const ThemeFiles = lazy(() => import("./pages/ThemeFiles.tsx"));
 const FeatureAudit = lazy(() => import("./pages/FeatureAudit.tsx"));
+const TemplateReference = lazy(() => import("./pages/TemplateReference.tsx"));
 const Suppliers = lazy(() => import("./pages/Suppliers.tsx"));
 const GiftVouchers = lazy(() => import("./pages/GiftVouchers.tsx"));
 const ContentPages = lazy(() => import("./pages/ContentPages.tsx"));
@@ -247,6 +248,7 @@ const App = () => (
                   <Route path="/_cpanel/templates" element={<RequireAuth><Templates /></RequireAuth>} />
                   <Route path="/_cpanel/theme-files" element={<RequireAuth><ThemeFiles /></RequireAuth>} />
                   <Route path="/_cpanel/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
+                   <Route path="/_cpanel/template-reference" element={<RequireAuth><TemplateReference /></RequireAuth>} />
                   <Route path="/_cpanel/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
                   <Route path="/_cpanel/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
                   <Route path="/_cpanel/content-pages" element={<RequireAuth><ContentPages /></RequireAuth>} />
@@ -361,7 +363,8 @@ const App = () => (
                   <Route path="/products/export" element={<RequireAuth><ExportWizard /></RequireAuth>} />
                   <Route path="/templates" element={<RequireAuth><Templates /></RequireAuth>} />
                   <Route path="/theme-files" element={<RequireAuth><ThemeFiles /></RequireAuth>} />
-                  <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
+                   <Route path="/feature-audit" element={<RequireAuth><FeatureAudit /></RequireAuth>} />
+                   <Route path="/template-reference" element={<RequireAuth><TemplateReference /></RequireAuth>} />
                   <Route path="/suppliers" element={<RequireAuth><Suppliers /></RequireAuth>} />
                   <Route path="/gift-vouchers" element={<RequireAuth><GiftVouchers /></RequireAuth>} />
                   <Route path="/content-pages" element={<RequireAuth><ContentPages /></RequireAuth>} />
