@@ -177,7 +177,7 @@ export default function StorefrontProductDetail() {
             .select("id, title, price, images, compare_at_price")
             .eq("store_id", found.id)
             .eq("status", "active")
-            .neq("id", productId)
+            .neq("id", resolvedId)
             .limit(4);
           if (prodRes.data.category_id) query.eq("category_id", prodRes.data.category_id);
           const { data: related } = await query;
