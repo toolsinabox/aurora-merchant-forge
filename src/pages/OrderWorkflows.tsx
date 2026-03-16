@@ -111,18 +111,59 @@ export default function OrderWorkflows() {
   const addCondition = () => setForm({ ...form, conditions: [...form.conditions, { field: "total", operator: "gt", value: "0" }] });
   const removeCondition = (i: number) => setForm({ ...form, conditions: form.conditions.filter((_, idx) => idx !== i) });
 
+  const PRESETS: { name: string; trigger: string; trigger_value?: string; actions: { type: string; config: Record<string, string> }[]; conditions: { field: string; operator: string; value: string }[] }[] = [
+    { name: "Send order confirmation", trigger: "order_created", actions: [{ type: "send_email", config: { template: "order_confirmation" } }], conditions: [] },
+    { name: "Notify staff on high-value order", trigger: "order_created", actions: [{ type: "notify_staff", config: { email: "" } }], conditions: [{ field: "total", operator: "gt", value: "500" }] },
+    { name: "Auto-process paid orders", trigger: "payment_received", actions: [{ type: "change_status", config: { status: "processing" } }], conditions: [] },
+    { name: "Send shipping notification", trigger: "order_shipped", actions: [{ type: "send_email", config: { template: "shipment_notification" } }], conditions: [] },
+    { name: "Flag failed payments", trigger: "payment_failed", actions: [{ type: "add_tag", config: { tag: "payment-failed" } }, { type: "notify_staff", config: { email: "" } }], conditions: [] },
+    { name: "Follow-up after delivery", trigger: "order_delivered", actions: [{ type: "send_email", config: { template: "review_request" } }], conditions: [] },
+    { name: "Alert on return request", trigger: "return_requested", actions: [{ type: "notify_staff", config: { email: "" } }, { type: "add_tag", config: { tag: "return-pending" } }], conditions: [] },
+    { name: "Free shipping VIP orders", trigger: "order_created", actions: [{ type: "add_tag", config: { tag: "vip-free-ship" } }], conditions: [{ field: "total", operator: "gt", value: "200" }, { field: "customer_segment", operator: "eq", value: "vip" }] },
+  ];
+
+  const applyPreset = (preset: typeof PRESETS[0]) => {
+    setForm({ name: preset.name, trigger: preset.trigger, trigger_value: preset.trigger_value || "", conditions: preset.conditions, actions: preset.actions, priority: 10 });
+    setEditingId(null);
+    setShowForm(true);
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-lg font-semibold">Order Workflow Automation</h1>
-            <p className="text-xs text-muted-foreground">Automate actions when order events occur — Maropost-style trigger → condition → action rules</p>
+            <p className="text-xs text-muted-foreground">Automate actions when order events occur — trigger → condition → action rules</p>
           </div>
           <Button size="sm" className="gap-1.5" onClick={() => { resetForm(); setEditingId(null); setShowForm(true); }}>
             <Plus className="h-3.5 w-3.5" /> New Workflow
           </Button>
         </div>
+
+        {/* Preset Templates */}
+        {rules.length === 0 && (
+          <Card>
+            <CardHeader className="pb-2"><CardTitle className="text-xs text-muted-foreground uppercase tracking-wider">Quick Start Templates</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {PRESETS.map((p, i) => (
+                  <button key={i} onClick={() => applyPreset(p)} className="text-left border rounded-lg p-3 hover:bg-accent/50 transition-colors group">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Zap className="h-3 w-3 text-primary" />
+                      <span className="text-xs font-medium group-hover:text-primary transition-colors">{p.name}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Badge variant="outline" className="text-[9px]">{TRIGGERS.find(t => t.value === p.trigger)?.label}</Badge>
+                      <ArrowRight className="h-2.5 w-2.5 text-muted-foreground" />
+                      <Badge variant="secondary" className="text-[9px]">{p.actions.length} action{p.actions.length > 1 ? "s" : ""}</Badge>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {rules.length === 0 ? (
           <Card className="border-dashed">
