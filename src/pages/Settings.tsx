@@ -1066,6 +1066,52 @@ export default function SettingsPage() {
   const [brandLoading, setBrandLoading] = useState(false);
   const [brandSaving, setBrandSaving] = useState(false);
 
+  // Advanced config state
+  const [configSearch, setConfigSearch] = useState("");
+  const advancedConfigKeys: { key: string; label: string; type: "text" | "boolean" | "select"; default: string; options?: string[] }[] = [
+    { key: "allow_guest_checkout", label: "Allow Guest Checkout", type: "boolean", default: "1" },
+    { key: "allow_nostock_checkout", label: "Allow Out-of-Stock Checkout", type: "boolean", default: "0" },
+    { key: "min_order_amount", label: "Minimum Order Amount", type: "text", default: "0" },
+    { key: "max_order_amount", label: "Maximum Order Amount", type: "text", default: "99999" },
+    { key: "items_per_page", label: "Products Per Page", type: "text", default: "24" },
+    { key: "default_sort", label: "Default Product Sort", type: "select", default: "relevance", options: ["relevance", "price_asc", "price_desc", "newest", "name_asc", "name_desc", "bestselling"] },
+    { key: "tax_mode", label: "Tax Calculation Mode", type: "select", default: "gst", options: ["gst", "vat", "sales_tax", "none"] },
+    { key: "tax_inclusive_pricing", label: "Tax Inclusive Pricing", type: "boolean", default: "1" },
+    { key: "show_price", label: "Show Prices", type: "boolean", default: "1" },
+    { key: "show_rrp", label: "Show RRP / Compare-at Price", type: "boolean", default: "1" },
+    { key: "show_addcart", label: "Show Add to Cart Button", type: "boolean", default: "1" },
+    { key: "show_wishlist", label: "Show Wishlist Button", type: "boolean", default: "1" },
+    { key: "show_compare", label: "Show Compare Button", type: "boolean", default: "1" },
+    { key: "show_reviews", label: "Show Product Reviews", type: "boolean", default: "1" },
+    { key: "show_sku", label: "Show SKU on Product Page", type: "boolean", default: "1" },
+    { key: "show_stock", label: "Show Stock Level", type: "boolean", default: "1" },
+    { key: "show_brand", label: "Show Brand on Product Page", type: "boolean", default: "1" },
+    { key: "show_breadcrumbs", label: "Show Breadcrumbs", type: "boolean", default: "1" },
+    { key: "show_shipping_calculator", label: "Show Shipping Calculator", type: "boolean", default: "1" },
+    { key: "free_shipping_threshold", label: "Free Shipping Threshold ($)", type: "text", default: "0" },
+    { key: "webstore_use_preorder_quantity", label: "Allow Pre-order Quantity", type: "boolean", default: "0" },
+    { key: "low_stock_threshold", label: "Low Stock Alert Threshold", type: "text", default: "10" },
+    { key: "cart_reservation_minutes", label: "Cart Reservation (minutes)", type: "text", default: "15" },
+    { key: "max_quantity_per_item", label: "Max Quantity Per Item", type: "text", default: "99" },
+    { key: "enable_backorders", label: "Enable Backorders", type: "boolean", default: "0" },
+    { key: "auto_confirm_orders", label: "Auto-Confirm Orders", type: "boolean", default: "0" },
+    { key: "require_phone", label: "Require Phone at Checkout", type: "boolean", default: "0" },
+    { key: "require_company", label: "Require Company at Checkout", type: "boolean", default: "0" },
+    { key: "enable_click_collect", label: "Enable Click & Collect", type: "boolean", default: "1" },
+    { key: "enable_same_day_delivery", label: "Enable Same-Day Delivery", type: "boolean", default: "0" },
+    { key: "same_day_cutoff_hour", label: "Same-Day Cutoff Hour (24h)", type: "text", default: "14" },
+    { key: "enable_split_shipping", label: "Enable Split Shipping", type: "boolean", default: "1" },
+    { key: "enable_shipping_insurance", label: "Enable Shipping Insurance", type: "boolean", default: "1" },
+    { key: "newsletter_popup_delay", label: "Newsletter Popup Delay (ms)", type: "text", default: "5000" },
+    { key: "enable_age_verification", label: "Enable Age Verification", type: "boolean", default: "0" },
+    { key: "minimum_age", label: "Minimum Age Required", type: "text", default: "18" },
+    { key: "maintenance_mode", label: "Maintenance Mode", type: "boolean", default: "0" },
+    { key: "robots_txt", label: "Robots.txt Override", type: "text", default: "" },
+  ];
+  const [advancedConfig, setAdvancedConfig] = useState<Record<string, string>>(() => {
+    try { return JSON.parse(localStorage.getItem("advanced_config") || "{}"); } catch { return {}; }
+  });
+
   // Theme builder state
   const [themeForm, setThemeForm] = useState({
     primary_color: "#2563eb",
