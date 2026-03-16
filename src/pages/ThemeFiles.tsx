@@ -328,6 +328,60 @@ export default function ThemeFiles() {
     qc.invalidateQueries({ queryKey: ["theme_files"] });
   };
 
+  // ── Rename File ──
+  const startRename = (file: any) => { setRenameTarget(file); setRenameName(file.file_name); setRenameDialog(true); };
+  const confirmRename = async () => {
+    if (!renameTarget || !renameName.trim()) return;
+    const newName = renameName.trim();
+    const oldPath = renameTarget.file_path || renameTarget.file_name;
+    const parts = oldPath.split("/"); parts[parts.length - 1] = newName;
+    const { error } = await supabase.from("theme_files" as any)
+      .update({ file_name: newName, file_path: parts.join("/"), file_type: detectFileType(newName) })
+      .eq("id", renameTarget.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Renamed to "${newName}"`);
+    setRenameDialog(false); setRenameTarget(null);
+    if (selectedFile?.id === renameTarget.id) setEditFileName(newName);
+    qc.invalidateQueries({ queryKey: ["theme_files"] });
+  };
+
+  // ── Duplicate File ──
+  const duplicateFile = async (file: any) => {
+    if (!activeThemeId || !currentStore) return;
+    const newName = file.file_name.replace(/(\.[^.]+)$/, "-copy$1");
+    const newPath = (file.file_path || file.file_name).replace(file.file_name, newName);
+    const { error } = await supabase.from("theme_files" as any).insert({
+      theme_id: activeThemeId, store_id: currentStore.id, file_path: newPath,
+      file_name: newName, folder: file.folder, file_type: file.file_type,
+      content: file.content || "", file_size: file.file_size,
+    }).select().single();
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Duplicated as "${newName}"`);
+    qc.invalidateQueries({ queryKey: ["theme_files"] });
+  };
+
+  // ── Drag & Drop ──
+  const handleDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); }, []);
+  const handleDragLeave = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); }, []);
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault(); setIsDragging(false);
+    if (!activeThemeId || !currentStore) return;
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    if (droppedFiles.length === 0) return;
+    let uploaded = 0;
+    for (const file of droppedFiles) {
+      const content = await file.text();
+      const folder = detectFolder(file.name);
+      const { error } = await supabase.from("theme_files" as any).upsert({
+        theme_id: activeThemeId, store_id: currentStore.id,
+        file_path: `${folder}/${file.name}`, file_name: file.name,
+        folder, file_type: detectFileType(file.name), content, file_size: file.size,
+      }, { onConflict: "theme_id,file_path" });
+      if (!error) uploaded++;
+    }
+    if (uploaded > 0) { toast.success(`Uploaded ${uploaded} file(s)`); qc.invalidateQueries({ queryKey: ["theme_files"] }); }
+  }, [activeThemeId, currentStore, qc]);
+
   // ── ZIP Import ──
   const handleZipSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
