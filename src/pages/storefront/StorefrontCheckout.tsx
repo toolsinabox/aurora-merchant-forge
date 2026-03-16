@@ -168,25 +168,28 @@ export default function StorefrontCheckout() {
 
   useEffect(() => {
     async function loadData() {
-      // Load shipping zones (public)
-      const { data: zones } = await supabase.from("shipping_zones").select("*").order("name");
+      if (!checkoutStore?.id) return;
+      const sid = checkoutStore.id;
+
+      // Load shipping zones for this store
+      const { data: zones } = await supabase.from("shipping_zones").select("*").eq("store_id", sid).order("name");
       if (zones && zones.length > 0) setShippingZones(zones);
 
-      // Load shipping services
-      const { data: svcData } = await supabase.from("shipping_services").select("*").eq("is_active", true).order("sort_order");
+      // Load shipping services for this store
+      const { data: svcData } = await supabase.from("shipping_services").select("*").eq("store_id", sid).eq("is_active", true).order("sort_order");
       if (svcData) setShippingServices(svcData);
 
-      // Load pickup locations (stores/warehouses)
-      const { data: locData } = await supabase.from("inventory_locations").select("id, name, address, type").order("name");
+      // Load pickup locations for this store
+      const { data: locData } = await supabase.from("inventory_locations").select("id, name, address, type").eq("store_id", sid).order("name");
       if (locData) setPickupLocations(locData);
 
-      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default, is_compound, is_inclusive, priority, applies_to").order("priority", { ascending: false });
+      const { data: taxRates } = await supabase.from("tax_rates" as any).select("rate, region, country, is_default, is_compound, is_inclusive, priority, applies_to").eq("store_id", sid).order("priority", { ascending: false });
       if (taxRates && taxRates.length > 0) {
         setAllTaxRates(taxRates as any[]);
         const defaultRate = (taxRates as any[]).find((r: any) => r.is_default) || taxRates[0];
         setTaxRate(Number((defaultRate as any).rate) / 100);
       }
-      const { data: storeData } = await supabase.from("stores").select("tax_mode").limit(1).maybeSingle();
+      const { data: storeData } = await supabase.from("stores").select("tax_mode").eq("id", sid).maybeSingle();
       if (storeData && (storeData as any).tax_mode) setTaxMode((storeData as any).tax_mode);
 
       if (!user) return;
