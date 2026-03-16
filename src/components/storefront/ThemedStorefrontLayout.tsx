@@ -7,6 +7,7 @@ import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine
 import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { useCart } from "@/contexts/CartContext";
 
 interface ThemedStorefrontLayoutProps {
   children: ReactNode;
