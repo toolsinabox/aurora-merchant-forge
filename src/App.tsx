@@ -421,6 +421,7 @@ const App = () => (
                 </>
               )}
             </Routes>
+            </ErrorBoundary>
           </CompareProvider>
           </WishlistProvider>
           </CartProvider>
