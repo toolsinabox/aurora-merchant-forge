@@ -1269,7 +1269,16 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
 function collapseAssetUrlBlocks(body: string): string {
   return body.replace(
     /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
-    (_, attrs: string) => `[%asset_url ${attrs}/%]`
+    (full, attrs: string, inner: string) => {
+      // Preserve any default param fallback in a data attribute for later processing
+      const defaultMatch = inner.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
+      if (defaultMatch) {
+        // Encode fallback content into the tag for later extraction
+        const fallbackContent = defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+        return `[%asset_url ${attrs} default:'${fallbackContent.replace(/'/g, "\\'")}'/%]`;
+      }
+      return `[%asset_url ${attrs}/%]`;
+    }
   );
 }
 
