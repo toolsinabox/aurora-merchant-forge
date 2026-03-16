@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles, Timer, AlertTriangle } from "lucide-react";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { addBusinessDays, format } from "date-fns";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 interface AppliedCoupon {
   id: string;
@@ -24,12 +26,42 @@ interface AppliedCoupon {
   discountAmount: number;
 }
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
 export default function StorefrontCheckout() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
+  const [checkoutStore, setCheckoutStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => { if (s) setCheckoutStore(s); });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(checkoutStore?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !checkoutStore) return null;
+    const templateFile = findMainThemeFile(activeTheme, "checkout") || findMainThemeFile(activeTheme, "check-out");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${checkoutStore.id}`;
+    const ctx: TemplateContext = {
+      store: checkoutStore, basePath, pageType: "checkout",
+      cart: { items, totalPrice },
+      cart_items: items,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Checkout" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, checkoutStore, basePath, items, totalPrice]);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
@@ -644,6 +676,14 @@ export default function StorefrontCheckout() {
       setSubmitting(false);
     }
   };
+
+  if (!completed && themeHtml) {
+    return (
+      <StorefrontLayout storeName={checkoutStore?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
 
   if (completed) {
     return (

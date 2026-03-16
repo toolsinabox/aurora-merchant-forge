@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -94,6 +96,7 @@ export default function StorefrontAccount() {
   const [orderItems, setOrderItems] = useState<any[]>([]);
   const [wishlistProducts, setWishlistProducts] = useState<any[]>([]);
   const [storeId, setStoreId] = useState("");
+  const [accountStore, setAccountStore] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<"orders" | "wishlist" | "returns" | "addresses" | "vouchers" | "quotes" | "disputes" | "files" | "preferences" | "account">("orders");
   const [vouchers, setVouchers] = useState<any[]>([]);
   const [quotes, setQuotes] = useState<any[]>([]);
@@ -142,6 +145,32 @@ export default function StorefrontAccount() {
     label: "Home", first_name: "", last_name: "", company: "",
     address_line1: "", address_line2: "", city: "", state: "", postal_code: "", country: "AU", phone: "",
   });
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => { if (s) setAccountStore(s); });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(accountStore?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !accountStore) return null;
+    const templateFile = findMainThemeFile(activeTheme, "account") || findMainThemeFile(activeTheme, "my-account");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${accountStore.id}`;
+    const ctx: TemplateContext = {
+      store: accountStore, basePath, pageType: "account",
+      customer,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "My Account" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, accountStore, basePath, customer]);
 
   useEffect(() => {
     if (!user) {
@@ -383,6 +412,14 @@ export default function StorefrontAccount() {
   };
 
   if (!user) return null;
+
+  if (!loading && themeHtml) {
+    return (
+      <StorefrontLayout storeName={accountStore?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
 
   const returnOrderIds = new Set(returns.map((r: any) => r.order_id));
   const eligibleOrders = orders.filter(

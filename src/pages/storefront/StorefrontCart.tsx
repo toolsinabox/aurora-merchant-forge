@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { useCart } from "@/contexts/CartContext";
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, Tag, X, Loader2, Bookmark, ShoppingCart } from "lucide-react";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;
@@ -23,9 +25,37 @@ interface AppliedCoupon {
 
 export default function StorefrontCart() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, totalPrice, totalItems, savedItems, saveForLater, moveToCart, removeSaved } = useCart();
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => { if (s) setStore(s); });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile = findMainThemeFile(activeTheme, "cart") || findMainThemeFile(activeTheme, "shopping-cart") || findMainThemeFile(activeTheme, "basket");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const ctx: TemplateContext = {
+      store, basePath, pageType: "cart",
+      cart: { items, totalPrice, totalItems },
+      cart_items: items,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Shopping Cart" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath, items, totalPrice, totalItems]);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
@@ -84,6 +114,14 @@ export default function StorefrontCart() {
     setAppliedCoupon(null);
     setCouponCode("");
   };
+
+  if (themeHtml && items.length > 0) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
 
   if (items.length === 0 && savedItems.length === 0) {
     return (
