@@ -990,14 +990,71 @@ Rate Limit: 500 requests/minute (429 response when exceeded)`}</CodeBlock>
               </p>
             </Section>
 
-            <Section title="Hardcoded Asset Paths" icon={Link2}>
-              <p className="text-xs">Some themes use hardcoded paths that bypass the template tags:</p>
-              <CodeBlock>{`/assets/themes/skeletal/fonts/titillium.css   ← Cross-theme font (shared)
-/assets/themes/THEME_NAME/img/logo.png        ← Direct path to theme image
-/assets/pixel.gif                               ← 1x1 transparent pixel (placeholder)`}</CodeBlock>
-              <p className="text-xs text-muted-foreground mt-2">
-                These paths must be mapped to the storage bucket in our system. The <code>/assets/themes/skeletal/</code> prefix is used for shared/base theme resources.
-              </p>
+            <Section title="Physical Asset Path Structure (Critical)" icon={Link2}>
+              <p className="text-xs font-medium text-primary mb-2">These are the actual on-disk / URL paths Maropost uses. Our platform must mirror these exactly.</p>
+              
+              <h4 className="font-medium mt-2 mb-1">Theme Assets</h4>
+              <CodeBlock title="Pattern: /assets/themes/THEME_NAME/...">{`/assets/themes/skeletal/img/logo.png          ← Store logo
+/assets/themes/skeletal/css/app.css            ← Compiled base CSS
+/assets/themes/skeletal/css/style.css          ← Theme-specific CSS
+/assets/themes/skeletal/css/custom.css         ← Custom overrides
+/assets/themes/skeletal/css/slick.css          ← Slick carousel
+/assets/themes/skeletal/css/slick-theme.css    ← Slick theme
+/assets/themes/skeletal/js/custom.js           ← Theme JS
+/assets/themes/skeletal/js/ba_custom.js        ← Custom JS
+/assets/themes/skeletal/fonts/titillium.css    ← Font CSS
+/assets/themes/skeletal/img/...                ← Theme images`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-1"><code>skeletal</code> is the base/default theme name. Replace with actual theme folder name.</p>
+
+              <h4 className="font-medium mt-3 mb-1">Product Images</h4>
+              <CodeBlock title="Pattern: /assets/thumb/SKU.ext and /assets/full/SKU.ext">{`/assets/thumb/2168A.png           ← Product thumbnail (by SKU)
+/assets/thumb/SKU.png?timestamp   ← Cache-busted thumbnail
+/assets/full/1778-DB-B.png        ← Full-size product image (by SKU)
+/assets/full/SKU.webp             ← WebP format supported
+
+Alternate images:
+/assets/thumb/SKU_alt_1.png       ← Alt image 1 thumbnail
+/assets/thumb/SKU_alt_2.png       ← Alt image 2 thumbnail
+/assets/full/SKU_alt_1.png        ← Alt image 1 full size`}</CodeBlock>
+
+              <h4 className="font-medium mt-3 mb-1">Category / Content Images</h4>
+              <CodeBlock title="Pattern: /assets/webshop/cms/LAST2DIGITS/CONTENT_ID.ext">{`/assets/webshop/cms/82/182.webp    ← Category image (ID=182, last 2 digits=82)
+/assets/webshop/cms/80/180.webp    ← Category "All Toolboxes" (ID=180)
+/assets/webshop/cms/18/318.webp    ← Category (ID=318, last 2 digits=18)
+/assets/webshop/cms/06/206.webp    ← Category (ID=206, last 2 digits=06)
+/assets/webshop/cms/22/422.webp    ← Category (ID=422, last 2 digits=22)
+
+The subfolder is the LAST 2 DIGITS of the content ID.
+Format: /assets/webshop/cms/{ID % 100 padded to 2 digits}/{ID}.{ext}`}</CodeBlock>
+
+              <h4 className="font-medium mt-3 mb-1">Marketing / Advert Banners</h4>
+              <CodeBlock title="Pattern: /assets/marketing/ID.ext">{`/assets/marketing/151.webp         ← Desktop banner (advert ID=151)
+/assets/marketing/156.webp         ← Mobile banner (advert ID=156)
+/assets/marketing/ID.webp?timestamp`}</CodeBlock>
+
+              <h4 className="font-medium mt-3 mb-1">Other Asset Paths</h4>
+              <TagTable rows={[
+                ["/assets/pixel.gif", "1x1 transparent pixel — universal fallback/placeholder"],
+                ["/assets/themes/THEME/img/logo.png", "Store logo in theme folder"],
+                ["/assets/webshop/cms/ID/ID.webp", "Content/category page primary image"],
+                ["/assets/thumb/SKU.png", "Product thumbnail image"],
+                ["/assets/full/SKU.png", "Product full-size image"],
+                ["/assets/thumbL/SKU.png", "Product large thumbnail"],
+                ["/assets/marketing/ID.webp", "Marketing/advert banner image"],
+                ["/assets/brochure/SKU.pdf", "Product brochure PDF"],
+                ["/assets/logo/logo.png", "Main site logo"],
+                ["/assets/logo/favicon.ico", "Site favicon"],
+              ]} />
+
+              <h4 className="font-medium mt-3 mb-1">Path Resolution Rules</h4>
+              <div className="border rounded-md p-3 text-xs space-y-1">
+                <p><strong>1.</strong> <code>[%ntheme_asset%]path[%/ntheme_asset%]</code> → <code>/assets/themes/ACTIVE_THEME/path</code></p>
+                <p><strong>2.</strong> <code>[%asset_url type:'product' id:'SKU' thumb:'full'/%]</code> → <code>/assets/full/SKU.png</code></p>
+                <p><strong>3.</strong> <code>[%asset_url type:'product' id:'SKU' thumb:'thumb'/%]</code> → <code>/assets/thumb/SKU.png</code></p>
+                <p><strong>4.</strong> <code>[%asset_url type:'content' id:'182'/%]</code> → <code>/assets/webshop/cms/82/182.webp</code></p>
+                <p><strong>5.</strong> <code>[%asset_url type:'logo'/%]</code> → <code>/assets/themes/THEME/img/logo.png</code></p>
+                <p><strong>6.</strong> <code>[%cdn_asset%]path[%/cdn_asset%]</code> → CDN base URL + path</p>
+              </div>
             </Section>
           </TabsContent>
 
