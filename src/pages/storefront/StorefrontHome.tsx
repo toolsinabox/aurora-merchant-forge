@@ -173,6 +173,11 @@ export default function StorefrontHome() {
   // Fallback: default React-rendered home page
   return (
     <ThemedStorefrontLayout storeName={store.name}>
+      <SEOHead
+        title={store.seo_title || store.name}
+        description={store.seo_description || `Shop at ${store.name}`}
+        organization={{ name: store.name, logo: store.logo_url }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Advert Banner */}
         <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
