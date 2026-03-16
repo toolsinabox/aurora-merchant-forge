@@ -25,9 +25,30 @@ interface ThemedStorefrontLayoutProps {
  * Wrapper that checks for an active theme. If theme exists with header/footer templates,
  * renders full B@SE theme. Otherwise falls back to the default React StorefrontLayout.
  */
+/**
+ * Derive page type from the current URL path for SSR routing.
+ */
+function derivePageType(pathname: string, basePath: string): { pageType: string; slug?: string } {
+  const relative = pathname.replace(basePath, "").replace(/^\/+/, "");
+  if (!relative || relative === "") return { pageType: "home" };
+  if (relative.startsWith("product/")) return { pageType: "product", slug: relative.replace("product/", "") };
+  if (relative.startsWith("category/")) return { pageType: "category", slug: relative.replace("category/", "") };
+  if (relative === "cart") return { pageType: "cart" };
+  if (relative === "checkout") return { pageType: "checkout" };
+  if (relative === "login") return { pageType: "login" };
+  if (relative === "signup") return { pageType: "register" };
+  if (relative === "account") return { pageType: "account" };
+  if (relative === "blog") return { pageType: "blog" };
+  if (relative === "contact") return { pageType: "contact" };
+  if (relative.startsWith("page/")) return { pageType: "content", slug: relative.replace("page/", "") };
+  if (relative === "products") return { pageType: "category" };
+  return { pageType: "content", slug: relative };
+}
+
 export function ThemedStorefrontLayout({ children, storeName, extraContext }: ThemedStorefrontLayoutProps) {
   const { storeSlug: paramSlug } = useParams();
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
+  const location = useLocation();
   const [storeId, setStoreId] = useState<string>("");
   const [store, setStore] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
@@ -56,8 +77,24 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
   const { data: theme, isLoading } = useActiveTheme(storeId);
 
+  // Derive page type for SSR
+  const { pageType, slug: pageSlug } = useMemo(
+    () => derivePageType(location.pathname, basePath || ""),
+    [location.pathname, basePath]
+  );
+
+  // SSR: fetch pre-rendered HTML from edge function (Maropost-style server rendering)
+  const { data: ssrData, loading: ssrLoading } = useSSRPage({
+    storeId: storeId || undefined,
+    pageType,
+    slug: pageSlug,
+    basePath,
+    extraContext,
+    enabled: !!storeId && storeResolved,
+  });
+
   // Show a minimal loading skeleton while store + theme resolve — never flash the default layout
-  if (!storeResolved || (!theme && isLoading)) {
+  if (!storeResolved || (!theme && isLoading) || (storeId && ssrLoading)) {
     return (
       <div className="min-h-screen bg-background">
         <div className="h-16 bg-muted/30 animate-pulse" />
@@ -77,7 +114,16 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   const { items: cartItems, totalPrice: cartTotal, totalItems: cartCount } = useCart();
 
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath} cartData={{ items: cartItems, totalPrice: cartTotal, totalItems: cartCount }}>
+    <ThemedShell
+      theme={theme}
+      store={store}
+      storeName={storeName}
+      extraContext={extraContext}
+      categories={categories}
+      basePath={basePath}
+      cartData={{ items: cartItems, totalPrice: cartTotal, totalItems: cartCount }}
+      ssrData={ssrData}
+    >
       {children}
     </ThemedShell>
   );
