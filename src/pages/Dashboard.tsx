@@ -112,12 +112,12 @@ export default function Dashboard() {
   const { currentStore } = useAuth();
 
   // Widget visibility
-  const WIDGET_KEYS = ["quickActions", "kpis", "fulfillment", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts"] as const;
+  const WIDGET_KEYS = ["quickActions", "kpis", "fulfillment", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts", "liveOrderFeed"] as const;
   const WIDGET_LABELS: Record<string, string> = {
     quickActions: "Quick Actions", kpis: "KPI Cards", fulfillment: "Fulfillment Pipeline",
     revenue: "Revenue Chart", dailyOrders: "Daily Orders", recentOrders: "Recent Orders",
     topProducts: "Top Products", customerGrowth: "Customer Growth", orderStatus: "Order Status",
-    customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts",
+    customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts", liveOrderFeed: "Live Order Feed",
   };
   const [visibleWidgets, setVisibleWidgets] = useState<Record<string, boolean>>(() => {
     try {
