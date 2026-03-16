@@ -1997,7 +1997,7 @@ export default function SettingsPage() {
                     value={configSearch}
                     onChange={(e) => setConfigSearch(e.target.value)}
                   />
-                  <Settings className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
                 </div>
                 <div className="border rounded-md divide-y max-h-[450px] overflow-y-auto">
                   {advancedConfigKeys
