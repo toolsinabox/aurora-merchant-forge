@@ -378,6 +378,7 @@ export default function StorefrontProducts() {
 
   return (
     <StorefrontLayout storeName={store?.name}>
+      <SEOHead title={`Products — ${store?.name || "Store"}`} description={`Browse and shop products at ${store?.name || "our store"}`} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-bold mb-6">All Products</h1>
 
