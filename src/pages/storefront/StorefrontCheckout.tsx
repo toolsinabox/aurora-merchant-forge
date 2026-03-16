@@ -525,8 +525,7 @@ export default function StorefrontCheckout() {
     }
 
     // Check minimum order amount (store-wide)
-    const { data: storeMin } = await supabase.from("stores").select("min_order_amount").limit(1).maybeSingle();
-    const minOrder = Number((storeMin as any)?.min_order_amount) || 0;
+    const minOrder = Number((checkoutStore as any)?.min_order_amount) || 0;
     if (minOrder > 0 && totalPrice < minOrder) {
       toast.error(`Minimum order amount is $${minOrder.toFixed(2)}`);
       return;
