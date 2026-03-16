@@ -13,6 +13,7 @@ import {
   Users, Plus, ExternalLink, ArrowRight, Settings2, Smartphone, Truck, 
   ClipboardList, Tag, FileText, RotateCcw, Layers,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
@@ -112,12 +113,12 @@ export default function Dashboard() {
   const { currentStore } = useAuth();
 
   // Widget visibility
-  const WIDGET_KEYS = ["quickActions", "kpis", "fulfillment", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts"] as const;
+  const WIDGET_KEYS = ["quickActions", "kpis", "fulfillment", "revenue", "dailyOrders", "recentOrders", "topProducts", "customerGrowth", "orderStatus", "customersSummary", "inventoryAlerts", "liveOrderFeed"] as const;
   const WIDGET_LABELS: Record<string, string> = {
     quickActions: "Quick Actions", kpis: "KPI Cards", fulfillment: "Fulfillment Pipeline",
     revenue: "Revenue Chart", dailyOrders: "Daily Orders", recentOrders: "Recent Orders",
     topProducts: "Top Products", customerGrowth: "Customer Growth", orderStatus: "Order Status",
-    customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts",
+    customersSummary: "Customers Summary", inventoryAlerts: "Inventory Alerts", liveOrderFeed: "Live Order Feed",
   };
   const [visibleWidgets, setVisibleWidgets] = useState<Record<string, boolean>>(() => {
     try {
@@ -568,6 +569,50 @@ export default function Dashboard() {
                 </CardContent>
               </Card>}
             </div>
+
+            {/* Live Order Feed */}
+            {w("liveOrderFeed") && (
+              <Card>
+                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                    Live Order Feed
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">{orders.length} total</Badge>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  {loadingOrders ? <Skeleton className="h-32 w-full" /> : orders.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-4 text-center">No orders yet — they'll appear here in real-time.</p>
+                  ) : (
+                    <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                      {orders.slice(0, 15).map((o: any) => {
+                        const mins = Math.round((Date.now() - new Date(o.created_at).getTime()) / 60000);
+                        const timeLabel = mins < 1 ? "just now" : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.round(mins / 60)}h ago` : `${Math.round(mins / 1440)}d ago`;
+                        return (
+                          <div
+                            key={o.id}
+                            className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
+                            onClick={() => navigate(`/orders/${o.id}`)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`h-1.5 w-1.5 rounded-full ${
+                                o.status === "new" ? "bg-primary" : o.status === "processing" ? "bg-warning" : o.status === "shipped" ? "bg-info" : "bg-muted-foreground"
+                              }`} />
+                              <span className="text-xs font-medium">{o.order_number}</span>
+                              <span className="text-[10px] text-muted-foreground">{o.customers?.name || "Guest"}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-semibold">${Number(o.total).toFixed(2)}</span>
+                              <span className="text-[10px] text-muted-foreground w-14 text-right">{timeLabel}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>

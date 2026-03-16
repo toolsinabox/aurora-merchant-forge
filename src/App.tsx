@@ -53,6 +53,7 @@ const Templates = lazy(() => import("./pages/Templates.tsx"));
 const ThemeFiles = lazy(() => import("./pages/ThemeFiles.tsx"));
 const FeatureAudit = lazy(() => import("./pages/FeatureAudit.tsx"));
 const TemplateReference = lazy(() => import("./pages/TemplateReference.tsx"));
+const OrderWorkflows = lazy(() => import("./pages/OrderWorkflows.tsx"));
 const Suppliers = lazy(() => import("./pages/Suppliers.tsx"));
 const GiftVouchers = lazy(() => import("./pages/GiftVouchers.tsx"));
 const ContentPages = lazy(() => import("./pages/ContentPages.tsx"));
@@ -292,6 +293,7 @@ const App = () => (
                    <Route path="/_cpanel/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/_cpanel/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/_cpanel/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/_cpanel/order-workflows" element={<RequireAuth><OrderWorkflows /></RequireAuth>} />
                    <Route path="/_cpanel/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/_cpanel/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/_cpanel/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
@@ -409,6 +411,7 @@ const App = () => (
                    <Route path="/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/order-workflows" element={<RequireAuth><OrderWorkflows /></RequireAuth>} />
                    <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />

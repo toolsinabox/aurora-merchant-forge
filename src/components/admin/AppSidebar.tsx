@@ -44,6 +44,7 @@ const ordersNav = [
   { title: "Abandoned Carts", url: `${prefix}/abandoned-carts`, icon: ShoppingCart },
   { title: "Saved Carts", url: `${prefix}/saved-carts`, icon: Save },
   { title: "Batch Invoices", url: `${prefix}/batch-invoices`, icon: Printer },
+  { title: "Order Workflows", url: `${prefix}/order-workflows`, icon: Zap },
 ];
 
 // ── Products (Maropost: "Products") ──
