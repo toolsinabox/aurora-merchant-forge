@@ -116,7 +116,7 @@ export default function PrintInvoice() {
           </div>
           <div>
             <span className="text-muted-foreground">Currency</span>
-            <p className="font-medium">{order.currency || "AUD"}</p>
+            <p className="font-medium">{(order as any).currency || "AUD"}</p>
           </div>
         </div>
 
