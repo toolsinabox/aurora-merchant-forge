@@ -411,6 +411,7 @@ const App = () => (
                    <Route path="/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/order-workflows" element={<RequireAuth><OrderWorkflows /></RequireAuth>} />
                    <Route path="/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
