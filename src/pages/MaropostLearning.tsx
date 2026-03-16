@@ -215,98 +215,200 @@ export default function MaropostLearning() {
 
           {/* ═══════════════ DATA TAGS ═══════════════ */}
           <TabsContent value="data-tags" className="space-y-4">
-            <Section title="Product Page Data Tags" icon={Tag}>
+            <Section title="Product Page Data Tags (Complete)" icon={Tag}>
               <TagTable rows={[
-                ["[@SKU@]", "Product SKU identifier"],
-                ["[@name@]", "Product name"],
-                ["[@model@]", "Product model number"],
+                ["[@SKU@], [@current_sku@]", "Product SKU identifier"],
+                ["[@name@], [@model@]", "Product name / model"],
                 ["[@subtitle@]", "Product subtitle"],
                 ["[@description@]", "Full HTML description"],
                 ["[@short_description@]", "Short/summary description"],
                 ["[@store_price@]", "Price based on user's group ID"],
-                ["[@retail_price@]", "Retail/RRP price"],
+                ["[@retail_price@], [@rrp@]", "Retail/RRP price"],
                 ["[@cost@]", "Cost price"],
+                ["[@promotional_price@]", "Sale/promotional price"],
                 ["[@store_quantity@]", "Available quantity for purchase"],
-                ["[@date_created@]", "Date product was created"],
+                ["[@limited_stock@]", "True when stock is below global low-stock config"],
+                ["[@min_qty@], [@max_qty@]", "Min/max purchase quantity per order"],
+                ["[@date_created@]", "Date product was created (YYYY-MM-DD)"],
                 ["[@date_updated@]", "Date product was last updated"],
                 ["[@brand@]", "Product brand name"],
                 ["[@weight@]", "Product weight"],
+                ["[@actual_height@], [@actual_length@], [@actual_width@]", "Assembled dimensions (meters)"],
                 ["[@acc_code@]", "Accounting code"],
+                ["[@acc_qty_multiplier@]", "Accounting quantity multiplier"],
                 ["[@active@]", "Boolean: 1 when product is active"],
                 ["[@approval@]", "Boolean: 1 when product is approved"],
                 ["[@extra@]", "Boolean: true if product has Extra Options"],
                 ["[@content_fullpath@]", "Full URL path to the product"],
                 ["[@content_id@]", "Internal content ID"],
-                ["[@thumb_url@]", "Primary thumbnail image URL"],
-                ["[@actual_height@]", "Assembled height dimension"],
-                ["[@actual_length@]", "Assembled length dimension"],
-                ["[@actual_width@]", "Assembled width dimension"],
+                ["[@current_id@]", "Active selected variation ID"],
+                ["[@thumb_url@], [@thumb@]", "Primary thumbnail image URL"],
                 ["[@print_label@]", "Number of labels to print per product"],
                 ["[@status@]", "Product status code"],
                 ["[@access_control@]", "True if page requires login"],
+                ["[@keywords@]", "SEO keywords list"],
+                ["[@manufacturer_model@]", "Manufacturer's model/SKU"],
+                ["[@misc1@] - [@misc50@]", "Miscellaneous custom fields (50 available)"],
+                ["[@group_name@]", "Customer's price group name (Retail, Wholesale, etc.)"],
+                ["[@is_kit@]", "Boolean: 1 if this is a kitted product"],
+                ["[@is_neto_utility@]", "Internal product (SHIPPING, ROUNDING) for POS/accounting"],
+                ["[@kitting_sku@]", "Parent kit SKU"],
+                ["[@barcode@]", "Product barcode / UPC / EAN"],
+                ["[@supplier_item_code@]", "Supplier's product code"],
+                ["[@warranty@]", "Warranty information"],
+                ["[@specifications@]", "Product specifications HTML"],
+                ["[@features@]", "Product features HTML"],
+                ["[@terms_and_conditions@]", "Product-specific terms"],
+                ["[@rndm@]", "Random string — used for unique DOM IDs"],
               ]} />
             </Section>
 
-            <Section title="Content & Category Page Data Tags" icon={FileText}>
+            <Section title="Content & Category Page Data Tags (Complete)" icon={FileText}>
               <TagTable rows={[
-                ["[@content_name@]", "Category/content page name"],
-                ["[@content_description@]", "Category description HTML"],
+                ["[@content_name@]", "Category/content page name/title"],
+                ["[@content_id@]", "Content page unique ID"],
+                ["[@content_ref@]", "Reference ID (integer, 50 char limit)"],
+                ["[@content_description1@] - [@content_description3@]", "Full description fields (3 available)"],
+                ["[@content_short_description1@] - [@content_short_description3@]", "Short descriptions (3 available)"],
+                ["[@content_allow_reviews@]", "True when reviews are enabled on this page"],
+                ["[@content_level@]", "Nesting depth level (1 = top level)"],
+                ["[@content_module@]", "Page module type (Contact_form, Subscribe, etc.)"],
+                ["[@content_type_code@]", "Content type code defined at creation"],
                 ["[@content_fullpath@]", "Full URL path"],
-                ["[@content_id@]", "Content page internal ID"],
                 ["[@seo_title@]", "SEO meta title"],
                 ["[@seo_description@]", "SEO meta description"],
+                ["[@parent_content_id@]", "Parent content type ID"],
+                ["[@parent_id@]", "Parent page ID"],
                 ["[@parent_name@]", "Parent category name"],
                 ["[@parent_url@]", "Parent category URL"],
                 ["[@breadcrumb@]", "Breadcrumb trail HTML"],
+                ["[@page_subheader@]", "Deprecated subtitle tag"],
+                ["[@rating@]", "Average review rating"],
+                ["[@reviews@]", "Review count"],
+                ["[@sortorder@]", "Sort order value"],
+                ["[@timestamp@]", "Page timestamp"],
+                ["[@title@]", "Page title"],
+                ["[@templatebody@]", "Body template name"],
+                ["[@templatehead@]", "Header template name"],
+                ["[@templatefoot@]", "Footer template name"],
+                ["[@templatesearch@]", "Search template name"],
+                ["[@thumb_content_type_id@]", "Content type ID for thumbnails"],
               ]} />
             </Section>
 
-            <Section title="Checkout & Cart Data Tags" icon={ShoppingCart}>
+            <Section title="Checkout & Cart Data Tags (Complete)" icon={ShoppingCart}>
               <TagTable rows={[
                 ["[@grand_total@]", "Grand total of the order"],
                 ["[@subtotal@]", "Subtotal before tax/shipping"],
-                ["[@shipping_total@]", "Shipping cost"],
+                ["[@product_total@]", "Product total prior to discounts"],
+                ["[@product_discount@]", "Total product discount amount"],
+                ["[@shipping_total@], [@shipping_cost@]", "Shipping cost"],
+                ["[@shipping_discount@]", "Shipping discount amount"],
+                ["[@discount_total@]", "Total of product + shipping discounts"],
                 ["[@tax_total@]", "Tax amount"],
-                ["[@bill_city@]", "Billing address city"],
-                ["[@bill_company@]", "Billing address company"],
-                ["[@bill_country@]", "Billing address country"],
-                ["[@bill_firstname@]", "Billing first name"],
-                ["[@bill_lastname@]", "Billing last name"],
-                ["[@ship_city@]", "Shipping address city"],
-                ["[@ship_country@]", "Shipping address country"],
-                ["[@customer_ref1@] - [@customer_ref4@]", "Order misc/reference fields"],
+                ["[@voucher_credit@]", "Gift voucher credit applied"],
+                ["[@payment_method@]", "Selected payment method name"],
+                ["[@payment_method_id@]", "Selected payment method ID"],
+                ["[@payment_plan@]", "Selected payment plan"],
+                ["[@shipping_method@]", "Selected shipping method name"],
+                ["[@shipping_method_id@]", "Selected shipping method ID"],
+                ["[@total_items@]", "Total items in cart"],
+                ["[@bill_firstname@], [@bill_lastname@]", "Billing first/last name"],
+                ["[@bill_company@]", "Billing company"],
+                ["[@bill_city@], [@bill_country@]", "Billing city/country"],
+                ["[@ship_firstname@], [@ship_lastname@]", "Shipping first/last name"],
+                ["[@ship_city@], [@ship_country@]", "Shipping city/country"],
+                ["[@customer_ref1@] - [@customer_ref4@]", "Order reference/misc fields"],
                 ["[@add_reminder@]", "Add reminder field value"],
                 ["[@agree@]", "T&C checkbox value"],
-                ["[@cart_count@]", "Number of items in cart (Cart Page exclusive)"],
+                ["[@apply_credit@]", "True/false if credit was applied"],
+                ["[@cart_count@]", "Number of items (Cart Page exclusive)"],
+                ["[@order_id@]", "Order ID after completion"],
               ]} />
             </Section>
 
-            <Section title="Customer Page Data Tags" icon={Users}>
+            <Section title="Customer Page Data Tags (Complete)" icon={Users}>
               <TagTable rows={[
                 ["[@active@]", "Boolean: true when customer is active"],
                 ["[@addr_id@]", "Unique ID for default address"],
                 ["[@approval_username@]", "Username of quote approver"],
                 ["[@def_order_type@]", "Default order type for the account"],
                 ["[@default_discounts@]", "Default order-wide discount percentage"],
-                ["[@usercustom1@] - [@usercustom3@]", "Custom customer fields"],
-                ["[@user:username@]", "Current logged-in username (value tag)"],
-                ["[@user:email@]", "Current logged-in email (value tag)"],
+                ["[@haslogin@]", "True if customer is currently logged in"],
+                ["[@terms@]", "User payment terms (COD, Net EOM, Net 10)"],
+                ["[@unresolve_dispute@]", "Total unresolved disputes count"],
+                ["[@user_id@]", "Customer number ID"],
+                ["[@usercustom1@] - [@usercustom50@]", "Custom customer fields (up to 50)"],
+                ["[@username@]", "Login username"],
+                ["[@email@]", "Customer email"],
+                ["[@company@]", "Company name"],
+                ["[@firstname@], [@lastname@]", "Customer first/last name"],
+                ["[@phone@]", "Phone number"],
+                ["[@fax@]", "Fax number"],
+                ["[@abn@]", "Australian Business Number"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ VALUE TAGS (NEW) ═══════════════ */}
+          <TabsContent value="value-tags" className="space-y-4">
+            <Section title="Value Tags — Dynamic Data Sources" icon={Database}>
+              <p>Value tags pull data from dynamic sources: the logged-in user, URL query strings, and store configuration. They work anywhere in any template.</p>
+            </Section>
+
+            <Section title="User Data Tags" icon={Users}>
+              <p className="mb-2">Load data from the currently logged-in user:</p>
+              <TagTable rows={[
+                ["[@user:username@]", "Login username"],
+                ["[@user:email@]", "Email address"],
+                ["[@user:firstname@]", "First name"],
+                ["[@user:lastname@]", "Last name"],
+                ["[@user:company@]", "Company name"],
+                ["[@user:phone@]", "Phone number"],
+                ["[@user:active@]", "True when account is active"],
+                ["[@user:usercustom1@] - [@user:usercustom50@]", "Custom fields (up to 50)"],
+                ["[@user:group_id@]", "Customer group/price tier ID"],
+                ["[@user:default_discounts@]", "Default discount percentage"],
+                ["[@user:credit_limit@]", "Credit limit"],
+                ["[@user:terms@]", "Payment terms"],
               ]} />
             </Section>
 
-            <Section title="Value Tags (Dynamic Sources)" icon={Zap}>
+            <Section title="Config Tags" icon={Settings}>
+              <p className="mb-2">Load store configuration values set in Control Panel:</p>
               <TagTable rows={[
-                ["[@config:home_url@]", "Store home URL"],
-                ["[@config:store_name@]", "Store name from settings"],
+                ["[@config:home_url@]", "Store home URL (e.g., https://www.mystore.com.au)"],
+                ["[@config:store_name@]", "Store display name"],
                 ["[@config:display_special_content@]", "Config flag for special content"],
                 ["[@config:imageurl@]", "Base image URL from config"],
-                ["[@user:username@]", "Currently logged-in username"],
-                ["[@user:email@]", "Currently logged-in email"],
-                ["[@form:fieldname@]", "Data from URL query string parameter"],
+                ["[@config:currency_symbol@]", "Currency symbol ($, £, €)"],
+                ["[@config:currency_code@]", "Currency ISO code (AUD, USD)"],
+                ["[@config:country@]", "Store country"],
+                ["[@config:timezone@]", "Store timezone"],
+                ["[@config:tax_inclusive@]", "Whether prices include tax"],
+                ["[@config:google_analytics_id@]", "Google Analytics ID"],
               ]} />
-              <p className="mt-2 text-xs text-muted-foreground">
-                Form data example: URL <code>mysite.com/page?color=red</code> → <code>[@form:color@]</code> outputs <code>red</code>
-              </p>
+            </Section>
+
+            <Section title="Form Data Tags (URL Query Strings)" icon={Link2}>
+              <CodeBlock title="How form tags work">{`URL: mysite.com.au/page?color=red&size=large
+
+[@form:color@]  → outputs "red"
+[@form:size@]   → outputs "large"
+[@form:anything@] → outputs value of ?anything= parameter
+
+Use case: Pre-filling forms, filtering, passing data between pages`}</CodeBlock>
+            </Section>
+
+            <Section title="Cart Data Tags (Inline)" icon={ShoppingCart}>
+              <p className="mb-2">Access cart values inline anywhere (faster than the cart function tag):</p>
+              <CodeBlock>{`[@cart:product_total@]     → Product subtotal
+[@cart:grand_total@]      → Grand total
+[@cart:total_items@]      → Item count
+[@cart:shipping_cost@]    → Shipping cost
+[@cart:payment_method@]   → Selected payment method
+[@cart:discount_total@]   → Total discounts applied
+[@cart:voucher_credit@]   → Gift voucher amount`}</CodeBlock>
             </Section>
           </TabsContent>
 
