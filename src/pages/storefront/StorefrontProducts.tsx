@@ -198,7 +198,7 @@ export default function StorefrontProducts() {
   const [loading, setLoading] = useState(true);
   const [searchParams] = useSearchParams();
   const [search, setSearch] = useState(() => searchParams.get("q") || "");
-  const [category, setCategory] = useState("all");
+  const [category, setCategory] = useState(() => searchParams.get("category") || "all");
   const [sort, setSort] = useState("newest");
   const [brandFilter, setBrandFilter] = useState<string[]>([]);
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
