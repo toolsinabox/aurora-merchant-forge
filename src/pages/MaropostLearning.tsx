@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Code2, FolderTree, Link2, Tag, Layout, Image, ShoppingCart, Users, FileText, Zap, Globe, Server, Palette, Search } from "lucide-react";
+import { BookOpen, Code2, FolderTree, Link2, Tag, Layout, Image, ShoppingCart, Users, FileText, Zap, Globe, Server, Palette, Search, CreditCard } from "lucide-react";
 
 function Section({ title, icon: Icon, children }: { title: string; icon?: any; children: React.ReactNode }) {
   return (
