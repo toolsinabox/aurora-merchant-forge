@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { SEOHead } from "@/components/storefront/SEOHead";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemedStorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
