@@ -1269,7 +1269,16 @@ function processContentMenu(template: string, ctx: TemplateContext): string {
 function collapseAssetUrlBlocks(body: string): string {
   return body.replace(
     /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
-    (_, attrs: string) => `[%asset_url ${attrs}/%]`
+    (full, attrs: string, inner: string) => {
+      // Preserve any default param fallback in a data attribute for later processing
+      const defaultMatch = inner.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
+      if (defaultMatch) {
+        // Encode fallback content into the tag for later extraction
+        const fallbackContent = defaultMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+        return `[%asset_url ${attrs} default:'${fallbackContent.replace(/'/g, "\\'")}'/%]`;
+      }
+      return `[%asset_url ${attrs}/%]`;
+    }
   );
 }
 
@@ -1280,12 +1289,21 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
   // Block variant FIRST
   result = result.replace(
     /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
-    (_, attrs: string) => {
+    (_, attrs: string, innerContent: string) => {
       const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
         if (item && item[field] !== undefined) return String(item[field]);
         return String(resolveField(field, ctx) || "");
       });
-      return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
+      const resolved = resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
+      if (resolved) return resolved;
+      // Extract fallback from [%param default%]...[%end param%] or [%/param%]
+      const fallbackMatch = innerContent.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
+      if (fallbackMatch) {
+        // Process cdn_asset within fallback
+        let fallback = fallbackMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+        return fallback || "/placeholder.svg";
+      }
+      return resolved || "/placeholder.svg";
     }
   );
   
@@ -1308,9 +1326,7 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
 function resolveStorageUrl(path: string | undefined | null): string {
   if (!path) return "";
   if (path.startsWith("http") || path.startsWith("//") || path.startsWith("/")) return path;
-  const supabaseUrl = typeof window !== "undefined"
-    ? (window as any).__VITE_SUPABASE_URL || ""
-    : "";
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
   if (supabaseUrl) {
     return `${supabaseUrl}/storage/v1/object/public/product-images/${path}`;
   }

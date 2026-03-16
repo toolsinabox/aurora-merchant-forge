@@ -101,7 +101,7 @@ export default function StorefrontHome() {
   const templateCtx: TemplateContext = useMemo(() => {
     const includes = theme ? buildIncludesMap(theme) : {};
     return {
-      store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
+      store: store ? { name: store.name, currency: store.currency || "AUD", ...store } : undefined,
       includes,
       themeFiles,
       themeAssetBaseUrl,

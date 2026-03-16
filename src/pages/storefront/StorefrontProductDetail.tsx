@@ -318,7 +318,7 @@ export default function StorefrontProductDetail() {
       pricing_tiers: pricingTiers,
       cross_sells: crossSells,
       products: allRelated,
-      store: store ? { name: store.name, currency: store.default_currency || "AUD", ...store } : undefined,
+      store: store ? { name: store.name, currency: store.currency || "AUD", ...store } : undefined,
       includes,
       themeFiles,
       themeAssetBaseUrl,

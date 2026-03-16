@@ -233,7 +233,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const baseCtx: TemplateContext = useMemo(() => ({
     store: {
       name: store?.name || storeName || "Store",
-      currency: store?.default_currency || "AUD",
+      currency: store?.currency || "AUD",
       contact_email: store?.contact_email || "",
       ...(store || {}),
     },
