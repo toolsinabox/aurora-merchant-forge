@@ -270,7 +270,7 @@ export default function StorefrontProducts() {
         if (sort === "name") return a.title.localeCompare(b.title);
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-  }, [products, search, category, brandFilter, specFilters, sort, priceRange, allSpecifics]);
+  }, [products, search, category, categories, brandFilter, specFilters, sort, priceRange, allSpecifics]);
 
   // Reset visible count when filters change
   const [visibleCount, setVisibleCount] = useState(pageSize);
