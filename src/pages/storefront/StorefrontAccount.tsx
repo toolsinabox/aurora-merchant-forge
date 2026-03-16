@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const getImageUrl = (path: string) => path?.startsWith("http") ? path : `${SUPABASE_URL}/storage/v1/object/public/product-images/${path}`;

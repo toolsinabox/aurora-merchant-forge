@@ -677,6 +677,14 @@ export default function StorefrontCheckout() {
     }
   };
 
+  if (!completed && themeHtml) {
+    return (
+      <StorefrontLayout storeName={checkoutStore?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   if (completed) {
     return (
       <StorefrontLayout>
