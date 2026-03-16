@@ -799,9 +799,9 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
 
   return (
     <>
-      {/* Scoped Theme CSS — only applies inside #neto-theme */}
-      {scopedCss && (
-        <style dangerouslySetInnerHTML={{ __html: scopedCss }} />
+      {/* Platform layout fallback CSS — structural fixes for carousel/grid components */}
+      {fallbackCss && (
+        <style dangerouslySetInnerHTML={{ __html: fallbackCss }} />
       )}
 
       {/* Theme-rendered sections: header + footer wrapped in scope */}
