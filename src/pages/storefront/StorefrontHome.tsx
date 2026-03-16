@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { AdvertBanner } from "@/components/storefront/AdvertBanner";
 import { useActiveTheme, findMainThemeFile, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useContentZones } from "@/hooks/use-content-zones";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -64,6 +65,7 @@ export default function StorefrontHome() {
   }, [storeSlug]);
 
   const { data: theme } = useActiveTheme(store?.id);
+  const { data: contentZones } = useContentZones(store?.id);
 
   // Check if there's an index/home template in the theme
   const homeTemplate = useMemo(() => {
@@ -109,8 +111,9 @@ export default function StorefrontHome() {
       baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
       basePath: basePath || "",
       pageType: "home",
+      contentZones: contentZones || {},
     };
-  }, [store, theme, themeFiles, themeAssetBaseUrl, categories, products, adverts, basePath]);
+  }, [store, theme, themeFiles, themeAssetBaseUrl, categories, products, adverts, basePath, contentZones]);
 
   if (loading) {
     return (

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useContentZones } from "@/hooks/use-content-zones";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
@@ -203,6 +204,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   cartData?: { items: any[]; totalPrice: number; totalItems: number };
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
+  const { data: contentZones } = useContentZones(store?.id);
 
   const themeFiles = useMemo(() => {
     const map: Record<string, string> = {};
@@ -244,8 +246,9 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     pageType: "content",
     cart: cartData ? { items: cartData.items, totalPrice: cartData.totalPrice, totalItems: cartData.totalItems } : undefined,
     cart_items: cartData?.items,
+    contentZones: contentZones || {},
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData, contentZones]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
