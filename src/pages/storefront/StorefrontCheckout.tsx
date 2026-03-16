@@ -241,7 +241,7 @@ export default function StorefrontCheckout() {
       }
     }
     loadData();
-  }, [user]);
+  }, [user, checkoutStore]);
 
   const applyAddress = (addr: any) => {
     setForm((prev) => ({
