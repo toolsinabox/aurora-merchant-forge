@@ -21,12 +21,16 @@ import {
   FolderOpen, FolderClosed, File, FileCode2, FileText, Upload, Plus, Save,
   Trash2, Eye, Code2, Download, Palette, ChevronRight, ChevronDown,
   Search, RefreshCw, Package, AlertCircle, Check, Copy, MoreVertical,
-  Settings2, Star, Archive, FilePlus,
+  Settings2, Star, Archive, FilePlus, Pencil, FolderPlus, UploadCloud,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  ContextMenu, ContextMenuContent, ContextMenuItem,
+  ContextMenuSeparator, ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -172,6 +176,18 @@ export default function ThemeFiles() {
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  // Rename dialog
+  const [renameDialog, setRenameDialog] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<any>(null);
+  const [renameName, setRenameName] = useState("");
+
+  // Drag-drop state
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Breadcrumb path for current folder navigation
+  const [currentFolderPath, setCurrentFolderPath] = useState("");
 
   // Auto-select first theme
   useEffect(() => {
@@ -311,6 +327,60 @@ export default function ThemeFiles() {
     if (selectedFile?.id === fileId) setSelectedFile(null);
     qc.invalidateQueries({ queryKey: ["theme_files"] });
   };
+
+  // ── Rename File ──
+  const startRename = (file: any) => { setRenameTarget(file); setRenameName(file.file_name); setRenameDialog(true); };
+  const confirmRename = async () => {
+    if (!renameTarget || !renameName.trim()) return;
+    const newName = renameName.trim();
+    const oldPath = renameTarget.file_path || renameTarget.file_name;
+    const parts = oldPath.split("/"); parts[parts.length - 1] = newName;
+    const { error } = await supabase.from("theme_files" as any)
+      .update({ file_name: newName, file_path: parts.join("/"), file_type: detectFileType(newName) })
+      .eq("id", renameTarget.id);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Renamed to "${newName}"`);
+    setRenameDialog(false); setRenameTarget(null);
+    if (selectedFile?.id === renameTarget.id) setEditFileName(newName);
+    qc.invalidateQueries({ queryKey: ["theme_files"] });
+  };
+
+  // ── Duplicate File ──
+  const duplicateFile = async (file: any) => {
+    if (!activeThemeId || !currentStore) return;
+    const newName = file.file_name.replace(/(\.[^.]+)$/, "-copy$1");
+    const newPath = (file.file_path || file.file_name).replace(file.file_name, newName);
+    const { error } = await supabase.from("theme_files" as any).insert({
+      theme_id: activeThemeId, store_id: currentStore.id, file_path: newPath,
+      file_name: newName, folder: file.folder, file_type: file.file_type,
+      content: file.content || "", file_size: file.file_size,
+    }).select().single();
+    if (error) { toast.error(error.message); return; }
+    toast.success(`Duplicated as "${newName}"`);
+    qc.invalidateQueries({ queryKey: ["theme_files"] });
+  };
+
+  // ── Drag & Drop ──
+  const handleDragOver = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); }, []);
+  const handleDragLeave = useCallback((e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); }, []);
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault(); setIsDragging(false);
+    if (!activeThemeId || !currentStore) return;
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    if (droppedFiles.length === 0) return;
+    let uploaded = 0;
+    for (const file of droppedFiles) {
+      const content = await file.text();
+      const folder = detectFolder(file.name);
+      const { error } = await supabase.from("theme_files" as any).upsert({
+        theme_id: activeThemeId, store_id: currentStore.id,
+        file_path: `${folder}/${file.name}`, file_name: file.name,
+        folder, file_type: detectFileType(file.name), content, file_size: file.size,
+      }, { onConflict: "theme_id,file_path" });
+      if (!error) uploaded++;
+    }
+    if (uploaded > 0) { toast.success(`Uploaded ${uploaded} file(s)`); qc.invalidateQueries({ queryKey: ["theme_files"] }); }
+  }, [activeThemeId, currentStore, qc]);
 
   // ── ZIP Import ──
   const handleZipSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -533,15 +603,29 @@ export default function ThemeFiles() {
     return (
       <div key={node.path} style={{ paddingLeft: depth > 0 ? 8 : 0 }}>
         {depth > 0 && (
-          <button
-            className="flex items-center gap-1.5 w-full px-2 py-1 text-xs font-medium hover:bg-muted/50 rounded-sm group"
-            onClick={() => toggleFolder(node.path)}
-          >
-            {isExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
-            {isExpanded ? <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" /> : <FolderClosed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
-            <span className="truncate">{node.name}</span>
-            <Badge variant="secondary" className="text-[9px] ml-auto h-4 px-1">{countAllFiles(node)}</Badge>
-          </button>
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <button
+                className="flex items-center gap-1.5 w-full px-2 py-1 text-xs font-medium hover:bg-muted/50 rounded-sm group"
+                onClick={() => toggleFolder(node.path)}
+              >
+                {isExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
+                {isExpanded ? <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" /> : <FolderClosed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+                <span className="truncate">{node.name}</span>
+                <Badge variant="secondary" className="text-[9px] ml-auto h-4 px-1">{countAllFiles(node)}</Badge>
+              </button>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="text-xs">
+              <ContextMenuItem onClick={() => { setNewFileFolder(node.name as FolderKey); setNewFileDialog(true); }} className="gap-2 text-xs">
+                <FilePlus className="h-3 w-3" /> New File Here
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem onClick={() => toggleFolder(node.path)} className="gap-2 text-xs">
+                {isExpanded ? <FolderClosed className="h-3 w-3" /> : <FolderOpen className="h-3 w-3" />}
+                {isExpanded ? "Collapse" : "Expand"}
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         )}
         {(depth === 0 || isExpanded) && (
           <div className={depth > 0 ? "ml-3 border-l border-border/40 pl-1" : ""}>
@@ -549,22 +633,40 @@ export default function ThemeFiles() {
             {sortedFiles.map((file: any) => {
               const FIcon = FILE_TYPE_ICONS[file.file_type] || File;
               return (
-                <button
-                  key={file.id}
-                  className={`flex items-center gap-1.5 w-full px-2 py-1 text-xs hover:bg-muted/50 rounded-sm truncate group ${
-                    selectedFile?.id === file.id ? "bg-accent text-accent-foreground" : ""
-                  }`}
-                  onClick={() => openFile(file)}
-                >
-                  <FIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{file.file_name}</span>
-                  <button
-                    className="opacity-0 group-hover:opacity-100 ml-auto h-4 w-4 flex items-center justify-center text-destructive hover:bg-destructive/10 rounded"
-                    onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
-                  >
-                    <Trash2 className="h-2.5 w-2.5" />
-                  </button>
-                </button>
+                <ContextMenu key={file.id}>
+                  <ContextMenuTrigger asChild>
+                    <button
+                      className={`flex items-center gap-1.5 w-full px-2 py-1 text-xs hover:bg-muted/50 rounded-sm truncate group ${
+                        selectedFile?.id === file.id ? "bg-accent text-accent-foreground" : ""
+                      }`}
+                      onClick={() => openFile(file)}
+                    >
+                      <FIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
+                      <span className="truncate">{file.file_name}</span>
+                      <button
+                        className="opacity-0 group-hover:opacity-100 ml-auto h-4 w-4 flex items-center justify-center text-destructive hover:bg-destructive/10 rounded"
+                        onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
+                      >
+                        <Trash2 className="h-2.5 w-2.5" />
+                      </button>
+                    </button>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="text-xs">
+                    <ContextMenuItem onClick={() => openFile(file)} className="gap-2 text-xs">
+                      <Code2 className="h-3 w-3" /> Edit
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => startRename(file)} className="gap-2 text-xs">
+                      <Pencil className="h-3 w-3" /> Rename
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => duplicateFile(file)} className="gap-2 text-xs">
+                      <Copy className="h-3 w-3" /> Duplicate
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem onClick={() => deleteFile(file.id)} className="gap-2 text-xs text-destructive">
+                      <Trash2 className="h-3 w-3" /> Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               );
             })}
             {sortedDirs.length === 0 && sortedFiles.length === 0 && depth > 0 && (
@@ -685,8 +787,40 @@ export default function ThemeFiles() {
             {/* Main layout: File Tree + Editor */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ minHeight: "calc(100vh - 220px)" }}>
               {/* File Tree */}
-              <Card className="lg:col-span-3">
+              <Card
+                className={`lg:col-span-3 relative ${isDragging ? "ring-2 ring-primary ring-offset-2" : ""}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                ref={dropZoneRef}
+              >
+                {/* Drag overlay */}
+                {isDragging && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-primary/10 border-2 border-dashed border-primary rounded-lg">
+                    <div className="text-center">
+                      <UploadCloud className="h-8 w-8 text-primary mx-auto mb-2" />
+                      <p className="text-xs font-medium text-primary">Drop files here</p>
+                    </div>
+                  </div>
+                )}
                 <CardHeader className="py-2 px-3 space-y-2">
+                  {/* Breadcrumb */}
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <button className="hover:text-foreground" onClick={() => setCurrentFolderPath("")}>
+                      {activeTheme?.name || "Theme"}
+                    </button>
+                    {selectedFile?.file_path && selectedFile.file_path.split("/").slice(0, -1).map((seg: string, i: number, arr: string[]) => (
+                      <span key={i} className="flex items-center gap-1">
+                        <ChevronRight className="h-2.5 w-2.5" />
+                        <button className="hover:text-foreground" onClick={() => {
+                          const path = "/" + arr.slice(0, i + 1).join("/");
+                          setExpandedFolders(prev => { const next = new Set(prev); next.add(path); return next; });
+                        }}>
+                          {seg}
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium truncate">{activeTheme?.name || "Theme"}</span>
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => { setNewFileFolder("templates"); setNewFileDialog(true); }}>
@@ -699,7 +833,7 @@ export default function ThemeFiles() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <ScrollArea className="h-[calc(100vh-340px)]">
+                  <ScrollArea className="h-[calc(100vh-380px)]">
                     <div className="px-1 pb-2">
                       {filesLoading ? (
                         <div className="space-y-2 p-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-5 w-full" />)}</div>
@@ -708,6 +842,10 @@ export default function ThemeFiles() {
                       )}
                     </div>
                   </ScrollArea>
+                  {/* Drop hint */}
+                  <div className="px-3 py-2 border-t text-[10px] text-muted-foreground text-center">
+                    Drag &amp; drop files or ZIP here
+                  </div>
                 </CardContent>
               </Card>
 
@@ -908,6 +1046,34 @@ export default function ThemeFiles() {
                 </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Rename File Dialog */}
+        <Dialog open={renameDialog} onOpenChange={setRenameDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle className="text-base">Rename File</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">New File Name</Label>
+                <Input
+                  className="h-8 text-xs font-mono"
+                  value={renameName}
+                  onChange={(e) => setRenameName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") confirmRename(); }}
+                  autoFocus
+                />
+              </div>
+              {renameTarget && (
+                <p className="text-[10px] text-muted-foreground">
+                  Current path: <code className="bg-muted px-1 rounded">{renameTarget.file_path}</code>
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="text-xs" onClick={() => setRenameDialog(false)}>Cancel</Button>
+              <Button size="sm" className="text-xs" onClick={confirmRename} disabled={!renameName.trim()}>Rename</Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

@@ -1220,31 +1220,31 @@ export default function SettingsPage() {
     <AdminLayout>
       <div className="space-y-3">
         <div>
-          <h1 className="text-lg font-semibold">Settings</h1>
-          <p className="text-xs text-muted-foreground">Manage your store configuration</p>
+          <h1 className="text-lg font-semibold">Settings & Tools</h1>
+          <p className="text-xs text-muted-foreground">Configure your webstore — business details, payments, shipping, and more</p>
         </div>
 
         <Tabs defaultValue="store">
           <TabsList className="h-auto flex-wrap gap-1 p-1">
-            <TabsTrigger value="store" className="text-xs h-7">Store</TabsTrigger>
-            <TabsTrigger value="branding" className="text-xs h-7">Branding</TabsTrigger>
+            <TabsTrigger value="store" className="text-xs h-7">Business Details</TabsTrigger>
+            <TabsTrigger value="branding" className="text-xs h-7">Branding & Logos</TabsTrigger>
             <TabsTrigger value="theme" className="text-xs h-7">Theme Builder</TabsTrigger>
-            <TabsTrigger value="seo" className="text-xs h-7">SEO</TabsTrigger>
+            <TabsTrigger value="payments" className="text-xs h-7">Payment Gateways</TabsTrigger>
+            <TabsTrigger value="shipping" className="text-xs h-7">Shipping & Delivery</TabsTrigger>
+            <TabsTrigger value="tax" className="text-xs h-7">Tax Settings</TabsTrigger>
             <TabsTrigger value="checkout" className="text-xs h-7">Checkout</TabsTrigger>
+            <TabsTrigger value="email" className="text-xs h-7">Email / SMTP</TabsTrigger>
             <TabsTrigger value="notifications" className="text-xs h-7">Notifications</TabsTrigger>
-            <TabsTrigger value="team" className="text-xs h-7">Team</TabsTrigger>
-            <TabsTrigger value="tax" className="text-xs h-7">Tax</TabsTrigger>
-            <TabsTrigger value="shipping" className="text-xs h-7">Shipping</TabsTrigger>
+            <TabsTrigger value="seo" className="text-xs h-7">SEO & Tracking</TabsTrigger>
+            <TabsTrigger value="team" className="text-xs h-7">Staff & Users</TabsTrigger>
             <TabsTrigger value="groups" className="text-xs h-7">Customer Groups</TabsTrigger>
             <TabsTrigger value="wholesale" className="text-xs h-7">Wholesale</TabsTrigger>
             <TabsTrigger value="inventory" className="text-xs h-7">Inventory</TabsTrigger>
-            <TabsTrigger value="payments" className="text-xs h-7">Payments</TabsTrigger>
-            <TabsTrigger value="email" className="text-xs h-7">Email</TabsTrigger>
-            <TabsTrigger value="returns" className="text-xs h-7">Returns</TabsTrigger>
+            <TabsTrigger value="returns" className="text-xs h-7">Returns Policy</TabsTrigger>
             <TabsTrigger value="fulfillment" className="text-xs h-7">Fulfillment</TabsTrigger>
             <TabsTrigger value="security" className="text-xs h-7">Security</TabsTrigger>
-            <TabsTrigger value="scripts" className="text-xs h-7">Scripts</TabsTrigger>
-            <TabsTrigger value="config" className="text-xs h-7">Config</TabsTrigger>
+            <TabsTrigger value="scripts" className="text-xs h-7">Header/Footer Scripts</TabsTrigger>
+            <TabsTrigger value="config" className="text-xs h-7">Advanced Config</TabsTrigger>
           </TabsList>
 
           <TabsContent value="store" className="space-y-3">
