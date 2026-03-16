@@ -9,6 +9,7 @@ import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ThemedStorefrontLayoutProps {
   children: ReactNode;
