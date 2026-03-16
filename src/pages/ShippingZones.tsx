@@ -509,6 +509,174 @@ export default function ShippingZones() {
   );
 }
 
+function ShippingRulesTab() {
+  interface ShippingRule {
+    id: string;
+    name: string;
+    condition_type: string;
+    condition_op: string;
+    condition_value: string;
+    action_type: string;
+    action_value: string;
+    is_active: boolean;
+    priority: number;
+  }
+
+  const [rules, setRules] = useState<ShippingRule[]>(() => {
+    try { return JSON.parse(localStorage.getItem("shipping_rules") || "[]"); } catch { return []; }
+  });
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ name: "", condition_type: "weight", condition_op: "gt", condition_value: "", action_type: "set_rate", action_value: "", priority: "10" });
+
+  const save = (r: ShippingRule[]) => { setRules(r); localStorage.setItem("shipping_rules", JSON.stringify(r)); };
+
+  const CONDITIONS = [
+    { value: "weight", label: "Cart Weight (kg)" },
+    { value: "total", label: "Cart Total ($)" },
+    { value: "items", label: "Item Count" },
+    { value: "country", label: "Country Code" },
+    { value: "postcode", label: "Postcode" },
+    { value: "sku", label: "Contains SKU" },
+    { value: "category", label: "Category" },
+  ];
+
+  const OPS = [
+    { value: "gt", label: ">" }, { value: "gte", label: ">=" },
+    { value: "lt", label: "<" }, { value: "lte", label: "<=" },
+    { value: "eq", label: "=" }, { value: "contains", label: "Contains" },
+  ];
+
+  const ACTIONS = [
+    { value: "set_rate", label: "Set flat rate ($)" },
+    { value: "add_surcharge", label: "Add surcharge ($)" },
+    { value: "multiply_rate", label: "Multiply rate by" },
+    { value: "free_shipping", label: "Free shipping" },
+    { value: "block", label: "Block shipping" },
+    { value: "set_method", label: "Force method" },
+  ];
+
+  const addRule = () => {
+    if (!form.name || !form.condition_value) { toast.error("Name and condition value required"); return; }
+    save([...rules, {
+      id: Date.now().toString(36),
+      name: form.name, condition_type: form.condition_type, condition_op: form.condition_op,
+      condition_value: form.condition_value, action_type: form.action_type, action_value: form.action_value,
+      is_active: true, priority: Number(form.priority) || 10,
+    }]);
+    setShowForm(false);
+    setForm({ name: "", condition_type: "weight", condition_op: "gt", condition_value: "", action_type: "set_rate", action_value: "", priority: "10" });
+    toast.success("Rule added");
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">Conditional shipping rules — evaluated in priority order, applied on top of zone rates</p>
+        <Button size="sm" onClick={() => setShowForm(true)} className="gap-1"><Plus className="h-3.5 w-3.5" /> Add Rule</Button>
+      </div>
+
+      {rules.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="py-10 text-center">
+            <Settings2 className="h-8 w-8 mx-auto text-muted-foreground/40 mb-2" />
+            <p className="text-sm text-muted-foreground">No advanced rules configured. Zone rates apply as-is.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs h-8">Active</TableHead>
+                  <TableHead className="text-xs h-8">Priority</TableHead>
+                  <TableHead className="text-xs h-8">Name</TableHead>
+                  <TableHead className="text-xs h-8">Condition</TableHead>
+                  <TableHead className="text-xs h-8">Action</TableHead>
+                  <TableHead className="text-xs h-8 w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...rules].sort((a, b) => a.priority - b.priority).map(r => (
+                  <TableRow key={r.id} className="text-xs">
+                    <TableCell className="py-2">
+                      <Switch checked={r.is_active} onCheckedChange={v => save(rules.map(x => x.id === r.id ? { ...x, is_active: v } : x))} />
+                    </TableCell>
+                    <TableCell className="py-2 font-mono">{r.priority}</TableCell>
+                    <TableCell className="py-2 font-medium">{r.name}</TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant="outline" className="text-[10px]">
+                        {CONDITIONS.find(c => c.value === r.condition_type)?.label} {OPS.find(o => o.value === r.condition_op)?.label} {r.condition_value}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Badge variant="secondary" className="text-[10px]">
+                        {ACTIONS.find(a => a.value === r.action_type)?.label}{r.action_value ? `: ${r.action_value}` : ""}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="py-2">
+                      <Button variant="ghost" size="icon" className="h-6 w-6 text-destructive"
+                        onClick={() => { save(rules.filter(x => x.id !== r.id)); toast.success("Rule deleted"); }}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-md">
+          <DialogHeader><DialogTitle className="text-sm">Add Shipping Rule</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div className="grid grid-cols-3 gap-2">
+              <div className="col-span-2"><Label className="text-xs">Rule Name</Label>
+                <Input className="h-8 text-xs" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="e.g. Heavy item surcharge" /></div>
+              <div><Label className="text-xs">Priority</Label>
+                <Input type="number" className="h-8 text-xs" value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <div><Label className="text-xs">If</Label>
+                <Select value={form.condition_type} onValueChange={v => setForm({ ...form, condition_type: v })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{CONDITIONS.map(c => <SelectItem key={c.value} value={c.value} className="text-xs">{c.label}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div><Label className="text-xs">Op</Label>
+                <Select value={form.condition_op} onValueChange={v => setForm({ ...form, condition_op: v })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{OPS.map(o => <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              <div><Label className="text-xs">Value</Label>
+                <Input className="h-8 text-xs" value={form.condition_value} onChange={e => setForm({ ...form, condition_value: e.target.value })} placeholder="e.g. 20" /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div><Label className="text-xs">Then</Label>
+                <Select value={form.action_type} onValueChange={v => setForm({ ...form, action_type: v })}>
+                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                  <SelectContent>{ACTIONS.map(a => <SelectItem key={a.value} value={a.value} className="text-xs">{a.label}</SelectItem>)}</SelectContent>
+                </Select>
+              </div>
+              {form.action_type !== "free_shipping" && form.action_type !== "block" && (
+                <div><Label className="text-xs">Action Value</Label>
+                  <Input className="h-8 text-xs" value={form.action_value} onChange={e => setForm({ ...form, action_value: e.target.value })} placeholder="e.g. 15.00" /></div>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>Cancel</Button>
+            <Button size="sm" onClick={addRule}>Add Rule</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
 function ShippingExclusionsTab({ storeId }: { storeId?: string }) {
   const [exclusions, setExclusions] = useState<Array<{ id: string; name: string; match_type: string; match_value: string; excluded_methods: string; is_active: boolean }>>([]);
   const [form, setForm] = useState({ name: "", match_type: "category", match_value: "", excluded_methods: "all" });
