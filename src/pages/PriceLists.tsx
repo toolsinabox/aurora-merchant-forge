@@ -141,9 +141,12 @@ export default function PriceLists() {
       name: pl.name, description: pl.description || "", customer_group_id: pl.customer_group_id || "",
       currency: pl.currency || "AUD", is_active: pl.is_active,
       starts_at: pl.starts_at?.split("T")[0] || "", ends_at: pl.ends_at?.split("T")[0] || "",
+      discount_type: (pl as any).discount_type || "none", discount_value: String((pl as any).discount_value || 0),
     });
     setEditingId(pl.id); setShowForm(true);
   };
+
+  const totalListValue = listItems.reduce((s: number, i: any) => s + Number(i.price || 0), 0);
 
   const filteredProducts = products.filter((p: any) =>
     !search || p.title?.toLowerCase().includes(search.toLowerCase()) || p.sku?.toLowerCase().includes(search.toLowerCase())
