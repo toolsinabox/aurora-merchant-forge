@@ -262,7 +262,9 @@ const App = () => (
                   <Route path="/_cpanel/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/_cpanel/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
-                  <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                   <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                   <Route path="/_cpanel/inventory-transfers" element={<RequireAuth><InventoryTransfers /></RequireAuth>} />
+                   <Route path="/_cpanel/scheduled-prices" element={<RequireAuth><ScheduledPriceChanges /></RequireAuth>} />
                   <Route path="/_cpanel/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/_cpanel/quotes/:id/print" element={<RequireAuth><PrintQuote /></RequireAuth>} />
                   <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
