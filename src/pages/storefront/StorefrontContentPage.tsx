@@ -220,7 +220,11 @@ export default function StorefrontContentPage() {
 
   return (
     <StorefrontLayout storeName={store?.name}>
-      {page.seo_title && <title>{page.seo_title}</title>}
+      <SEOHead
+        title={page.seo_title || `${page.title} — ${store?.name || "Store"}`}
+        description={page.seo_description || page.content?.slice(0, 160)?.replace(/<[^>]+>/g, "")}
+        image={page.featured_image}
+      />
       {faqItems.length > 0 && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
           "@context": "https://schema.org",
