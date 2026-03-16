@@ -86,6 +86,9 @@ export default function MaropostLearning() {
               <TabsTrigger value="emails">Emails & Printables</TabsTrigger>
               <TabsTrigger value="theme-structure">Theme Structure</TabsTrigger>
               <TabsTrigger value="webhooks">Webhooks & API</TabsTrigger>
+              <TabsTrigger value="navigation">Navigation</TabsTrigger>
+              <TabsTrigger value="formatting">Formatting & Logic</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="gotchas">Gotchas & Tips</TabsTrigger>
             </TabsList>
           </ScrollArea>
