@@ -1404,6 +1404,50 @@ function resolveStorageUrl(path: string | undefined | null): string {
   return path;
 }
 
+/**
+ * Build a Maropost-compatible content image path.
+ * Pattern: /assets/webshop/cms/{last2digits}/{id}.webp
+ * In our system, maps to storage: store-assets/{storeId}/cms/{last2}/{id}.webp
+ */
+function buildContentImagePath(id: string, ctx: TemplateContext): string {
+  const numId = parseInt(id) || 0;
+  const last2 = String(numId % 100).padStart(2, "0");
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+  const storeId = ctx.store?.id || "";
+  if (supabaseUrl && storeId) {
+    return `${supabaseUrl}/storage/v1/object/public/store-assets/${storeId}/cms/${last2}/${numId}.webp`;
+  }
+  return `/assets/webshop/cms/${last2}/${numId}.webp`;
+}
+
+/**
+ * Build a Maropost-compatible product image path.
+ * Pattern: /assets/{size}/{sku}.{ext}
+ * In our system, maps to storage: product-images/{sku}.{ext}
+ */
+function buildProductImagePath(sku: string, thumb?: string): string {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+  // Determine size folder: full, thumbL, thumb (default)
+  const sizeFolder = thumb === "full" ? "full" : thumb === "thumbL" ? "thumbL" : "thumb";
+  if (supabaseUrl) {
+    return `${supabaseUrl}/storage/v1/object/public/product-images/${sku}.png`;
+  }
+  return `/assets/${sizeFolder}/${sku}.png`;
+}
+
+/**
+ * Build a Maropost-compatible marketing/advert image path.
+ * Pattern: /assets/marketing/{id}.webp
+ */
+function buildMarketingImagePath(id: string, ctx: TemplateContext): string {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+  const storeId = ctx.store?.id || "";
+  if (supabaseUrl && storeId) {
+    return `${supabaseUrl}/storage/v1/object/public/store-assets/${storeId}/marketing/${id}.webp`;
+  }
+  return `/assets/marketing/${id}.webp`;
+}
+
 function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): string {
   const typeMatch = attrs.match(/type:'(\w+)'/i);
   const idMatch = attrs.match(/id:'([^']+)'/i);
@@ -1419,30 +1463,50 @@ function resolveAssetUrlAttrs(attrs: string, ctx: TemplateContext, item?: any): 
   });
   
   const defaultUrl = defaultMatch?.[1] || "";
+  const thumb = thumbMatch?.[1] || "";
   
   switch (type.toLowerCase()) {
     case "adw":
     case "ad":
     case "advert":
+      // Try DB image first, then Maropost marketing path
       if (item?.image_url) return resolveStorageUrl(item.image_url);
       const ad = (ctx.adverts || []).find(a => a.id === id || a.ad_id === id);
       if (ad?.image_url) return resolveStorageUrl(ad.image_url);
+      if (id) return buildMarketingImagePath(id, ctx);
       return defaultUrl || "";
+    case "content":
     case "category":
+      // Try DB image first, then Maropost /assets/webshop/cms/ path
       if (item?.image_url) return resolveStorageUrl(item.image_url);
-      const cat = (ctx.categories || []).find(c => c.id === id);
+      const cat = (ctx.categories || []).find(c => c.id === id || String(c.content_id) === id);
       if (cat?.image_url) return resolveStorageUrl(cat.image_url);
+      if (id) return buildContentImagePath(id, ctx);
       return defaultUrl || "/placeholder.svg";
     case "product":
+      // Try DB image first, then Maropost /assets/thumb|full/ path
       if (item?.images?.[0]) return resolveStorageUrl(item.images[0]);
       if (item?.image_url) return item.image_url;
       const prodById = (ctx.products || []).find(p => p.id === id);
       if (prodById?.images?.[0]) return resolveStorageUrl(prodById.images[0]);
       const prodBySku = (ctx.products || []).find(p => p.sku === id);
       if (prodBySku?.images?.[0]) return resolveStorageUrl(prodBySku.images[0]);
+      if (id) return buildProductImagePath(id, thumb);
       return defaultUrl || "/placeholder.svg";
     case "logo":
-      return ctx.store?.logo_url || defaultUrl || "";
+      if (ctx.store?.logo_url) return ctx.store.logo_url;
+      // Maropost fallback: /assets/themes/THEME/img/logo.png
+      if (ctx.themeAssetBaseUrl) return `${ctx.themeAssetBaseUrl}/img/logo.png`;
+      return defaultUrl || "";
+    case "brochure":
+      if (id) {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
+        if (supabaseUrl) return `${supabaseUrl}/storage/v1/object/public/product-images/${id}.pdf`;
+        return `/assets/brochure/${id}.pdf`;
+      }
+      return defaultUrl || "";
+    case "user":
+      return defaultUrl || "/placeholder.svg";
     default:
       // Check if the id references a theme asset
       if (id && ctx.themeAssetBaseUrl) {
