@@ -105,6 +105,7 @@ const webstoreNav = [
 const designNav = [
   { title: "Theme Files", url: `${prefix}/theme-files`, icon: Palette },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
+  { title: "Template Reference", url: `${prefix}/template-reference`, icon: Book },
   { title: "Email Templates", url: `${prefix}/email-templates`, icon: Mail },
 ];
 
