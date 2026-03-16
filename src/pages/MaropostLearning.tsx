@@ -865,6 +865,184 @@ Use case: Pre-filling forms, filtering, passing data between pages`}</CodeBlock>
     [%param *next%]<a href="[@url@]">Next</a>[%/param%]
 [%/paging%]`}</CodeBlock>
             </Section>
+
+            <Section title="SPLIT — Array Splitting" icon={Code2}>
+              <p>Splits delimited data into iterable arrays — very useful for processing CSV-like values.</p>
+              <CodeBlock>{`[%split delimiter:','%]
+    [%param data1%]author1,author2,author3[%/param%]
+    [%param data2%]book1,book2,book3[%/param%]
+    [%param *header%]
+        [@count@] items found.
+    [%/param%]
+    [%param *body%]
+        <p>[@data1@] wrote [@data2@]</p>
+    [%/param%]
+[%/split%]`}</CodeBlock>
+              <TagTable rows={[
+                ["delimiter:''", "Character to split on: , ; | & = etc."],
+                ["data1, data2, data3...", "Multiple data streams to split in parallel"],
+                ["[@count@]", "Total number of items after split"],
+                ["[@data1@], [@data2@]...", "Current item from each data stream"],
+              ]} />
+            </Section>
+
+            <Section title="SITE_VALUE — Cross-Template Data" icon={Database}>
+              <p>Stores content in one template location and loads it in another — essential for moving JS to footer.</p>
+              <CodeBlock>{`<!-- STORE content (e.g., in product body template) -->
+[%site_value id:'footer_javascript'%]
+    <script>
+        var productSku = '[@SKU@]';
+        initProductGallery();
+    </script>
+[%/site_value%]
+
+<!-- LOAD content (e.g., in footer template) -->
+[%site_value id:'footer_javascript' type:'load' /%]`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs space-y-1">
+                <p className="text-destructive font-medium">⚠️ Limitations:</p>
+                <ul className="list-disc pl-4">
+                  <li>Won't work across print or email templates</li>
+                  <li>Won't react dynamically to AJAX calls</li>
+                  <li>Keyhole caching breaks results</li>
+                  <li>Can only load BELOW where data was stored in page flow</li>
+                </ul>
+              </div>
+            </Section>
+
+            <Section title="PARSE — Execute B@SE in Dynamic Content" icon={Code2}>
+              <CodeBlock>{`<!-- Parse B@SE tags inside a product description -->
+[%parse%]
+    [@description@]
+[%/parse%]`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs text-destructive">
+                <p className="font-medium">🔴 SECURITY WARNING:</p>
+                <p>NEVER use [%parse%] around user-accessible fields (forms, customer input). Attackers could inject B@SE tags that execute server-side code.</p>
+              </div>
+            </Section>
+
+            <Section title="Formatting & Utility Functions" icon={Code2}>
+              <TagTable rows={[
+                ["[%nohtml%]...[%/nohtml%]", "Strip all HTML tags from content"],
+                ["[%nojs%]...[%/nojs%]", "Strip all JavaScript from content"],
+                ["[%escape%]...[%/escape%]", "Prevent code injection — escape special chars"],
+                ["[%trim%]...[%/trim%]", "Remove whitespace from start/end"],
+                ["[%trim inner:'1'%]...[%/trim%]", "Remove all internal whitespace too"],
+                ["[%url_encode%]...[%/url_encode%]", "URL-encode a string"],
+                ["[%url_decode%]...[%/url_decode%]", "URL-decode a string"],
+                ["[%random_number length:'5'/%]", "Generate random number of N digits"],
+                ["[%random_text length:'8'/%]", "Generate random string of N chars"],
+                ["[%debug%][@some_tag@][%/debug%]", "Output debug info about a tag"],
+                ["[%months%]...[%/months%]", "Generate list of months (full names)"],
+                ["[%years from:'2020' to:'2030'%]...[%/years%]", "Generate list of years"],
+                ["[%ajax_loader%]...[%/ajax_loader%]", "Prevent Neto web accelerator caching"],
+              ]} />
+            </Section>
+
+            <Section title="SHOW_ORDER — Order Detail Display" icon={ShoppingCart}>
+              <CodeBlock>{`[%show_order id:'[@order_id@]' hidechild:'1'%]
+    [%param *header%]
+        <h2>Order: [@order_id@]</h2>
+        <p>Status: [@order_status@]</p>
+        <p>Grand Total: [%format type:'currency'%][@grand_total@][%/format%]</p>
+    [%/param%]
+    [%param *body%]
+        <tr>
+            <td>[@sku@]</td>
+            <td>[@model@]</td>
+            <td>[@quantity@]</td>
+            <td>[%format type:'currency'%][@unit_price@][%/format%]</td>
+        </tr>
+    [%/param%]
+[%/show_order%]`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">show_order Data Tags</h4>
+              <TagTable rows={[
+                ["[@order_id@]", "Order ID"],
+                ["[@order_status@]", "Status name (New, Dispatched, etc.)"],
+                ["[@sku@]", "Order line SKU"],
+                ["[@model@], [@name@]", "Product name"],
+                ["[@quantity@]", "Line quantity"],
+                ["[@unit_price@]", "Unit price"],
+                ["[@grand_total@]", "Grand total"],
+                ["[@total_items@]", "Total order lines"],
+                ["[@tracking_id@]", "Tracking number ID"],
+                ["[@ship_tracking@]", "Tracking number"],
+                ["[@iskitting@]", "True if line is a kit component"],
+                ["[@itemnotes@]", "Order line notes"],
+                ["[@acc_code@]", "Accounting code"],
+              ]} />
+            </Section>
+
+            <Section title="ORDER_PAYMENT_HISTORY" icon={CreditCard}>
+              <CodeBlock>{`[%order_payment_history id:'[@order_id@]'%]
+    [%param *body%]
+        <p>[@payment_amount@] paid on [@date_paid@] via [@payment_name@]</p>
+    [%/param%]
+[%/order_payment_history%]`}</CodeBlock>
+            </Section>
+
+            <Section title="ORDER_REFUNDS" icon={CreditCard}>
+              <CodeBlock>{`[%order_refunds id:'[@order_id@]'%]
+    [%param *body%]
+        <p>Refund #[@count@]: [@refund_total@] issued [@date_issued@]</p>
+    [%/param%]
+[%/order_refunds%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@refund_total@]", "Total refund amount"],
+                ["[@date_issued@]", "Date refund was issued"],
+                ["[@date_approved@]", "Date refund was approved"],
+                ["[@count@]", "Incrementing counter"],
+              ]} />
+            </Section>
+
+            <Section title="SHIPPING_METHODS — Available Shipping Options" icon={Package}>
+              <CodeBlock>{`[%shipping_methods%]
+    [%param *body%]
+        <div class="shipping-option">
+            <h4>[@shipping_method@] - 
+                [%if [@shipping_quote@]%]P.O.A
+                [%else%]
+                    [%if [@cost@] == 0%]
+                        [%if [@na@] == 0%]Free[%else%]Not Applicable[%/if%]
+                    [%else%]
+                        [%format type:'currency'%][@cost@][%/format%]
+                    [%/if%]
+                [%/if%]
+            </h4>
+            <p>Est. arrival: [%format type:'number' tl_unit:'day'%][@delivery_time@][%/format%]</p>
+        </div>
+    [%/param%]
+[%/shipping_methods%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@shipping_method@]", "Shipping option name"],
+                ["[@cost@]", "Calculated cost after discounts"],
+                ["[@actual_cost@]", "Original cost before discounts"],
+                ["[@delivery_time@]", "Estimated delivery time"],
+                ["[@na@]", "Not applicable flag (0=available, 1=N/A)"],
+                ["[@shipping_quote@]", "True if freight quote required"],
+                ["[@sh_group_routing@]", "Routing group for cheapest-default logic"],
+                ["[@sortorder@]", "Sort order"],
+                ["sortby:''", "Param: sort by actual_cost, sortorder, delivery_time"],
+              ]} />
+            </Section>
+
+            <Section title="CONSIGNMENT_BREAKDOWN — Shipment Details" icon={Package}>
+              <CodeBlock>{`[%consignment_breakdown order_id:'[@order_id@]' 
+    article_id:'[@article_id@]' cngmt_id:'[@cngmt_id@]'%]
+    [%param *body%]
+        <p>[@SKU@] × [@quantity@]</p>
+    [%/param%]
+[%/consignment_breakdown%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Used in dispatch dockets and shipping labels to show what's in each consignment/article.</p>
+            </Section>
+
+            <Section title="PRINT_ORDER" icon={FileText}>
+              <CodeBlock>{`[%print_order id:'[@order_id@]'%]
+    [%param *body%]
+        <!-- Invoice/printable template content -->
+    [%/param%]
+[%/print_order%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Used in printable documents (invoices, pick slips, etc.) to load order data.</p>
+            </Section>
           </TabsContent>
 
           {/* ═══════════════ URL SYSTEM ═══════════════ */}
