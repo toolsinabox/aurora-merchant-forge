@@ -119,6 +119,7 @@ export default function StorefrontContact() {
 
     return (
       <StorefrontLayout storeName={store.name} extraContext={contactCtx}>
+        <SEOHead title={`Contact Us — ${store.name}`} description={`Get in touch with ${store.name}`} />
         <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </StorefrontLayout>
     );
