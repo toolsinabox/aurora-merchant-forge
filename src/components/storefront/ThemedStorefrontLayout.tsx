@@ -298,22 +298,37 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return rendered;
   }, [footerFile, baseCtx, themeAssetBaseUrl]);
 
-  // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
-  const scopedCss = useMemo(() => {
-    let raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
-    if (!raw) return "";
-    // Rewrite relative url() paths in CSS to storage bucket
-    if (themeAssetBaseUrl) {
-      raw = raw.replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (_, path) => {
-        const cleanPath = path.replace(/^\.?\/+/, "").trim();
-        return `url("${themeAssetBaseUrl}/${cleanPath}")`;
-      });
-    }
-    const scoped = scopeCss(raw, SCOPE_SELECTOR);
-    
-    // Add CSS fallbacks for Slick carousel wrappers that need JS to layout
-    // Without Slick JS, these containers stack vertically — provide flexbox fallback
-    const fallbackCss = `
+  // Ensure CSS/JS files exist in storage bucket (upload from DB content if missing)
+  useEffect(() => {
+    if (!store?.id || !theme.id || !theme.cssFiles.length) return;
+    const allTextAssets = [...theme.cssFiles, ...theme.jsFiles];
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) return;
+
+    (async () => {
+      for (const f of allTextAssets) {
+        const storagePath = `${store.id}/${theme.id}/${f.file_path}`;
+        const publicUrl = `${supabaseUrl}/storage/v1/object/public/theme-assets/${storagePath}`;
+        // Quick HEAD check to see if file exists
+        try {
+          const res = await fetch(publicUrl, { method: "HEAD" });
+          if (res.ok) continue; // Already in storage
+        } catch { /* not found, upload it */ }
+        // Upload from DB content
+        if (f.content) {
+          const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
+          const blob = new Blob([f.content], { type: mimeType });
+          await supabase.storage
+            .from("theme-assets")
+            .upload(storagePath, blob, { contentType: mimeType, upsert: true });
+        }
+      }
+    })();
+  }, [store?.id, theme.id, theme.cssFiles, theme.jsFiles]);
+
+  // Platform-level CSS fallbacks for Slick, Bootstrap carousel, and layout fixes
+  // These are structural fixes — the actual theme CSS loads via <link> tags from storage
+  const fallbackCss = useMemo(() => `
 ${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) {
   display: flex;
   flex-wrap: wrap;
@@ -531,9 +546,7 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-menu .nav-link { display: block; padding:
 ${SCOPE_SELECTOR} .mega-menu .dropdown-menu .nav-link:hover { background: #f5f5f5; color: #a2ce46; }
 ${SCOPE_SELECTOR} .mega-menu .dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
 ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-align: middle; }
-`;
-    return scoped + fallbackCss;
-  }, [theme.cssFiles, themeAssetBaseUrl]);
+`, []);
 
   // Inject Font Awesome + Bootstrap CSS (required by most Maropost themes)
   useEffect(() => {
