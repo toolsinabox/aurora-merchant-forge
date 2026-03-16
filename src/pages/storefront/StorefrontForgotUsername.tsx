@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,16 +8,48 @@ import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefr
 import { ArrowLeft, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontForgotUsername() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [found, setFound] = useState(false);
   const [maskedEmail, setMaskedEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => {
+      if (s) setStore(s);
+    });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile = findMainThemeFile(activeTheme, "forgot-password") || findMainThemeFile(activeTheme, "forgot-username") || findMainThemeFile(activeTheme, "forgot_password");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const ctx: TemplateContext = {
+      store, basePath, pageType: "forgot-password",
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Forgot Username" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath]);
 
   const maskEmail = (email: string) => {
     const [local, domain] = email.split("@");
@@ -33,14 +65,11 @@ export default function StorefrontForgotUsername() {
       return;
     }
     setLoading(true);
-
     let query = supabase.from("customers").select("email").limit(1);
     if (name.trim()) query = query.ilike("name", `%${name.trim()}%`);
     if (phone.trim()) query = query.eq("phone", phone.trim());
-
     const { data } = await query;
     setLoading(false);
-
     if (data && data.length > 0 && data[0].email) {
       setMaskedEmail(maskEmail(data[0].email));
       setFound(true);
@@ -49,8 +78,16 @@ export default function StorefrontForgotUsername() {
     }
   };
 
+  if (themeHtml) {
+    return (
+      <StorefrontLayout storeName={store?.name || ""}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
-    <StorefrontLayout storeName="">
+    <StorefrontLayout storeName={store?.name || ""}>
       <div className="min-h-[60vh] flex items-center justify-center p-4">
         <Card className="w-full max-w-sm">
           <CardHeader className="text-center pb-4">
