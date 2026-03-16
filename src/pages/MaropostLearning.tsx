@@ -1581,6 +1581,46 @@ Format: /assets/webshop/cms/{ID % 100 padded to 2 digits}/{ID}.{ext}`}</CodeBloc
 </form>`}</CodeBlock>
             </Section>
 
+            <Section title="AJAX Cart & JavaScript API" icon={Code2}>
+              <p>Maropost provides JavaScript cart functions available after jQuery loads:</p>
+              <CodeBlock title="Built-in Cart JavaScript">{`// Get current cart contents (returns array of product objects)
+$.getCartCache()
+
+// Get last product added to cart
+$.getLastItemAdded()
+
+// Cart loaded callback — fires after cart initializes
+function cartLoaded() {
+    console.log('Cart ready');
+    var items = $.getCartCache();
+}
+
+// Add to Cart callback for analytics
+nAddItemCallback = {
+    addToCart: function() {
+        var product = $.getLastItemAdded();
+        // Send to Google Analytics, Facebook Pixel, etc.
+        gtag('event', 'add_to_cart', { items: [product] });
+    },
+    addMultiToCart: function() {
+        var items = $.getCartCache();
+        // Handle multi-add
+    },
+    init: function() {
+        // Runs on page load
+    }
+};
+
+// AJAX add to cart
+document.getElementById("myBtn").addEventListener("click", async () => {
+    await fetch("/_mycart?sku=SOME_SKU&qty=1");
+    window.location = "/_mycart?fn=payment";
+});`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">
+                <strong>Init chain:</strong> <code>$.initPageFuncs</code> → <code>$.addToCartInit</code> → <code>$.buildCartItem</code> → <code>$.cartCacheUpdate</code> → callback
+              </p>
+            </Section>
+
             <Section title="Payment Integration" icon={CreditCard}>
               <ul className="list-disc pl-5 space-y-1 text-xs">
                 <li>Supports multiple payment gateways: PayPal, Stripe, eWAY, Afterpay, Zip, etc.</li>
