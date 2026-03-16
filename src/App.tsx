@@ -79,6 +79,8 @@ const StorefrontBlog = lazy(() => import("./pages/storefront/StorefrontBlog.tsx"
 const StorefrontGiftVouchers = lazy(() => import("./pages/storefront/StorefrontGiftVouchers.tsx"));
 const PrintGiftVoucher = lazy(() => import("./pages/PrintGiftVoucher.tsx"));
 const WarehouseDashboard = lazy(() => import("./pages/WarehouseDashboard.tsx"));
+const InventoryTransfers = lazy(() => import("./pages/InventoryTransfers.tsx"));
+const ScheduledPriceChanges = lazy(() => import("./pages/ScheduledPriceChanges.tsx"));
 const PrintCustomerStatement = lazy(() => import("./pages/PrintCustomerStatement.tsx"));
 const Redirects = lazy(() => import("./pages/Redirects.tsx"));
 const PrintBarcodeLabels = lazy(() => import("./pages/PrintBarcodeLabels.tsx"));
