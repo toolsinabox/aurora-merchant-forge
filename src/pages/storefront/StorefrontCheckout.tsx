@@ -759,136 +759,185 @@ export default function StorefrontCheckout() {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Checkout Progress Indicator */}
-          <div className="flex items-center justify-center gap-0 mb-8">
-            {[{ step: 1, label: "Details" }, { step: 2, label: "Shipping" }, { step: 3, label: "Payment" }].map((s, i) => (
-              <div key={s.step} className="flex items-center">
-                {i > 0 && <div className={`w-12 h-0.5 ${checkoutStep >= s.step ? "bg-primary" : "bg-border"}`} />}
-                <button type="button" onClick={() => setCheckoutStep(s.step)} className="flex flex-col items-center gap-1">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors ${checkoutStep >= s.step ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border"}`}>
-                    {checkoutStep > s.step ? <Check className="h-4 w-4" /> : s.step}
-                  </div>
-                  <span className={`text-[10px] ${checkoutStep >= s.step ? "text-primary font-medium" : "text-muted-foreground"}`}>{s.label}</span>
-                </button>
-              </div>
-            ))}
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Form */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Contact */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Contact Information</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label>Full Name *</Label>
-                    <Input value={form.name} onChange={(e) => update("name", e.target.value)} required className="h-10" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Email *</Label>
-                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required className="h-10" />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Phone</Label>
-                  <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="h-10" />
-                </div>
-              </div>
-
-              {/* Shipping */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">Shipping Address</h2>
-                  {savedAddresses.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                      <Select onValueChange={(id) => {
-                        const addr = savedAddresses.find((a: any) => a.id === id);
-                        if (addr) applyAddress(addr);
-                      }}>
-                        <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Use saved address" /></SelectTrigger>
-                        <SelectContent>
-                          {savedAddresses.map((a: any) => (
-                            <SelectItem key={a.id} value={a.id} className="text-xs">
-                              {a.label || `${a.address_line1}, ${a.city}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+            {/* Form — One-Page Accordion Checkout (Maropost style) */}
+            <div className="lg:col-span-2 space-y-0">
+              {/* Section 1: Contact */}
+              <div className="border rounded-t-lg overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 1 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 1 ? 0 : 1)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${form.name && form.email ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+                      {form.name && form.email ? <Check className="h-3 w-3" /> : "1"}
                     </div>
+                    <span className="font-semibold text-sm">Contact Information</span>
+                  </div>
+                  {form.name && form.email && checkoutStep !== 1 && (
+                    <span className="text-xs text-muted-foreground truncate max-w-[200px]">{form.name} · {form.email}</span>
                   )}
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Address</Label>
-                  <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
-                  {form.address.length > 0 && form.address.length < 10 && (
-                    <p className="text-[10px] text-destructive flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="space-y-1.5">
-                    <Label>City</Label>
-                    <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
-                    {form.city && !/^[a-zA-Z\s'-]+$/.test(form.city) && <p className="text-[10px] text-destructive">City should contain only letters</p>}
+                </button>
+                {checkoutStep === 1 && (
+                  <div className="px-5 pb-5 pt-3 space-y-4 border-t">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>Full Name *</Label>
+                        <Input value={form.name} onChange={(e) => update("name", e.target.value)} required className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Email *</Label>
+                        <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required className="h-10" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Phone</Label>
+                      <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="h-10" />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button type="button" size="sm" onClick={() => setCheckoutStep(2)} disabled={!form.name || !form.email}>
+                        Continue to Shipping
+                      </Button>
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label>ZIP / Postcode</Label>
-                    <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
-                    {form.zip && form.zip.length < 3 && <p className="text-[10px] text-destructive">Please enter a valid postcode</p>}
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Country</Label>
-                    <Select value={form.country} onValueChange={(v) => update("country", v)}>
-                      <SelectTrigger className="h-10"><SelectValue placeholder="Select country" /></SelectTrigger>
-                      <SelectContent>
-                        {["Australia", "New Zealand", "United States", "United Kingdom", "Canada", "Singapore", "Hong Kong", "Japan", "Germany", "France", "Netherlands", "Ireland"].map(c => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                )}
               </div>
 
-              {/* Billing Address */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Billing Address</h2>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="billing_same"
-                    checked={form.billing_same}
-                    onCheckedChange={(checked) => setForm(prev => ({ ...prev, billing_same: !!checked }))}
-                  />
-                  <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
-                </div>
-                {!form.billing_same && (
-                  <>
+              {/* Section 2: Shipping Address */}
+              <div className="border-x border-b overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 2 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 2 ? 0 : 2)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${form.address && form.city ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+                      {form.address && form.city ? <Check className="h-3 w-3" /> : "2"}
+                    </div>
+                    <span className="font-semibold text-sm">Shipping Address</span>
+                  </div>
+                  {form.address && checkoutStep !== 2 && (
+                    <span className="text-xs text-muted-foreground truncate max-w-[250px]">{form.address}, {form.city} {form.zip}</span>
+                  )}
+                </button>
+                {checkoutStep === 2 && (
+                  <div className="px-5 pb-5 pt-3 space-y-4 border-t">
+                    <div className="flex items-center justify-between">
+                      {savedAddresses.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Select onValueChange={(id) => {
+                            const addr = savedAddresses.find((a: any) => a.id === id);
+                            if (addr) applyAddress(addr);
+                          }}>
+                            <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Use saved address" /></SelectTrigger>
+                            <SelectContent>
+                              {savedAddresses.map((a: any) => (
+                                <SelectItem key={a.id} value={a.id} className="text-xs">
+                                  {a.label || `${a.address_line1}, ${a.city}`}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
                     <div className="space-y-1.5">
                       <Label>Address</Label>
-                      <Input value={form.billing_address} onChange={(e) => update("billing_address", e.target.value)} className="h-10" />
+                      <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
+                      {form.address.length > 0 && form.address.length < 10 && (
+                        <p className="text-[10px] text-destructive flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                       <div className="space-y-1.5">
                         <Label>City</Label>
-                        <Input value={form.billing_city} onChange={(e) => update("billing_city", e.target.value)} className="h-10" />
+                        <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
                       </div>
                       <div className="space-y-1.5">
-                        <Label>ZIP Code</Label>
-                        <Input value={form.billing_zip} onChange={(e) => update("billing_zip", e.target.value)} className="h-10" />
+                        <Label>ZIP / Postcode</Label>
+                        <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
                       </div>
                       <div className="space-y-1.5">
                         <Label>Country</Label>
-                        <Input value={form.billing_country} onChange={(e) => update("billing_country", e.target.value)} className="h-10" />
+                        <Select value={form.country} onValueChange={(v) => update("country", v)}>
+                          <SelectTrigger className="h-10"><SelectValue placeholder="Select country" /></SelectTrigger>
+                          <SelectContent>
+                            {["Australia", "New Zealand", "United States", "United Kingdom", "Canada", "Singapore", "Hong Kong", "Japan", "Germany", "France", "Netherlands", "Ireland"].map(c => (
+                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
-                  </>
+                    <div className="flex justify-end">
+                      <Button type="button" size="sm" onClick={() => setCheckoutStep(3)} disabled={!form.address || !form.city}>
+                        Continue to Delivery
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
 
-              {/* Delivery Method Toggle */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Delivery Method</h2>
+              {/* Section 3: Billing & Delivery */}
+              <div className="border-x border-b overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 3 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 3 ? 0 : 3)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${deliveryMethod ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+                      {deliveryMethod ? <Check className="h-3 w-3" /> : "3"}
+                    </div>
+                    <span className="font-semibold text-sm">Billing & Delivery</span>
+                  </div>
+                  {checkoutStep !== 3 && (
+                    <span className="text-xs text-muted-foreground capitalize">{deliveryMethod === "pickup" ? "Click & Collect" : "Delivery"}</span>
+                  )}
+                </button>
+                {checkoutStep === 3 && (
+                  <div className="px-5 pb-5 pt-3 space-y-5 border-t">
+                    {/* Billing */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium">Billing Address</h3>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="billing_same"
+                          checked={form.billing_same}
+                          onCheckedChange={(checked) => setForm(prev => ({ ...prev, billing_same: !!checked }))}
+                        />
+                        <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
+                      </div>
+                      {!form.billing_same && (
+                        <>
+                          <div className="space-y-1.5">
+                            <Label>Address</Label>
+                            <Input value={form.billing_address} onChange={(e) => update("billing_address", e.target.value)} className="h-10" />
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div className="space-y-1.5">
+                              <Label>City</Label>
+                              <Input value={form.billing_city} onChange={(e) => update("billing_city", e.target.value)} className="h-10" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label>ZIP Code</Label>
+                              <Input value={form.billing_zip} onChange={(e) => update("billing_zip", e.target.value)} className="h-10" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label>Country</Label>
+                              <Input value={form.billing_country} onChange={(e) => update("billing_country", e.target.value)} className="h-10" />
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <Separator />
+
+              {/* Delivery Method */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Delivery Method</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryMethod === "shipping" ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
                     <input type="radio" name="delivery" value="shipping" checked={deliveryMethod === "shipping"} onChange={() => setDeliveryMethod("shipping")} className="accent-primary" />
@@ -966,12 +1015,12 @@ export default function StorefrontCheckout() {
                     })}
                   </div>
                 )}
-              </div>
+                </div>
 
               {/* Shipping Method */}
               {deliveryMethod === "shipping" && shippingZones.length > 0 && (
-                <div className="border rounded-lg p-5 space-y-4">
-                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h2>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h3>
                   <div className="space-y-2">
                     {shippingZones.map((zone) => {
                       const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
@@ -983,14 +1032,7 @@ export default function StorefrontCheckout() {
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <input
-                              type="radio"
-                              name="shipping_zone"
-                              value={zone.id}
-                              checked={selectedZone === zone.id}
-                              onChange={() => handleZoneChange(zone.id)}
-                              className="accent-primary"
-                            />
+                            <input type="radio" name="shipping_zone" value={zone.id} checked={selectedZone === zone.id} onChange={() => handleZoneChange(zone.id)} className="accent-primary" />
                             <div>
                               <p className="text-sm font-medium">{zone.name}</p>
                               <p className="text-xs text-muted-foreground">{zone.regions}</p>
@@ -1014,7 +1056,6 @@ export default function StorefrontCheckout() {
                     })}
                   </div>
 
-                  {/* Shipping Services for selected zone */}
                   {selectedZone && shippingServices.filter((s: any) => s.zone_id === selectedZone).length > 0 && (
                     <div className="mt-3 space-y-2">
                       <Label className="text-xs font-medium">Shipping Method</Label>
@@ -1026,19 +1067,10 @@ export default function StorefrontCheckout() {
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <input
-                              type="radio"
-                              name="shipping_service"
-                              value={svc.id}
-                              checked={selectedServiceId === svc.id}
-                              onChange={() => handleServiceChange(svc.id)}
-                              className="accent-primary"
-                            />
+                            <input type="radio" name="shipping_service" value={svc.id} checked={selectedServiceId === svc.id} onChange={() => handleServiceChange(svc.id)} className="accent-primary" />
                             <div>
                               <p className="text-sm font-medium">{svc.name}</p>
-                              <p className="text-2xs text-muted-foreground">
-                                {svc.carrier ? `${svc.carrier} · ` : ""}{svc.estimated_days_min}–{svc.estimated_days_max} business days
-                              </p>
+                              <p className="text-2xs text-muted-foreground">{svc.carrier ? `${svc.carrier} · ` : ""}{svc.estimated_days_min}–{svc.estimated_days_max} business days</p>
                             </div>
                           </div>
                         </label>
@@ -1048,9 +1080,8 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Estimated Delivery */}
               {estimatedDelivery && deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-4 bg-primary/5 border-primary/20">
+                <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-primary" />
                     <p className="text-sm font-medium">Estimated Delivery</p>
@@ -1059,53 +1090,39 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Same-Day Delivery Option */}
               {sameDayAvailable && deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-4 space-y-3">
-                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${sameDaySelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
-                    <div className="flex items-center gap-3">
-                      <Checkbox checked={sameDaySelected} onCheckedChange={(v) => setSameDaySelected(!!v)} />
-                      <div>
-                        <p className="text-sm font-medium flex items-center gap-1.5">
-                          <Truck className="h-3.5 w-3.5 text-primary" /> Same-Day Delivery
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Order before {SAME_DAY_CUTOFF_HOUR > 12 ? SAME_DAY_CUTOFF_HOUR - 12 : SAME_DAY_CUTOFF_HOUR}:00 {SAME_DAY_CUTOFF_HOUR >= 12 ? "PM" : "AM"} for delivery today
-                        </p>
-                      </div>
+                <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${sameDaySelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={sameDaySelected} onCheckedChange={(v) => setSameDaySelected(!!v)} />
+                    <div>
+                      <p className="text-sm font-medium flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Same-Day Delivery</p>
+                      <p className="text-xs text-muted-foreground">Order before {SAME_DAY_CUTOFF_HOUR > 12 ? SAME_DAY_CUTOFF_HOUR - 12 : SAME_DAY_CUTOFF_HOUR}:00 {SAME_DAY_CUTOFF_HOUR >= 12 ? "PM" : "AM"} for delivery today</p>
                     </div>
-                    <span className="text-sm font-semibold text-primary">+${SAME_DAY_FEE.toFixed(2)}</span>
-                  </label>
-                </div>
+                  </div>
+                  <span className="text-sm font-semibold text-primary">+${SAME_DAY_FEE.toFixed(2)}</span>
+                </label>
               )}
 
-              {/* Shipping Insurance Option */}
               {deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-4 space-y-3">
-                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${shippingInsurance ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
-                    <div className="flex items-center gap-3">
-                      <Checkbox checked={shippingInsurance} onCheckedChange={(v) => setShippingInsurance(!!v)} />
-                      <div>
-                        <p className="text-sm font-medium">Shipping Insurance</p>
-                        <p className="text-xs text-muted-foreground">Protect your order against loss, theft, or damage during shipping</p>
-                      </div>
+                <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${shippingInsurance ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={shippingInsurance} onCheckedChange={(v) => setShippingInsurance(!!v)} />
+                    <div>
+                      <p className="text-sm font-medium">Shipping Insurance</p>
+                      <p className="text-xs text-muted-foreground">Protect your order against loss, theft, or damage</p>
                     </div>
-                    <span className="text-sm font-semibold text-primary">+${insurancePremium.toFixed(2)}</span>
-                  </label>
-                </div>
+                  </div>
+                  <span className="text-sm font-semibold text-primary">+${insurancePremium.toFixed(2)}</span>
+                </label>
               )}
 
               {upsellProducts.length > 0 && (
-                <div className="border rounded-lg p-5 space-y-3">
-                  <h2 className="font-semibold flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" /> You might also like
-                  </h2>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> You might also like</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {upsellProducts.slice(0, 4).map((p: any) => (
                       <div key={p.id} className="flex items-center gap-2 p-2 border rounded-lg hover:bg-muted/50 transition-colors">
-                        {p.images?.[0] && (
-                          <img src={p.images[0]} alt={p.title} className="w-10 h-10 object-cover rounded" />
-                        )}
+                        {p.images?.[0] && <img src={p.images[0]} alt={p.title} className="w-10 h-10 object-cover rounded" />}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium line-clamp-1">{p.title}</p>
                           <p className="text-xs text-primary font-semibold">${Number(p.price).toFixed(2)}</p>
@@ -1116,10 +1133,9 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Delivery Instructions */}
               {deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-5 space-y-4">
-                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Delivery Instructions</h2>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium flex items-center gap-2"><Truck className="h-4 w-4" /> Delivery Instructions</h3>
                   <Textarea value={form.delivery_instructions} onChange={(e) => update("delivery_instructions", e.target.value)} placeholder="Leave at front door, ring doorbell, etc." className="min-h-[60px]" maxLength={300} />
                   <p className="text-xs text-muted-foreground">{form.delivery_instructions.length}/300 characters</p>
                   <Separator />
@@ -1140,9 +1156,10 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Custom Fields */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Additional Information</h2>
+              {/* Additional Info */}
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium">Additional Information</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-sm">Company Name <span className="text-xs text-muted-foreground">(optional)</span></Label>
@@ -1159,17 +1176,46 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
-              {/* Gift Message */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Message</h2>
-                <Textarea value={orderGiftMessage} onChange={(e) => setOrderGiftMessage(e.target.value)} placeholder="Add a personal gift message to include with your order..." className="min-h-[60px]" maxLength={500} />
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Message</h3>
+                <Textarea value={orderGiftMessage} onChange={(e) => setOrderGiftMessage(e.target.value)} placeholder="Add a personal gift message..." className="min-h-[60px]" maxLength={500} />
                 <p className="text-xs text-muted-foreground">{orderGiftMessage.length}/500 characters</p>
               </div>
 
-              {/* Notes */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Order Notes</h2>
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium">Order Notes</h3>
                 <Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Special instructions or comments..." className="min-h-[80px]" />
+              </div>
+
+                    <div className="flex justify-end pt-2">
+                      <Button type="button" size="sm" onClick={() => setCheckoutStep(4)}>
+                        Continue to Payment
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Section 4: Payment */}
+              <div className="border-x border-b rounded-b-lg overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 4 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 4 ? 0 : 4)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-border text-muted-foreground`}>
+                      4
+                    </div>
+                    <span className="font-semibold text-sm">Payment & Review</span>
+                  </div>
+                </button>
+                {checkoutStep === 4 && (
+                  <div className="px-5 pb-5 pt-3 border-t text-sm text-muted-foreground">
+                    <p>Payment details are in the order summary panel →</p>
+                  </div>
+                )}
               </div>
             </div>
 
