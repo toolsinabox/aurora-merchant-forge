@@ -204,6 +204,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   basePath?: string;
   cartData?: { items: any[]; totalPrice: number; totalItems: number };
 }) {
+  const { user } = useAuth();
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
   const { data: contentZones } = useContentZones(store?.id);
 
