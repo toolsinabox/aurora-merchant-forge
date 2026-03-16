@@ -358,11 +358,12 @@ export default function StorefrontCheckout() {
 
   // Auto-apply coupons on load
   useEffect(() => {
-    if (autoAppliedCoupon || appliedCoupon || totalPrice <= 0) return;
+    if (autoAppliedCoupon || appliedCoupon || totalPrice <= 0 || !checkoutStore?.id) return;
     const tryAutoApply = async () => {
       const { data: coupons } = await supabase
         .from("coupons")
         .select("*")
+        .eq("store_id", checkoutStore.id)
         .eq("is_active", true)
         .order("discount_value", { ascending: false });
       if (!coupons) return;
@@ -387,7 +388,7 @@ export default function StorefrontCheckout() {
       }
     };
     tryAutoApply();
-  }, [totalPrice, autoAppliedCoupon, appliedCoupon]);
+  }, [totalPrice, autoAppliedCoupon, appliedCoupon, checkoutStore]);
 
   // Load upsell products
   useEffect(() => {
