@@ -53,6 +53,7 @@ const Templates = lazy(() => import("./pages/Templates.tsx"));
 const ThemeFiles = lazy(() => import("./pages/ThemeFiles.tsx"));
 const FeatureAudit = lazy(() => import("./pages/FeatureAudit.tsx"));
 const TemplateReference = lazy(() => import("./pages/TemplateReference.tsx"));
+const OrderWorkflows = lazy(() => import("./pages/OrderWorkflows.tsx"));
 const Suppliers = lazy(() => import("./pages/Suppliers.tsx"));
 const GiftVouchers = lazy(() => import("./pages/GiftVouchers.tsx"));
 const ContentPages = lazy(() => import("./pages/ContentPages.tsx"));
