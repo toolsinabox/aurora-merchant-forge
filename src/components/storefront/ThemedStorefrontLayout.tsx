@@ -18,7 +18,7 @@ interface ThemedStorefrontLayoutProps {
   extraContext?: Partial<TemplateContext>;
 }
 
-const SCOPE_SELECTOR = "#neto-theme";
+
 
 /**
  * Wrapper that checks for an active theme. If theme exists with header/footer templates,
