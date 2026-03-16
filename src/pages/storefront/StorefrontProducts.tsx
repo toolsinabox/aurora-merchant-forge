@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { SEOHead } from "@/components/storefront/SEOHead";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
@@ -341,6 +342,7 @@ export default function StorefrontProducts() {
   if (!loading && themeHtml) {
     return (
       <StorefrontLayout storeName={store?.name}>
+        <SEOHead title={`Products — ${store?.name || "Store"}`} description={`Browse products at ${store?.name || "our store"}`} />
         <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
       </StorefrontLayout>
     );
@@ -376,6 +378,7 @@ export default function StorefrontProducts() {
 
   return (
     <StorefrontLayout storeName={store?.name}>
+      <SEOHead title={`Products — ${store?.name || "Store"}`} description={`Browse and shop products at ${store?.name || "our store"}`} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 className="text-2xl font-bold mb-6">All Products</h1>
 

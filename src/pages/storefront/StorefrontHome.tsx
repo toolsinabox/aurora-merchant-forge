@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { SEOHead } from "@/components/storefront/SEOHead";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemedStorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
@@ -156,6 +157,12 @@ export default function StorefrontHome() {
     }
     return (
       <ThemedStorefrontLayout storeName={store.name} extraContext={templateCtx}>
+        <SEOHead
+          title={store.seo_title || store.name}
+          description={store.seo_description || `Shop at ${store.name}`}
+          url={store.custom_domain ? `https://${store.custom_domain}` : undefined}
+          organization={{ name: store.name, url: store.custom_domain ? `https://${store.custom_domain}` : undefined, logo: store.logo_url }}
+        />
         <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
         <div dangerouslySetInnerHTML={{ __html: renderedHome }} />
         <AdvertBanner storeId={store.id} placement="homepage_bottom" basePath={basePath} />
@@ -166,6 +173,11 @@ export default function StorefrontHome() {
   // Fallback: default React-rendered home page
   return (
     <ThemedStorefrontLayout storeName={store.name}>
+      <SEOHead
+        title={store.seo_title || store.name}
+        description={store.seo_description || `Shop at ${store.name}`}
+        organization={{ name: store.name, logo: store.logo_url }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Advert Banner */}
         <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />

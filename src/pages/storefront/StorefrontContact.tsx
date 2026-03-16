@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { SEOHead } from "@/components/storefront/SEOHead";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -118,6 +119,7 @@ export default function StorefrontContact() {
 
     return (
       <StorefrontLayout storeName={store.name} extraContext={contactCtx}>
+        <SEOHead title={`Contact Us — ${store.name}`} description={`Get in touch with ${store.name}`} />
         <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </StorefrontLayout>
     );
@@ -125,6 +127,7 @@ export default function StorefrontContact() {
 
   return (
     <StorefrontLayout storeName={storeName}>
+      <SEOHead title={`Contact Us — ${storeName || "Store"}`} description={`Get in touch with ${storeName || "us"}`} />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
         <div className="text-center mb-8">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">

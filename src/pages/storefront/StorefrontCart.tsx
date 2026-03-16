@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { SEOHead } from "@/components/storefront/SEOHead";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -119,6 +120,7 @@ export default function StorefrontCart() {
   if (themeHtml && items.length > 0) {
     return (
       <StorefrontLayout storeName={store?.name}>
+        <SEOHead title={`Shopping Cart — ${store?.name || "Store"}`} description="Review your cart and proceed to checkout" />
         <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
       </StorefrontLayout>
     );
