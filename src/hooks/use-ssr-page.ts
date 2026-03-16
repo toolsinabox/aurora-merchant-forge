@@ -21,6 +21,8 @@ interface UseSSRPageOptions {
   basePath?: string;
   extraContext?: Record<string, any>;
   enabled?: boolean;
+  /** Maropost template override params: ?templatehead=name&templatebody=name&templatefoot=name */
+  templateOverrides?: { templatehead?: string; templatebody?: string; templatefoot?: string };
 }
 
 /**
