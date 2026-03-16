@@ -63,20 +63,27 @@ export default function MaropostLearning() {
 
         <Tabs defaultValue="architecture" className="space-y-4">
           <ScrollArea className="w-full">
-            <TabsList className="inline-flex w-auto">
+            <TabsList className="inline-flex w-auto flex-wrap">
               <TabsTrigger value="architecture">Architecture</TabsTrigger>
               <TabsTrigger value="base-tags">B@SE Tags</TabsTrigger>
               <TabsTrigger value="data-tags">Data Tags</TabsTrigger>
               <TabsTrigger value="function-tags">Function Tags</TabsTrigger>
+              <TabsTrigger value="advanced-functions">Advanced Functions</TabsTrigger>
+              <TabsTrigger value="value-tags">Value Tags</TabsTrigger>
               <TabsTrigger value="urls">URL System</TabsTrigger>
               <TabsTrigger value="theme">Theme Structure</TabsTrigger>
               <TabsTrigger value="api">API</TabsTrigger>
+              <TabsTrigger value="api-actions">API Actions Detail</TabsTrigger>
               <TabsTrigger value="orders">Order System</TabsTrigger>
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="customers">Customers</TabsTrigger>
               <TabsTrigger value="assets">Assets & CDN</TabsTrigger>
               <TabsTrigger value="cart">Cart & Checkout</TabsTrigger>
+              <TabsTrigger value="payments">Payments</TabsTrigger>
+              <TabsTrigger value="filters">Filters & Sorting</TabsTrigger>
               <TabsTrigger value="seo">SEO & Optimisation</TabsTrigger>
+              <TabsTrigger value="ebay">eBay & Marketplaces</TabsTrigger>
+              <TabsTrigger value="emails">Emails & Printables</TabsTrigger>
               <TabsTrigger value="gotchas">Gotchas & Tips</TabsTrigger>
             </TabsList>
           </ScrollArea>
