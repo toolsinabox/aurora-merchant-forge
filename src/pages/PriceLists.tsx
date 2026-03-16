@@ -26,11 +26,15 @@ interface PriceListForm {
   is_active: boolean;
   starts_at: string;
   ends_at: string;
+  discount_type: string;
+  discount_value: string;
 }
+
+const CURRENCIES = ["AUD", "USD", "EUR", "GBP", "NZD", "CAD", "SGD", "JPY", "HKD", "CHF", "SEK", "NOK", "DKK", "INR", "BRL", "ZAR"];
 
 const emptyForm: PriceListForm = {
   name: "", description: "", customer_group_id: "", currency: "AUD",
-  is_active: true, starts_at: "", ends_at: "",
+  is_active: true, starts_at: "", ends_at: "", discount_type: "none", discount_value: "0",
 };
 
 interface PriceItemForm {
