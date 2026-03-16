@@ -1432,7 +1432,196 @@ Rate Limit: 500 requests/minute (429 response when exceeded)`}</CodeBlock>
               ]} />
             </Section>
 
-            <Section title="Product Types" icon={Tag}>
+            <Section title="Complete Product Data Tags" icon={Tag}>
+              <p className="text-xs mb-2">All tags available on product pages and inside product-related functions:</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-1">Identity & Display</h4>
+                  <TagTable rows={[
+                    ["[@sku@] / [@current_sku@]", "Product SKU"],
+                    ["[@model@]", "Model number"],
+                    ["[@name@]", "Product name"],
+                    ["[@subtitle@]", "Subtitle"],
+                    ["[@brand@]", "Brand name"],
+                    ["[@short_description@]", "Short description"],
+                    ["[@description@]", "Full description"],
+                    ["[@specifications@]", "Specifications text"],
+                    ["[@warranty@]", "Warranty details"],
+                    ["[@keywords@]", "SEO keywords"],
+                    ["[@acc_code@] / [@custom_label@]", "Accounting/eBay label"],
+                  ]} />
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-1">Pricing</h4>
+                  <TagTable rows={[
+                    ["[@store_price@]", "Resolved price for current user's group"],
+                    ["[@rrp@]", "Recommended retail price"],
+                    ["[@promo_price@]", "Promotional/sale price"],
+                    ["[@cost_price@]", "Cost price (wholesale)"],
+                    ["[@retail@]", "Retail price"],
+                    ["[@has_mlp@]", "Has multi-level pricing"],
+                    ["[@has_from_price@]", "Child price used as 'From' price"],
+                    ["[@save_price@]", "Savings amount (RRP - price)"],
+                    ["[@save_percent@]", "Savings percentage"],
+                  ]} />
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-1">Dimensions & Weight</h4>
+                  <TagTable rows={[
+                    ["[@weight@]", "Item weight"],
+                    ["[@height@] / [@length@] / [@width@]", "Dimensions (meters default)"],
+                    ["[@actual_height@] / [@actual_length@] / [@actual_width@]", "Assembled dimensions"],
+                    ["[@cubic@]", "Cubic weight"],
+                  ]} />
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-1">Stock & Inventory</h4>
+                  <TagTable rows={[
+                    ["[@store_quantity@]", "Quantity available for purchase"],
+                    ["[@allow_oversell@]", "y = don't track, n = track inventory"],
+                    ["[@preorder@]", "Pre-order flag"],
+                    ["[@active@]", "Product active"],
+                    ["[@approved@]", "Product approved for display"],
+                  ]} />
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-1">Variation & Kit Flags</h4>
+                  <TagTable rows={[
+                    ["[@has_child@]", "0/1 — has child variants"],
+                    ["[@has_components@]", "1 = editable kit"],
+                    ["[@fixed_assemble@]", "true = NOT editable kit"],
+                    ["[@itm_gp_id@]", "Unique ID for kit/variation group"],
+                    ["[@free_gifts@]", "Free gifts from discount/coupon"],
+                  ]} />
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-1">Misc & Custom Fields</h4>
+                  <TagTable rows={[
+                    ["[@misc1@] to [@misc50@]", "50 miscellaneous fields"],
+                    ["[@filter1@] to [@filter9@]", "Legacy filter fields (v4)"],
+                    ["[@extra@]", "Extra options format string"],
+                    ["[@image_url@]", "Full product image URL"],
+                    ["[@thumb@]", "Thumbnail image URL"],
+                    ["[@access_control@]", "Requires login to view"],
+                  ]} />
+                </div>
+              </div>
+            </Section>
+
+            <Section title="[%product%] — Query Product Anywhere" icon={Tag}>
+              <CodeBlock>{`<!-- Use product data in any template (header, footer, content page, etc.) -->
+[%product sku:'SOME-SKU'%]
+    [%param *body%]
+        <h3>[@name@]</h3>
+        <p>Price: [%format type:'currency'%][@store_price@][%/format%]</p>
+        <p>Stock: [@store_quantity@]</p>
+    [%/param%]
+    [%param *ifempty%]<p>Product not found</p>[%/param%]
+[%/product%]
+
+<!-- By inventory ID -->
+[%product id:'12345'%]...[%/product%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Covers ALL product data tags. Use to embed product data outside product pages (e.g., in headers, banners, content pages).</p>
+            </Section>
+
+            <Section title="URL Generation" icon={Tag}>
+              <CodeBlock>{`<!-- Link to cart -->
+[%url page:'checkout' type:'cart'/%]
+
+<!-- Link home -->
+[%url type:'home'/%]
+<!-- Also: [@config:home_url@] -->
+
+<!-- Link to specific product -->
+[%url type:'item' id:'[@sku@]'/%]
+
+<!-- Link to content page -->
+[%url page:'content' id:'42'/%]
+
+<!-- Link to account pages -->
+[%url page:'account' type:'login'/%]
+[%url page:'account' type:'register'/%]
+[%url page:'account' type:'approve_quote'/%]
+
+<!-- Newsletter subscribe action -->
+[%url type:'page' id:'subscribe' https:'1'%][%END url%]
+
+<!-- Relative URL (no protocol/domain) -->
+[%url type:'item' id:'[@sku@]' nohost:'1'/%]`}</CodeBlock>
+              <TagTable rows={[
+                ["page:''", "Section: account, checkout, content, home, item, page"],
+                ["type:''", "Page type (cart, login, register, etc.)"],
+                ["id:''", "Target ID (SKU, content ID, etc.)"],
+                ["https:'1'", "Force HTTPS"],
+                ["nohost:'1'", "Relative URL (no domain)"],
+              ]} />
+            </Section>
+
+            <Section title="Newsletter & Forms" icon={Tag}>
+              <CodeBlock>{`<!-- Footer newsletter subscribe -->
+<form method="post" 
+    action="[%url type:'page' id:'subscribe' https:'1'%][%END url%]"
+    aria-label="Newsletter subscribe form">
+    <input type="hidden" name="list_id" value="1" />
+    <input type="email" name="email" placeholder="Your email" required />
+    <label>
+        <input type="checkbox" name="opt_in_newsletter" 
+            [%if [@opt_in_newsletter@]%]checked[%/if%] />
+        Subscribe to newsletter
+    </label>
+    <button type="submit">Subscribe</button>
+</form>
+
+<!-- Contact form -->
+<form method="post" action="[%url type:'page' id:'contact'%][%END url%]">
+    <input name="name" required />
+    <input name="email" required />
+    <textarea name="message"></textarea>
+    <button type="submit">Send</button>
+</form>`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs">
+                <p className="font-medium">📝 Form Notes:</p>
+                <ul className="list-disc pl-4">
+                  <li>ReCAPTCHA enabled in CP Settings → no template code needed</li>
+                  <li>GDPR consent: add checkbox for Terms & Privacy (post-2018)</li>
+                  <li>Use content zones for Terms & Privacy modal content</li>
+                  <li>Contact form file upload via <code>enctype="multipart/form-data"</code></li>
+                </ul>
+              </div>
+            </Section>
+
+            <Section title="Config Value Tags Reference" icon={Tag}>
+              <TagTable rows={[
+                ["[@config:home_url@]", "Store home URL"],
+                ["[@config:store_name@]", "Store name"],
+                ["[@config:website_name@]", "Website name"],
+                ["[@config:company_phone@]", "Company phone number"],
+                ["[@config:defaultcurrency@]", "Default currency code"],
+                ["[@config:current_url@]", "Current page URL"],
+                ["[@config:IMG_THUMB_WIDTH@]", "Thumbnail image width setting"],
+                ["[@config:IMG_THUMB_HEIGHT@]", "Thumbnail image height setting"],
+                ["[@config:IMG_FULL_WIDTH@]", "Full image width setting"],
+                ["[@config:CUSTOMER_REGISTRATION_IGNORE_USERNAME@]", "Auto-use email as username"],
+              ]} />
+              <p className="text-xs text-muted-foreground mt-2">Access any CP config setting via <code>[@config:SETTING_ID@]</code>. Also works for custom configs.</p>
+            </Section>
+
+            <Section title="Content & Category Data Tags" icon={Tag}>
+              <TagTable rows={[
+                ["[@content_id@]", "Unique page ID"],
+                ["[@content_name@]", "Page/category name"],
+                ["[@content_description1/2/3@]", "Description fields"],
+                ["[@content_ref@]", "Reference ID (integer, 50 char max)"],
+                ["[@content_allow_reviews@]", "Reviews enabled"],
+                ["[@parent_content_id@]", "Parent page ID"],
+                ["[@content_fullpath@]", "Full URL path"],
+                ["[@subtitle@]", "Page subtitle"],
+                ["[@sortorder@]", "Sort order number"],
+                ["[@rating@]", "Average review rating"],
+                ["[@templatebody@] / [@templatehead@] / [@templatefoot@]", "Assigned template IDs"],
+                ["[@access_control@]", "Requires login"],
+              ]} />
+            </Section>
               <ul className="list-disc pl-5 space-y-1 text-xs">
                 <li><strong>Standard Product</strong> — single SKU, no variants</li>
                 <li><strong>Parent Product</strong> — has child SKUs (variants)</li>
