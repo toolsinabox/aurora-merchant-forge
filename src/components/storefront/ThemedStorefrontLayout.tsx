@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useMemo, useCallback } from "react";
+import { ReactNode, useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
