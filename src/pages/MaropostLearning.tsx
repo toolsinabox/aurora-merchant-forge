@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Code2, FolderTree, Link2, Tag, Layout, Image, ShoppingCart, Users, FileText, Zap, Globe, Server, Palette, Search, CreditCard } from "lucide-react";
+import { BookOpen, Code2, FolderTree, Link2, Tag, Layout, Image, ShoppingCart, Users, FileText, Zap, Globe, Server, Palette, Search, CreditCard, Package, Filter, Layers, Database, AlertTriangle, Settings, Boxes } from "lucide-react";
 
 function Section({ title, icon: Icon, children }: { title: string; icon?: any; children: React.ReactNode }) {
   return (
@@ -63,20 +63,27 @@ export default function MaropostLearning() {
 
         <Tabs defaultValue="architecture" className="space-y-4">
           <ScrollArea className="w-full">
-            <TabsList className="inline-flex w-auto">
+            <TabsList className="inline-flex w-auto flex-wrap">
               <TabsTrigger value="architecture">Architecture</TabsTrigger>
               <TabsTrigger value="base-tags">B@SE Tags</TabsTrigger>
               <TabsTrigger value="data-tags">Data Tags</TabsTrigger>
               <TabsTrigger value="function-tags">Function Tags</TabsTrigger>
+              <TabsTrigger value="advanced-functions">Advanced Functions</TabsTrigger>
+              <TabsTrigger value="value-tags">Value Tags</TabsTrigger>
               <TabsTrigger value="urls">URL System</TabsTrigger>
               <TabsTrigger value="theme">Theme Structure</TabsTrigger>
               <TabsTrigger value="api">API</TabsTrigger>
+              <TabsTrigger value="api-actions">API Actions Detail</TabsTrigger>
               <TabsTrigger value="orders">Order System</TabsTrigger>
               <TabsTrigger value="products">Products</TabsTrigger>
               <TabsTrigger value="customers">Customers</TabsTrigger>
               <TabsTrigger value="assets">Assets & CDN</TabsTrigger>
               <TabsTrigger value="cart">Cart & Checkout</TabsTrigger>
+              <TabsTrigger value="payments">Payments</TabsTrigger>
+              <TabsTrigger value="filters">Filters & Sorting</TabsTrigger>
               <TabsTrigger value="seo">SEO & Optimisation</TabsTrigger>
+              <TabsTrigger value="ebay">eBay & Marketplaces</TabsTrigger>
+              <TabsTrigger value="emails">Emails & Printables</TabsTrigger>
               <TabsTrigger value="gotchas">Gotchas & Tips</TabsTrigger>
             </TabsList>
           </ScrollArea>
@@ -208,98 +215,200 @@ export default function MaropostLearning() {
 
           {/* ═══════════════ DATA TAGS ═══════════════ */}
           <TabsContent value="data-tags" className="space-y-4">
-            <Section title="Product Page Data Tags" icon={Tag}>
+            <Section title="Product Page Data Tags (Complete)" icon={Tag}>
               <TagTable rows={[
-                ["[@SKU@]", "Product SKU identifier"],
-                ["[@name@]", "Product name"],
-                ["[@model@]", "Product model number"],
+                ["[@SKU@], [@current_sku@]", "Product SKU identifier"],
+                ["[@name@], [@model@]", "Product name / model"],
                 ["[@subtitle@]", "Product subtitle"],
                 ["[@description@]", "Full HTML description"],
                 ["[@short_description@]", "Short/summary description"],
                 ["[@store_price@]", "Price based on user's group ID"],
-                ["[@retail_price@]", "Retail/RRP price"],
+                ["[@retail_price@], [@rrp@]", "Retail/RRP price"],
                 ["[@cost@]", "Cost price"],
+                ["[@promotional_price@]", "Sale/promotional price"],
                 ["[@store_quantity@]", "Available quantity for purchase"],
-                ["[@date_created@]", "Date product was created"],
+                ["[@limited_stock@]", "True when stock is below global low-stock config"],
+                ["[@min_qty@], [@max_qty@]", "Min/max purchase quantity per order"],
+                ["[@date_created@]", "Date product was created (YYYY-MM-DD)"],
                 ["[@date_updated@]", "Date product was last updated"],
                 ["[@brand@]", "Product brand name"],
                 ["[@weight@]", "Product weight"],
+                ["[@actual_height@], [@actual_length@], [@actual_width@]", "Assembled dimensions (meters)"],
                 ["[@acc_code@]", "Accounting code"],
+                ["[@acc_qty_multiplier@]", "Accounting quantity multiplier"],
                 ["[@active@]", "Boolean: 1 when product is active"],
                 ["[@approval@]", "Boolean: 1 when product is approved"],
                 ["[@extra@]", "Boolean: true if product has Extra Options"],
                 ["[@content_fullpath@]", "Full URL path to the product"],
                 ["[@content_id@]", "Internal content ID"],
-                ["[@thumb_url@]", "Primary thumbnail image URL"],
-                ["[@actual_height@]", "Assembled height dimension"],
-                ["[@actual_length@]", "Assembled length dimension"],
-                ["[@actual_width@]", "Assembled width dimension"],
+                ["[@current_id@]", "Active selected variation ID"],
+                ["[@thumb_url@], [@thumb@]", "Primary thumbnail image URL"],
                 ["[@print_label@]", "Number of labels to print per product"],
                 ["[@status@]", "Product status code"],
                 ["[@access_control@]", "True if page requires login"],
+                ["[@keywords@]", "SEO keywords list"],
+                ["[@manufacturer_model@]", "Manufacturer's model/SKU"],
+                ["[@misc1@] - [@misc50@]", "Miscellaneous custom fields (50 available)"],
+                ["[@group_name@]", "Customer's price group name (Retail, Wholesale, etc.)"],
+                ["[@is_kit@]", "Boolean: 1 if this is a kitted product"],
+                ["[@is_neto_utility@]", "Internal product (SHIPPING, ROUNDING) for POS/accounting"],
+                ["[@kitting_sku@]", "Parent kit SKU"],
+                ["[@barcode@]", "Product barcode / UPC / EAN"],
+                ["[@supplier_item_code@]", "Supplier's product code"],
+                ["[@warranty@]", "Warranty information"],
+                ["[@specifications@]", "Product specifications HTML"],
+                ["[@features@]", "Product features HTML"],
+                ["[@terms_and_conditions@]", "Product-specific terms"],
+                ["[@rndm@]", "Random string — used for unique DOM IDs"],
               ]} />
             </Section>
 
-            <Section title="Content & Category Page Data Tags" icon={FileText}>
+            <Section title="Content & Category Page Data Tags (Complete)" icon={FileText}>
               <TagTable rows={[
-                ["[@content_name@]", "Category/content page name"],
-                ["[@content_description@]", "Category description HTML"],
+                ["[@content_name@]", "Category/content page name/title"],
+                ["[@content_id@]", "Content page unique ID"],
+                ["[@content_ref@]", "Reference ID (integer, 50 char limit)"],
+                ["[@content_description1@] - [@content_description3@]", "Full description fields (3 available)"],
+                ["[@content_short_description1@] - [@content_short_description3@]", "Short descriptions (3 available)"],
+                ["[@content_allow_reviews@]", "True when reviews are enabled on this page"],
+                ["[@content_level@]", "Nesting depth level (1 = top level)"],
+                ["[@content_module@]", "Page module type (Contact_form, Subscribe, etc.)"],
+                ["[@content_type_code@]", "Content type code defined at creation"],
                 ["[@content_fullpath@]", "Full URL path"],
-                ["[@content_id@]", "Content page internal ID"],
                 ["[@seo_title@]", "SEO meta title"],
                 ["[@seo_description@]", "SEO meta description"],
+                ["[@parent_content_id@]", "Parent content type ID"],
+                ["[@parent_id@]", "Parent page ID"],
                 ["[@parent_name@]", "Parent category name"],
                 ["[@parent_url@]", "Parent category URL"],
                 ["[@breadcrumb@]", "Breadcrumb trail HTML"],
+                ["[@page_subheader@]", "Deprecated subtitle tag"],
+                ["[@rating@]", "Average review rating"],
+                ["[@reviews@]", "Review count"],
+                ["[@sortorder@]", "Sort order value"],
+                ["[@timestamp@]", "Page timestamp"],
+                ["[@title@]", "Page title"],
+                ["[@templatebody@]", "Body template name"],
+                ["[@templatehead@]", "Header template name"],
+                ["[@templatefoot@]", "Footer template name"],
+                ["[@templatesearch@]", "Search template name"],
+                ["[@thumb_content_type_id@]", "Content type ID for thumbnails"],
               ]} />
             </Section>
 
-            <Section title="Checkout & Cart Data Tags" icon={ShoppingCart}>
+            <Section title="Checkout & Cart Data Tags (Complete)" icon={ShoppingCart}>
               <TagTable rows={[
                 ["[@grand_total@]", "Grand total of the order"],
                 ["[@subtotal@]", "Subtotal before tax/shipping"],
-                ["[@shipping_total@]", "Shipping cost"],
+                ["[@product_total@]", "Product total prior to discounts"],
+                ["[@product_discount@]", "Total product discount amount"],
+                ["[@shipping_total@], [@shipping_cost@]", "Shipping cost"],
+                ["[@shipping_discount@]", "Shipping discount amount"],
+                ["[@discount_total@]", "Total of product + shipping discounts"],
                 ["[@tax_total@]", "Tax amount"],
-                ["[@bill_city@]", "Billing address city"],
-                ["[@bill_company@]", "Billing address company"],
-                ["[@bill_country@]", "Billing address country"],
-                ["[@bill_firstname@]", "Billing first name"],
-                ["[@bill_lastname@]", "Billing last name"],
-                ["[@ship_city@]", "Shipping address city"],
-                ["[@ship_country@]", "Shipping address country"],
-                ["[@customer_ref1@] - [@customer_ref4@]", "Order misc/reference fields"],
+                ["[@voucher_credit@]", "Gift voucher credit applied"],
+                ["[@payment_method@]", "Selected payment method name"],
+                ["[@payment_method_id@]", "Selected payment method ID"],
+                ["[@payment_plan@]", "Selected payment plan"],
+                ["[@shipping_method@]", "Selected shipping method name"],
+                ["[@shipping_method_id@]", "Selected shipping method ID"],
+                ["[@total_items@]", "Total items in cart"],
+                ["[@bill_firstname@], [@bill_lastname@]", "Billing first/last name"],
+                ["[@bill_company@]", "Billing company"],
+                ["[@bill_city@], [@bill_country@]", "Billing city/country"],
+                ["[@ship_firstname@], [@ship_lastname@]", "Shipping first/last name"],
+                ["[@ship_city@], [@ship_country@]", "Shipping city/country"],
+                ["[@customer_ref1@] - [@customer_ref4@]", "Order reference/misc fields"],
                 ["[@add_reminder@]", "Add reminder field value"],
                 ["[@agree@]", "T&C checkbox value"],
-                ["[@cart_count@]", "Number of items in cart (Cart Page exclusive)"],
+                ["[@apply_credit@]", "True/false if credit was applied"],
+                ["[@cart_count@]", "Number of items (Cart Page exclusive)"],
+                ["[@order_id@]", "Order ID after completion"],
               ]} />
             </Section>
 
-            <Section title="Customer Page Data Tags" icon={Users}>
+            <Section title="Customer Page Data Tags (Complete)" icon={Users}>
               <TagTable rows={[
                 ["[@active@]", "Boolean: true when customer is active"],
                 ["[@addr_id@]", "Unique ID for default address"],
                 ["[@approval_username@]", "Username of quote approver"],
                 ["[@def_order_type@]", "Default order type for the account"],
                 ["[@default_discounts@]", "Default order-wide discount percentage"],
-                ["[@usercustom1@] - [@usercustom3@]", "Custom customer fields"],
-                ["[@user:username@]", "Current logged-in username (value tag)"],
-                ["[@user:email@]", "Current logged-in email (value tag)"],
+                ["[@haslogin@]", "True if customer is currently logged in"],
+                ["[@terms@]", "User payment terms (COD, Net EOM, Net 10)"],
+                ["[@unresolve_dispute@]", "Total unresolved disputes count"],
+                ["[@user_id@]", "Customer number ID"],
+                ["[@usercustom1@] - [@usercustom50@]", "Custom customer fields (up to 50)"],
+                ["[@username@]", "Login username"],
+                ["[@email@]", "Customer email"],
+                ["[@company@]", "Company name"],
+                ["[@firstname@], [@lastname@]", "Customer first/last name"],
+                ["[@phone@]", "Phone number"],
+                ["[@fax@]", "Fax number"],
+                ["[@abn@]", "Australian Business Number"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ VALUE TAGS (NEW) ═══════════════ */}
+          <TabsContent value="value-tags" className="space-y-4">
+            <Section title="Value Tags — Dynamic Data Sources" icon={Database}>
+              <p>Value tags pull data from dynamic sources: the logged-in user, URL query strings, and store configuration. They work anywhere in any template.</p>
+            </Section>
+
+            <Section title="User Data Tags" icon={Users}>
+              <p className="mb-2">Load data from the currently logged-in user:</p>
+              <TagTable rows={[
+                ["[@user:username@]", "Login username"],
+                ["[@user:email@]", "Email address"],
+                ["[@user:firstname@]", "First name"],
+                ["[@user:lastname@]", "Last name"],
+                ["[@user:company@]", "Company name"],
+                ["[@user:phone@]", "Phone number"],
+                ["[@user:active@]", "True when account is active"],
+                ["[@user:usercustom1@] - [@user:usercustom50@]", "Custom fields (up to 50)"],
+                ["[@user:group_id@]", "Customer group/price tier ID"],
+                ["[@user:default_discounts@]", "Default discount percentage"],
+                ["[@user:credit_limit@]", "Credit limit"],
+                ["[@user:terms@]", "Payment terms"],
               ]} />
             </Section>
 
-            <Section title="Value Tags (Dynamic Sources)" icon={Zap}>
+            <Section title="Config Tags" icon={Settings}>
+              <p className="mb-2">Load store configuration values set in Control Panel:</p>
               <TagTable rows={[
-                ["[@config:home_url@]", "Store home URL"],
-                ["[@config:store_name@]", "Store name from settings"],
+                ["[@config:home_url@]", "Store home URL (e.g., https://www.mystore.com.au)"],
+                ["[@config:store_name@]", "Store display name"],
                 ["[@config:display_special_content@]", "Config flag for special content"],
                 ["[@config:imageurl@]", "Base image URL from config"],
-                ["[@user:username@]", "Currently logged-in username"],
-                ["[@user:email@]", "Currently logged-in email"],
-                ["[@form:fieldname@]", "Data from URL query string parameter"],
+                ["[@config:currency_symbol@]", "Currency symbol ($, £, €)"],
+                ["[@config:currency_code@]", "Currency ISO code (AUD, USD)"],
+                ["[@config:country@]", "Store country"],
+                ["[@config:timezone@]", "Store timezone"],
+                ["[@config:tax_inclusive@]", "Whether prices include tax"],
+                ["[@config:google_analytics_id@]", "Google Analytics ID"],
               ]} />
-              <p className="mt-2 text-xs text-muted-foreground">
-                Form data example: URL <code>mysite.com/page?color=red</code> → <code>[@form:color@]</code> outputs <code>red</code>
-              </p>
+            </Section>
+
+            <Section title="Form Data Tags (URL Query Strings)" icon={Link2}>
+              <CodeBlock title="How form tags work">{`URL: mysite.com.au/page?color=red&size=large
+
+[@form:color@]  → outputs "red"
+[@form:size@]   → outputs "large"
+[@form:anything@] → outputs value of ?anything= parameter
+
+Use case: Pre-filling forms, filtering, passing data between pages`}</CodeBlock>
+            </Section>
+
+            <Section title="Cart Data Tags (Inline)" icon={ShoppingCart}>
+              <p className="mb-2">Access cart values inline anywhere (faster than the cart function tag):</p>
+              <CodeBlock>{`[@cart:product_total@]     → Product subtotal
+[@cart:grand_total@]      → Grand total
+[@cart:total_items@]      → Item count
+[@cart:shipping_cost@]    → Shipping cost
+[@cart:payment_method@]   → Selected payment method
+[@cart:discount_total@]   → Total discounts applied
+[@cart:voucher_credit@]   → Gift voucher amount`}</CodeBlock>
             </Section>
           </TabsContent>
 
@@ -551,6 +660,210 @@ export default function MaropostLearning() {
               <p className="text-xs text-muted-foreground">
                 Newer replacement for many older listing functions. Types: <code>content</code>, <code>product</code>, <code>content_review</code>, <code>product_review</code>, <code>store_location</code>.
               </p>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ ADVANCED FUNCTIONS (NEW) ═══════════════ */}
+          <TabsContent value="advanced-functions" className="space-y-4">
+            <Section title="CONTENT_MENU — Navigation Trees" icon={Layers}>
+              <p>Generates a hierarchical navigation menu from content types (categories, pages, blogs, etc.).</p>
+              <CodeBlock title="Multi-level category menu">{`[%content_menu content_type:'category' sortby:'sortorder,name' show_empty:'1'%]
+    [%param *header%]<ul class="category-menu">[%/param%]
+    [%param *level_1%]
+        <li>
+            <a href="[@url@]">[@name@]</a>
+            [%if [@next_level@]%]<ul>[@next_level@]</ul>[%/if%]
+        </li>
+    [%/param%]
+    [%param *level_2%]
+        <li><a href="[@url@]">[@name@]</a>
+            [%if [@next_level@]%]<ul>[@next_level@]</ul>[%/if%]
+        </li>
+    [%/param%]
+    [%param *level_3%]
+        <li><a href="[@url@]">[@name@]</a></li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/content_menu%]`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">Parameters</h4>
+              <TagTable rows={[
+                ["content_type:''", "Content type to target: category, brand, blog, information, etc."],
+                ["sortby:''", "Sort field: sortorder, name, date"],
+                ["show_empty:'1'", "Show categories with no products"],
+                ["category:'[@id@]'", "Start menu from specific category ID"],
+                ["limit:''", "Max items per level"],
+              ]} />
+              <h4 className="font-medium mt-3 mb-1">Data Tags (within levels)</h4>
+              <TagTable rows={[
+                ["[@name@]", "Content/category name"],
+                ["[@url@]", "Full URL path"],
+                ["[@id@], [@content_id@]", "Content ID"],
+                ["[@next_level@]", "Renders the next depth level (recursive)"],
+                ["[@parent_content_id@]", "Parent content type ID"],
+                ["[@thumb@]", "Thumbnail image URL"],
+                ["[@description@]", "Description text"],
+              ]} />
+            </Section>
+
+            <Section title="CONTENT_PATH — Breadcrumb & Category Assignment" icon={FolderTree}>
+              <CodeBlock>{`[%content_path content_id:'[@content_id@]' show_path:'y'%]
+    [%param *header%]<nav class="breadcrumb">[%/param%]
+    [%param *body%]
+        <a href="[@url@]">[@content_name@]</a> &gt;
+    [%/param%]
+    [%param *footer%]</nav>[%/param%]
+[%/content_path%]
+
+<!-- Show which category a product belongs to -->
+[%content_path id:'[@inventory_id@]' type:'category' limit:'1'%]
+    [%param *body%]
+        <a href="[%url type:'cms'%][%param id%][@content_id@][%/param%][%/url%]">
+            [@content_name@]
+        </a>
+    [%/param%]
+[%/content_path%]`}</CodeBlock>
+            </Section>
+
+            <Section title="ITEM_KITTING — Kit/Bundle Components" icon={Boxes}>
+              <p>Displays editable kit component items for bundled/kitted products.</p>
+              <CodeBlock>{`[%item_kitting id:'[@SKU@]'%]
+    [%param *group_header%]
+        <input type="hidden" id="model[@rndm@][@SKU@]" 
+               name="model" value="[@model@]">
+        <h4>[@group_name@]</h4>
+    [%/param%]
+    [%param *body%]
+        <select name="kit_component_[@count@]">
+            <option value="[@sku@]">[@name@] - $[@price@]</option>
+        </select>
+    [%/param%]
+[%/item_kitting%]`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">Kit Data Tags</h4>
+              <TagTable rows={[
+                ["[@kit_price_total@]", "Minimum cost of required components"],
+                ["[@total_components@]", "Total number of components"],
+                ["[@is_kit@]", "Boolean: 1 if kitted product"],
+                ["[@kitting_sku@]", "Parent kit SKU"],
+                ["[@group_name@]", "Component group name"],
+              ]} />
+            </Section>
+
+            <Section title="PRODUCT — Single Product Query" icon={Package}>
+              <CodeBlock>{`[%product sku:'SPECIFIC-SKU'%]
+    [%param *body%]
+        <div class="featured-product">
+            <img src="[@thumb@]" alt="[@name@]" />
+            <h3>[@name@]</h3>
+            <span>$[@store_price@]</span>
+        </div>
+    [%/param%]
+    [%param *ifempty%]Product not found[%/param%]
+[%/product%]
+
+<!-- With group pricing -->
+[%product sku:'[@sku@]' group_id:'5'%]
+    [%param *body%]Wholesale price: $[@price@][%/param%]
+[%/product%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">The product tag gives access to ALL product data tags. Can query by <code>sku:''</code> or <code>id:''</code>.</p>
+            </Section>
+
+            <Section title="RELATED_PRODUCTS & CHILD_PRODUCTS" icon={Package}>
+              <CodeBlock>{`<!-- Related products -->
+[%related_products id:'[@SKU@]' limit:'4'%]
+    [%param *body%]
+        <a href="[@url@]">[@name@] - $[@price@]</a>
+    [%/param%]
+[%/related_products%]
+
+<!-- Variation child products -->
+[%child_products id:'[@SKU@]'%]
+    [%param *body%]
+        [@sku@]: [@name@] ([@store_quantity@] in stock)
+    [%/param%]
+[%/child_products%]
+
+<!-- List item variations (dropdowns) -->
+[%list_item_variations id:'[@SKU@]'%]
+    [%param *body%]
+        <option value="[@sku@]">[@variation_name@] - $[@price@]</option>
+    [%/param%]
+[%/list_item_variations%]`}</CodeBlock>
+            </Section>
+
+            <Section title="MULTILEVELPRICING — Quantity Break Pricing" icon={CreditCard}>
+              <CodeBlock>{`[%multilevelpricing id:'[@SKU@]'%]
+    [%param *header%]<table class="qty-pricing">[%/param%]
+    [%param *body%]
+        <tr>
+            <td>[@qty_from@] - [@qty_to@]</td>
+            <td>$[@price@]</td>
+        </tr>
+    [%/param%]
+    [%param *footer%]</table>[%/param%]
+[%/multilevelpricing%]`}</CodeBlock>
+            </Section>
+
+            <Section title="DISCOUNT_PRODUCTS — Free/Discounted Items" icon={Tag}>
+              <CodeBlock>{`[%discount_products id:'[@SKU@]' template:'' show_all:'1'%]
+    [%param *body%]
+        <div>Buy [@name@] and get this FREE: [@discount_name@]</div>
+    [%/param%]
+[%/discount_products%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Displays products with discount incentives configured in the Control Panel.</p>
+            </Section>
+
+            <Section title="WAREHOUSE_QTY — Stock by Location" icon={Boxes}>
+              <CodeBlock>{`[%warehouse_qty sku:'[@SKU@]' warehouse:'Sydney'%]
+    [%param *body%]
+        Sydney stock: [@quantity@]
+    [%/param%]
+[%/warehouse_qty%]`}</CodeBlock>
+            </Section>
+
+            <Section title="MENU — Control Panel Managed Menus" icon={Layers}>
+              <CodeBlock>{`[%menu id:'web_header'%]
+    [%param *header%]<ul class="nav">[%/param%]
+    [%param *body%]
+        <li><a href="[@url@]">[@name@]</a></li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/menu%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Loads custom menus built in the Neto Control Panel menu builder.</p>
+            </Section>
+
+            <Section title="BREADCRUMB" icon={FolderTree}>
+              <CodeBlock>{`[%breadcrumb%]
+    [%param *header%]<ol class="breadcrumb">[%/param%]
+    [%param *body%]
+        <li><a href="[@url@]">[@name@]</a></li>
+    [%/param%]
+    [%param *current%]
+        <li class="active">[@name@]</li>
+    [%/param%]
+    [%param *footer%]</ol>[%/param%]
+[%/breadcrumb%]`}</CodeBlock>
+            </Section>
+
+            <Section title="PAYMENT_METHODS" icon={CreditCard}>
+              <CodeBlock>{`[%payment_methods%]
+    [%param *body%]
+        <div class="payment-option">
+            <img src="[@icon@]" alt="[@name@]" />
+            <span>[@name@]</span>
+        </div>
+    [%/param%]
+[%/payment_methods%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Lists payment methods enabled in the Control Panel.</p>
+            </Section>
+
+            <Section title="PAGING / PAGINATION" icon={Filter}>
+              <CodeBlock>{`[%paging%]
+    [%param *body%]
+        <a href="[@url@]" class="[@current@]">[@page_number@]</a>
+    [%/param%]
+    [%param *prev%]<a href="[@url@]">Previous</a>[%/param%]
+    [%param *next%]<a href="[@url@]">Next</a>[%/param%]
+[%/paging%]`}</CodeBlock>
             </Section>
           </TabsContent>
 
@@ -1100,6 +1413,293 @@ Format: /assets/webshop/cms/{ID % 100 padded to 2 digits}/{ID}.{ext}`}</CodeBloc
             </Section>
           </TabsContent>
 
+          {/* ═══════════════ API ACTIONS DETAIL (NEW) ═══════════════ */}
+          <TabsContent value="api-actions" className="space-y-4">
+            <Section title="Complete API Action List" icon={Server}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Products (Items)</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddItem</li>
+                    <li>GetItem</li>
+                    <li>UpdateItem</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Orders</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddOrder</li>
+                    <li>GetOrder</li>
+                    <li>UpdateOrder</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Customers</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddCustomer</li>
+                    <li>GetCustomer</li>
+                    <li>UpdateCustomer</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Categories / Content</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddCategory</li>
+                    <li>GetCategory</li>
+                    <li>UpdateCategory</li>
+                    <li>AddContent</li>
+                    <li>GetContent</li>
+                    <li>UpdateContent</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Payments</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddPayment</li>
+                    <li>GetPayment</li>
+                    <li>GetPaymentMethods</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Shipping</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>GetShippingQuote</li>
+                    <li>GetShippingMethods</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Vouchers / RMA</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddVoucher</li>
+                    <li>GetVoucher</li>
+                    <li>UpdateVoucher</li>
+                    <li>AddRma</li>
+                    <li>GetRma</li>
+                    <li>UpdateRma</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Warehouses / Suppliers</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>GetWarehouse</li>
+                    <li>GetSupplier</li>
+                    <li>GetCurrency</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Cart</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>GetCart (internal)</li>
+                    <li>UpdateCart (internal)</li>
+                  </ul>
+                </div>
+              </div>
+            </Section>
+
+            <Section title="GetPayment API Call" icon={CreditCard}>
+              <CodeBlock title="GetPayment request">{`POST https://www.yoursite.com.au/do/WS/NetoAPI
+Headers:
+  NETOAPI_ACTION: GetPayment
+  Accept: application/json
+  NETOAPI_KEY: your-api-key
+
+{
+  "Filter": {
+    "PaymentID": [123],
+    "OrderID": ["N10001"],
+    "Page": 0,
+    "Limit": 50,
+    "OutputSelector": [
+      "PaymentID", "OrderID", "PaymentMethodName",
+      "AmountPaid", "DatePaid", "PaymentStatus"
+    ]
+  }
+}`}</CodeBlock>
+            </Section>
+
+            <Section title="AddPayment API Call" icon={CreditCard}>
+              <CodeBlock title="AddPayment request">{`{
+  "Payment": [{
+    "OrderID": "N10001",
+    "PaymentMethodName": "Credit Card",
+    "AmountPaid": 99.95,
+    "DatePaid": "2024-01-15 10:30:00",
+    "PaymentReference": "txn_123456"
+  }]
+}`}</CodeBlock>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ PAYMENTS (NEW) ═══════════════ */}
+          <TabsContent value="payments" className="space-y-4">
+            <Section title="Payment Gateways Supported" icon={CreditCard}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {["PayPal", "Stripe", "eWAY", "Afterpay", "Zip Pay", "zipMoney", "Braintree", "SecurePay", 
+                  "Commonwealth Bank", "NAB Transact", "Westpac", "ANZ eGate", "Pin Payments", "Windcave",
+                  "Klarna", "Laybuy", "Openpay", "Humm", "LatitudePay", "Bank Transfer", "Cash on Delivery", "Phone Order"
+                ].map(gw => (
+                  <div key={gw} className="border rounded-md p-2 text-xs text-center">{gw}</div>
+                ))}
+              </div>
+            </Section>
+
+            <Section title="Payment Flow in Templates" icon={Code2}>
+              <CodeBlock>{`<!-- Payment is entirely server-side. Templates just provide the form: -->
+
+<!-- 1. Cart page shows order summary -->
+/_mycart → templates/checkout/cart.template.html
+
+<!-- 2. Checkout page collects billing/shipping -->
+/_mycart?fn=payment → templates/checkout/payment.template.html
+
+<!-- 3. Third-party redirect (PayPal, Afterpay) -->
+/_mycart?fn=3rdparty → handled by gateway
+
+<!-- 4. Order confirmation -->
+/_mycart?fn=confirm → templates/checkout/confirm.template.html
+
+<!-- Payment methods listed via function tag -->
+[%payment_methods%]
+    [%param *body%][@name@][%/param%]
+[%/payment_methods%]`}</CodeBlock>
+            </Section>
+
+            <Section title="Cart Function Tag — Cart Values" icon={ShoppingCart}>
+              <CodeBlock>{`<!-- Load specific cart value -->
+[%cart id:'grand_total'/%]
+[%cart id:'total_items'/%]
+[%cart id:'shipping_cost'/%]
+[%cart id:'payment_method'/%]
+[%cart id:'payment_method_id'/%]
+[%cart id:'discount_total'/%]
+[%cart id:'product_total'/%]
+[%cart id:'product_discount'/%]
+[%cart id:'shipping_method'/%]
+[%cart id:'shipping_method_id'/%]
+[%cart id:'shipping_total'/%]
+[%cart id:'voucher_credit'/%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">
+                <strong>Note:</strong> These values are rendered at page load time — they won't update dynamically. For live updates, use AJAX calls.
+              </p>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ FILTERS & SORTING (NEW) ═══════════════ */}
+          <TabsContent value="filters" className="space-y-4">
+            <Section title="thumb_list Filter Parameters" icon={Filter}>
+              <TagTable rows={[
+                ["filter_category:''", "Filter by category ID or slug"],
+                ["filter_brand:''", "Filter by brand name"],
+                ["filter_price_from:'' / filter_price_to:''", "Price range filter"],
+                ["filter_in_stock:'y'", "Only show in-stock items"],
+                ["filter_new:'y'", "Only new products"],
+                ["filter_on_sale:'y'", "Only products on sale"],
+                ["filter_featured:'y'", "Only featured products"],
+                ["filter_date_from:'' / filter_date_to:''", "Date range filter"],
+                ["filter_field:'value'", "Custom field filter"],
+              ]} />
+            </Section>
+
+            <Section title="Sort Options" icon={Filter}>
+              <TagTable rows={[
+                ["sort:'name'", "Alphabetical by name"],
+                ["sort:'price'", "By price (low to high)"],
+                ["sort:'price_desc'", "By price (high to low)"],
+                ["sort:'date'", "By date added"],
+                ["sort:'top_sellers'", "By sales count"],
+                ["sort:'sortorder'", "Manual sort order"],
+                ["sort:'sortorder2'", "Secondary sort order"],
+                ["sort:'SKU'", "By SKU"],
+                ["sort:'shortest_item'", "By shortest dimension"],
+                ["sort:'random'", "Random order"],
+              ]} />
+            </Section>
+
+            <Section title="Pagination in Listings" icon={Filter}>
+              <CodeBlock>{`<!-- thumb_list with pagination -->
+[%thumb_list type:'products' limit:'24' page:'[@form:page@]'%]
+    [%param *body%]...product card...[%/param%]
+[%/thumb_list%]
+
+<!-- Pagination controls -->
+[%paging%]
+    [%param *prev%]<a href="[@url@]">&laquo; Prev</a>[%/param%]
+    [%param *body%]<a href="[@url@]" class="[@current@]">[@page_number@]</a>[%/param%]
+    [%param *next%]<a href="[@url@]">Next &raquo;</a>[%/param%]
+[%/paging%]`}</CodeBlock>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ EBAY & MARKETPLACES (NEW) ═══════════════ */}
+          <TabsContent value="ebay" className="space-y-4">
+            <Section title="eBay Template System" icon={Globe}>
+              <ul className="list-disc pl-5 space-y-1 text-xs">
+                <li>eBay has its <strong>own set of B@SE tags</strong> separate from the webstore</li>
+                <li>eBay templates are stored in a separate directory structure</li>
+                <li>eBay templates cannot use JavaScript (eBay policy)</li>
+                <li>Product listings are synced via the Maropost Control Panel</li>
+                <li>eBay-specific data tags documented separately</li>
+              </ul>
+            </Section>
+
+            <Section title="Marketplace Channels" icon={ShoppingCart}>
+              <TagTable rows={[
+                ["eBay AU/US/UK", "Full listing management with templates"],
+                ["Amazon AU", "Product feed sync"],
+                ["Catch.com.au", "Product feed sync"],
+                ["Google Shopping", "XML product feed via sitemap"],
+                ["Facebook Shop", "Catalogue sync"],
+                ["Trade Me (NZ)", "Auction/buy now listings"],
+                ["Kogan", "Product feed"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ EMAILS & PRINTABLES (NEW) ═══════════════ */}
+          <TabsContent value="emails" className="space-y-4">
+            <Section title="Email Template System" icon={FileText}>
+              <ul className="list-disc pl-5 space-y-1 text-xs">
+                <li>Email templates use the same B@SE tag syntax as webstore templates</li>
+                <li>Stored in <code>templates/emails/</code> directory</li>
+                <li>Support all order, customer, and product data tags</li>
+                <li>HTML email with inline CSS (no external stylesheets)</li>
+                <li>Triggered automatically by order status changes</li>
+              </ul>
+            </Section>
+
+            <Section title="Email Types" icon={FileText}>
+              <TagTable rows={[
+                ["Order Confirmation", "Sent when order is placed (status 110)"],
+                ["Order Dispatched", "Sent when order ships (status 200)"],
+                ["Order Completed", "Sent when delivered (status 300)"],
+                ["Abandoned Cart", "Sent after cart abandonment delay"],
+                ["Welcome Email", "Sent on new customer registration"],
+                ["Password Reset", "Triggered by forgot password"],
+                ["Quote Email", "Sent for quote orders (status 100)"],
+                ["Back in Stock", "Triggered when product restocked"],
+                ["Review Request", "Sent after order completion delay"],
+                ["Gift Voucher", "Sent when voucher is purchased"],
+                ["Invoice", "Order invoice email"],
+                ["Credit Note", "Credit note notification"],
+                ["Shipment Tracking", "Tracking number update"],
+              ]} />
+            </Section>
+
+            <Section title="Printable Templates" icon={FileText}>
+              <TagTable rows={[
+                ["Invoice", "templates/printables/invoice.template.html"],
+                ["Packing Slip", "templates/printables/packing_slip.template.html"],
+                ["Pick List", "templates/printables/pick_list.template.html"],
+                ["Shipping Label", "templates/printables/shipping_label.template.html"],
+                ["Return Label", "templates/printables/return_label.template.html"],
+                ["Quote", "templates/printables/quote.template.html"],
+                ["Customer Statement", "templates/printables/statement.template.html"],
+                ["Gift Voucher", "templates/printables/gift_voucher.template.html"],
+                ["Barcode Labels", "templates/printables/barcode_label.template.html"],
+              ]} />
+            </Section>
+          </TabsContent>
+
           {/* ═══════════════ SEO ═══════════════ */}
           <TabsContent value="seo" className="space-y-4">
             <Section title="SEO Tags" icon={Search}>
@@ -1202,14 +1802,45 @@ Format: /assets/webshop/cms/{ID % 100 padded to 2 digits}/{ID}.{ext}`}</CodeBloc
               </div>
             </Section>
 
+            <Section title="More Gotchas" icon={AlertTriangle}>
+              <div className="space-y-3">
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ Cache invalidation</h4>
+                  <p className="text-xs mt-1"><code>[%cache%]</code> blocks don't auto-invalidate on product updates. Clear cache manually or use unique cache IDs per entity.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ [%list%] vs [%thumb_list%]</h4>
+                  <p className="text-xs mt-1">The <code>[%list%]</code> function is still "under development" per Maropost. When in doubt, use <code>[%thumb_list%]</code> which is the stable version. <code>[%list%]</code> templates come from <code>list/</code> directory, not <code>thumbs/</code>.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ Hardcoded /assets/ paths</h4>
+                  <p className="text-xs mt-1">Some themes hardcode paths like <code>/assets/themes/skeletal/fonts/titillium.css</code> instead of using <code>[%ntheme_asset%]</code>. Our engine must handle both patterns.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ [@cart:...@] vs [%cart id:'...'/%]</h4>
+                  <p className="text-xs mt-1">The inline <code>[@cart:grand_total@]</code> syntax is faster but both render at page load time — neither updates dynamically without AJAX.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ content_menu level depth</h4>
+                  <p className="text-xs mt-1">Must define <code>*level_1</code>, <code>*level_2</code>, <code>*level_3</code> params explicitly. Missing levels won't render children.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ eBay templates</h4>
+                  <p className="text-xs mt-1">eBay templates CANNOT contain JavaScript — eBay strips it. Only inline CSS and HTML.</p>
+                </div>
+              </div>
+            </Section>
+
             <Section title="Bootstrap Dependency" icon={Palette}>
               <ul className="list-disc pl-5 space-y-1 text-xs">
-                <li>Most Maropost themes use <strong>Bootstrap 3</strong> (Skeletal) or <strong>Bootstrap 4</strong> (newer themes)</li>
+                <li>Skeletal theme uses <strong>Bootstrap 4</strong> (latest version; older Skeletal used Bootstrap 3)</li>
                 <li>Bootstrap CSS is loaded via CDN in the header template</li>
                 <li>jQuery is required — loaded before custom.js</li>
                 <li>Slick Carousel is the standard product slider library</li>
                 <li>Font Awesome 4.7 is the standard icon library</li>
                 <li>FancyBox is commonly used for image lightboxes</li>
+                <li>Skeletal is on <strong>GitHub</strong>: <code>NetoECommerce/Skeletal</code></li>
+                <li>Theme installation: upload <code>src</code> directory to <code>httpdocs/assets/themes</code></li>
               </ul>
             </Section>
 
