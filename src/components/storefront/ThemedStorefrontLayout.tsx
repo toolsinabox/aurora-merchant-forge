@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState, useMemo, useCallback } from "react";
+import { ReactNode, useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,91 +18,7 @@ interface ThemedStorefrontLayoutProps {
   extraContext?: Partial<TemplateContext>;
 }
 
-/**
- * Scope all CSS rules under a given selector so theme CSS doesn't bleed
- * into React-rendered components. Handles @media, @keyframes, @font-face, etc.
- */
-function scopeCss(css: string, scopeSelector: string): string {
-  // Remove source map comments
-  let result = css.replace(/\/\*#\s*sourceMappingURL=.*?\*\//g, "");
 
-  // Process the CSS by splitting on top-level braces
-  // We need to prefix selectors but leave @-rules intact
-  const output: string[] = [];
-  let i = 0;
-
-  while (i < result.length) {
-    // Skip whitespace
-    while (i < result.length && /\s/.test(result[i])) { output.push(result[i]); i++; }
-    if (i >= result.length) break;
-
-    // Find the next { to determine if this is an @-rule or a selector
-    const braceIdx = result.indexOf("{", i);
-    if (braceIdx === -1) { output.push(result.slice(i)); break; }
-
-    const prelude = result.slice(i, braceIdx).trim();
-
-    if (prelude.startsWith("@media") || prelude.startsWith("@supports") || prelude.startsWith("@layer")) {
-      // Nested @-rule: output the @-rule opener, then recursively scope its contents
-      output.push(prelude + " {");
-      i = braceIdx + 1;
-      // Find matching closing brace
-      let depth = 1;
-      let blockStart = i;
-      while (i < result.length && depth > 0) {
-        if (result[i] === "{") depth++;
-        else if (result[i] === "}") depth--;
-        i++;
-      }
-      const innerBlock = result.slice(blockStart, i - 1);
-      output.push(scopeCss(innerBlock, scopeSelector));
-      output.push("}");
-    } else if (prelude.startsWith("@keyframes") || prelude.startsWith("@-webkit-keyframes") || prelude.startsWith("@font-face") || prelude.startsWith("@import") || prelude.startsWith("@charset")) {
-      // Pass through as-is (don't scope these)
-      output.push(prelude + " {");
-      i = braceIdx + 1;
-      let depth = 1;
-      while (i < result.length && depth > 0) {
-        if (result[i] === "{") depth++;
-        else if (result[i] === "}") depth--;
-        output.push(result[i]);
-        i++;
-      }
-    } else {
-      // Regular selector(s) — scope them
-      const scopedSelectors = prelude
-        .split(",")
-        .map(sel => {
-          sel = sel.trim();
-          if (!sel) return sel;
-          // Don't double-scope
-          if (sel.includes(scopeSelector)) return sel;
-          // :root and html and body → replace with scope selector
-          if (sel === ":root" || sel === "html" || sel === "body") {
-            return scopeSelector;
-          }
-          if (sel.startsWith("html ") || sel.startsWith("body ")) {
-            return `${scopeSelector} ${sel.replace(/^(?:html|body)\s+/, "")}`;
-          }
-          return `${scopeSelector} ${sel}`;
-        })
-        .join(", ");
-
-      output.push(scopedSelectors + " {");
-      i = braceIdx + 1;
-      // Find the closing brace for this rule
-      let depth = 1;
-      while (i < result.length && depth > 0) {
-        if (result[i] === "{") depth++;
-        else if (result[i] === "}") depth--;
-        output.push(result[i]);
-        i++;
-      }
-    }
-  }
-
-  return output.join("");
-}
 
 /**
  * Wrapper that checks for an active theme. If theme exists with header/footer templates,
@@ -276,10 +192,8 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<\/?html[^>]*>/gi, "")
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<\/?body[^>]*>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-      // Strip local theme asset links but preserve CDN links (Google Fonts, etc.)
-      .replace(/<link[^>]*href=["'][^"']*\/assets\/themes\/[^"']*["'][^>]*>/gi, "")
-      .replace(/<link[^>]*href=["'](?!https?:\/\/|\/\/)[^"']*["'][^>]*>/gi, "");
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+      // Keep <link> tags with resolved theme-assets URLs — they should load normally
     
     // Rewrite relative asset paths to storage bucket URLs
     bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
@@ -300,22 +214,37 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return rendered;
   }, [footerFile, baseCtx, themeAssetBaseUrl]);
 
-  // Scope all theme CSS under #neto-theme so it doesn't bleed into React components
-  const scopedCss = useMemo(() => {
-    let raw = theme.cssFiles.map(f => f.content || "").filter(Boolean).join("\n");
-    if (!raw) return "";
-    // Rewrite relative url() paths in CSS to storage bucket
-    if (themeAssetBaseUrl) {
-      raw = raw.replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (_, path) => {
-        const cleanPath = path.replace(/^\.?\/+/, "").trim();
-        return `url("${themeAssetBaseUrl}/${cleanPath}")`;
-      });
-    }
-    const scoped = scopeCss(raw, SCOPE_SELECTOR);
-    
-    // Add CSS fallbacks for Slick carousel wrappers that need JS to layout
-    // Without Slick JS, these containers stack vertically — provide flexbox fallback
-    const fallbackCss = `
+  // Ensure CSS/JS files exist in storage bucket (upload from DB content if missing)
+  useEffect(() => {
+    if (!store?.id || !theme.id || !theme.cssFiles.length) return;
+    const allTextAssets = [...theme.cssFiles, ...theme.jsFiles];
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) return;
+
+    (async () => {
+      for (const f of allTextAssets) {
+        const storagePath = `${store.id}/${theme.id}/${f.file_path}`;
+        const publicUrl = `${supabaseUrl}/storage/v1/object/public/theme-assets/${storagePath}`;
+        // Quick HEAD check to see if file exists
+        try {
+          const res = await fetch(publicUrl, { method: "HEAD" });
+          if (res.ok) continue; // Already in storage
+        } catch { /* not found, upload it */ }
+        // Upload from DB content
+        if (f.content) {
+          const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
+          const blob = new Blob([f.content], { type: mimeType });
+          await supabase.storage
+            .from("theme-assets")
+            .upload(storagePath, blob, { contentType: mimeType, upsert: true });
+        }
+      }
+    })();
+  }, [store?.id, theme.id, theme.cssFiles, theme.jsFiles]);
+
+  // Platform-level CSS fallbacks for Slick, Bootstrap carousel, and layout fixes
+  // These are structural fixes — the actual theme CSS loads via <link> tags from storage
+  const fallbackCss = useMemo(() => `
 ${SCOPE_SELECTOR} .js-list-category:not(.slick-initialized) {
   display: flex;
   flex-wrap: wrap;
@@ -533,9 +462,7 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-menu .nav-link { display: block; padding:
 ${SCOPE_SELECTOR} .mega-menu .dropdown-menu .nav-link:hover { background: #f5f5f5; color: #a2ce46; }
 ${SCOPE_SELECTOR} .mega-menu .dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
 ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-align: middle; }
-`;
-    return scoped + fallbackCss;
-  }, [theme.cssFiles, themeAssetBaseUrl]);
+`, []);
 
   // Inject Font Awesome + Bootstrap CSS (required by most Maropost themes)
   useEffect(() => {
@@ -556,17 +483,24 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     return () => { addedLinks.forEach(l => l.remove()); };
   }, []);
 
-  // Inject external CSS links from the theme's <head> content (CDN only)
+  // Inject CSS links from the theme's <head> content (CDN + theme-assets storage URLs)
   useEffect(() => {
     if (!headContent && !renderedHeader) return;
     const addedElements: Element[] = [];
     
     const allCssHtml = (headContent || "") + (renderedHeader || "");
-    const linkRegex = /<link[^>]*href=["']((?:https?:)?\/\/[^"']+)["'][^>]*>/gi;
+    // Match all <link> tags with href — both CDN and storage bucket URLs
+    const linkRegex = /<link[^>]*href=["']([^"']+)["'][^>]*>/gi;
     let match;
     while ((match = linkRegex.exec(allCssHtml)) !== null) {
+      const fullTag = match[0];
       const href = match[1];
-      if (href.includes("/assets/themes/")) continue;
+      // Only process stylesheet links
+      if (!fullTag.includes("stylesheet") && !href.endsWith(".css")) continue;
+      // Skip legacy local paths like /assets/themes/...
+      if (href.includes("/assets/themes/") && !href.includes("storage/v1")) continue;
+      // Skip empty or placeholder hrefs
+      if (!href || href === "#") continue;
       if (document.querySelector(`link[href="${href}"]`)) continue;
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -781,9 +715,9 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
 
   return (
     <>
-      {/* Scoped Theme CSS — only applies inside #neto-theme */}
-      {scopedCss && (
-        <style dangerouslySetInnerHTML={{ __html: scopedCss }} />
+      {/* Platform layout fallback CSS — structural fixes for carousel/grid components */}
+      {fallbackCss && (
+        <style dangerouslySetInnerHTML={{ __html: fallbackCss }} />
       )}
 
       {/* Theme-rendered sections: header + footer wrapped in scope */}

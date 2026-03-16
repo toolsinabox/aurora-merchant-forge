@@ -576,7 +576,7 @@ function resolveThemeTemplate(templateName: string, ctx: TemplateContext): strin
 function processThemeAssets(template: string, ctx: TemplateContext): string {
   return template.replace(/\[%ntheme_asset%\]([\s\S]*?)\[%\/ntheme_asset%\]/gi, (_, path: string) => {
     const trimmed = path.trim();
-    if (trimmed.endsWith(".css") || trimmed.endsWith(".js")) return "";
+    // Resolve ALL asset types (including CSS/JS) to the storage bucket URL
     if (ctx.themeAssetBaseUrl) {
       return `${ctx.themeAssetBaseUrl}/${trimmed}`;
     }

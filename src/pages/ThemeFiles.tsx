@@ -373,11 +373,12 @@ export default function ThemeFiles() {
       const binaryEntries: { path: string; blob: Blob; mimeType: string }[] = [];
       const promises: Promise<void>[] = [];
       const binaryExtensions = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|pdf)$/i;
+      const textAssetExtensions = /\.(css|js)$/i;
       const mimeMap: Record<string, string> = {
         png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
         svg: "image/svg+xml", webp: "image/webp", ico: "image/x-icon",
         woff: "font/woff", woff2: "font/woff2", ttf: "font/ttf", eot: "application/vnd.ms-fontobject",
-        pdf: "application/pdf",
+        pdf: "application/pdf", css: "text/css", js: "application/javascript",
       };
       zip.forEach((path, entry) => {
         if (entry.dir || path.startsWith("__MACOSX") || path.startsWith(".")) return;
@@ -387,7 +388,14 @@ export default function ThemeFiles() {
             binaryEntries.push({ path, blob: new Blob([blob], { type: mimeMap[ext] || "application/octet-stream" }), mimeType: mimeMap[ext] || "application/octet-stream" });
           }));
         } else {
-          promises.push(entry.async("string").then(content => { entries.push({ path, content }); }));
+          // CSS/JS: store as text in DB AND also queue for storage upload
+          promises.push(entry.async("string").then(content => {
+            entries.push({ path, content });
+            if (textAssetExtensions.test(path)) {
+              const ext = path.split(".").pop()?.toLowerCase() || "";
+              binaryEntries.push({ path, blob: new Blob([content], { type: mimeMap[ext] || "text/plain" }), mimeType: mimeMap[ext] || "text/plain" });
+            }
+          }));
         }
       });
       await Promise.all(promises);
