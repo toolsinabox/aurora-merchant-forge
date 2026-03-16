@@ -243,6 +243,7 @@ export function AppSidebar() {
         <NavGroup label="Marketing" items={marketingNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
         <NavGroup label="Analytics" items={analyticsNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
         <NavGroup label="Content" items={contentNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
+        <NavGroup label="Maropost / Neto" items={maropostNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
         <NavGroup label="System" items={systemNav} collapsed={collapsed} currentPath={currentPath} defaultOpen={false} />
       </SidebarContent>
 
