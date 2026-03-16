@@ -110,8 +110,9 @@ export default function StorefrontHome() {
       baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
       basePath: basePath || "",
       pageType: "home",
+      contentZones: contentZones || {},
     };
-  }, [store, theme, themeFiles, themeAssetBaseUrl, categories, products, adverts, basePath]);
+  }, [store, theme, themeFiles, themeAssetBaseUrl, categories, products, adverts, basePath, contentZones]);
 
   if (loading) {
     return (
