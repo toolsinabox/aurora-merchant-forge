@@ -1515,8 +1515,15 @@ function processSiteValueBlocks(template: string): string {
 }
 
 // ── Process [%content_zone id:'...'%]...[%end content_zone%] ──
-function processContentZone(template: string): string {
-  return template.replace(/\[%content_zone[^\]]*%\]([\s\S]*?)\[%(?:end\s+content_zone|\/content_zone)%\]/gi, "");
+function processContentZone(template: string, ctx?: TemplateContext): string {
+  return template.replace(/\[%content_zone\s+([^\]]*?)%\]([\s\S]*?)\[%(?:end\s+content_zone|\/content_zone)%\]/gi, (_, attrs: string, fallback: string) => {
+    const idMatch = attrs.match(/id:'([^']+)'/i);
+    if (!idMatch) return fallback;
+    const key = idMatch[1];
+    const zones = (ctx as any)?.contentZones as Record<string, string> | undefined;
+    if (zones && zones[key]) return zones[key];
+    return fallback;
+  });
 }
 
 // ── Process [%DATA id:'count' if:'==' value:'0'%]...[%END DATA%] ──

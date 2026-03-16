@@ -88,6 +88,7 @@ import Layby from "./pages/Layby.tsx";
 import Webhooks from "./pages/Webhooks.tsx";
 import MediaLibrary from "./pages/MediaLibrary.tsx";
 import ContentBlocks from "./pages/ContentBlocks.tsx";
+import ContentZones from "./pages/ContentZones.tsx";
 import Backorders from "./pages/Backorders.tsx";
 import StaffActivity from "./pages/StaffActivity.tsx";
 import ApiKeys from "./pages/ApiKeys.tsx";

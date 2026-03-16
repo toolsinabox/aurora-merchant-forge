@@ -109,6 +109,7 @@ const analyticsNav = [
 const contentNav = [
   { title: "Content Pages", url: `${prefix}/content-pages`, icon: FileText },
   { title: "Content Blocks", url: `${prefix}/content-blocks`, icon: LayoutDashboard },
+  { title: "Content Zones", url: `${prefix}/content-zones`, icon: LayoutDashboard },
   { title: "Media Library", url: `${prefix}/media`, icon: Image },
   { title: "Templates", url: `${prefix}/templates`, icon: Code2 },
   { title: "Theme Files", url: `${prefix}/theme-files`, icon: Palette },
