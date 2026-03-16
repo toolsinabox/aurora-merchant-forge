@@ -502,6 +502,97 @@ export default function PurchaseOrders() {
             )}
           </DialogContent>
         </Dialog>
+          </TabsContent>
+
+          {/* Supplier Performance Tab */}
+          <TabsContent value="suppliers" className="mt-3">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Supplier</TableHead>
+                      <TableHead className="text-xs text-right">Total POs</TableHead>
+                      <TableHead className="text-xs text-right">Received</TableHead>
+                      <TableHead className="text-xs text-right">On Time</TableHead>
+                      <TableHead className="text-xs text-right">Late</TableHead>
+                      <TableHead className="text-xs text-right">On-Time %</TableHead>
+                      <TableHead className="text-xs text-right">Total Value</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {supplierStats.length === 0 ? (
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">No supplier data yet</TableCell></TableRow>
+                    ) : supplierStats.map((s, i) => {
+                      const onTimePct = (s.onTime + s.late) > 0 ? Math.round((s.onTime / (s.onTime + s.late)) * 100) : null;
+                      return (
+                        <TableRow key={i} className="text-xs">
+                          <TableCell className="font-medium">{s.name}</TableCell>
+                          <TableCell className="text-right">{s.total}</TableCell>
+                          <TableCell className="text-right">{s.received}</TableCell>
+                          <TableCell className="text-right text-primary">{s.onTime}</TableCell>
+                          <TableCell className="text-right text-destructive">{s.late}</TableCell>
+                          <TableCell className="text-right">
+                            {onTimePct !== null ? (
+                              <Badge variant={onTimePct >= 80 ? "default" : onTimePct >= 50 ? "secondary" : "destructive"} className="text-[10px]">{onTimePct}%</Badge>
+                            ) : "—"}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">${s.totalValue.toFixed(0)}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Reorder Suggestions Tab */}
+          <TabsContent value="reorder" className="mt-3">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Product</TableHead>
+                      <TableHead className="text-xs">SKU</TableHead>
+                      <TableHead className="text-xs text-right">Current Stock</TableHead>
+                      <TableHead className="text-xs text-right">Threshold</TableHead>
+                      <TableHead className="text-xs text-right">Suggested Qty</TableHead>
+                      <TableHead className="text-xs w-20"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {reorderSuggestions.length === 0 ? (
+                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-xs text-muted-foreground">
+                        <CheckCircle className="h-6 w-6 mx-auto mb-1 text-primary/40" />
+                        All stock levels are healthy
+                      </TableCell></TableRow>
+                    ) : reorderSuggestions.map((s: any) => (
+                      <TableRow key={s.product_id} className="text-xs">
+                        <TableCell className="font-medium">{s.title}</TableCell>
+                        <TableCell className="font-mono text-muted-foreground">{s.sku || "—"}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant={s.current_stock <= 0 ? "destructive" : "secondary"} className="text-[10px]">{s.current_stock}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">{s.threshold}</TableCell>
+                        <TableCell className="text-right font-medium">{s.suggested_qty}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1" onClick={() => {
+                            setForm({ ...emptyForm, po_number: genPO(), notes: `Reorder: ${s.title} x${s.suggested_qty}` });
+                            setOpen(true);
+                          }}>
+                            Create PO <ArrowRight className="h-2.5 w-2.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </AdminLayout>
   );
