@@ -174,6 +174,7 @@ const App = () => (
           <CompareProvider>
             <MigrationProgressWidget />
             <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
             <Routes>
               {isSubdomainMode ? (
                 <>
