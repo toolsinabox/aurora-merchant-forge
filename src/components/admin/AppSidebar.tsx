@@ -5,7 +5,7 @@ import {
   CreditCard, Webhook, Image, PackageX, Activity, Key, Shield, Monitor, Mail, Puzzle, Book,
   Heart, PieChart, Smartphone, UserPlus, DollarSign, Sparkles, Globe, ShoppingBag, Repeat,
   FileDown, TrendingUp, Save, Zap, MapPin, Calculator, Archive, Boxes, Bell, List, Navigation, Printer, Target,
-  FormInput, ReceiptText, Share2, ArrowLeftRight, Palette, HelpCircle, FolderOpen, BarChart, Newspaper,
+  FormInput, ReceiptText, Share2, ArrowLeftRight, Palette, HelpCircle, FolderOpen, BarChart, Newspaper, Calendar,
 } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
@@ -55,6 +55,7 @@ const productsNav = [
   { title: "Digital Downloads", url: `${prefix}/digital-downloads`, icon: FileDown },
   { title: "Price Lists", url: `${prefix}/price-lists`, icon: List },
   { title: "Price Rules", url: `${prefix}/price-rules`, icon: Zap },
+  { title: "Scheduled Prices", url: `${prefix}/scheduled-prices`, icon: Calendar },
 ];
 
 // ── Customers (Maropost: "Customers") ──
@@ -83,6 +84,7 @@ const inventoryNav = [
 const fulfillmentNav = [
   { title: "Warehouse", url: `${prefix}/warehouse`, icon: Warehouse },
   { title: "Pick & Pack", url: `${prefix}/pick-pack`, icon: ClipboardCopy },
+  { title: "Inventory Transfers", url: `${prefix}/inventory-transfers`, icon: ArrowLeftRight },
   { title: "Carrier Manifest", url: `${prefix}/carrier-manifest`, icon: Truck },
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: MapPin },
 ];

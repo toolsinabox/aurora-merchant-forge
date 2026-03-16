@@ -268,6 +268,7 @@ export default function Suppliers() {
             <TabsTrigger value="list" className="text-xs h-7">Suppliers</TabsTrigger>
             <TabsTrigger value="products" className="text-xs h-7">Product Assignments</TabsTrigger>
             <TabsTrigger value="performance" className="text-xs h-7">Performance</TabsTrigger>
+            <TabsTrigger value="dropship" className="text-xs h-7">Dropship Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list">
@@ -415,6 +416,71 @@ export default function Suppliers() {
               </CardHeader>
               <CardContent>
                 <SupplierPerformance suppliers={suppliers} storeId={currentStore?.id} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="dropship" className="space-y-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2"><Truck className="h-4 w-4" /> Dropship Automation</CardTitle>
+                <p className="text-xs text-muted-foreground">Configure automatic PO generation and supplier notifications for dropship orders</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {suppliers.filter((s: any) => s.is_dropship).length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-6">No dropship suppliers. Mark a supplier as "Dropship" when creating or editing.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {suppliers.filter((s: any) => s.is_dropship).map((s: any) => (
+                      <div key={s.id} className="border rounded-lg p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Building className="h-4 w-4 text-primary" />
+                            <span className="text-sm font-medium">{s.name}</span>
+                            <Badge variant="secondary" className="text-[10px]">Dropship</Badge>
+                          </div>
+                          <Badge variant={s.is_active ? "default" : "outline"} className="text-[10px]">{s.is_active ? "Active" : "Inactive"}</Badge>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 text-xs">
+                          <div>
+                            <span className="text-muted-foreground">Email: </span>
+                            <span className="font-medium">{s.email || "Not set"}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Lead Time: </span>
+                            <span className="font-medium">{s.lead_time_days} days</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Payment Terms: </span>
+                            <span className="font-medium">{s.payment_terms || "—"}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 pt-2 border-t">
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={localStorage.getItem(`dropship_auto_po_${s.id}`) === "1"}
+                              onCheckedChange={(v) => {
+                                localStorage.setItem(`dropship_auto_po_${s.id}`, v ? "1" : "0");
+                                toast.success(v ? "Auto PO enabled" : "Auto PO disabled");
+                              }}
+                            />
+                            <span className="text-xs">Auto-create PO on order</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={localStorage.getItem(`dropship_notify_${s.id}`) === "1"}
+                              onCheckedChange={(v) => {
+                                localStorage.setItem(`dropship_notify_${s.id}`, v ? "1" : "0");
+                                toast.success(v ? "Email notification enabled" : "Email notification disabled");
+                              }}
+                            />
+                            <span className="text-xs">Email supplier on new order</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

@@ -79,6 +79,8 @@ const StorefrontBlog = lazy(() => import("./pages/storefront/StorefrontBlog.tsx"
 const StorefrontGiftVouchers = lazy(() => import("./pages/storefront/StorefrontGiftVouchers.tsx"));
 const PrintGiftVoucher = lazy(() => import("./pages/PrintGiftVoucher.tsx"));
 const WarehouseDashboard = lazy(() => import("./pages/WarehouseDashboard.tsx"));
+const InventoryTransfers = lazy(() => import("./pages/InventoryTransfers.tsx"));
+const ScheduledPriceChanges = lazy(() => import("./pages/ScheduledPriceChanges.tsx"));
 const PrintCustomerStatement = lazy(() => import("./pages/PrintCustomerStatement.tsx"));
 const Redirects = lazy(() => import("./pages/Redirects.tsx"));
 const PrintBarcodeLabels = lazy(() => import("./pages/PrintBarcodeLabels.tsx"));
@@ -260,7 +262,9 @@ const App = () => (
                   <Route path="/_cpanel/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/_cpanel/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/_cpanel/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
-                  <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                   <Route path="/_cpanel/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                   <Route path="/_cpanel/inventory-transfers" element={<RequireAuth><InventoryTransfers /></RequireAuth>} />
+                   <Route path="/_cpanel/scheduled-prices" element={<RequireAuth><ScheduledPriceChanges /></RequireAuth>} />
                   <Route path="/_cpanel/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/_cpanel/quotes/:id/print" element={<RequireAuth><PrintQuote /></RequireAuth>} />
                   <Route path="/_cpanel/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
@@ -377,7 +381,9 @@ const App = () => (
                   <Route path="/stock-adjustments" element={<RequireAuth><StockAdjustments /></RequireAuth>} />
                   <Route path="/stocktake" element={<RequireAuth><Stocktake /></RequireAuth>} />
                   <Route path="/abandoned-carts" element={<RequireAuth><AbandonedCarts /></RequireAuth>} />
-                  <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                   <Route path="/warehouse" element={<RequireAuth><WarehouseDashboard /></RequireAuth>} />
+                   <Route path="/inventory-transfers" element={<RequireAuth><InventoryTransfers /></RequireAuth>} />
+                   <Route path="/scheduled-prices" element={<RequireAuth><ScheduledPriceChanges /></RequireAuth>} />
                   <Route path="/quotes" element={<RequireAuth><Quotes /></RequireAuth>} />
                   <Route path="/quotes/:id/print" element={<RequireAuth><PrintQuote /></RequireAuth>} />
                   <Route path="/redirects" element={<RequireAuth><Redirects /></RequireAuth>} />
