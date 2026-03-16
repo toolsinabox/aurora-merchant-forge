@@ -26,12 +26,42 @@ interface AppliedCoupon {
   discountAmount: number;
 }
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+
 export default function StorefrontCheckout() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
+  const [checkoutStore, setCheckoutStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => { if (s) setCheckoutStore(s); });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(checkoutStore?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !checkoutStore) return null;
+    const templateFile = findMainThemeFile(activeTheme, "checkout") || findMainThemeFile(activeTheme, "check-out");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${checkoutStore.id}`;
+    const ctx: TemplateContext = {
+      store: checkoutStore, basePath, pageType: "checkout",
+      cart: { items, totalPrice },
+      cart_items: items,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Checkout" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, checkoutStore, basePath, items, totalPrice]);
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [orderNumber, setOrderNumber] = useState("");
