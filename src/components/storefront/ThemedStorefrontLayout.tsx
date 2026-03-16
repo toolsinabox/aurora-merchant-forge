@@ -670,6 +670,32 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     };
   }, [renderedHeader, renderedFooter]);
 
+  // Execute <script> tags inside #neto-theme that were injected via dangerouslySetInnerHTML
+  // (e.g. from content zones like Elfsight widgets). React doesn't execute scripts set via innerHTML.
+  useEffect(() => {
+    const container = document.getElementById("neto-theme");
+    if (!container) return;
+    const timer = setTimeout(() => {
+      const scripts = container.querySelectorAll("script:not([data-executed])");
+      scripts.forEach((oldScript) => {
+        oldScript.setAttribute("data-executed", "true");
+        const newScript = document.createElement("script");
+        // Copy attributes (src, defer, async, type, etc.)
+        Array.from(oldScript.attributes).forEach((attr) => {
+          if (attr.name !== "data-executed") {
+            newScript.setAttribute(attr.name, attr.value);
+          }
+        });
+        // Copy inline content if no src
+        if (!oldScript.getAttribute("src") && oldScript.textContent) {
+          newScript.textContent = oldScript.textContent;
+        }
+        oldScript.parentNode?.replaceChild(newScript, oldScript);
+      });
+    }, 600);
+    return () => clearTimeout(timer);
+  });
+
   // SPA link interception — route internal links through React Router
   const navigate = useNavigate();
   useEffect(() => {
