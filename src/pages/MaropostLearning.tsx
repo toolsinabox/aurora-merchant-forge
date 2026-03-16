@@ -169,45 +169,100 @@ export default function MaropostLearning() {
             </Section>
 
             <Section title="Tag Categories" icon={Tag}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="border rounded-md p-3">
-                  <h4 className="font-medium text-sm mb-2">Function Tags</h4>
+                  <h4 className="font-medium text-sm mb-2">Logic & Calculation</h4>
                   <ul className="text-xs space-y-1">
                     <li><code>if / elseif / else</code> — conditional logic</li>
                     <li><code>set</code> — variable assignment</li>
                     <li><code>calc</code> — arithmetic operations</li>
                     <li><code>round</code> — decimal rounding</li>
                     <li><code>forloop</code> — counted loops</li>
-                    <li><code>format</code> — data formatting (currency, date, number)</li>
-                    <li><code>load_template</code> — include sub-templates</li>
-                    <li><code>load_ajax_template</code> — async template loading</li>
+                    <li><code>data</code> — switch/case (deprecated)</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Formatting & Data</h4>
+                  <ul className="text-xs space-y-1">
+                    <li><code>format</code> — currency, date, number, text</li>
+                    <li><code>split</code> — delimiter-based array splitting</li>
+                    <li><code>trim</code> — whitespace removal</li>
+                    <li><code>escape</code> — prevent code injection</li>
+                    <li><code>nohtml</code> — strip HTML tags</li>
+                    <li><code>nojs</code> — strip JavaScript</li>
+                    <li><code>parse</code> — execute B@SE in dynamic content</li>
+                    <li><code>random_number / random_text</code> — random generation</li>
+                    <li><code>url_encode / url_decode</code> — URL encoding</li>
+                    <li><code>site_value</code> — cross-template data transfer</li>
+                    <li><code>months / years</code> — date lists</li>
+                    <li><code>debug</code> — tag debugging</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Listing & Navigation</h4>
+                  <ul className="text-xs space-y-1">
                     <li><code>thumb_list</code> — product/content listings</li>
-                    <li><code>content_menu</code> — navigation menus</li>
+                    <li><code>list</code> — new unified listing (beta)</li>
+                    <li><code>content_menu</code> — navigation tree menus</li>
+                    <li><code>content_path</code> — breadcrumb/category paths</li>
                     <li><code>advert</code> — advertisement blocks</li>
+                    <li><code>menu</code> — CP-managed menus</li>
+                    <li><code>breadcrumb</code> — breadcrumb trails</li>
+                    <li><code>paging / pagination</code> — page navigation</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Product Information</h4>
+                  <ul className="text-xs space-y-1">
+                    <li><code>product</code> — single product data query</li>
+                    <li><code>related_products</code> — related items</li>
+                    <li><code>child_products</code> — variation children</li>
+                    <li><code>list_item_variations</code> — variation dropdowns</li>
+                    <li><code>multilevelpricing</code> — qty break pricing</li>
+                    <li><code>discount_products</code> — free/discount incentives</li>
+                    <li><code>item_kitting</code> — bundle components</li>
+                    <li><code>warehouse_qty</code> — stock by location</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Cart, Checkout & Orders</h4>
+                  <ul className="text-xs space-y-1">
+                    <li><code>cart</code> — cart value queries</li>
+                    <li><code>payment_methods</code> — list payment options</li>
+                    <li><code>shipping_methods</code> — list shipping options</li>
+                    <li><code>show_order</code> — order detail display</li>
+                    <li><code>order_payment_history</code> — payment list</li>
+                    <li><code>order_refunds</code> — refund list</li>
+                    <li><code>print_order</code> — printable order</li>
+                    <li><code>consignment_breakdown</code> — shipment items</li>
+                    <li><code>show_standing_order</code> — recurring orders</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">URLs, Assets & Templating</h4>
+                  <ul className="text-xs space-y-1">
                     <li><code>url</code> — URL generation</li>
                     <li><code>ntheme_asset</code> — theme asset paths</li>
                     <li><code>asset_url</code> — CP-uploaded asset paths</li>
                     <li><code>cdn_asset</code> — CDN asset paths</li>
+                    <li><code>load_template</code> — include sub-templates</li>
+                    <li><code>load_ajax_template</code> — async includes</li>
                     <li><code>cache</code> — output caching</li>
-                    <li><code>paging / pagination</code> — page navigation</li>
-                    <li><code>product</code> — single product data</li>
-                    <li><code>data</code> — legacy conditional/calc (deprecated)</li>
-                    <li><code>menu</code> — CP-managed menus</li>
-                    <li><code>list</code> — new unified listing function</li>
+                    <li><code>ajax_loader</code> — prevent accelerator cache</li>
                   </ul>
                 </div>
-                <div className="border rounded-md p-3">
-                  <h4 className="font-medium text-sm mb-2">Data Tags by Page Type</h4>
-                  <ul className="text-xs space-y-1">
-                    <li><strong>Product Pages</strong> — SKU, price, images, variants, stock</li>
-                    <li><strong>Category Pages</strong> — category name, description, breadcrumbs</li>
-                    <li><strong>Content Pages</strong> — title, body, SEO fields, images</li>
-                    <li><strong>Cart Pages</strong> — line items, totals, shipping</li>
-                    <li><strong>Checkout Pages</strong> — billing/shipping, payment methods</li>
-                    <li><strong>Customer Pages</strong> — account, orders, wishlist, addresses</li>
-                    <li><strong>Email Templates</strong> — order details, customer info</li>
-                    <li><strong>Value Tags</strong> — config, user, form data (dynamic)</li>
-                  </ul>
+              </div>
+              <div className="border rounded-md p-3 mt-3">
+                <h4 className="font-medium text-sm mb-2">Data Tags by Page Type</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  <div><strong>Product</strong> — SKU, price, stock, images, variants, kitting, misc1-50</div>
+                  <div><strong>Category</strong> — name, description, level, breadcrumbs, parent</div>
+                  <div><strong>Cart/Checkout</strong> — totals, billing, shipping, payment methods</div>
+                  <div><strong>Customer</strong> — account, addresses, groups, custom1-50</div>
+                  <div><strong>Value</strong> — config:*, user:*, form:*, cart:*</div>
+                  <div><strong>Email</strong> — order details, customer info, tracking</div>
+                  <div><strong>eBay</strong> — separate tag set for eBay templates</div>
+                  <div><strong>Order</strong> — line items, payments, refunds, consignments</div>
                 </div>
               </div>
             </Section>
@@ -865,6 +920,184 @@ Use case: Pre-filling forms, filtering, passing data between pages`}</CodeBlock>
     [%param *next%]<a href="[@url@]">Next</a>[%/param%]
 [%/paging%]`}</CodeBlock>
             </Section>
+
+            <Section title="SPLIT — Array Splitting" icon={Code2}>
+              <p>Splits delimited data into iterable arrays — very useful for processing CSV-like values.</p>
+              <CodeBlock>{`[%split delimiter:','%]
+    [%param data1%]author1,author2,author3[%/param%]
+    [%param data2%]book1,book2,book3[%/param%]
+    [%param *header%]
+        [@count@] items found.
+    [%/param%]
+    [%param *body%]
+        <p>[@data1@] wrote [@data2@]</p>
+    [%/param%]
+[%/split%]`}</CodeBlock>
+              <TagTable rows={[
+                ["delimiter:''", "Character to split on: , ; | & = etc."],
+                ["data1, data2, data3...", "Multiple data streams to split in parallel"],
+                ["[@count@]", "Total number of items after split"],
+                ["[@data1@], [@data2@]...", "Current item from each data stream"],
+              ]} />
+            </Section>
+
+            <Section title="SITE_VALUE — Cross-Template Data" icon={Database}>
+              <p>Stores content in one template location and loads it in another — essential for moving JS to footer.</p>
+              <CodeBlock>{`<!-- STORE content (e.g., in product body template) -->
+[%site_value id:'footer_javascript'%]
+    <script>
+        var productSku = '[@SKU@]';
+        initProductGallery();
+    </script>
+[%/site_value%]
+
+<!-- LOAD content (e.g., in footer template) -->
+[%site_value id:'footer_javascript' type:'load' /%]`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs space-y-1">
+                <p className="text-destructive font-medium">⚠️ Limitations:</p>
+                <ul className="list-disc pl-4">
+                  <li>Won't work across print or email templates</li>
+                  <li>Won't react dynamically to AJAX calls</li>
+                  <li>Keyhole caching breaks results</li>
+                  <li>Can only load BELOW where data was stored in page flow</li>
+                </ul>
+              </div>
+            </Section>
+
+            <Section title="PARSE — Execute B@SE in Dynamic Content" icon={Code2}>
+              <CodeBlock>{`<!-- Parse B@SE tags inside a product description -->
+[%parse%]
+    [@description@]
+[%/parse%]`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs text-destructive">
+                <p className="font-medium">🔴 SECURITY WARNING:</p>
+                <p>NEVER use [%parse%] around user-accessible fields (forms, customer input). Attackers could inject B@SE tags that execute server-side code.</p>
+              </div>
+            </Section>
+
+            <Section title="Formatting & Utility Functions" icon={Code2}>
+              <TagTable rows={[
+                ["[%nohtml%]...[%/nohtml%]", "Strip all HTML tags from content"],
+                ["[%nojs%]...[%/nojs%]", "Strip all JavaScript from content"],
+                ["[%escape%]...[%/escape%]", "Prevent code injection — escape special chars"],
+                ["[%trim%]...[%/trim%]", "Remove whitespace from start/end"],
+                ["[%trim inner:'1'%]...[%/trim%]", "Remove all internal whitespace too"],
+                ["[%url_encode%]...[%/url_encode%]", "URL-encode a string"],
+                ["[%url_decode%]...[%/url_decode%]", "URL-decode a string"],
+                ["[%random_number length:'5'/%]", "Generate random number of N digits"],
+                ["[%random_text length:'8'/%]", "Generate random string of N chars"],
+                ["[%debug%][@some_tag@][%/debug%]", "Output debug info about a tag"],
+                ["[%months%]...[%/months%]", "Generate list of months (full names)"],
+                ["[%years from:'2020' to:'2030'%]...[%/years%]", "Generate list of years"],
+                ["[%ajax_loader%]...[%/ajax_loader%]", "Prevent Neto web accelerator caching"],
+              ]} />
+            </Section>
+
+            <Section title="SHOW_ORDER — Order Detail Display" icon={ShoppingCart}>
+              <CodeBlock>{`[%show_order id:'[@order_id@]' hidechild:'1'%]
+    [%param *header%]
+        <h2>Order: [@order_id@]</h2>
+        <p>Status: [@order_status@]</p>
+        <p>Grand Total: [%format type:'currency'%][@grand_total@][%/format%]</p>
+    [%/param%]
+    [%param *body%]
+        <tr>
+            <td>[@sku@]</td>
+            <td>[@model@]</td>
+            <td>[@quantity@]</td>
+            <td>[%format type:'currency'%][@unit_price@][%/format%]</td>
+        </tr>
+    [%/param%]
+[%/show_order%]`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">show_order Data Tags</h4>
+              <TagTable rows={[
+                ["[@order_id@]", "Order ID"],
+                ["[@order_status@]", "Status name (New, Dispatched, etc.)"],
+                ["[@sku@]", "Order line SKU"],
+                ["[@model@], [@name@]", "Product name"],
+                ["[@quantity@]", "Line quantity"],
+                ["[@unit_price@]", "Unit price"],
+                ["[@grand_total@]", "Grand total"],
+                ["[@total_items@]", "Total order lines"],
+                ["[@tracking_id@]", "Tracking number ID"],
+                ["[@ship_tracking@]", "Tracking number"],
+                ["[@iskitting@]", "True if line is a kit component"],
+                ["[@itemnotes@]", "Order line notes"],
+                ["[@acc_code@]", "Accounting code"],
+              ]} />
+            </Section>
+
+            <Section title="ORDER_PAYMENT_HISTORY" icon={CreditCard}>
+              <CodeBlock>{`[%order_payment_history id:'[@order_id@]'%]
+    [%param *body%]
+        <p>[@payment_amount@] paid on [@date_paid@] via [@payment_name@]</p>
+    [%/param%]
+[%/order_payment_history%]`}</CodeBlock>
+            </Section>
+
+            <Section title="ORDER_REFUNDS" icon={CreditCard}>
+              <CodeBlock>{`[%order_refunds id:'[@order_id@]'%]
+    [%param *body%]
+        <p>Refund #[@count@]: [@refund_total@] issued [@date_issued@]</p>
+    [%/param%]
+[%/order_refunds%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@refund_total@]", "Total refund amount"],
+                ["[@date_issued@]", "Date refund was issued"],
+                ["[@date_approved@]", "Date refund was approved"],
+                ["[@count@]", "Incrementing counter"],
+              ]} />
+            </Section>
+
+            <Section title="SHIPPING_METHODS — Available Shipping Options" icon={Package}>
+              <CodeBlock>{`[%shipping_methods%]
+    [%param *body%]
+        <div class="shipping-option">
+            <h4>[@shipping_method@] - 
+                [%if [@shipping_quote@]%]P.O.A
+                [%else%]
+                    [%if [@cost@] == 0%]
+                        [%if [@na@] == 0%]Free[%else%]Not Applicable[%/if%]
+                    [%else%]
+                        [%format type:'currency'%][@cost@][%/format%]
+                    [%/if%]
+                [%/if%]
+            </h4>
+            <p>Est. arrival: [%format type:'number' tl_unit:'day'%][@delivery_time@][%/format%]</p>
+        </div>
+    [%/param%]
+[%/shipping_methods%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@shipping_method@]", "Shipping option name"],
+                ["[@cost@]", "Calculated cost after discounts"],
+                ["[@actual_cost@]", "Original cost before discounts"],
+                ["[@delivery_time@]", "Estimated delivery time"],
+                ["[@na@]", "Not applicable flag (0=available, 1=N/A)"],
+                ["[@shipping_quote@]", "True if freight quote required"],
+                ["[@sh_group_routing@]", "Routing group for cheapest-default logic"],
+                ["[@sortorder@]", "Sort order"],
+                ["sortby:''", "Param: sort by actual_cost, sortorder, delivery_time"],
+              ]} />
+            </Section>
+
+            <Section title="CONSIGNMENT_BREAKDOWN — Shipment Details" icon={Package}>
+              <CodeBlock>{`[%consignment_breakdown order_id:'[@order_id@]' 
+    article_id:'[@article_id@]' cngmt_id:'[@cngmt_id@]'%]
+    [%param *body%]
+        <p>[@SKU@] × [@quantity@]</p>
+    [%/param%]
+[%/consignment_breakdown%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Used in dispatch dockets and shipping labels to show what's in each consignment/article.</p>
+            </Section>
+
+            <Section title="PRINT_ORDER" icon={FileText}>
+              <CodeBlock>{`[%print_order id:'[@order_id@]'%]
+    [%param *body%]
+        <!-- Invoice/printable template content -->
+    [%/param%]
+[%/print_order%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Used in printable documents (invoices, pick slips, etc.) to load order data.</p>
+            </Section>
           </TabsContent>
 
           {/* ═══════════════ URL SYSTEM ═══════════════ */}
@@ -1401,6 +1634,46 @@ Format: /assets/webshop/cms/{ID % 100 padded to 2 digits}/{ID}.{ext}`}</CodeBloc
     <input type="number" name="qty" value="1" min="1" />
     <button type="submit">Add to Cart</button>
 </form>`}</CodeBlock>
+            </Section>
+
+            <Section title="AJAX Cart & JavaScript API" icon={Code2}>
+              <p>Maropost provides JavaScript cart functions available after jQuery loads:</p>
+              <CodeBlock title="Built-in Cart JavaScript">{`// Get current cart contents (returns array of product objects)
+$.getCartCache()
+
+// Get last product added to cart
+$.getLastItemAdded()
+
+// Cart loaded callback — fires after cart initializes
+function cartLoaded() {
+    console.log('Cart ready');
+    var items = $.getCartCache();
+}
+
+// Add to Cart callback for analytics
+nAddItemCallback = {
+    addToCart: function() {
+        var product = $.getLastItemAdded();
+        // Send to Google Analytics, Facebook Pixel, etc.
+        gtag('event', 'add_to_cart', { items: [product] });
+    },
+    addMultiToCart: function() {
+        var items = $.getCartCache();
+        // Handle multi-add
+    },
+    init: function() {
+        // Runs on page load
+    }
+};
+
+// AJAX add to cart
+document.getElementById("myBtn").addEventListener("click", async () => {
+    await fetch("/_mycart?sku=SOME_SKU&qty=1");
+    window.location = "/_mycart?fn=payment";
+});`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">
+                <strong>Init chain:</strong> <code>$.initPageFuncs</code> → <code>$.addToCartInit</code> → <code>$.buildCartItem</code> → <code>$.cartCacheUpdate</code> → callback
+              </p>
             </Section>
 
             <Section title="Payment Integration" icon={CreditCard}>
