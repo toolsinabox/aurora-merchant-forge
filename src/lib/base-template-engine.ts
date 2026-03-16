@@ -1103,35 +1103,106 @@ function processUrlTags(template: string, ctx: TemplateContext): string {
 function resolveUrlTag(attrs: string, base: string, basePath?: string): string {
   const pageMatch = attrs.match(/page:'([^']+)'/i);
   const typeMatch = attrs.match(/type:'([^']+)'/i);
+  const fnMatch = attrs.match(/fn:'([^']+)'/i);
+  const idMatch = attrs.match(/id:'([^']+)'/i);
   const qsMatch = attrs.match(/qs:'([^']+)'/i);
   const page = pageMatch?.[1] || "";
   const type = typeMatch?.[1] || "";
+  const fn = fnMatch?.[1] || "";
+  const id = idMatch?.[1] || "";
   const qs = qsMatch?.[1] || "";
   
   const prefix = basePath || base;
   
   let url = prefix;
+
+  // Handle type-only shortcuts (no page param)
+  if (!page && type) {
+    switch (type) {
+      case "home": return prefix || "/";
+      case "item": return id ? `${prefix}/product/${id}` : `${prefix}/products`;
+      case "content": return id ? `${prefix}/page/${id}` : `${prefix}/`;
+      case "page":
+        if (id === "contact_us") return `${prefix}/contact`;
+        if (id === "subscribe") return `${prefix}/`;
+        return id ? `${prefix}/page/${id}` : `${prefix}/`;
+      default: break;
+    }
+  }
+
   switch (page) {
-    case "account": url += "/account"; break;
-    case "checkout":
-      if (type === "cart") url += "/cart";
-      else url += "/checkout";
+    case "account":
+      // Maropost account sub-pages
+      switch (type) {
+        case "login": url += "/login"; break;
+        case "register": url += "/signup"; break;
+        case "logout": url += "/login"; break; // Will need logout logic
+        case "forgotpwd": url += "/forgot-password"; break;
+        case "forgotusr": url += "/forgot-username"; break;
+        case "resetpwd": url += "/reset-password"; break;
+        case "edit_account": url += "/account"; break;
+        case "edit_address": url += "/account"; break;
+        case "edit_pwd": url += "/account"; break;
+        case "wishlist": url += "/wishlist"; break;
+        case "favourites": url += "/account"; break;
+        case "orders": url += "/account"; break;
+        case "view_order": url += "/account"; break;
+        case "nr_view_order": url += "/account"; break;
+        case "track_order":
+        case "nr_track_order": url += "/track-order"; break;
+        case "documents": url += "/account"; break;
+        case "approve_quote": url += "/account"; break;
+        case "payrec": url += "/account"; break;
+        case "pay_order": url += "/account"; break;
+        case "warranty": url += "/account"; break;
+        case "write_review": url += "/account"; break;
+        case "write_contentreview": url += "/account"; break;
+        case "wholesaleregister": url += "/wholesale"; break;
+        case "mystore": url += "/account"; break;
+        case "logos": url += "/account"; break;
+        case "cart": url += "/cart"; break;
+        default: url += "/account"; break;
+      }
       break;
-    case "contact": url += "/contact-us"; break;
+    case "checkout":
+      if (type === "cart" || (!fn && !type)) {
+        url += "/cart";
+      } else if (fn === "payment" || fn === "3rdparty") {
+        url += "/checkout";
+      } else if (fn === "quote") {
+        url += "/request-quote";
+      } else if (fn === "voucher") {
+        url += "/gift-vouchers";
+      } else if (fn === "upsell") {
+        url += "/cart";
+      } else {
+        url += "/checkout";
+      }
+      break;
+    case "contact": url += "/contact"; break;
     case "wishlist": url += "/wishlist"; break;
     case "compare": url += "/compare"; break;
     case "home": url = prefix || "/"; break;
-    case "products": url += "/products"; break;
+    case "products":
     case "search": url += "/products"; break;
+    case "item": url += id ? `/product/${id}` : "/products"; break;
+    case "content": url += id ? `/page/${id}` : "/"; break;
     case "login": url += "/login"; break;
-    case "register": url += "/register"; break;
+    case "register": url += "/signup"; break;
     case "blog": url += "/blog"; break;
-    case "store-finder": url += "/store-finder"; break;
-    default: url += "/" + page;
+    case "store-finder":
+    case "store_finder": url += "/store-finder"; break;
+    default:
+      if (page) url += "/" + page.replace(/_/g, "-");
+      break;
   }
-  if (type === "write_review") url = `${prefix}/account/write_review`;
-  if (type === "track_order") url = `${prefix}/track-order`;
-  if (qs) url += "?" + qs;
+
+  // Append ID to URL for order/item views
+  if (id && type === "view_order") url += `?order=${id}`;
+  else if (id && type === "track_order") url += `?order=${id}`;
+  else if (id && page === "item") { /* already handled */ }
+
+  if (qs) url += (url.includes("?") ? "&" : "?") + qs;
   return url;
 }
 
