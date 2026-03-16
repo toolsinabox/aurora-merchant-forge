@@ -235,47 +235,44 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
 
-  // Render header — the Maropost header template contains <!DOCTYPE>, <html>, <head>, <body>
-  // We need to extract just the <body> content for rendering
-  const { headContent, bodyContent: renderedHeader } = useMemo(() => {
-    if (!headerFile?.content) return { headContent: "", bodyContent: "" };
+  // ── SSR-first rendering: use server-rendered HTML when available, fall back to client-side ──
+  const useSSR = !!ssrData;
+
+  // Client-side render (fallback when SSR unavailable)
+  const { headContent: clientHeadContent, bodyContent: clientHeader } = useMemo(() => {
+    if (useSSR || !headerFile?.content) return { headContent: "", bodyContent: "" };
     const rendered = renderTemplate(headerFile.content, baseCtx);
-    
-    // Extract <head> content for CSS/meta injection
     const headMatch = rendered.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
     const headContent = headMatch?.[1] || "";
-    
-    // Extract <body> content — everything after <body...>
     const bodyMatch = rendered.match(/<body[^>]*>([\s\S]*$)/i);
     let bodyContent = bodyMatch?.[1] || rendered;
-    
-    // Remove DOCTYPE, html, head tags if present at top level
     bodyContent = bodyContent
       .replace(/<!DOCTYPE[^>]*>/gi, "")
       .replace(/<\/?html[^>]*>/gi, "")
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<\/?body[^>]*>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-      // Keep <link> tags with resolved theme-assets URLs — they should load normally
-    
-    // Rewrite relative asset paths to storage bucket URLs
     bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
-    
     return { headContent, bodyContent };
-  }, [headerFile, baseCtx, themeAssetBaseUrl]);
+  }, [useSSR, headerFile, baseCtx, themeAssetBaseUrl]);
 
-  const renderedFooter = useMemo(() => {
-    if (!footerFile?.content) return "";
+  const clientFooter = useMemo(() => {
+    if (useSSR || !footerFile?.content) return "";
     let rendered = renderTemplate(footerFile.content, baseCtx);
-    // Clean up closing tags and strip scripts (handled separately)
     rendered = rendered
       .replace(/<\/body>/gi, "")
       .replace(/<\/html>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-    // Rewrite relative asset paths to storage bucket URLs
     rendered = rewriteAssetUrls(rendered, themeAssetBaseUrl);
     return rendered;
-  }, [footerFile, baseCtx, themeAssetBaseUrl]);
+  }, [useSSR, footerFile, baseCtx, themeAssetBaseUrl]);
+
+  // Resolve final HTML — SSR takes priority
+  const headContent = useSSR ? ssrData!.head_content : clientHeadContent;
+  const renderedHeader = useSSR ? ssrData!.header_html : clientHeader;
+  const renderedFooter = useSSR ? ssrData!.footer_html : clientFooter;
+  const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
+  const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
 
   // Track when CSS files are ready in storage
   const [cssReady, setCssReady] = useState(false);
