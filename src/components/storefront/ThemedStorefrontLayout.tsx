@@ -192,7 +192,7 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
 }
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
@@ -200,6 +200,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   extraContext?: Partial<TemplateContext>;
   categories?: any[];
   basePath?: string;
+  cartData?: { items: any[]; totalPrice: number; totalItems: number };
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
