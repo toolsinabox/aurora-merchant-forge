@@ -1496,6 +1496,68 @@ Rate Limit: 500 requests/minute (429 response when exceeded)`}</CodeBlock>
                 ["/_myaccount?page=wishlist", "Wishlist"],
                 ["/_myaccount?page=orders", "Order history"],
                 ["/_myaccount?page=edit_account", "Edit account details"],
+                ["/_myaccount?page=addressbook", "Address book management"],
+              ]} />
+            </Section>
+
+            <Section title="Registration Form Fields" icon={Users}>
+              <p>Template locations:</p>
+              <CodeBlock>{`THEME-NAME/templates/customer/register/template.html
+THEME-NAME/templates/customer/login.template.html`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">Standard Form Input Names</h4>
+              <TagTable rows={[
+                ["reg_username", "Username (auto-use email via CUSTOMER_REGISTRATION_IGNORE_USERNAME=1)"],
+                ["reg_password / reg_confirm_password", "Password fields"],
+                ["reg_email_address", "Email address"],
+                ["reg_bill_first_name / reg_bill_last_name", "Name fields"],
+                ["reg_bill_company", "Company name"],
+                ["reg_bill_phone", "Phone number"],
+                ["reg_bill_zip / reg_bill_city / reg_bill_state", "Address fields"],
+                ["reg_bill_country", "Country"],
+                ["reg_usercustom1 ... reg_usercustom9", "Custom fields (read back as [@user:usercustom1@])"],
+                ["reg_usermisc1", "Miscellaneous field"],
+              ]} />
+            </Section>
+
+            <Section title="Address Book Function Tag" icon={Users}>
+              <CodeBlock>{`[%address_book%]
+    [%param *header%]<ul>[%/param%]
+    [%param *body%]
+        <li>
+            <strong>[@ship_title@]</strong><br/>
+            [@ship_first_name@] [@ship_last_name@]<br/>
+            [@ship_street1@] [@ship_street2@]<br/>
+            [@ship_city@] [@ship_state@] [@ship_postcode@]<br/>
+            [@ship_country@]
+        </li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/address_book%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@id@]", "Address ID ('b' for billing, integer for shipping)"],
+                ["[@ship_title@]", "Address label"],
+                ["[@ship_first_name@], [@ship_last_name@]", "Name"],
+                ["[@ship_street1@], [@ship_street2@]", "Street lines"],
+                ["[@ship_city@], [@ship_state@], [@ship_postcode@]", "Location"],
+                ["[@ship_country@]", "Country code"],
+              ]} />
+            </Section>
+
+            <Section title="User Value Tags (Logged-in Customer)" icon={Users}>
+              <p>All via <code>[@user:field_name@]</code>:</p>
+              <TagTable rows={[
+                ["[@user:email@]", "Email"],
+                ["[@user:username@]", "Username"],
+                ["[@user:bill_first_name@] / [@user:bill_last_name@]", "Name"],
+                ["[@user:haslogin@]", "True if logged in"],
+                ["[@user:active@]", "True if active"],
+                ["[@user:registration_date@]", "Registration date"],
+                ["[@user:sales_agent@]", "Sales agent"],
+                ["[@user:approval_username@]", "B2B approval parent"],
+                ["[@user:balance@]", "Credit balance"],
+                ["[@user:addr_id@]", "Default address ID"],
+                ["[@user:referral_username@]", "Referral code"],
+                ["[@user:usercustom1@] to [@user:usercustom9@]", "Custom fields"],
               ]} />
             </Section>
           </TabsContent>
