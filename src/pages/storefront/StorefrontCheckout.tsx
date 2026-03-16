@@ -880,40 +880,60 @@ export default function StorefrontCheckout() {
                 )}
               </div>
 
-              {/* Billing Address */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Billing Address</h2>
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id="billing_same"
-                    checked={form.billing_same}
-                    onCheckedChange={(checked) => setForm(prev => ({ ...prev, billing_same: !!checked }))}
-                  />
-                  <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
-                </div>
-                {!form.billing_same && (
-                  <>
-                    <div className="space-y-1.5">
-                      <Label>Address</Label>
-                      <Input value={form.billing_address} onChange={(e) => update("billing_address", e.target.value)} className="h-10" />
+              {/* Section 3: Billing & Delivery */}
+              <div className="border-x border-b overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 3 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 3 ? 0 : 3)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${deliveryMethod ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+                      {deliveryMethod ? <Check className="h-3 w-3" /> : "3"}
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      <div className="space-y-1.5">
-                        <Label>City</Label>
-                        <Input value={form.billing_city} onChange={(e) => update("billing_city", e.target.value)} className="h-10" />
+                    <span className="font-semibold text-sm">Billing & Delivery</span>
+                  </div>
+                  {checkoutStep !== 3 && (
+                    <span className="text-xs text-muted-foreground capitalize">{deliveryMethod === "pickup" ? "Click & Collect" : "Delivery"}</span>
+                  )}
+                </button>
+                {checkoutStep === 3 && (
+                  <div className="px-5 pb-5 pt-3 space-y-5 border-t">
+                    {/* Billing */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium">Billing Address</h3>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="billing_same"
+                          checked={form.billing_same}
+                          onCheckedChange={(checked) => setForm(prev => ({ ...prev, billing_same: !!checked }))}
+                        />
+                        <label htmlFor="billing_same" className="text-sm cursor-pointer">Same as shipping address</label>
                       </div>
-                      <div className="space-y-1.5">
-                        <Label>ZIP Code</Label>
-                        <Input value={form.billing_zip} onChange={(e) => update("billing_zip", e.target.value)} className="h-10" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label>Country</Label>
-                        <Input value={form.billing_country} onChange={(e) => update("billing_country", e.target.value)} className="h-10" />
-                      </div>
+                      {!form.billing_same && (
+                        <>
+                          <div className="space-y-1.5">
+                            <Label>Address</Label>
+                            <Input value={form.billing_address} onChange={(e) => update("billing_address", e.target.value)} className="h-10" />
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div className="space-y-1.5">
+                              <Label>City</Label>
+                              <Input value={form.billing_city} onChange={(e) => update("billing_city", e.target.value)} className="h-10" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label>ZIP Code</Label>
+                              <Input value={form.billing_zip} onChange={(e) => update("billing_zip", e.target.value)} className="h-10" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <Label>Country</Label>
+                              <Input value={form.billing_country} onChange={(e) => update("billing_country", e.target.value)} className="h-10" />
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
-                  </>
-                )}
-              </div>
+                    <Separator />
 
               {/* Delivery Method Toggle */}
               <div className="border rounded-lg p-5 space-y-4">
