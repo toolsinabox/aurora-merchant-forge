@@ -1,10 +1,11 @@
 import { ReactNode, useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
 import { useContentZones } from "@/hooks/use-content-zones";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+import { useSSRPage } from "@/hooks/use-ssr-page";
 import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
@@ -24,9 +25,30 @@ interface ThemedStorefrontLayoutProps {
  * Wrapper that checks for an active theme. If theme exists with header/footer templates,
  * renders full B@SE theme. Otherwise falls back to the default React StorefrontLayout.
  */
+/**
+ * Derive page type from the current URL path for SSR routing.
+ */
+function derivePageType(pathname: string, basePath: string): { pageType: string; slug?: string } {
+  const relative = pathname.replace(basePath, "").replace(/^\/+/, "");
+  if (!relative || relative === "") return { pageType: "home" };
+  if (relative.startsWith("product/")) return { pageType: "product", slug: relative.replace("product/", "") };
+  if (relative.startsWith("category/")) return { pageType: "category", slug: relative.replace("category/", "") };
+  if (relative === "cart") return { pageType: "cart" };
+  if (relative === "checkout") return { pageType: "checkout" };
+  if (relative === "login") return { pageType: "login" };
+  if (relative === "signup") return { pageType: "register" };
+  if (relative === "account") return { pageType: "account" };
+  if (relative === "blog") return { pageType: "blog" };
+  if (relative === "contact") return { pageType: "contact" };
+  if (relative.startsWith("page/")) return { pageType: "content", slug: relative.replace("page/", "") };
+  if (relative === "products") return { pageType: "category" };
+  return { pageType: "content", slug: relative };
+}
+
 export function ThemedStorefrontLayout({ children, storeName, extraContext }: ThemedStorefrontLayoutProps) {
   const { storeSlug: paramSlug } = useParams();
   const { storeSlug, basePath } = useStoreSlug(paramSlug);
+  const location = useLocation();
   const [storeId, setStoreId] = useState<string>("");
   const [store, setStore] = useState<any>(null);
   const [categories, setCategories] = useState<any[]>([]);
@@ -55,8 +77,24 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
   const { data: theme, isLoading } = useActiveTheme(storeId);
 
+  // Derive page type for SSR
+  const { pageType, slug: pageSlug } = useMemo(
+    () => derivePageType(location.pathname, basePath || ""),
+    [location.pathname, basePath]
+  );
+
+  // SSR: fetch pre-rendered HTML from edge function (Maropost-style server rendering)
+  const { data: ssrData, loading: ssrLoading } = useSSRPage({
+    storeId: storeId || undefined,
+    pageType,
+    slug: pageSlug,
+    basePath,
+    extraContext,
+    enabled: !!storeId && storeResolved,
+  });
+
   // Show a minimal loading skeleton while store + theme resolve — never flash the default layout
-  if (!storeResolved || (!theme && isLoading)) {
+  if (!storeResolved || (!theme && isLoading) || (storeId && ssrLoading)) {
     return (
       <div className="min-h-screen bg-background">
         <div className="h-16 bg-muted/30 animate-pulse" />
@@ -76,7 +114,16 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   const { items: cartItems, totalPrice: cartTotal, totalItems: cartCount } = useCart();
 
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath} cartData={{ items: cartItems, totalPrice: cartTotal, totalItems: cartCount }}>
+    <ThemedShell
+      theme={theme}
+      store={store}
+      storeName={storeName}
+      extraContext={extraContext}
+      categories={categories}
+      basePath={basePath}
+      cartData={{ items: cartItems, totalPrice: cartTotal, totalItems: cartCount }}
+      ssrData={ssrData}
+    >
       {children}
     </ThemedShell>
   );
@@ -125,7 +172,7 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
 }
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData, ssrData }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
@@ -134,6 +181,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   categories?: any[];
   basePath?: string;
   cartData?: { items: any[]; totalPrice: number; totalItems: number };
+  ssrData?: import("@/hooks/use-ssr-page").SSRPageResult | null;
 }) {
   const { user } = useAuth();
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
@@ -187,47 +235,44 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
 
-  // Render header — the Maropost header template contains <!DOCTYPE>, <html>, <head>, <body>
-  // We need to extract just the <body> content for rendering
-  const { headContent, bodyContent: renderedHeader } = useMemo(() => {
-    if (!headerFile?.content) return { headContent: "", bodyContent: "" };
+  // ── SSR-first rendering: use server-rendered HTML when available, fall back to client-side ──
+  const useSSR = !!ssrData;
+
+  // Client-side render (fallback when SSR unavailable)
+  const { headContent: clientHeadContent, bodyContent: clientHeader } = useMemo(() => {
+    if (useSSR || !headerFile?.content) return { headContent: "", bodyContent: "" };
     const rendered = renderTemplate(headerFile.content, baseCtx);
-    
-    // Extract <head> content for CSS/meta injection
     const headMatch = rendered.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
     const headContent = headMatch?.[1] || "";
-    
-    // Extract <body> content — everything after <body...>
     const bodyMatch = rendered.match(/<body[^>]*>([\s\S]*$)/i);
     let bodyContent = bodyMatch?.[1] || rendered;
-    
-    // Remove DOCTYPE, html, head tags if present at top level
     bodyContent = bodyContent
       .replace(/<!DOCTYPE[^>]*>/gi, "")
       .replace(/<\/?html[^>]*>/gi, "")
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<\/?body[^>]*>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-      // Keep <link> tags with resolved theme-assets URLs — they should load normally
-    
-    // Rewrite relative asset paths to storage bucket URLs
     bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
-    
     return { headContent, bodyContent };
-  }, [headerFile, baseCtx, themeAssetBaseUrl]);
+  }, [useSSR, headerFile, baseCtx, themeAssetBaseUrl]);
 
-  const renderedFooter = useMemo(() => {
-    if (!footerFile?.content) return "";
+  const clientFooter = useMemo(() => {
+    if (useSSR || !footerFile?.content) return "";
     let rendered = renderTemplate(footerFile.content, baseCtx);
-    // Clean up closing tags and strip scripts (handled separately)
     rendered = rendered
       .replace(/<\/body>/gi, "")
       .replace(/<\/html>/gi, "")
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-    // Rewrite relative asset paths to storage bucket URLs
     rendered = rewriteAssetUrls(rendered, themeAssetBaseUrl);
     return rendered;
-  }, [footerFile, baseCtx, themeAssetBaseUrl]);
+  }, [useSSR, footerFile, baseCtx, themeAssetBaseUrl]);
+
+  // Resolve final HTML — SSR takes priority
+  const headContent = useSSR ? ssrData!.head_content : clientHeadContent;
+  const renderedHeader = useSSR ? ssrData!.header_html : clientHeader;
+  const renderedFooter = useSSR ? ssrData!.footer_html : clientFooter;
+  const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
+  const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
 
   // Track when CSS files are ready in storage
   const [cssReady, setCssReady] = useState(false);
@@ -850,10 +895,13 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
           <header dangerouslySetInnerHTML={{ __html: renderedHeader }} />
         )}
 
-        {/* Page Content — children render OUTSIDE theme scope for React pages,
-            but INSIDE for B@SE-rendered pages (they bring their own themed wrapper) */}
+        {/* Page Content — SSR body takes priority, React children as fallback */}
         <main id="main-content" className="flex-1 pb-16 md:pb-0">
-          {children}
+          {ssrBodyHtml ? (
+            <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
+          ) : (
+            children
+          )}
         </main>
 
         {/* Rendered Footer */}
