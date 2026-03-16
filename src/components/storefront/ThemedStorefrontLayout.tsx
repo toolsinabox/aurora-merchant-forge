@@ -667,6 +667,33 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     };
   }, [renderedHeader, renderedFooter]);
 
+  // SPA link interception — route internal links through React Router
+  const navigate = useNavigate();
+  useEffect(() => {
+    const container = document.getElementById("neto-theme");
+    if (!container) return;
+    const handler = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement).closest("a[href]") as HTMLAnchorElement | null;
+      if (!anchor) return;
+      const href = anchor.getAttribute("href");
+      if (!href) return;
+      // Skip external links, hash links, mailto, tel, javascript, download, new-tab
+      if (/^(https?:\/\/|\/\/|mailto:|tel:|javascript:|data:)/.test(href)) return;
+      if (href === "#" || href.startsWith("#")) return;
+      if (anchor.target === "_blank" || anchor.hasAttribute("download")) return;
+      // Skip if modifier keys held
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+      e.preventDefault();
+      // Normalize: ensure basePath prefix
+      const bp = basePath || "";
+      const resolved = href.startsWith(bp) ? href : href.startsWith("/") ? `${bp}${href}` : `${bp}/${href}`;
+      navigate(resolved);
+    };
+    container.addEventListener("click", handler);
+    return () => container.removeEventListener("click", handler);
+  }, [basePath, navigate]);
+
   return (
     <>
       {/* Scoped Theme CSS — only applies inside #neto-theme */}
