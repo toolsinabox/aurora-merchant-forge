@@ -2075,6 +2075,182 @@ Headers:
             </Section>
           </TabsContent>
 
+          {/* ═══════════════ THEME STRUCTURE ═══════════════ */}
+          <TabsContent value="theme-structure" className="space-y-4">
+            <Section title="Complete Theme Directory" icon={FileText}>
+              <p>All themes at <code>/httpdocs/assets/themes/THEME_NAME/</code></p>
+              <CodeBlock>{`skeletal/
+├── css/
+│   ├── style.css        ← Your custom CSS (EDIT THIS)
+│   └── app.css          ← Compiled framework (DO NOT EDIT)
+├── js/
+│   ├── ba_custom.js     ← Your custom JS (EDIT THIS)
+│   └── custom.js        ← Framework JS (DO NOT EDIT)
+├── img/
+│   └── logo.png
+└── templates/
+    ├── headers/
+    │   ├── template.html
+    │   └── empty.template.html
+    ├── footers/
+    │   ├── template.html
+    │   └── empty.template.html
+    ├── products/
+    │   ├── template.html          ← Product detail page
+    │   └── includes/
+    │       ├── header.template.html
+    │       ├── buying_options.template.html
+    │       ├── related.template.html
+    │       └── reviews.template.html
+    ├── cms/
+    │   ├── template.html          ← Default content page
+    │   ├── category.template.html ← Category listing
+    │   ├── blog.template.html
+    │   └── includes/
+    │       └── sidebar.template.html
+    ├── cart/
+    │   ├── template.html
+    │   ├── cart.error.html
+    │   └── confirmation.template.html
+    ├── checkout/
+    │   └── template.html
+    ├── customer/
+    │   ├── login.template.html    ← Login + Registration
+    │   ├── register/template.html
+    │   ├── account/template.html
+    │   └── forgot_password/template.html
+    ├── search/
+    │   └── template.html
+    ├── thumbs/
+    │   ├── product/template.html  ← Product card
+    │   └── content/template.html  ← Content card
+    └── write_review/
+        ├── write.template.html
+        ├── preview.template.html
+        └── confirm.template.html`}</CodeBlock>
+            </Section>
+
+            <Section title="Page Composition" icon={FileText}>
+              <p>Every page = <strong>Header + Body + Footer</strong> template</p>
+              <CodeBlock>{`<!-- Override via URL params (testing) -->
+?templatehead=alt_header
+?templatebody=alt_body
+?templatefoot=alt_footer
+
+<!-- Preview staging theme -->
+?nview=THEME_NAME
+
+<!-- Include sub-templates -->
+[%load_template file:'cms/includes/sidebar.template.html'/%]
+
+<!-- Async include -->
+[%load_ajax_template file:'products/includes/reviews.template.html'/%]`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs">
+                <p className="font-medium">⚠️ Rules:</p>
+                <ul className="list-disc pl-4">
+                  <li>Only <code>.template.html</code> files processed by B@SE engine</li>
+                  <li>Plain <code>.html</code> = static, no B@SE tag processing</li>
+                  <li>Custom templates assignable only when theme is <strong>active</strong></li>
+                  <li>SFTP upload = immediately live (no build step)</li>
+                </ul>
+              </div>
+            </Section>
+
+            <Section title="Thumb Templates" icon={FileText}>
+              <CodeBlock>{`<!-- Default thumb: thumbs/product/template.html -->
+[%thumb_list type:'products' template:''%]  ← uses default
+
+<!-- Custom thumb: thumbs/product/grid.template.html -->
+[%thumb_list type:'products' template:'grid'%]
+
+<!-- Content thumbs from thumbs/content/ -->
+[%thumb_list type:'blog' template:'card'%]`}</CodeBlock>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ WEBHOOKS & API ═══════════════ */}
+          <TabsContent value="webhooks" className="space-y-4">
+            <Section title="Order Notification Webhooks" icon={Zap}>
+              <CodeBlock>{`POST https://your-webhook-url.com/endpoint
+Headers:
+  NETO_NOTIFICATION: Order
+  NETOAPI_KEY: your-api-secure-key
+
+Body (XML):
+<?xml version="1.0" encoding="utf-8"?>
+<Event>
+    <CurrentTime>2024-01-03 01:11:12</CurrentTime>
+    <Order>
+        <OrderID>N10001</OrderID>
+        <Username>customer@email.com</Username>
+        <OrderStatus>Pick</OrderStatus>
+        <PreviousOrderStatus>New</PreviousOrderStatus>
+    </Order>
+</Event>`}</CodeBlock>
+              <div className="border rounded-md p-3 mt-2 text-xs">
+                <p className="font-medium">⚠️ Webhook Notes:</p>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>Fires on <strong>order status changes</strong> only — not on creation</li>
+                  <li>Payload is minimal — use <code>GetOrder</code> API for full details</li>
+                  <li>Verify <code>NETOAPI_KEY</code> header for authentication</li>
+                  <li>v6.354.0+ has stricter security (fewer fields in payload)</li>
+                  <li>Rate limit: 500 requests/minute (429 if exceeded)</li>
+                </ul>
+              </div>
+            </Section>
+
+            <Section title="API Endpoint & Best Practices" icon={Code2}>
+              <CodeBlock>{`POST https://www.mysite.com.au/do/WS/NetoAPI
+Headers:
+  NETOAPI_ACTION: GetOrder
+  NETOAPI_KEY: your-api-key
+  Accept: application/json`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">Always Use OutputSelector</h4>
+              <CodeBlock>{`// ✅ Only fetch needed fields
+{
+  "Filter": {
+    "OrderID": "N10001",
+    "OutputSelector": ["OrderID", "OrderStatus", "GrandTotal", "OrderLine"]
+  }
+}`}</CodeBlock>
+              <ul className="list-disc pl-5 space-y-1 text-xs mt-2">
+                <li>Batch create/update in single requests to minimize API calls</li>
+                <li>Track order <strong>lines</strong> not just order IDs (orders can split)</li>
+                <li>Use UTC date variants for timezone consistency</li>
+              </ul>
+            </Section>
+
+            <Section title="Cart & Checkout URL Actions" icon={ShoppingCart}>
+              <TagTable rows={[
+                ["/_mycart", "View cart"],
+                ["/_mycart?sku=SKU&qty=1", "Add to cart via URL"],
+                ["/_mycart?fn=payment", "Proceed to payment"],
+                ["/_mycart?fn=3rdparty", "3rd-party payment redirect"],
+                ["/_mycart?fn=complete", "Order confirmation"],
+                ["/_mycart?fn=empty", "Empty the cart"],
+                ["/_mycart?coupon=CODE", "Apply coupon"],
+              ]} />
+            </Section>
+
+            <Section title="SEO: url_info Function" icon={Search}>
+              <CodeBlock>{`[%url_info name:'page_title'/%]
+[%url_info name:'meta_description'/%]
+[%url_info name:'canonical_url'/%]
+[%url_info name:'page_heading'/%]
+
+<!-- For a specific product -->
+[%url_info type:'product' id:'[@sku@]' name:'page_heading' default:'[@content_name@]'/%]`}</CodeBlock>
+              <TagTable rows={[
+                ["name:'page_title'", "SEO title"],
+                ["name:'page_heading'", "H1 heading"],
+                ["name:'meta_description'", "Meta description"],
+                ["name:'canonical_url'", "Canonical URL path"],
+                ["type:'product'", "Query specific product (by SKU)"],
+                ["default:''", "Fallback if field is empty"],
+              ]} />
+            </Section>
+          </TabsContent>
+
           {/* ═══════════════ GOTCHAS & TIPS ═══════════════ */}
           <TabsContent value="gotchas" className="space-y-4">
             <Section title="Common Pitfalls" icon={Zap}>
