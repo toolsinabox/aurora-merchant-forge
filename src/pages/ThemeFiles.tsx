@@ -176,6 +176,18 @@ export default function ThemeFiles() {
   const [zipFile, setZipFile] = useState<File | null>(null);
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+
+  // Rename dialog
+  const [renameDialog, setRenameDialog] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<any>(null);
+  const [renameName, setRenameName] = useState("");
+
+  // Drag-drop state
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Breadcrumb path for current folder navigation
+  const [currentFolderPath, setCurrentFolderPath] = useState("");
 
   // Auto-select first theme
   useEffect(() => {
