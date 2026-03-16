@@ -83,6 +83,7 @@ const inventoryNav = [
 const fulfillmentNav = [
   { title: "Warehouse", url: `${prefix}/warehouse`, icon: Warehouse },
   { title: "Pick & Pack", url: `${prefix}/pick-pack`, icon: ClipboardCopy },
+  { title: "Inventory Transfers", url: `${prefix}/inventory-transfers`, icon: ArrowLeftRight },
   { title: "Carrier Manifest", url: `${prefix}/carrier-manifest`, icon: Truck },
   { title: "Shipping Zones", url: `${prefix}/shipping-zones`, icon: MapPin },
 ];
