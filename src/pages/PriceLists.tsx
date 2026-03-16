@@ -279,14 +279,41 @@ export default function PriceLists() {
             <div className="space-y-3">
               <div><Label className="text-xs">Name *</Label><Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} className="h-9 text-xs" /></div>
               <div><Label className="text-xs">Description</Label><Input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className="h-9 text-xs" /></div>
-              <div><Label className="text-xs">Customer Group</Label>
-                <Select value={form.customer_group_id} onValueChange={v => setForm(f => ({ ...f, customer_group_id: v }))}>
-                  <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="All customers" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">All Customers</SelectItem>
-                    {groups.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-2">
+                <div><Label className="text-xs">Customer Group</Label>
+                  <Select value={form.customer_group_id} onValueChange={v => setForm(f => ({ ...f, customer_group_id: v }))}>
+                    <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="All customers" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Customers</SelectItem>
+                      {groups.map((g: any) => <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div><Label className="text-xs">Currency</Label>
+                  <Select value={form.currency} onValueChange={v => setForm(f => ({ ...f, currency: v }))}>
+                    <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {CURRENCIES.map(c => <SelectItem key={c} value={c} className="text-xs">{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div><Label className="text-xs">Bulk Discount Type</Label>
+                  <Select value={form.discount_type} onValueChange={v => setForm(f => ({ ...f, discount_type: v }))}>
+                    <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none" className="text-xs">None (per-item pricing)</SelectItem>
+                      <SelectItem value="percentage" className="text-xs">% Off Base Price</SelectItem>
+                      <SelectItem value="fixed" className="text-xs">Fixed $ Off</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {form.discount_type !== "none" && (
+                  <div><Label className="text-xs">Discount Value</Label>
+                    <Input type="number" value={form.discount_value} onChange={e => setForm(f => ({ ...f, discount_value: e.target.value }))} className="h-9 text-xs" />
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div><Label className="text-xs">Starts</Label><Input type="date" value={form.starts_at} onChange={e => setForm(f => ({ ...f, starts_at: e.target.value }))} className="h-9 text-xs" /></div>
