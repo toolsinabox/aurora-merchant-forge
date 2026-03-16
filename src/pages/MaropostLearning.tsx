@@ -1413,6 +1413,293 @@ Format: /assets/webshop/cms/{ID % 100 padded to 2 digits}/{ID}.{ext}`}</CodeBloc
             </Section>
           </TabsContent>
 
+          {/* ═══════════════ API ACTIONS DETAIL (NEW) ═══════════════ */}
+          <TabsContent value="api-actions" className="space-y-4">
+            <Section title="Complete API Action List" icon={Server}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Products (Items)</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddItem</li>
+                    <li>GetItem</li>
+                    <li>UpdateItem</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Orders</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddOrder</li>
+                    <li>GetOrder</li>
+                    <li>UpdateOrder</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Customers</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddCustomer</li>
+                    <li>GetCustomer</li>
+                    <li>UpdateCustomer</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Categories / Content</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddCategory</li>
+                    <li>GetCategory</li>
+                    <li>UpdateCategory</li>
+                    <li>AddContent</li>
+                    <li>GetContent</li>
+                    <li>UpdateContent</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Payments</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddPayment</li>
+                    <li>GetPayment</li>
+                    <li>GetPaymentMethods</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Shipping</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>GetShippingQuote</li>
+                    <li>GetShippingMethods</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Vouchers / RMA</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>AddVoucher</li>
+                    <li>GetVoucher</li>
+                    <li>UpdateVoucher</li>
+                    <li>AddRma</li>
+                    <li>GetRma</li>
+                    <li>UpdateRma</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Warehouses / Suppliers</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>GetWarehouse</li>
+                    <li>GetSupplier</li>
+                    <li>GetCurrency</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Cart</h4>
+                  <ul className="text-xs space-y-1 font-mono">
+                    <li>GetCart (internal)</li>
+                    <li>UpdateCart (internal)</li>
+                  </ul>
+                </div>
+              </div>
+            </Section>
+
+            <Section title="GetPayment API Call" icon={CreditCard}>
+              <CodeBlock title="GetPayment request">{`POST https://www.yoursite.com.au/do/WS/NetoAPI
+Headers:
+  NETOAPI_ACTION: GetPayment
+  Accept: application/json
+  NETOAPI_KEY: your-api-key
+
+{
+  "Filter": {
+    "PaymentID": [123],
+    "OrderID": ["N10001"],
+    "Page": 0,
+    "Limit": 50,
+    "OutputSelector": [
+      "PaymentID", "OrderID", "PaymentMethodName",
+      "AmountPaid", "DatePaid", "PaymentStatus"
+    ]
+  }
+}`}</CodeBlock>
+            </Section>
+
+            <Section title="AddPayment API Call" icon={CreditCard}>
+              <CodeBlock title="AddPayment request">{`{
+  "Payment": [{
+    "OrderID": "N10001",
+    "PaymentMethodName": "Credit Card",
+    "AmountPaid": 99.95,
+    "DatePaid": "2024-01-15 10:30:00",
+    "PaymentReference": "txn_123456"
+  }]
+}`}</CodeBlock>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ PAYMENTS (NEW) ═══════════════ */}
+          <TabsContent value="payments" className="space-y-4">
+            <Section title="Payment Gateways Supported" icon={CreditCard}>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {["PayPal", "Stripe", "eWAY", "Afterpay", "Zip Pay", "zipMoney", "Braintree", "SecurePay", 
+                  "Commonwealth Bank", "NAB Transact", "Westpac", "ANZ eGate", "Pin Payments", "Windcave",
+                  "Klarna", "Laybuy", "Openpay", "Humm", "LatitudePay", "Bank Transfer", "Cash on Delivery", "Phone Order"
+                ].map(gw => (
+                  <div key={gw} className="border rounded-md p-2 text-xs text-center">{gw}</div>
+                ))}
+              </div>
+            </Section>
+
+            <Section title="Payment Flow in Templates" icon={Code2}>
+              <CodeBlock>{`<!-- Payment is entirely server-side. Templates just provide the form: -->
+
+<!-- 1. Cart page shows order summary -->
+/_mycart → templates/checkout/cart.template.html
+
+<!-- 2. Checkout page collects billing/shipping -->
+/_mycart?fn=payment → templates/checkout/payment.template.html
+
+<!-- 3. Third-party redirect (PayPal, Afterpay) -->
+/_mycart?fn=3rdparty → handled by gateway
+
+<!-- 4. Order confirmation -->
+/_mycart?fn=confirm → templates/checkout/confirm.template.html
+
+<!-- Payment methods listed via function tag -->
+[%payment_methods%]
+    [%param *body%][@name@][%/param%]
+[%/payment_methods%]`}</CodeBlock>
+            </Section>
+
+            <Section title="Cart Function Tag — Cart Values" icon={ShoppingCart}>
+              <CodeBlock>{`<!-- Load specific cart value -->
+[%cart id:'grand_total'/%]
+[%cart id:'total_items'/%]
+[%cart id:'shipping_cost'/%]
+[%cart id:'payment_method'/%]
+[%cart id:'payment_method_id'/%]
+[%cart id:'discount_total'/%]
+[%cart id:'product_total'/%]
+[%cart id:'product_discount'/%]
+[%cart id:'shipping_method'/%]
+[%cart id:'shipping_method_id'/%]
+[%cart id:'shipping_total'/%]
+[%cart id:'voucher_credit'/%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">
+                <strong>Note:</strong> These values are rendered at page load time — they won't update dynamically. For live updates, use AJAX calls.
+              </p>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ FILTERS & SORTING (NEW) ═══════════════ */}
+          <TabsContent value="filters" className="space-y-4">
+            <Section title="thumb_list Filter Parameters" icon={Filter}>
+              <TagTable rows={[
+                ["filter_category:''", "Filter by category ID or slug"],
+                ["filter_brand:''", "Filter by brand name"],
+                ["filter_price_from:'' / filter_price_to:''", "Price range filter"],
+                ["filter_in_stock:'y'", "Only show in-stock items"],
+                ["filter_new:'y'", "Only new products"],
+                ["filter_on_sale:'y'", "Only products on sale"],
+                ["filter_featured:'y'", "Only featured products"],
+                ["filter_date_from:'' / filter_date_to:''", "Date range filter"],
+                ["filter_field:'value'", "Custom field filter"],
+              ]} />
+            </Section>
+
+            <Section title="Sort Options" icon={Filter}>
+              <TagTable rows={[
+                ["sort:'name'", "Alphabetical by name"],
+                ["sort:'price'", "By price (low to high)"],
+                ["sort:'price_desc'", "By price (high to low)"],
+                ["sort:'date'", "By date added"],
+                ["sort:'top_sellers'", "By sales count"],
+                ["sort:'sortorder'", "Manual sort order"],
+                ["sort:'sortorder2'", "Secondary sort order"],
+                ["sort:'SKU'", "By SKU"],
+                ["sort:'shortest_item'", "By shortest dimension"],
+                ["sort:'random'", "Random order"],
+              ]} />
+            </Section>
+
+            <Section title="Pagination in Listings" icon={Filter}>
+              <CodeBlock>{`<!-- thumb_list with pagination -->
+[%thumb_list type:'products' limit:'24' page:'[@form:page@]'%]
+    [%param *body%]...product card...[%/param%]
+[%/thumb_list%]
+
+<!-- Pagination controls -->
+[%paging%]
+    [%param *prev%]<a href="[@url@]">&laquo; Prev</a>[%/param%]
+    [%param *body%]<a href="[@url@]" class="[@current@]">[@page_number@]</a>[%/param%]
+    [%param *next%]<a href="[@url@]">Next &raquo;</a>[%/param%]
+[%/paging%]`}</CodeBlock>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ EBAY & MARKETPLACES (NEW) ═══════════════ */}
+          <TabsContent value="ebay" className="space-y-4">
+            <Section title="eBay Template System" icon={Globe}>
+              <ul className="list-disc pl-5 space-y-1 text-xs">
+                <li>eBay has its <strong>own set of B@SE tags</strong> separate from the webstore</li>
+                <li>eBay templates are stored in a separate directory structure</li>
+                <li>eBay templates cannot use JavaScript (eBay policy)</li>
+                <li>Product listings are synced via the Maropost Control Panel</li>
+                <li>eBay-specific data tags documented separately</li>
+              </ul>
+            </Section>
+
+            <Section title="Marketplace Channels" icon={ShoppingCart}>
+              <TagTable rows={[
+                ["eBay AU/US/UK", "Full listing management with templates"],
+                ["Amazon AU", "Product feed sync"],
+                ["Catch.com.au", "Product feed sync"],
+                ["Google Shopping", "XML product feed via sitemap"],
+                ["Facebook Shop", "Catalogue sync"],
+                ["Trade Me (NZ)", "Auction/buy now listings"],
+                ["Kogan", "Product feed"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ EMAILS & PRINTABLES (NEW) ═══════════════ */}
+          <TabsContent value="emails" className="space-y-4">
+            <Section title="Email Template System" icon={FileText}>
+              <ul className="list-disc pl-5 space-y-1 text-xs">
+                <li>Email templates use the same B@SE tag syntax as webstore templates</li>
+                <li>Stored in <code>templates/emails/</code> directory</li>
+                <li>Support all order, customer, and product data tags</li>
+                <li>HTML email with inline CSS (no external stylesheets)</li>
+                <li>Triggered automatically by order status changes</li>
+              </ul>
+            </Section>
+
+            <Section title="Email Types" icon={FileText}>
+              <TagTable rows={[
+                ["Order Confirmation", "Sent when order is placed (status 110)"],
+                ["Order Dispatched", "Sent when order ships (status 200)"],
+                ["Order Completed", "Sent when delivered (status 300)"],
+                ["Abandoned Cart", "Sent after cart abandonment delay"],
+                ["Welcome Email", "Sent on new customer registration"],
+                ["Password Reset", "Triggered by forgot password"],
+                ["Quote Email", "Sent for quote orders (status 100)"],
+                ["Back in Stock", "Triggered when product restocked"],
+                ["Review Request", "Sent after order completion delay"],
+                ["Gift Voucher", "Sent when voucher is purchased"],
+                ["Invoice", "Order invoice email"],
+                ["Credit Note", "Credit note notification"],
+                ["Shipment Tracking", "Tracking number update"],
+              ]} />
+            </Section>
+
+            <Section title="Printable Templates" icon={FileText}>
+              <TagTable rows={[
+                ["Invoice", "templates/printables/invoice.template.html"],
+                ["Packing Slip", "templates/printables/packing_slip.template.html"],
+                ["Pick List", "templates/printables/pick_list.template.html"],
+                ["Shipping Label", "templates/printables/shipping_label.template.html"],
+                ["Return Label", "templates/printables/return_label.template.html"],
+                ["Quote", "templates/printables/quote.template.html"],
+                ["Customer Statement", "templates/printables/statement.template.html"],
+                ["Gift Voucher", "templates/printables/gift_voucher.template.html"],
+                ["Barcode Labels", "templates/printables/barcode_label.template.html"],
+              ]} />
+            </Section>
+          </TabsContent>
+
           {/* ═══════════════ SEO ═══════════════ */}
           <TabsContent value="seo" className="space-y-4">
             <Section title="SEO Tags" icon={Search}>
