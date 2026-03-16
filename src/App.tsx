@@ -155,6 +155,7 @@ const App = () => (
           <WishlistProvider>
           <CompareProvider>
             <MigrationProgressWidget />
+            <ErrorBoundary>
             <Routes>
               {isSubdomainMode ? (
                 <>
