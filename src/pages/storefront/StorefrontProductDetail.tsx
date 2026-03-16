@@ -135,14 +135,24 @@ export default function StorefrontProductDetail() {
       const found = await resolveStoreBySlug(storeSlug, supabase);
       if (found) setStore(found);
 
-      if (productId) {
-        const [prodRes, varsRes, specsRes, shipRes, tiersRes, relsRes] = await Promise.all([
-          supabase.from("products").select("*").eq("id", productId).single(),
-          supabase.from("product_variants").select("*").eq("product_id", productId),
-          supabase.from("product_specifics").select("*").eq("product_id", productId).order("sort_order"),
-          supabase.from("product_shipping").select("*").eq("product_id", productId).maybeSingle(),
-          supabase.from("product_pricing_tiers").select("*").eq("product_id", productId).order("min_quantity"),
-          supabase.from("product_relations").select("*, related:related_product_id(id, title, price, images, compare_at_price)").eq("product_id", productId),
+      if (productId && found) {
+        // Try by UUID first, then by slug
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(productId);
+        let prodRes;
+        if (isUuid) {
+          prodRes = await supabase.from("products").select("*").eq("id", productId).eq("store_id", found.id).single();
+        } else {
+          prodRes = await supabase.from("products").select("*").eq("slug", productId).eq("store_id", found.id).single();
+        }
+        const resolvedId = prodRes.data?.id;
+        if (!resolvedId) { setLoading(false); return; }
+
+        const [varsRes, specsRes, shipRes, tiersRes, relsRes] = await Promise.all([
+          supabase.from("product_variants").select("*").eq("product_id", resolvedId),
+          supabase.from("product_specifics").select("*").eq("product_id", resolvedId).order("sort_order"),
+          supabase.from("product_shipping").select("*").eq("product_id", resolvedId).maybeSingle(),
+          supabase.from("product_pricing_tiers").select("*").eq("product_id", resolvedId).order("min_quantity"),
+          supabase.from("product_relations").select("*, related:related_product_id(id, title, price, images, compare_at_price)").eq("product_id", resolvedId),
         ]);
 
         setProduct(prodRes.data);
