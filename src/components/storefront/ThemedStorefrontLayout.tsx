@@ -155,8 +155,10 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
     return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
   }
 
+  const { items: cartItems, totalPrice: cartTotal, totalItems: cartCount } = useCart();
+
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath}>
+    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath} cartData={{ items: cartItems, totalPrice: cartTotal, totalItems: cartCount }}>
       {children}
     </ThemedShell>
   );
