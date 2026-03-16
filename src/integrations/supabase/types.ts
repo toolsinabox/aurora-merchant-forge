@@ -6651,6 +6651,7 @@ export type Database = {
       }
       stores: {
         Row: {
+          address: string | null
           banner_end: string | null
           banner_start: string | null
           banner_text: string | null
@@ -6660,6 +6661,7 @@ export type Database = {
           currency: string
           currency_decimal_places: number | null
           currency_symbol_position: string | null
+          custom_domain: string | null
           default_low_stock_threshold: number | null
           description: string | null
           favicon_url: string | null
@@ -6667,6 +6669,7 @@ export type Database = {
           ga_tracking_id: string | null
           google_ads_conversion_label: string | null
           google_ads_id: string | null
+          google_verification: string | null
           gtm_container_id: string | null
           guest_checkout_enabled: boolean
           id: string
@@ -6677,6 +6680,7 @@ export type Database = {
           name: string
           notification_prefs: Json | null
           owner_id: string
+          phone: string | null
           plan: string
           plan_limits: Json
           primary_color: string | null
@@ -6692,6 +6696,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          address?: string | null
           banner_end?: string | null
           banner_start?: string | null
           banner_text?: string | null
@@ -6701,6 +6706,7 @@ export type Database = {
           currency?: string
           currency_decimal_places?: number | null
           currency_symbol_position?: string | null
+          custom_domain?: string | null
           default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
@@ -6708,6 +6714,7 @@ export type Database = {
           ga_tracking_id?: string | null
           google_ads_conversion_label?: string | null
           google_ads_id?: string | null
+          google_verification?: string | null
           gtm_container_id?: string | null
           guest_checkout_enabled?: boolean
           id?: string
@@ -6718,6 +6725,7 @@ export type Database = {
           name: string
           notification_prefs?: Json | null
           owner_id: string
+          phone?: string | null
           plan?: string
           plan_limits?: Json
           primary_color?: string | null
@@ -6733,6 +6741,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          address?: string | null
           banner_end?: string | null
           banner_start?: string | null
           banner_text?: string | null
@@ -6742,6 +6751,7 @@ export type Database = {
           currency?: string
           currency_decimal_places?: number | null
           currency_symbol_position?: string | null
+          custom_domain?: string | null
           default_low_stock_threshold?: number | null
           description?: string | null
           favicon_url?: string | null
@@ -6749,6 +6759,7 @@ export type Database = {
           ga_tracking_id?: string | null
           google_ads_conversion_label?: string | null
           google_ads_id?: string | null
+          google_verification?: string | null
           gtm_container_id?: string | null
           guest_checkout_enabled?: boolean
           id?: string
@@ -6759,6 +6770,7 @@ export type Database = {
           name?: string
           notification_prefs?: Json | null
           owner_id?: string
+          phone?: string | null
           plan?: string
           plan_limits?: Json
           primary_color?: string | null
