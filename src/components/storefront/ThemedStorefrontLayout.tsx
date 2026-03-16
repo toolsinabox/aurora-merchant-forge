@@ -276,10 +276,8 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
       .replace(/<\/?html[^>]*>/gi, "")
       .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
       .replace(/<\/?body[^>]*>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
-      // Strip local theme asset links but preserve CDN links (Google Fonts, etc.)
-      .replace(/<link[^>]*href=["'][^"']*\/assets\/themes\/[^"']*["'][^>]*>/gi, "")
-      .replace(/<link[^>]*href=["'](?!https?:\/\/|\/\/)[^"']*["'][^>]*>/gi, "");
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+      // Keep <link> tags with resolved theme-assets URLs — they should load normally
     
     // Rewrite relative asset paths to storage bucket URLs
     bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
