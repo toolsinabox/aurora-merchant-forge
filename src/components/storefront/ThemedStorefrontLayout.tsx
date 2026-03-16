@@ -242,8 +242,10 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
     basePath: basePath || "",
     pageType: "content",
+    cart: cartData ? { items: cartData.items, totalPrice: cartData.totalPrice, totalItems: cartData.totalItems } : undefined,
+    cart_items: cartData?.items,
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
