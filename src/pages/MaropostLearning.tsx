@@ -1455,9 +1455,164 @@ Rate Limit: 500 requests/minute (429 response when exceeded)`}</CodeBlock>
     [%param default%][%cdn_asset html:'0'%]img/default-product.png[%/cdn_asset%][%/param%]
 [%/asset_url%]`}</CodeBlock>
             </Section>
-          </TabsContent>
 
-          {/* ═══════════════ CUSTOMERS ═══════════════ */}
+            <Section title="Variations & Child Products" icon={Tag}>
+              <h4 className="font-medium mb-1">list_item_variations — Dropdown/Swatch Selectors</h4>
+              <CodeBlock>{`[%list_item_variations id:'[@current_sku@]'%]
+    [%param *variation_header%]
+        <label>[@specific@]:</label>
+        <select name="[@specific@]">
+    [%/param%]
+    [%param *variation_body%]
+        <option value="[@value@]" [@selected@]>[@value@]</option>
+    [%/param%]
+    [%param *variation_footer%]
+        </select>
+    [%/param%]
+[%/list_item_variations%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@specific@]", "Variation type name (Size, Colour, etc.)"],
+                ["[@value@]", "Individual option value (S, M, L, Red, Blue)"],
+                ["[@selected@]", "Prints 'selected' for the current selection"],
+                ["[@sku@]", "Child SKU for this variation"],
+                ["[@price@]", "Price for this variation"],
+                ["[@stock@]", "Stock for this variation"],
+              ]} />
+
+              <h4 className="font-medium mt-4 mb-1">Variation Grid (Matrix Layout)</h4>
+              <CodeBlock>{`<!-- Grid/matrix for multi-add (e.g., size × colour table) -->
+[%list_item_variations id:'[@sku@]' grid_style:'1d,2d'%]
+    [%param grid_header%]<table class="table">[%/param%]
+    [%param grid_row_header%]<tr>[%/param%]
+    [%param grid_corner_cell%]<th></th>[%/param%]
+    [%param grid_column_header%]<th>[@value@]</th>[%/param%]
+    [%param grid_cell%]
+        <td><input type="number" name="qty_[@sku@]" value="0" min="0" /></td>
+    [%/param%]
+    [%param grid_row_footer%]</tr>[%/param%]
+    [%param grid_footer%]</table>[%/param%]
+[%/list_item_variations%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Grid file: <code>products/includes/grid.template.html</code></p>
+
+              <h4 className="font-medium mt-4 mb-1">display_child_products — List All Children</h4>
+              <CodeBlock>{`[%display_child_products id:'[@sku@]' template:'default' sortby:'sortorder'%]
+    [%param *header%]<h4>Available Variants</h4>[%/param%]
+    [%param *footer%][%/param%]
+    [%param *ifempty%]<p>No variants available</p>[%/param%]
+[%/display_child_products%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-1">Uses thumb templates from <code>thumbs/product/</code>. Sort options: brand, name, sku, shippingweight, sortorder.</p>
+
+              <h4 className="font-medium mt-4 mb-1">Colour Swatches & Size Blocks</h4>
+              <ul className="list-disc pl-5 text-xs space-y-1">
+                <li><strong>Colour swatches</strong>: Replace dropdown with coloured squares using variation specifics</li>
+                <li><strong>Size blocks</strong>: Small clickable blocks instead of dropdown</li>
+                <li><strong>Stop preselection</strong>: By default Neto preselects a child — can be disabled</li>
+                <li>Deprecated: <code>item_variations</code> → use <code>display_child_products</code> instead</li>
+              </ul>
+            </Section>
+
+            <Section title="Related, Cross-sell, Upsell & Free Gifts" icon={Tag}>
+              <CodeBlock>{`<!-- Related (auto-generated from purchase behavior) -->
+[%related_products id:'[@SKU@]' limit:'10' template:'' show_all:'1'%]
+    [%param *header%]<h4>Customers Also Bought</h4>[%/param%]
+    [%param *ifempty%]<p>No related products.</p>[%/param%]
+[%/related_products%]
+
+<!-- Cross-sell (manually assigned in CP) -->
+[%crosssell id:'[@SKU@]' limit:'10' template:'' show_all:'1'/%]
+
+<!-- Upsell (manually assigned, also shows at checkout) -->
+[%upsell_products id:'[@SKU@]' limit:'10' template:'' show_all:'1'/%]
+
+<!-- Discount/bonus products (from Discounts & Coupons CP section) -->
+[%discount_products id:'[@SKU@]' template:'' show_all:'1' limit:'100'%]
+    [%param *header%]
+        <h3>BONUS! Buy [@name@] & Get These FREE!</h3>
+    [%/param%]
+[%/discount_products%]
+
+<!-- Free gifts (requires Freebies addon) -->
+[%free_gifts id:'[@sku@]'%]
+    [%param *header%]<h4>Free Gifts</h4>[%/param%]
+[%/free_gifts%]`}</CodeBlock>
+              <TagTable rows={[
+                ["related_products", "Auto-generated from purchase behavior (people who bought X also bought Y)"],
+                ["crosssell", "Manually assigned in CP — shows on product page"],
+                ["upsell_products", "Manually assigned in CP — also appears during checkout"],
+                ["discount_products", "Products discounted/free via Discounts & Coupons section"],
+                ["free_gifts", "Requires Freebies addon — buy X get Y free (appears in cart)"],
+              ]} />
+            </Section>
+
+            <Section title="Extra Options (Non-Inventoried)" icon={Tag}>
+              <CodeBlock>{`[%extra_options id:'[@sku@]'%]
+    [%param *header%]<h4>Available Options</h4>[%/param%]
+    [%param *choices%]
+        <label>[@title@] [@price_label@]</label>
+        <div>[@choices@]</div>
+    [%/param%]
+    [%param *text_option%]
+        <label>[@title@] [@price_label@]</label>
+        <input type="text" name="[@name@]" maxlength="[@maxlength@]" />
+    [%/param%]
+    [%param *number_option%]
+        <label>[@title@]</label>
+        <input type="number" name="[@name@]" />
+    [%/param%]
+    [%param *select_option%]
+        <label>[@title@]</label>
+        <select name="[@name@]">[@choices@]</select>
+    [%/param%]
+[%/extra_options%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Extra options are non-inventoried add-ons (gift wrapping, engraving, etc.) configured per product in CP. Format in product data: <code>**Gift Message;*-TEXT_FIELD-;LENGTH=+80</code></p>
+            </Section>
+
+            <Section title="Caching & Performance" icon={Zap}>
+              <h4 className="font-medium mb-1">Cache Tag</h4>
+              <CodeBlock>{`<!-- Cache a product thumbnail (most effective cache) -->
+[%cache id:'thumb_[@inventory_id@]' type:'product'%]
+    <div class="product-card">
+        <img src="[@thumb@]" alt="[@name@]" />
+        <p>[@name@] - [@store_price@]</p>
+    </div>
+[%/cache%]
+
+<!-- Cache category menu -->
+[%cache id:'header_category_menu' type:'cmenu'%]
+    [%content_menu content_type:'category' ...%]...[%/content_menu%]
+[%/cache%]`}</CodeBlock>
+              <TagTable rows={[
+                ["type:'product'", "Refreshes when product data changes"],
+                ["type:'content'", "Refreshes when content/category changes"],
+                ["type:'cmenu'", "Refreshes when menu structure changes"],
+                ["type:'cart'", "Refreshes per cart session"],
+                ["id:''", "Unique identifier for this cache block"],
+              ]} />
+              <div className="border rounded-md p-3 mt-2 text-xs space-y-1">
+                <p className="font-medium">⚠️ Cache Rules:</p>
+                <ul className="list-disc pl-4">
+                  <li><code>type</code> is required and cannot be blank</li>
+                  <li>Cached hourly OR when related data updates in CP</li>
+                  <li><strong>Never cache</strong> customer-specific or cart-specific content</li>
+                  <li>Max size: 1MB per cached snippet (excl. images)</li>
+                  <li>Use <code>[@inventory_id@]</code> for per-product cache keys</li>
+                </ul>
+              </div>
+
+              <h4 className="font-medium mt-4 mb-1">Performance Best Practices</h4>
+              <ul className="list-disc pl-5 text-xs space-y-1">
+                <li>Images: x1 to x1.5 display size, use TinyPNG for compression</li>
+                <li>Upload optimized images to <code>raw_imagedrop</code> folder (bypasses CP processing)</li>
+                <li>Use <code>[@config:IMG_THUMB_WIDTH@]</code> for image dimension attributes</li>
+                <li>Lazy load below-fold images (native <code>loading="lazy"</code>)</li>
+                <li>Keep Web Accelerator ON for production (use Developer Mode only when needed)</li>
+                <li>Don't nest functions too deeply in large loops</li>
+                <li>Provide facades for 3rd-party widgets (chat, analytics) to avoid blocking render</li>
+                <li>Remove thumbnail code referencing 3rd-party assets</li>
+                <li>Use <code>[%ajax_loader%]</code> to exclude dynamic content from accelerator cache</li>
+              </ul>
+            </Section>
+          </TabsContent>
           <TabsContent value="customers" className="space-y-4">
             <Section title="Customer Data Model" icon={Users}>
               <TagTable rows={[
