@@ -648,9 +648,52 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
       e.preventDefault();
-      // Normalize: ensure basePath prefix
       const bp = basePath || "";
-      const resolved = href.startsWith(bp) ? href : href.startsWith("/") ? `${bp}${href}` : `${bp}/${href}`;
+
+      // Map Maropost legacy paths to our React routes
+      const maropostPathMap: Record<string, string> = {
+        "/_mycart": `${bp}/cart`,
+        "/_myaccount": `${bp}/account`,
+        "/contact-us": `${bp}/contact`,
+        "/contact_us": `${bp}/contact`,
+      };
+
+      let resolved = href;
+
+      // Check for Maropost legacy path matches (with query string support)
+      const [pathPart, queryPart] = href.split("?");
+      const mappedPath = maropostPathMap[pathPart];
+      if (mappedPath) {
+        // Handle query string params for Maropost-style routing
+        if (queryPart) {
+          const params = new URLSearchParams(queryPart);
+          const fn = params.get("fn");
+          const pagePar = params.get("page");
+          if (pathPart === "/_mycart" && fn === "payment") {
+            resolved = `${bp}/checkout`;
+          } else if (pathPart === "/_myaccount" && pagePar === "login") {
+            resolved = `${bp}/login`;
+          } else if (pathPart === "/_myaccount" && pagePar === "register") {
+            resolved = `${bp}/signup`;
+          } else if (pathPart === "/_myaccount" && pagePar === "wishlist") {
+            resolved = `${bp}/wishlist`;
+          } else if (pathPart === "/_myaccount" && pagePar === "nr_track_order") {
+            resolved = `${bp}/track-order`;
+          } else if (pathPart === "/_myaccount" && pagePar === "forgotpwd") {
+            resolved = `${bp}/forgot-password`;
+          } else if (pathPart === "/_myaccount" && pagePar === "forgotusr") {
+            resolved = `${bp}/forgot-username`;
+          } else {
+            resolved = mappedPath;
+          }
+        } else {
+          resolved = mappedPath;
+        }
+      } else {
+        // Standard path normalization
+        resolved = href.startsWith(bp) ? href : href.startsWith("/") ? `${bp}${href}` : `${bp}/${href}`;
+      }
+
       navigate(resolved);
     };
     container.addEventListener("click", handler);
