@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,11 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Plus, Trash2, ShoppingCart, Search, Loader2, Upload } from "lucide-react";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 interface OrderLine {
   id: string;
@@ -24,12 +28,40 @@ interface OrderLine {
 
 export default function StorefrontQuickOrder() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const { addItem } = useCart();
   const [lines, setLines] = useState<OrderLine[]>([
     { id: "1", sku: "", productId: "", title: "", price: 0, quantity: 1, found: false },
   ]);
   const [lookingUp, setLookingUp] = useState<string | null>(null);
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => {
+      if (s) setStore(s);
+    });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile = findMainThemeFile(activeTheme, "quick-order") || findMainThemeFile(activeTheme, "quickorder") || findMainThemeFile(activeTheme, "quick_order");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const ctx: TemplateContext = {
+      store, basePath, pageType: "quick-order",
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Quick Order" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath]);
 
   const addLine = () => {
     setLines([...lines, {
@@ -50,7 +82,6 @@ export default function StorefrontQuickOrder() {
   const lookupSku = async (lineId: string) => {
     const line = lines.find(l => l.id === lineId);
     if (!line || !line.sku.trim()) return;
-    
     setLookingUp(lineId);
     const { data } = await supabase
       .from("products")
@@ -59,9 +90,7 @@ export default function StorefrontQuickOrder() {
       .eq("status", "active")
       .limit(1)
       .maybeSingle();
-    
     if (data) {
-      updateLine(lineId, "productId", data.id);
       setLines(prev => prev.map(l => l.id === lineId ? {
         ...l, productId: data.id, title: data.title, price: Number(data.price), found: true,
       } : l));
@@ -83,7 +112,6 @@ export default function StorefrontQuickOrder() {
       const text = evt.target?.result as string;
       if (!text) return;
       const rows = text.split("\n").map(r => r.trim()).filter(Boolean);
-      // Skip header if first row contains "sku" or "SKU"
       const start = rows[0]?.toLowerCase().includes("sku") ? 1 : 0;
       const newLines: OrderLine[] = [];
       for (let i = start; i < rows.length; i++) {
@@ -91,15 +119,11 @@ export default function StorefrontQuickOrder() {
         const sku = cols[0]?.trim();
         const qty = parseInt(cols[1]?.trim()) || 1;
         if (!sku) continue;
-        newLines.push({
-          id: `csv-${Date.now()}-${i}`,
-          sku, productId: "", title: "", price: 0, quantity: qty, found: false,
-        });
+        newLines.push({ id: `csv-${Date.now()}-${i}`, sku, productId: "", title: "", price: 0, quantity: qty, found: false });
       }
       if (newLines.length === 0) { toast.error("No valid rows found in CSV"); return; }
       setLines(newLines);
       toast.success(`Loaded ${newLines.length} lines from CSV. Looking up products...`);
-      // Auto-lookup all SKUs
       for (const line of newLines) {
         const { data } = await supabase
           .from("products")
@@ -122,26 +146,24 @@ export default function StorefrontQuickOrder() {
 
   const handleAddAllToCart = () => {
     const validLines = lines.filter(l => l.found && l.quantity > 0);
-    if (validLines.length === 0) {
-      toast.error("No valid products to add");
-      return;
-    }
+    if (validLines.length === 0) { toast.error("No valid products to add"); return; }
     validLines.forEach(line => {
-      addItem({
-        product_id: line.productId,
-        title: line.title,
-        price: line.price,
-        image: "",
-        quantity: line.quantity,
-      });
+      addItem({ product_id: line.productId, title: line.title, price: line.price, image: "", quantity: line.quantity });
     });
     toast.success(`Added ${validLines.length} product(s) to cart`);
-    // Reset form
     setLines([{ id: Date.now().toString(), sku: "", productId: "", title: "", price: 0, quantity: 1, found: false }]);
   };
 
+  if (themeHtml) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
-    <StorefrontLayout>
+    <StorefrontLayout storeName={store?.name}>
       <div className="max-w-4xl mx-auto py-8 px-4">
         <h1 className="text-2xl font-bold mb-2">Quick Order</h1>
         <p className="text-muted-foreground mb-6">Enter SKUs or barcodes to quickly add multiple products to your cart, or upload a CSV.</p>
@@ -177,44 +199,21 @@ export default function StorefrontQuickOrder() {
                 {lines.map((line) => (
                   <TableRow key={line.id}>
                     <TableCell>
-                      <Input
-                        className="h-8 text-sm"
-                        placeholder="Enter SKU..."
-                        value={line.sku}
-                        onChange={(e) => updateLine(line.id, "sku", e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && lookupSku(line.id)}
-                      />
+                      <Input className="h-8 text-sm" placeholder="Enter SKU..." value={line.sku} onChange={(e) => updateLine(line.id, "sku", e.target.value)} onKeyDown={(e) => e.key === "Enter" && lookupSku(line.id)} />
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="ghost" size="sm"
-                        onClick={() => lookupSku(line.id)}
-                        disabled={lookingUp === line.id}
-                      >
+                      <Button variant="ghost" size="sm" onClick={() => lookupSku(line.id)} disabled={lookingUp === line.id}>
                         {lookingUp === line.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                       </Button>
                     </TableCell>
                     <TableCell className="text-sm">
-                      {line.found ? (
-                        <span className="text-foreground">{line.title}</span>
-                      ) : (
-                        <span className="text-muted-foreground italic">—</span>
-                      )}
+                      {line.found ? <span className="text-foreground">{line.title}</span> : <span className="text-muted-foreground italic">—</span>}
                     </TableCell>
-                    <TableCell className="text-right text-sm">
-                      {line.found ? `$${line.price.toFixed(2)}` : "—"}
-                    </TableCell>
+                    <TableCell className="text-right text-sm">{line.found ? `$${line.price.toFixed(2)}` : "—"}</TableCell>
                     <TableCell>
-                      <Input
-                        type="number" min={1}
-                        className="h-8 text-sm w-20"
-                        value={line.quantity}
-                        onChange={(e) => updateLine(line.id, "quantity", Math.max(1, parseInt(e.target.value) || 1))}
-                      />
+                      <Input type="number" min={1} className="h-8 text-sm w-20" value={line.quantity} onChange={(e) => updateLine(line.id, "quantity", Math.max(1, parseInt(e.target.value) || 1))} />
                     </TableCell>
-                    <TableCell className="text-right text-sm font-medium">
-                      {line.found ? `$${(line.price * line.quantity).toFixed(2)}` : "—"}
-                    </TableCell>
+                    <TableCell className="text-right text-sm font-medium">{line.found ? `$${(line.price * line.quantity).toFixed(2)}` : "—"}</TableCell>
                     <TableCell>
                       <Button variant="ghost" size="sm" onClick={() => removeLine(line.id)} disabled={lines.length <= 1}>
                         <Trash2 className="h-4 w-4 text-muted-foreground" />

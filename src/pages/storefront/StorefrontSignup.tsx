@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Loader2, User, Mail, Lock, ArrowRight } from "lucide-react";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 
 export default function StorefrontSignup() {
   const { storeSlug: paramSlug } = useParams();
@@ -19,6 +23,34 @@ export default function StorefrontSignup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => {
+      if (s) setStore(s);
+    });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile = findMainThemeFile(activeTheme, "signup") || findMainThemeFile(activeTheme, "register") || findMainThemeFile(activeTheme, "sign-up");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const ctx: TemplateContext = {
+      store, basePath, pageType: "signup",
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Create Account" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,16 +66,16 @@ export default function StorefrontSignup() {
     if (error) { toast.error(error.message); setLoading(false); return; }
 
     if (data.user && storeSlug) {
-      const store = await resolveStoreBySlug(storeSlug, supabase);
-      if (store) {
+      const s = await resolveStoreBySlug(storeSlug, supabase);
+      if (s) {
         await supabase.from("customers").insert({
-          store_id: store.id,
+          store_id: s.id,
           name,
           email,
           user_id: data.user.id,
         } as any);
         supabase.functions.invoke("welcome-email", {
-          body: { store_id: store.id, customer_name: name, customer_email: email },
+          body: { store_id: s.id, customer_name: name, customer_email: email },
         }).catch(() => {});
       }
     }
@@ -60,8 +92,16 @@ export default function StorefrontSignup() {
     if (error) toast.error(error.message);
   };
 
+  if (themeHtml) {
+    return (
+      <StorefrontLayout storeName={store?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   return (
-    <StorefrontLayout>
+    <StorefrontLayout storeName={store?.name}>
       <div className="max-w-md mx-auto px-4 py-16 animate-fade-in">
         <Card className="border shadow-sm">
           <CardHeader className="text-center pb-2">
