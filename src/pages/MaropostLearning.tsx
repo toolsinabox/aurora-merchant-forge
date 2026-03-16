@@ -663,6 +663,210 @@ Use case: Pre-filling forms, filtering, passing data between pages`}</CodeBlock>
             </Section>
           </TabsContent>
 
+          {/* ═══════════════ ADVANCED FUNCTIONS (NEW) ═══════════════ */}
+          <TabsContent value="advanced-functions" className="space-y-4">
+            <Section title="CONTENT_MENU — Navigation Trees" icon={Layers}>
+              <p>Generates a hierarchical navigation menu from content types (categories, pages, blogs, etc.).</p>
+              <CodeBlock title="Multi-level category menu">{`[%content_menu content_type:'category' sortby:'sortorder,name' show_empty:'1'%]
+    [%param *header%]<ul class="category-menu">[%/param%]
+    [%param *level_1%]
+        <li>
+            <a href="[@url@]">[@name@]</a>
+            [%if [@next_level@]%]<ul>[@next_level@]</ul>[%/if%]
+        </li>
+    [%/param%]
+    [%param *level_2%]
+        <li><a href="[@url@]">[@name@]</a>
+            [%if [@next_level@]%]<ul>[@next_level@]</ul>[%/if%]
+        </li>
+    [%/param%]
+    [%param *level_3%]
+        <li><a href="[@url@]">[@name@]</a></li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/content_menu%]`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">Parameters</h4>
+              <TagTable rows={[
+                ["content_type:''", "Content type to target: category, brand, blog, information, etc."],
+                ["sortby:''", "Sort field: sortorder, name, date"],
+                ["show_empty:'1'", "Show categories with no products"],
+                ["category:'[@id@]'", "Start menu from specific category ID"],
+                ["limit:''", "Max items per level"],
+              ]} />
+              <h4 className="font-medium mt-3 mb-1">Data Tags (within levels)</h4>
+              <TagTable rows={[
+                ["[@name@]", "Content/category name"],
+                ["[@url@]", "Full URL path"],
+                ["[@id@], [@content_id@]", "Content ID"],
+                ["[@next_level@]", "Renders the next depth level (recursive)"],
+                ["[@parent_content_id@]", "Parent content type ID"],
+                ["[@thumb@]", "Thumbnail image URL"],
+                ["[@description@]", "Description text"],
+              ]} />
+            </Section>
+
+            <Section title="CONTENT_PATH — Breadcrumb & Category Assignment" icon={FolderTree}>
+              <CodeBlock>{`[%content_path content_id:'[@content_id@]' show_path:'y'%]
+    [%param *header%]<nav class="breadcrumb">[%/param%]
+    [%param *body%]
+        <a href="[@url@]">[@content_name@]</a> &gt;
+    [%/param%]
+    [%param *footer%]</nav>[%/param%]
+[%/content_path%]
+
+<!-- Show which category a product belongs to -->
+[%content_path id:'[@inventory_id@]' type:'category' limit:'1'%]
+    [%param *body%]
+        <a href="[%url type:'cms'%][%param id%][@content_id@][%/param%][%/url%]">
+            [@content_name@]
+        </a>
+    [%/param%]
+[%/content_path%]`}</CodeBlock>
+            </Section>
+
+            <Section title="ITEM_KITTING — Kit/Bundle Components" icon={Boxes}>
+              <p>Displays editable kit component items for bundled/kitted products.</p>
+              <CodeBlock>{`[%item_kitting id:'[@SKU@]'%]
+    [%param *group_header%]
+        <input type="hidden" id="model[@rndm@][@SKU@]" 
+               name="model" value="[@model@]">
+        <h4>[@group_name@]</h4>
+    [%/param%]
+    [%param *body%]
+        <select name="kit_component_[@count@]">
+            <option value="[@sku@]">[@name@] - $[@price@]</option>
+        </select>
+    [%/param%]
+[%/item_kitting%]`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">Kit Data Tags</h4>
+              <TagTable rows={[
+                ["[@kit_price_total@]", "Minimum cost of required components"],
+                ["[@total_components@]", "Total number of components"],
+                ["[@is_kit@]", "Boolean: 1 if kitted product"],
+                ["[@kitting_sku@]", "Parent kit SKU"],
+                ["[@group_name@]", "Component group name"],
+              ]} />
+            </Section>
+
+            <Section title="PRODUCT — Single Product Query" icon={Package}>
+              <CodeBlock>{`[%product sku:'SPECIFIC-SKU'%]
+    [%param *body%]
+        <div class="featured-product">
+            <img src="[@thumb@]" alt="[@name@]" />
+            <h3>[@name@]</h3>
+            <span>$[@store_price@]</span>
+        </div>
+    [%/param%]
+    [%param *ifempty%]Product not found[%/param%]
+[%/product%]
+
+<!-- With group pricing -->
+[%product sku:'[@sku@]' group_id:'5'%]
+    [%param *body%]Wholesale price: $[@price@][%/param%]
+[%/product%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">The product tag gives access to ALL product data tags. Can query by <code>sku:''</code> or <code>id:''</code>.</p>
+            </Section>
+
+            <Section title="RELATED_PRODUCTS & CHILD_PRODUCTS" icon={Package}>
+              <CodeBlock>{`<!-- Related products -->
+[%related_products id:'[@SKU@]' limit:'4'%]
+    [%param *body%]
+        <a href="[@url@]">[@name@] - $[@price@]</a>
+    [%/param%]
+[%/related_products%]
+
+<!-- Variation child products -->
+[%child_products id:'[@SKU@]'%]
+    [%param *body%]
+        [@sku@]: [@name@] ([@store_quantity@] in stock)
+    [%/param%]
+[%/child_products%]
+
+<!-- List item variations (dropdowns) -->
+[%list_item_variations id:'[@SKU@]'%]
+    [%param *body%]
+        <option value="[@sku@]">[@variation_name@] - $[@price@]</option>
+    [%/param%]
+[%/list_item_variations%]`}</CodeBlock>
+            </Section>
+
+            <Section title="MULTILEVELPRICING — Quantity Break Pricing" icon={CreditCard}>
+              <CodeBlock>{`[%multilevelpricing id:'[@SKU@]'%]
+    [%param *header%]<table class="qty-pricing">[%/param%]
+    [%param *body%]
+        <tr>
+            <td>[@qty_from@] - [@qty_to@]</td>
+            <td>$[@price@]</td>
+        </tr>
+    [%/param%]
+    [%param *footer%]</table>[%/param%]
+[%/multilevelpricing%]`}</CodeBlock>
+            </Section>
+
+            <Section title="DISCOUNT_PRODUCTS — Free/Discounted Items" icon={Tag}>
+              <CodeBlock>{`[%discount_products id:'[@SKU@]' template:'' show_all:'1'%]
+    [%param *body%]
+        <div>Buy [@name@] and get this FREE: [@discount_name@]</div>
+    [%/param%]
+[%/discount_products%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Displays products with discount incentives configured in the Control Panel.</p>
+            </Section>
+
+            <Section title="WAREHOUSE_QTY — Stock by Location" icon={Boxes}>
+              <CodeBlock>{`[%warehouse_qty sku:'[@SKU@]' warehouse:'Sydney'%]
+    [%param *body%]
+        Sydney stock: [@quantity@]
+    [%/param%]
+[%/warehouse_qty%]`}</CodeBlock>
+            </Section>
+
+            <Section title="MENU — Control Panel Managed Menus" icon={Layers}>
+              <CodeBlock>{`[%menu id:'web_header'%]
+    [%param *header%]<ul class="nav">[%/param%]
+    [%param *body%]
+        <li><a href="[@url@]">[@name@]</a></li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/menu%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Loads custom menus built in the Neto Control Panel menu builder.</p>
+            </Section>
+
+            <Section title="BREADCRUMB" icon={FolderTree}>
+              <CodeBlock>{`[%breadcrumb%]
+    [%param *header%]<ol class="breadcrumb">[%/param%]
+    [%param *body%]
+        <li><a href="[@url@]">[@name@]</a></li>
+    [%/param%]
+    [%param *current%]
+        <li class="active">[@name@]</li>
+    [%/param%]
+    [%param *footer%]</ol>[%/param%]
+[%/breadcrumb%]`}</CodeBlock>
+            </Section>
+
+            <Section title="PAYMENT_METHODS" icon={CreditCard}>
+              <CodeBlock>{`[%payment_methods%]
+    [%param *body%]
+        <div class="payment-option">
+            <img src="[@icon@]" alt="[@name@]" />
+            <span>[@name@]</span>
+        </div>
+    [%/param%]
+[%/payment_methods%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Lists payment methods enabled in the Control Panel.</p>
+            </Section>
+
+            <Section title="PAGING / PAGINATION" icon={Filter}>
+              <CodeBlock>{`[%paging%]
+    [%param *body%]
+        <a href="[@url@]" class="[@current@]">[@page_number@]</a>
+    [%/param%]
+    [%param *prev%]<a href="[@url@]">Previous</a>[%/param%]
+    [%param *next%]<a href="[@url@]">Next</a>[%/param%]
+[%/paging%]`}</CodeBlock>
+            </Section>
+          </TabsContent>
+
           {/* ═══════════════ URL SYSTEM ═══════════════ */}
           <TabsContent value="urls" className="space-y-4">
             <Section title="URL Tag — [%url%]" icon={Link2}>
