@@ -25,9 +25,37 @@ interface AppliedCoupon {
 
 export default function StorefrontCart() {
   const { storeSlug: paramSlug } = useParams();
-  const { basePath } = useStoreSlug(paramSlug);
+  const { basePath, storeSlug } = useStoreSlug(paramSlug);
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity, totalPrice, totalItems, savedItems, saveForLater, moveToCart, removeSaved } = useCart();
+  const [store, setStore] = useState<any>(null);
+
+  useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => { if (s) setStore(s); });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(store?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !store) return null;
+    const templateFile = findMainThemeFile(activeTheme, "cart") || findMainThemeFile(activeTheme, "shopping-cart") || findMainThemeFile(activeTheme, "basket");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${store.id}`;
+    const ctx: TemplateContext = {
+      store, basePath, pageType: "cart",
+      cart: { items, totalPrice, totalItems },
+      cart_items: items,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "Shopping Cart" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, store, basePath, items, totalPrice, totalItems]);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
