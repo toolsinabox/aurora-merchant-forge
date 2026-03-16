@@ -268,6 +268,7 @@ export default function Suppliers() {
             <TabsTrigger value="list" className="text-xs h-7">Suppliers</TabsTrigger>
             <TabsTrigger value="products" className="text-xs h-7">Product Assignments</TabsTrigger>
             <TabsTrigger value="performance" className="text-xs h-7">Performance</TabsTrigger>
+            <TabsTrigger value="dropship" className="text-xs h-7">Dropship Settings</TabsTrigger>
           </TabsList>
 
           <TabsContent value="list">
