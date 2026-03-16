@@ -307,6 +307,7 @@ const App = () => (
                    <Route path="/_cpanel/maropost-migration" element={<RequireAuth><MaropostMigration /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
+                   <Route path="/_cpanel/maropost-learning" element={<RequireAuth><MaropostLearning /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
