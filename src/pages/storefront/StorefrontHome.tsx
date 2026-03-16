@@ -163,9 +163,7 @@ export default function StorefrontHome() {
           url={store.custom_domain ? `https://${store.custom_domain}` : undefined}
           organization={{ name: store.name, url: store.custom_domain ? `https://${store.custom_domain}` : undefined, logo: store.logo_url }}
         />
-        <AdvertBanner storeId={store.id} placement="homepage_top" basePath={basePath} />
         <div dangerouslySetInnerHTML={{ __html: renderedHome }} />
-        <AdvertBanner storeId={store.id} placement="homepage_bottom" basePath={basePath} />
       </ThemedStorefrontLayout>
     );
   }
