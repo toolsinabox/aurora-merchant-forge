@@ -74,6 +74,7 @@ export default function StorefrontCart() {
         .from("coupons")
         .select("*")
         .eq("code", code)
+        .eq("store_id", store?.id)
         .eq("is_active", true)
         .maybeSingle();
 
