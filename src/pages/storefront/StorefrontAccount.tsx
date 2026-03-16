@@ -172,6 +172,7 @@ export default function StorefrontAccount() {
     return html;
   }, [activeTheme, accountStore, basePath, customer]);
 
+  useEffect(() => {
     if (!user) {
       navigate(`${basePath}/login`);
       return;
