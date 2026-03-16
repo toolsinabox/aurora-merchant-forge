@@ -180,10 +180,11 @@ export default function ShippingZones() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="h-8">
+          <TabsList className="h-8 flex-wrap">
             <TabsTrigger value="zones" className="text-xs h-7">Zones ({(zones as any[]).length})</TabsTrigger>
             <TabsTrigger value="services" className="text-xs h-7">Services ({(services as any[]).length})</TabsTrigger>
             <TabsTrigger value="rates" className="text-xs h-7">Rate Matrix ({(rates as any[]).length})</TabsTrigger>
+            <TabsTrigger value="rules" className="text-xs h-7">Advanced Rules</TabsTrigger>
             <TabsTrigger value="exclusions" className="text-xs h-7">Exclusions</TabsTrigger>
           </TabsList>
 
