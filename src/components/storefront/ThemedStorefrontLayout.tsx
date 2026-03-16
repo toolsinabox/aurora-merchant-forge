@@ -696,7 +696,6 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
 
       navigate(resolved);
     };
-    };
     container.addEventListener("click", handler);
     return () => container.removeEventListener("click", handler);
   }, [basePath, navigate]);
