@@ -935,9 +935,9 @@ export default function StorefrontCheckout() {
                     </div>
                     <Separator />
 
-              {/* Delivery Method Toggle */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Delivery Method</h2>
+              {/* Delivery Method */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Delivery Method</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryMethod === "shipping" ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
                     <input type="radio" name="delivery" value="shipping" checked={deliveryMethod === "shipping"} onChange={() => setDeliveryMethod("shipping")} className="accent-primary" />
