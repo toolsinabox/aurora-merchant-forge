@@ -1,10 +1,11 @@
 import { ReactNode, useEffect, useState, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
 import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
 import { useContentZones } from "@/hooks/use-content-zones";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+import { useSSRPage } from "@/hooks/use-ssr-page";
 import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
