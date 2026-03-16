@@ -372,7 +372,7 @@ export default function ThemeFiles() {
       const entries: { path: string; content: string }[] = [];
       const binaryEntries: { path: string; blob: Blob; mimeType: string }[] = [];
       const promises: Promise<void>[] = [];
-      const binaryExtensions = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|pdf)$/i;
+      const binaryExtensions = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|pdf|css|js)$/i;
       const mimeMap: Record<string, string> = {
         png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
         svg: "image/svg+xml", webp: "image/webp", ico: "image/x-icon",
