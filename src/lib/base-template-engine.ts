@@ -1308,9 +1308,7 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
 function resolveStorageUrl(path: string | undefined | null): string {
   if (!path) return "";
   if (path.startsWith("http") || path.startsWith("//") || path.startsWith("/")) return path;
-  const supabaseUrl = typeof window !== "undefined"
-    ? (window as any).__VITE_SUPABASE_URL || ""
-    : "";
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "";
   if (supabaseUrl) {
     return `${supabaseUrl}/storage/v1/object/public/product-images/${path}`;
   }
