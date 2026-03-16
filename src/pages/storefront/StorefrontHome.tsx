@@ -65,6 +65,7 @@ export default function StorefrontHome() {
   }, [storeSlug]);
 
   const { data: theme } = useActiveTheme(store?.id);
+  const { data: contentZones } = useContentZones(store?.id);
 
   // Check if there's an index/home template in the theme
   const homeTemplate = useMemo(() => {
