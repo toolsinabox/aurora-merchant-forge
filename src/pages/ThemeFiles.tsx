@@ -787,8 +787,40 @@ export default function ThemeFiles() {
             {/* Main layout: File Tree + Editor */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3" style={{ minHeight: "calc(100vh - 220px)" }}>
               {/* File Tree */}
-              <Card className="lg:col-span-3">
+              <Card
+                className={`lg:col-span-3 relative ${isDragging ? "ring-2 ring-primary ring-offset-2" : ""}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                ref={dropZoneRef}
+              >
+                {/* Drag overlay */}
+                {isDragging && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-primary/10 border-2 border-dashed border-primary rounded-lg">
+                    <div className="text-center">
+                      <UploadCloud className="h-8 w-8 text-primary mx-auto mb-2" />
+                      <p className="text-xs font-medium text-primary">Drop files here</p>
+                    </div>
+                  </div>
+                )}
                 <CardHeader className="py-2 px-3 space-y-2">
+                  {/* Breadcrumb */}
+                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                    <button className="hover:text-foreground" onClick={() => setCurrentFolderPath("")}>
+                      {activeTheme?.name || "Theme"}
+                    </button>
+                    {selectedFile?.file_path && selectedFile.file_path.split("/").slice(0, -1).map((seg: string, i: number, arr: string[]) => (
+                      <span key={i} className="flex items-center gap-1">
+                        <ChevronRight className="h-2.5 w-2.5" />
+                        <button className="hover:text-foreground" onClick={() => {
+                          const path = "/" + arr.slice(0, i + 1).join("/");
+                          setExpandedFolders(prev => { const next = new Set(prev); next.add(path); return next; });
+                        }}>
+                          {seg}
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-medium truncate">{activeTheme?.name || "Theme"}</span>
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => { setNewFileFolder("templates"); setNewFileDialog(true); }}>
@@ -801,7 +833,7 @@ export default function ThemeFiles() {
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <ScrollArea className="h-[calc(100vh-340px)]">
+                  <ScrollArea className="h-[calc(100vh-380px)]">
                     <div className="px-1 pb-2">
                       {filesLoading ? (
                         <div className="space-y-2 p-3">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-5 w-full" />)}</div>
@@ -810,6 +842,10 @@ export default function ThemeFiles() {
                       )}
                     </div>
                   </ScrollArea>
+                  {/* Drop hint */}
+                  <div className="px-3 py-2 border-t text-[10px] text-muted-foreground text-center">
+                    Drag &amp; drop files or ZIP here
+                  </div>
                 </CardContent>
               </Card>
 
