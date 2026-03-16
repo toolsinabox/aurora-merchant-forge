@@ -255,7 +255,7 @@ export default function StorefrontProducts() {
       .filter((p) => {
         const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
           (p.search_keywords && p.search_keywords.toLowerCase().includes(search.toLowerCase()));
-        const matchCat = category === "all" || p.category_id === category;
+        const matchCat = category === "all" || p.category_id === category || categories.find((c: any) => c.slug === category)?.id === p.category_id;
         const matchBrand = brandFilter.length === 0 || brandFilter.includes(p.brand);
         const matchPrice = Number(p.price) >= priceRange[0] && Number(p.price) <= priceRange[1];
         let matchSpecs = true;
