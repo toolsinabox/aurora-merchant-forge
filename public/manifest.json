@@ -1,11 +1,11 @@
 {
-  "name": "Aurora Merchant",
-  "short_name": "Aurora",
-  "description": "Multi-tenant e-commerce platform",
+  "name": "B@SE Commerce",
+  "short_name": "B@SE",
+  "description": "Modern multi-tenant eCommerce platform with Maropost compatibility",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
-  "theme_color": "#2563eb",
+  "theme_color": "#09090b",
   "orientation": "any",
   "icons": [
     {

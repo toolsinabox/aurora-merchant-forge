@@ -12,3 +12,16 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /onboarding
+Disallow: /dashboard
+Disallow: /products/new
+Disallow: /settings
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /_cpanel/
+Disallow: /platform/
