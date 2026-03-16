@@ -694,6 +694,62 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     return () => container.removeEventListener("click", handler);
   }, [basePath, navigate]);
 
+  // Intercept search form submissions in theme HTML
+  useEffect(() => {
+    const container = document.getElementById("neto-theme");
+    if (!container) return;
+    const handler = (e: Event) => {
+      const form = e.target as HTMLFormElement;
+      if (!form || form.tagName !== "FORM") return;
+      // Detect search forms by name, role, or input with name="kw"/"q"/"search"
+      const isSearch = form.getAttribute("role") === "search"
+        || form.getAttribute("name") === "productsearch"
+        || form.querySelector("input[name='kw'], input[name='q'], input[name='search']");
+      if (isSearch) {
+        e.preventDefault();
+        const input = form.querySelector("input[name='kw'], input[name='q'], input[name='search'], input[type='search'], input.ajax_search") as HTMLInputElement;
+        const query = input?.value?.trim();
+        if (query) {
+          const bp = basePath || "";
+          navigate(`${bp}/products?q=${encodeURIComponent(query)}`);
+        }
+        return;
+      }
+      // Detect newsletter/subscribe forms
+      const isNewsletter = form.getAttribute("name") === "newsletter"
+        || form.classList.contains("newsletter-form")
+        || form.querySelector("input[name='email']") && (form.action?.includes("subscribe") || form.classList.contains("subscribe"));
+      if (isNewsletter) {
+        e.preventDefault();
+        const emailInput = form.querySelector("input[name='email'], input[type='email']") as HTMLInputElement;
+        if (emailInput?.value) {
+          // Dispatch custom event for newsletter signup
+          window.dispatchEvent(new CustomEvent("theme:newsletter-signup", { detail: { email: emailInput.value } }));
+        }
+      }
+    };
+    container.addEventListener("submit", handler, true);
+    return () => container.removeEventListener("submit", handler, true);
+  }, [basePath, navigate]);
+
+  // Wire wishlist toggle buttons in theme HTML
+  useEffect(() => {
+    const container = document.getElementById("neto-theme");
+    if (!container) return;
+    const handler = (e: MouseEvent) => {
+      const btn = (e.target as HTMLElement).closest(".wishlist_toggle, [data-wishlist], .btn-wishlist") as HTMLElement | null;
+      if (!btn) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const sku = btn.getAttribute("rel") || btn.getAttribute("data-sku") || btn.getAttribute("data-product-id");
+      if (sku) {
+        window.dispatchEvent(new CustomEvent("theme:wishlist-toggle", { detail: { sku } }));
+      }
+    };
+    container.addEventListener("click", handler, true);
+    return () => container.removeEventListener("click", handler, true);
+  }, []);
+
   return (
     <>
       {/* Scoped Theme CSS — only applies inside #neto-theme */}
