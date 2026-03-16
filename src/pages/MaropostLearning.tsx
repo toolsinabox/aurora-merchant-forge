@@ -86,6 +86,9 @@ export default function MaropostLearning() {
               <TabsTrigger value="emails">Emails & Printables</TabsTrigger>
               <TabsTrigger value="theme-structure">Theme Structure</TabsTrigger>
               <TabsTrigger value="webhooks">Webhooks & API</TabsTrigger>
+              <TabsTrigger value="navigation">Navigation</TabsTrigger>
+              <TabsTrigger value="formatting">Formatting & Logic</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
               <TabsTrigger value="gotchas">Gotchas & Tips</TabsTrigger>
             </TabsList>
           </ScrollArea>
@@ -2667,6 +2670,345 @@ Headers:
                 ["name:'canonical_url'", "Canonical URL path"],
                 ["type:'product'", "Query specific product (by SKU)"],
                 ["default:''", "Fallback if field is empty"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ NAVIGATION ═══════════════ */}
+          <TabsContent value="navigation" className="space-y-4">
+            <Section title="content_menu — Dynamic Category/Content Nav" icon={Tag}>
+              <CodeBlock>{`[%content_menu content_type:'category' sortby:'sortorder,name' show_empty:'1'%]
+    [%param *header%]
+        <ul class="navbar-nav" role="navigation" aria-label="Category menu">
+    [%/param%]
+    [%param *level_1%]
+        <li class="nav-item [%if [@next_level@]%]dropdown[%/if%]">
+            <a href="[@url@]" class="nav-link">[@name@]</a>
+            [%if [@next_level@]%]
+                <ul class="dropdown-menu">[@next_level@]</ul>
+            [%/if%]
+        </li>
+    [%/param%]
+    [%param *level_2%]
+        <li><a href="[@url@]">[@name@]</a>
+            [%if [@next_level@]%][@next_level@][%/if%]
+        </li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/content_menu%]`}</CodeBlock>
+              <TagTable rows={[
+                ["content_type:'category'", "Content type: category, brand, page, blog, etc."],
+                ["sortby:'sortorder,name'", "Sort by field(s)"],
+                ["show_empty:'1'", "Show categories with no products"],
+                ["limit:'50'", "Max items to show"],
+                ["[@url@]", "Link URL for this menu item"],
+                ["[@name@]", "Display name"],
+                ["[@content_id@]", "Unique content ID"],
+                ["[@next_level@]", "Rendered HTML of child level (use in [%if%])"],
+                ["[@image@]", "Category image URL"],
+                ["[@count@]", "Number of products in category"],
+              ]} />
+            </Section>
+
+            <Section title="Mega Menu Pattern" icon={Tag}>
+              <CodeBlock>{`[%cache type:'cmenu' id:'header_mega_menu'%]
+[%content_menu content_type:'category' sortby:'sortorder,name' show_empty:'1'%]
+    [%param *header%]<ul class="navbar-nav">[%/param%]
+    [%param *level_1%]
+        <li class="nav-item dropdown position-static">
+            <a href="[@url@]" class="nav-link dropdown-toggle">[@name@]</a>
+            [%if [@next_level@]%]
+                <ul class="dropdown-menu mega-menu w-100 p-3">[@next_level@]</ul>
+            [%/if%]
+        </li>
+    [%/param%]
+    [%param *level_2%]
+        <li class="mega-menu-col">
+            <a href="[@url@]" class="font-weight-bold">[@name@]</a>
+            [%if [@next_level@]%]<ul class="list-unstyled">[@next_level@]</ul>[%/if%]
+        </li>
+    [%/param%]
+    [%param *level_3%]<li><a href="[@url@]">[@name@]</a></li>[%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/content_menu%]
+[%/cache%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Always wrap category menus in <code>[%cache type:'cmenu'%]</code>. Levels go to *level_5+.</p>
+            </Section>
+
+            <Section title="menu — Static CMS Menu" icon={Tag}>
+              <CodeBlock>{`[%menu id:'header_menu'%]
+    [%param *header%]<nav><ul>[%/param%]
+    [%param *level_1%]
+        <li><a href="[@url@]">[@name@]</a>
+            [%if [@next_level@]%]<ul>[@next_level@]</ul>[%/if%]
+        </li>
+    [%/param%]
+    [%param *level_2%]<li><a href="[@url@]">[@name@]</a></li>[%/param%]
+    [%param *footer%]</ul></nav>[%/param%]
+[%/menu%]`}</CodeBlock>
+              <TagTable rows={[
+                ["id:''", "Menu ID from CP → Content → Menus"],
+                ["*level_1, *level_2, etc.", "Unlimited depth levels"],
+                ["[@url@] / [@name@] / [@target@]", "Link URL, text, target"],
+              ]} />
+            </Section>
+
+            <Section title="breadcrumb" icon={Tag}>
+              <CodeBlock>{`[%breadcrumb%]
+    [%param *header%]
+        <nav aria-label="Breadcrumb"><ol class="breadcrumb">
+        <li><a href="[%url page:'home'/%]">Home</a></li>
+    [%/param%]
+    [%param *body%]<li><a href="[@url@]">[@name@]</a></li>[%/param%]
+    [%param *footer%]</ol></nav>[%/param%]
+[%/breadcrumb%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@url@] / [@name@]", "Page URL and name"],
+                ["[@type@]", "Page type (category, page, blog)"],
+                ["[@content_id@]", "Content ID"],
+              ]} />
+            </Section>
+
+            <Section title="advert — Banners & Carousels" icon={Tag}>
+              <CodeBlock>{`[%advert type:'text' template:'carousel' limit:'10' ad_group:'homepage'%]
+    [%param *header%]
+        <div class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+    [%/param%]
+    [%param *body%]
+        <div class="carousel-item [%if [@count@] == 0%]active[%/if%]">
+            <a href="[@url@]">
+                <img src="[@image@]" alt="[@title@]" class="d-block w-100" />
+            </a>
+        </div>
+    [%/param%]
+    [%param *footer%]</div></div>[%/param%]
+[%/advert%]`}</CodeBlock>
+              <TagTable rows={[
+                ["type:'text'", "Advert type (text, image, html)"],
+                ["template:'carousel'", "Template name"],
+                ["ad_group:''", "Filter by advert group"],
+                ["[@title@] / [@subtitle@]", "Banner text"],
+                ["[@image@] / [@url@]", "Image URL / click-through URL"],
+                ["[@count@]", "0-based index"],
+                ["[@total_showing@]", "Total adverts displayed"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ FORMATTING & LOGIC ═══════════════ */}
+          <TabsContent value="formatting" className="space-y-4">
+            <Section title="format — Currency, Date, Number, Text" icon={Tag}>
+              <CodeBlock>{`<!-- Currency -->
+[%format type:'currency'%][@store_price@][%/format%]
+
+<!-- Date formatting -->
+[%format type:'date' format:'d/m/Y'%][@date_placed@][%/format%]
+
+<!-- Relative dates -->
+[%format type:'date' format:'d M Y'%]10 days time[%/format%]
+[%format type:'date' format:'Y-m-d'%]now[%/format%]
+
+<!-- Number -->
+[%format type:'number' decimals:'0'%][@store_quantity@][%/format%]
+
+<!-- Percentage -->
+[%format type:'percent'%][@save_percent@][%/format%]
+
+<!-- Text truncation -->
+[%format type:'text' characters:'100' append:'...'%][@description@][%/format%]
+
+<!-- Text transformation -->
+[%format type:'text' transform:'uppercase'%][@brand@][%/format%]
+
+<!-- CSV-safe -->
+[%format type:'csv'%][@name@][%/format%]`}</CodeBlock>
+              <TagTable rows={[
+                ["type:'currency'", "Format as store currency"],
+                ["type:'date' format:'d/m/Y'", "PHP date format string"],
+                ["type:'date' format:'relative'", "Relative time (e.g., '2 days ago')"],
+                ["type:'number' decimals:'2'", "Number with decimal places"],
+                ["type:'percent'", "Whole percentage"],
+                ["type:'text' characters:'N'", "Truncate to N characters"],
+                ["type:'text' transform:'uppercase'", "uppercase / lowercase / ucfirst"],
+                ["type:'csv'", "Escape for CSV export"],
+              ]} />
+            </Section>
+
+            <Section title="if — Conditional Logic" icon={Tag}>
+              <CodeBlock>{`<!-- String comparison -->
+[%if [@brand@] eq 'Nike'%]
+    <span class="badge">Nike Product</span>
+[%/if%]
+
+<!-- Not equal (check not empty) -->
+[%if [@brand@] ne ''%]<p>Brand: [@brand@]</p>[%/if%]
+
+<!-- Numeric -->
+[%if [@store_quantity@] > 0%]
+    <span>In Stock</span>
+[%elseif [@preorder@] eq 'y'%]
+    <span>Pre-Order</span>
+[%else%]
+    <span>Out of Stock</span>
+[%/if%]
+
+<!-- AND / OR -->
+[%if [@active@] eq 'y' && [@approved@] eq 'y'%]...Show...[%/if%]
+[%if [@brand@] eq 'Nike' || [@brand@] eq 'Adidas'%]...Featured...[%/if%]`}</CodeBlock>
+              <TagTable rows={[
+                ["eq / ne", "String equals / not equals"],
+                ["== / !=", "Numeric equals / not equals"],
+                ["> / < / >= / <=", "Numeric comparison"],
+                ["&& / ||", "AND / OR operators"],
+                ["[%elseif%] / [%else%]", "Else-if and else branches"],
+              ]} />
+            </Section>
+
+            <Section title="calc & round — Arithmetic" icon={Tag}>
+              <CodeBlock>{`[%calc%][@rrp@] - [@store_price@][%/calc%]
+[%round dp:'2'%][%calc%][@store_price@] * 1.1[%/calc%][%/round%]`}</CodeBlock>
+              <TagTable rows={[
+                ["+ - * / %", "Basic arithmetic + modulo"],
+                ["**", "Power"],
+                ["( )", "Grouping"],
+                ["[%round dp:'N'%]", "Round to N decimal places"],
+              ]} />
+            </Section>
+
+            <Section title="set — Custom Variables" icon={Tag}>
+              <CodeBlock>{`[%set [@my_var@]%]Hello World[%/set%]
+<p>[@my_var@]</p>
+
+[%set [@total_with_tax@]%][%calc%][@store_price@] * 1.1[%/calc%][%/set%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Variables persist within the current template render. Avoids repeating complex logic.</p>
+            </Section>
+
+            <Section title="forloop — Iteration" icon={Tag}>
+              <CodeBlock>{`[%forloop start:'1' end:'5'%]
+    [%param *body%]<div class="star star-[@value@]"></div>[%/param%]
+[%/forloop%]`}</CodeBlock>
+              <TagTable rows={[
+                ["start:'' / end:''", "Start and end values (integer or data tag)"],
+                ["[@value@]", "Current iteration value"],
+                ["[@count@]", "0-based index"],
+              ]} />
+            </Section>
+
+            <Section title="nohtml / nojs / escape / parse" icon={Tag}>
+              <CodeBlock>{`[%nohtml%][@description@][%/nohtml%]   <!-- Strip HTML -->
+[%nojs%][@html_content@][%/nojs%]       <!-- Strip JS -->
+[%escape%][@name@][%/escape%]           <!-- HTML entity escape -->
+
+<!-- Parse B@SE inside content zones -->
+[%parse%][%content_zone id:'warranty_info'/%][%/parse%]
+<!-- ⚠️ NEVER use [%parse%] around user-editable fields! XSS risk -->`}</CodeBlock>
+            </Section>
+
+            <Section title="data — Legacy Conditionals (Deprecated)" icon={Tag}>
+              <CodeBlock>{`[%data id:'discount_total' if:'>' value:'0'%]
+    [%param *if_true%]<p>Discount: [@discount_total@]</p>[%/param%]
+[%/data%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">⚠️ Deprecated — use <code>[%if%]</code> instead. Still found in older themes.</p>
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ ORDERS ═══════════════ */}
+          <TabsContent value="orders" className="space-y-4">
+            <Section title="show_order — Display Order Details" icon={Tag}>
+              <CodeBlock>{`[%show_order id:'[@order_id@]' hidechild:'1'%]
+    [%param *header%]
+        <h2>Order #[@order_id@]</h2>
+        <p>Status: [@order_status@] | Payment: [@payment_method@]</p>
+        <table>
+    [%/param%]
+    [%param *body%]
+        <tr>
+            <td><img src="[@thumb@]" width="50" /></td>
+            <td>[@model@] ([@sku@])</td>
+            <td>Qty: [@qty@]</td>
+            <td>[%format type:'currency'%][@unit_price@][%/format%]</td>
+        </tr>
+    [%/param%]
+    [%param *footer%]
+        </table>
+        <p>Total: [%format type:'currency'%][@grand_total@][%/format%]</p>
+    [%/param%]
+[%/show_order%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@order_id@]", "Order number"],
+                ["[@order_status@]", "Quote, New, Pick, Pack, Dispatched, Cancelled, etc."],
+                ["[@date_placed@]", "Order date"],
+                ["[@payment_method@]", "Payment method name"],
+                ["[@shipping_method@]", "Shipping option name"],
+                ["[@grand_total@] / [@product_total@] / [@shipping_cost@]", "Totals"],
+                ["[@tracking_number@] / [@tracking_url@]", "Shipment tracking"],
+                ["[@customer_name@] / [@email@]", "Customer info"],
+              ]} />
+            </Section>
+
+            <Section title="cart — Cart Data Function" icon={Tag}>
+              <CodeBlock>{`Items: [%cart id:'total_items'/%]
+Total: [%cart id:'grand_total'/%]
+Shipping: [%cart id:'shipping_method'/%]`}</CodeBlock>
+              <TagTable rows={[
+                ["id:'total_items'", "Number of items in cart"],
+                ["id:'grand_total'", "Cart grand total"],
+                ["id:'product_total'", "Product subtotal"],
+                ["id:'shipping_cost' / id:'shipping_method'", "Shipping cost/method"],
+                ["id:'payment_method'", "Selected payment method"],
+                ["id:'discount_total'", "Total discount amount"],
+                ["id:'voucher_credit'", "Gift voucher credit applied"],
+              ]} />
+              <p className="text-xs text-muted-foreground mt-2">⚠️ Server-rendered at page load. Won't update dynamically — use JS/AJAX for live cart.</p>
+            </Section>
+
+            <Section title="cart_items — List Cart Contents" icon={Tag}>
+              <CodeBlock>{`[%cart_items%]
+    [%param *header%]<table>[%/param%]
+    [%param *body%]
+        <tr>
+            <td><img src="[@thumb@]" width="40" /> [@model@]</td>
+            <td><input type="number" name="qty_[@sku@]" value="[@qty@]" min="0" /></td>
+            <td>[%format type:'currency'%][@price@][%/format%]</td>
+        </tr>
+    [%/param%]
+    [%param *footer%]</table>[%/param%]
+    [%param *ifempty%]<p>Your cart is empty.</p>[%/param%]
+[%/cart_items%]`}</CodeBlock>
+            </Section>
+
+            <Section title="shipping_methods — Shipping Calculator" icon={Tag}>
+              <CodeBlock>{`[%shipping_methods country:'[@ship_country@]' zip:'[@ship_zip@]'%]
+    [%param *body%]
+        <label>
+            <input type="radio" name="shipping_method" value="[@id@]" [@selected@] />
+            [@name@] — [%format type:'currency'%][@price@][%/format%]
+        </label>
+    [%/param%]
+[%/shipping_methods%]`}</CodeBlock>
+              <TagTable rows={[
+                ["country:'' / zip:''", "Calculate for destination"],
+                ["ship_mode:'b'", "b=billing, s=shipping, m=multiple"],
+                ["[@id@] / [@name@] / [@price@]", "Method ID, name, cost"],
+                ["[@selected@]", "'checked' if currently selected"],
+              ]} />
+            </Section>
+
+            <Section title="Order Status Values" icon={Tag}>
+              <TagTable rows={[
+                ["Quote", "Quote request (not confirmed)"],
+                ["New", "New confirmed order"],
+                ["On Hold", "Order on hold"],
+                ["New Backorder", "Contains backordered items"],
+                ["Backorder Approved", "Backorder approved"],
+                ["Pick", "Ready for picking"],
+                ["Pack", "Being packed"],
+                ["Pending Dispatch", "Awaiting dispatch"],
+                ["Pending Pickup", "Ready for customer pickup"],
+                ["Dispatched", "Shipped/dispatched"],
+                ["Cancelled", "Order cancelled"],
+                ["Uncommitted", "Draft/uncommitted"],
               ]} />
             </Section>
           </TabsContent>
