@@ -804,59 +804,80 @@ export default function StorefrontCheckout() {
                 )}
               </div>
 
-              {/* Shipping */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">Shipping Address</h2>
-                  {savedAddresses.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
-                      <Select onValueChange={(id) => {
-                        const addr = savedAddresses.find((a: any) => a.id === id);
-                        if (addr) applyAddress(addr);
-                      }}>
-                        <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Use saved address" /></SelectTrigger>
-                        <SelectContent>
-                          {savedAddresses.map((a: any) => (
-                            <SelectItem key={a.id} value={a.id} className="text-xs">
-                              {a.label || `${a.address_line1}, ${a.city}`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+              {/* Section 2: Shipping Address */}
+              <div className="border-x border-b overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 2 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 2 ? 0 : 2)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${form.address && form.city ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+                      {form.address && form.city ? <Check className="h-3 w-3" /> : "2"}
                     </div>
+                    <span className="font-semibold text-sm">Shipping Address</span>
+                  </div>
+                  {form.address && checkoutStep !== 2 && (
+                    <span className="text-xs text-muted-foreground truncate max-w-[250px]">{form.address}, {form.city} {form.zip}</span>
                   )}
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Address</Label>
-                  <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
-                  {form.address.length > 0 && form.address.length < 10 && (
-                    <p className="text-[10px] text-destructive flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  <div className="space-y-1.5">
-                    <Label>City</Label>
-                    <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
-                    {form.city && !/^[a-zA-Z\s'-]+$/.test(form.city) && <p className="text-[10px] text-destructive">City should contain only letters</p>}
+                </button>
+                {checkoutStep === 2 && (
+                  <div className="px-5 pb-5 pt-3 space-y-4 border-t">
+                    <div className="flex items-center justify-between">
+                      {savedAddresses.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
+                          <Select onValueChange={(id) => {
+                            const addr = savedAddresses.find((a: any) => a.id === id);
+                            if (addr) applyAddress(addr);
+                          }}>
+                            <SelectTrigger className="h-8 w-48 text-xs"><SelectValue placeholder="Use saved address" /></SelectTrigger>
+                            <SelectContent>
+                              {savedAddresses.map((a: any) => (
+                                <SelectItem key={a.id} value={a.id} className="text-xs">
+                                  {a.label || `${a.address_line1}, ${a.city}`}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Address</Label>
+                      <Input value={form.address} onChange={(e) => update("address", e.target.value)} className="h-10" placeholder="Start typing your address..." />
+                      {form.address.length > 0 && form.address.length < 10 && (
+                        <p className="text-[10px] text-destructive flex items-center gap-1">⚠ Address seems too short — please enter full street address</p>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>City</Label>
+                        <Input value={form.city} onChange={(e) => update("city", e.target.value)} className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>ZIP / Postcode</Label>
+                        <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Country</Label>
+                        <Select value={form.country} onValueChange={(v) => update("country", v)}>
+                          <SelectTrigger className="h-10"><SelectValue placeholder="Select country" /></SelectTrigger>
+                          <SelectContent>
+                            {["Australia", "New Zealand", "United States", "United Kingdom", "Canada", "Singapore", "Hong Kong", "Japan", "Germany", "France", "Netherlands", "Ireland"].map(c => (
+                              <SelectItem key={c} value={c}>{c}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <Button type="button" size="sm" onClick={() => setCheckoutStep(3)} disabled={!form.address || !form.city}>
+                        Continue to Delivery
+                      </Button>
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label>ZIP / Postcode</Label>
-                    <Input value={form.zip} onChange={(e) => update("zip", e.target.value)} className="h-10" />
-                    {form.zip && form.zip.length < 3 && <p className="text-[10px] text-destructive">Please enter a valid postcode</p>}
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label>Country</Label>
-                    <Select value={form.country} onValueChange={(v) => update("country", v)}>
-                      <SelectTrigger className="h-10"><SelectValue placeholder="Select country" /></SelectTrigger>
-                      <SelectContent>
-                        {["Australia", "New Zealand", "United States", "United Kingdom", "Canada", "Singapore", "Hong Kong", "Japan", "Germany", "France", "Netherlands", "Ireland"].map(c => (
-                          <SelectItem key={c} value={c}>{c}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Billing Address */}
