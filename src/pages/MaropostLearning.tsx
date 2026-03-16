@@ -2078,42 +2078,116 @@ Headers:
 
           {/* ═══════════════ FILTERS & SORTING (NEW) ═══════════════ */}
           <TabsContent value="filters" className="space-y-4">
+            <Section title="product_filter — Faceted Search" icon={Filter}>
+              <CodeBlock>{`<!-- Category filter -->
+[%product_filter type:'category' limit:'100' autohide:'0' filter_parent_content:'1'%]
+    [%param header%]<h4>Filter By Category</h4>[%/param%]
+    [%param *body%]
+        [%if [@selected@]%]
+            <a href="[@url@]" class="active">[@name@] ([@count@])</a>
+        [%else%]
+            <a href="[@url@]">[@name@] ([@count@])</a>
+        [%/if%]
+    [%/param%]
+[%/product_filter%]
+
+<!-- Brand filter -->
+[%product_filter type:'brand' limit:'50'%]...[%/product_filter%]
+
+<!-- Price filter -->
+[%product_filter type:'price'%]...[%/product_filter%]
+
+<!-- Variation specifics filter (Size, Colour, etc.) -->
+[%product_filter type:'variations'%]...[%/product_filter%]
+
+<!-- A-Z filter (for brands/content) -->
+[%a2z%]
+    [%param *body%]
+        <a href="[%url type:'page'%]?lead=[@upper@][%END url%]">[@upper@]</a>
+    [%/param%]
+[%/a2z%]`}</CodeBlock>
+              <TagTable rows={[
+                ["type:'category'", "Filter by category tree"],
+                ["type:'brand'", "Filter by product brand"],
+                ["type:'price'", "Price range buckets"],
+                ["type:'variations'", "Variation specifics (size, colour)"],
+                ["type:'a2z'", "A-Z alphabetical filter"],
+                ["type:'keywords'", "Keyword/tag filter"],
+                ["type:'instock'", "In-stock only toggle"],
+                ["autohide:'0'", "Show filter even when only 1 option"],
+                ["filter_parent_content:'1'", "Include parent category products"],
+                ["ignorefilter:''", "Ignore specific filter types (brand, price, misc#, filter#)"],
+                ["[@selected@]", "True if this filter option is currently active"],
+                ["[@name@]", "Filter option label"],
+                ["[@count@]", "Number of matching products"],
+                ["[@url@]", "URL with this filter applied"],
+              ]} />
+            </Section>
+
+            <Section title="filter & filter_code Functions" icon={Filter}>
+              <CodeBlock>{`<!-- Check if a filter is active -->
+[%filter id:'keywords' if:'ne' value:''%]
+    [%param if_true%]
+        <p>Search results for: [%filter id:'keywords'/%]</p>
+    [%/param%]
+    [%param if_false%]
+        <p>Browse all products</p>
+    [%/param%]
+[%/filter%]
+
+<!-- Get filter query string for forms -->
+<form method="get" action="[@config:current_url@]">
+    <input type="hidden" name="rf" value="[%filter_code id:'brand,category'/%]" />
+    <input name="price_from" /> to <input name="price_to" />
+    <button type="submit">Filter</button>
+</form>`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2"><code>filter</code> returns the value; <code>filter_code</code> returns the query string preserving other active filters.</p>
+            </Section>
+
+            <Section title="sortby & viewby Functions" icon={Filter}>
+              <CodeBlock>{`<!-- Get current sort setting -->
+Current sort: [%sortby type:'products'/%]
+<!-- Returns: popular, name, lowest_price, etc. -->
+
+<!-- Get current view mode -->
+Current view: [%viewby type:'products'/%]
+<!-- Returns: gallery, list, etc. -->`}</CodeBlock>
+              <h4 className="font-medium mt-3 mb-1">All Sort Options</h4>
+              <TagTable rows={[
+                ["popular", "Most popular (default)"],
+                ["name", "Product name A-Z"],
+                ["brand", "Brand name"],
+                ["SKU", "Product SKU"],
+                ["lowest_price / highest_price", "Price sorting"],
+                ["sortorder / sortorder2", "Manual sort order 1 & 2"],
+                ["sortorder_price / sortorder2_price", "Sort order then price"],
+                ["largest_item / smallest_item", "By size"],
+                ["longest_item / shortest_item", "By length"],
+                ["top_sellers", "By sales count"],
+              ]} />
+            </Section>
+
             <Section title="thumb_list Filter Parameters" icon={Filter}>
               <TagTable rows={[
                 ["filter_category:''", "Filter by category ID or slug"],
                 ["filter_brand:''", "Filter by brand name"],
-                ["filter_price_from:'' / filter_price_to:''", "Price range filter"],
-                ["filter_in_stock:'y'", "Only show in-stock items"],
+                ["filter_price_from:'' / filter_price_to:''", "Price range"],
+                ["filter_in_stock:'y'", "Only in-stock items"],
                 ["filter_new:'y'", "Only new products"],
-                ["filter_on_sale:'y'", "Only products on sale"],
-                ["filter_featured:'y'", "Only featured products"],
-                ["filter_date_from:'' / filter_date_to:''", "Date range filter"],
+                ["filter_on_sale:'y' / filter_has_save:''", "On sale / has RRP discount"],
+                ["filter_featured:'y'", "Only featured"],
+                ["filter_a2z:'[@form:lead@]'", "A-Z letter filter"],
+                ["filter_exsku1:'[@sku@]'", "Exclude specific SKU"],
                 ["filter_field:'value'", "Custom field filter"],
+                ["filter_date_from:'' / filter_date_to:''", "Date range"],
               ]} />
             </Section>
 
-            <Section title="Sort Options" icon={Filter}>
-              <TagTable rows={[
-                ["sort:'name'", "Alphabetical by name"],
-                ["sort:'price'", "By price (low to high)"],
-                ["sort:'price_desc'", "By price (high to low)"],
-                ["sort:'date'", "By date added"],
-                ["sort:'top_sellers'", "By sales count"],
-                ["sort:'sortorder'", "Manual sort order"],
-                ["sort:'sortorder2'", "Secondary sort order"],
-                ["sort:'SKU'", "By SKU"],
-                ["sort:'shortest_item'", "By shortest dimension"],
-                ["sort:'random'", "Random order"],
-              ]} />
-            </Section>
-
-            <Section title="Pagination in Listings" icon={Filter}>
-              <CodeBlock>{`<!-- thumb_list with pagination -->
-[%thumb_list type:'products' limit:'24' page:'[@form:page@]'%]
+            <Section title="Pagination" icon={Filter}>
+              <CodeBlock>{`[%thumb_list type:'products' limit:'24' page:'[@form:page@]'%]
     [%param *body%]...product card...[%/param%]
 [%/thumb_list%]
 
-<!-- Pagination controls -->
 [%paging%]
     [%param *prev%]<a href="[@url@]">&laquo; Prev</a>[%/param%]
     [%param *body%]<a href="[@url@]" class="[@current@]">[@page_number@]</a>[%/param%]
