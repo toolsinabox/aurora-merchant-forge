@@ -189,6 +189,7 @@ export default function StorefrontAccount() {
         .from("customers")
         .select("*")
         .eq("user_id", user!.id)
+        .eq("store_id", resolvedStoreId)
         .limit(1);
 
       const cust = custs?.[0];
