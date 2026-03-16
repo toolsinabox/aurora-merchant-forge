@@ -246,8 +246,9 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     pageType: "content",
     cart: cartData ? { items: cartData.items, totalPrice: cartData.totalPrice, totalItems: cartData.totalItems } : undefined,
     cart_items: cartData?.items,
+    contentZones: contentZones || {},
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData, contentZones]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
