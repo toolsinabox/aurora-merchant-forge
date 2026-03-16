@@ -189,7 +189,7 @@ export default function StorefrontProductDetail() {
           const { data: kitData } = await supabase
             .from("kit_components" as any)
             .select("*, component:component_product_id(id, title, price, images, sku)")
-            .eq("kit_product_id", productId)
+            .eq("kit_product_id", resolvedId)
             .order("sort_order");
           setKitComponents(kitData || []);
         }
