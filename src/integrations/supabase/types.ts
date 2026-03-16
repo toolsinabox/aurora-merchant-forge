@@ -750,6 +750,59 @@ export type Database = {
           },
         ]
       }
+      content_zones: {
+        Row: {
+          block_type: string
+          content: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          placement: string | null
+          sort_order: number
+          store_id: string
+          updated_at: string
+          zone_key: string
+        }
+        Insert: {
+          block_type?: string
+          content?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          placement?: string | null
+          sort_order?: number
+          store_id: string
+          updated_at?: string
+          zone_key: string
+        }
+        Update: {
+          block_type?: string
+          content?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          placement?: string | null
+          sort_order?: number
+          store_id?: string
+          updated_at?: string
+          zone_key?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_zones_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       coupons: {
         Row: {
           applies_to: string | null
