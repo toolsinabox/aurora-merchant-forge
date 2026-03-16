@@ -1802,14 +1802,45 @@ Headers:
               </div>
             </Section>
 
+            <Section title="More Gotchas" icon={AlertTriangle}>
+              <div className="space-y-3">
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ Cache invalidation</h4>
+                  <p className="text-xs mt-1"><code>[%cache%]</code> blocks don't auto-invalidate on product updates. Clear cache manually or use unique cache IDs per entity.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ [%list%] vs [%thumb_list%]</h4>
+                  <p className="text-xs mt-1">The <code>[%list%]</code> function is still "under development" per Maropost. When in doubt, use <code>[%thumb_list%]</code> which is the stable version. <code>[%list%]</code> templates come from <code>list/</code> directory, not <code>thumbs/</code>.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ Hardcoded /assets/ paths</h4>
+                  <p className="text-xs mt-1">Some themes hardcode paths like <code>/assets/themes/skeletal/fonts/titillium.css</code> instead of using <code>[%ntheme_asset%]</code>. Our engine must handle both patterns.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ [@cart:...@] vs [%cart id:'...'/%]</h4>
+                  <p className="text-xs mt-1">The inline <code>[@cart:grand_total@]</code> syntax is faster but both render at page load time — neither updates dynamically without AJAX.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ content_menu level depth</h4>
+                  <p className="text-xs mt-1">Must define <code>*level_1</code>, <code>*level_2</code>, <code>*level_3</code> params explicitly. Missing levels won't render children.</p>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm text-destructive">❌ eBay templates</h4>
+                  <p className="text-xs mt-1">eBay templates CANNOT contain JavaScript — eBay strips it. Only inline CSS and HTML.</p>
+                </div>
+              </div>
+            </Section>
+
             <Section title="Bootstrap Dependency" icon={Palette}>
               <ul className="list-disc pl-5 space-y-1 text-xs">
-                <li>Most Maropost themes use <strong>Bootstrap 3</strong> (Skeletal) or <strong>Bootstrap 4</strong> (newer themes)</li>
+                <li>Skeletal theme uses <strong>Bootstrap 4</strong> (latest version; older Skeletal used Bootstrap 3)</li>
                 <li>Bootstrap CSS is loaded via CDN in the header template</li>
                 <li>jQuery is required — loaded before custom.js</li>
                 <li>Slick Carousel is the standard product slider library</li>
                 <li>Font Awesome 4.7 is the standard icon library</li>
                 <li>FancyBox is commonly used for image lightboxes</li>
+                <li>Skeletal is on <strong>GitHub</strong>: <code>NetoECommerce/Skeletal</code></li>
+                <li>Theme installation: upload <code>src</code> directory to <code>httpdocs/assets/themes</code></li>
               </ul>
             </Section>
 
