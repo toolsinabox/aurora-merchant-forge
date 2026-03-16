@@ -12,6 +12,7 @@ import { MigrationProgressWidget } from "@/components/admin/MigrationProgressWid
 import { RequireAuth } from "@/components/auth/RequireAuth";
 import { RequirePlatformAdmin } from "@/components/auth/RequirePlatformAdmin";
 import { getSubdomainSlug } from "@/lib/subdomain";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
@@ -154,6 +155,7 @@ const App = () => (
           <WishlistProvider>
           <CompareProvider>
             <MigrationProgressWidget />
+            <ErrorBoundary>
             <Routes>
               {isSubdomainMode ? (
                 <>
@@ -419,6 +421,7 @@ const App = () => (
                 </>
               )}
             </Routes>
+            </ErrorBoundary>
           </CompareProvider>
           </WishlistProvider>
           </CartProvider>
