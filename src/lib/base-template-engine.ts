@@ -1565,7 +1565,7 @@ function processSystemTags(template: string, ctx: TemplateContext): string {
   result = processSiteValueBlocks(result);
   
   // [%content_zone%]
-  result = processContentZone(result);
+  result = processContentZone(result, ctx);
   
   // [%asset_url%] (global pass)
   result = processAssetUrl(result, ctx);
