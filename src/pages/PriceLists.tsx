@@ -188,7 +188,8 @@ export default function PriceLists() {
                     </div>
                     {pl.description && <p className="text-muted-foreground mt-0.5">{pl.description}</p>}
                     <div className="flex gap-2 mt-1 text-muted-foreground">
-                      <span>{pl.currency}</span>
+                      <Badge variant="outline" className="text-[10px]">{pl.currency}</Badge>
+                      {pl.customer_group_id && <Badge variant="outline" className="text-[10px]">{groups.find((g: any) => g.id === pl.customer_group_id)?.name || "Group"}</Badge>}
                       {pl.starts_at && <span>From {format(new Date(pl.starts_at), "MMM d")}</span>}
                     </div>
                   </div>
