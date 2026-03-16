@@ -214,23 +214,28 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return rendered;
   }, [footerFile, baseCtx, themeAssetBaseUrl]);
 
-  // Ensure CSS/JS files exist in storage bucket (upload from DB content if missing)
-  useEffect(() => {
-    if (!store?.id || !theme.id || !theme.cssFiles.length) return;
-    const allTextAssets = [...theme.cssFiles, ...theme.jsFiles];
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    if (!supabaseUrl) return;
+  // Track when CSS files are ready in storage
+  const [cssReady, setCssReady] = useState(false);
 
+  // Ensure CSS/JS files exist in storage bucket (upload from DB content if missing)
+  // CSS must be ready BEFORE we inject <link> tags to avoid 404 flash
+  useEffect(() => {
+    if (!store?.id || !theme.id) return;
+    const allTextAssets = [...(theme.cssFiles || []), ...(theme.jsFiles || [])];
+    if (allTextAssets.length === 0) { setCssReady(true); return; }
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) { setCssReady(true); return; }
+
+    let cancelled = false;
     (async () => {
       for (const f of allTextAssets) {
+        if (cancelled) return;
         const storagePath = `${store.id}/${theme.id}/${f.file_path}`;
         const publicUrl = `${supabaseUrl}/storage/v1/object/public/theme-assets/${storagePath}`;
-        // Quick HEAD check to see if file exists
         try {
           const res = await fetch(publicUrl, { method: "HEAD" });
-          if (res.ok) continue; // Already in storage
+          if (res.ok) continue;
         } catch { /* not found, upload it */ }
-        // Upload from DB content
         if (f.content) {
           const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
           const blob = new Blob([f.content], { type: mimeType });
@@ -239,8 +244,33 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
             .upload(storagePath, blob, { contentType: mimeType, upsert: true });
         }
       }
+      if (!cancelled) setCssReady(true);
     })();
+    return () => { cancelled = true; };
   }, [store?.id, theme.id, theme.cssFiles, theme.jsFiles]);
+
+  // Inject theme CSS as inline <style> blocks immediately for instant rendering
+  // This prevents FOUC while storage <link> tags may still be loading
+  useEffect(() => {
+    if (!theme.cssFiles || theme.cssFiles.length === 0) return;
+    const styleEls: HTMLStyleElement[] = [];
+    // Priority order for CSS loading
+    const priorityOrder = ["slick.css", "slick-theme.css", "app.css", "style.css", "custom.css"];
+    const sorted = [...theme.cssFiles].sort((a, b) => {
+      const aIdx = priorityOrder.findIndex(p => a.file_name === p);
+      const bIdx = priorityOrder.findIndex(p => b.file_name === p);
+      return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
+    });
+    for (const f of sorted) {
+      if (!f.content) continue;
+      const style = document.createElement("style");
+      style.setAttribute("data-theme-inline-css", f.file_name);
+      style.textContent = f.content;
+      document.head.appendChild(style);
+      styleEls.push(style);
+    }
+    return () => { styleEls.forEach(el => el.remove()); };
+  }, [theme.cssFiles]);
 
   // Platform-level CSS fallbacks for Slick, Bootstrap carousel, and layout fixes
   // These are structural fixes — the actual theme CSS loads via <link> tags from storage
