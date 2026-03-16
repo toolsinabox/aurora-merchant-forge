@@ -543,11 +543,8 @@ export default function StorefrontCheckout() {
 
     setSubmitting(true);
     try {
-      const { data: stores } = await supabase.from("stores").select("id").limit(100);
-      const found = stores?.find((s: any) => true);
-      if (!found) throw new Error("Store not found");
-
-      const storeId = found.id;
+      if (!checkoutStore?.id) throw new Error("Store not found");
+      const storeId = checkoutStore.id;
       const orderNum = `ORD-${Date.now().toString(36).toUpperCase()}`;
       const shippingAddr = `${form.address}, ${form.city} ${form.zip}, ${form.country}`;
 
