@@ -169,45 +169,100 @@ export default function MaropostLearning() {
             </Section>
 
             <Section title="Tag Categories" icon={Tag}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="border rounded-md p-3">
-                  <h4 className="font-medium text-sm mb-2">Function Tags</h4>
+                  <h4 className="font-medium text-sm mb-2">Logic & Calculation</h4>
                   <ul className="text-xs space-y-1">
                     <li><code>if / elseif / else</code> — conditional logic</li>
                     <li><code>set</code> — variable assignment</li>
                     <li><code>calc</code> — arithmetic operations</li>
                     <li><code>round</code> — decimal rounding</li>
                     <li><code>forloop</code> — counted loops</li>
-                    <li><code>format</code> — data formatting (currency, date, number)</li>
-                    <li><code>load_template</code> — include sub-templates</li>
-                    <li><code>load_ajax_template</code> — async template loading</li>
+                    <li><code>data</code> — switch/case (deprecated)</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Formatting & Data</h4>
+                  <ul className="text-xs space-y-1">
+                    <li><code>format</code> — currency, date, number, text</li>
+                    <li><code>split</code> — delimiter-based array splitting</li>
+                    <li><code>trim</code> — whitespace removal</li>
+                    <li><code>escape</code> — prevent code injection</li>
+                    <li><code>nohtml</code> — strip HTML tags</li>
+                    <li><code>nojs</code> — strip JavaScript</li>
+                    <li><code>parse</code> — execute B@SE in dynamic content</li>
+                    <li><code>random_number / random_text</code> — random generation</li>
+                    <li><code>url_encode / url_decode</code> — URL encoding</li>
+                    <li><code>site_value</code> — cross-template data transfer</li>
+                    <li><code>months / years</code> — date lists</li>
+                    <li><code>debug</code> — tag debugging</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Listing & Navigation</h4>
+                  <ul className="text-xs space-y-1">
                     <li><code>thumb_list</code> — product/content listings</li>
-                    <li><code>content_menu</code> — navigation menus</li>
+                    <li><code>list</code> — new unified listing (beta)</li>
+                    <li><code>content_menu</code> — navigation tree menus</li>
+                    <li><code>content_path</code> — breadcrumb/category paths</li>
                     <li><code>advert</code> — advertisement blocks</li>
+                    <li><code>menu</code> — CP-managed menus</li>
+                    <li><code>breadcrumb</code> — breadcrumb trails</li>
+                    <li><code>paging / pagination</code> — page navigation</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Product Information</h4>
+                  <ul className="text-xs space-y-1">
+                    <li><code>product</code> — single product data query</li>
+                    <li><code>related_products</code> — related items</li>
+                    <li><code>child_products</code> — variation children</li>
+                    <li><code>list_item_variations</code> — variation dropdowns</li>
+                    <li><code>multilevelpricing</code> — qty break pricing</li>
+                    <li><code>discount_products</code> — free/discount incentives</li>
+                    <li><code>item_kitting</code> — bundle components</li>
+                    <li><code>warehouse_qty</code> — stock by location</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">Cart, Checkout & Orders</h4>
+                  <ul className="text-xs space-y-1">
+                    <li><code>cart</code> — cart value queries</li>
+                    <li><code>payment_methods</code> — list payment options</li>
+                    <li><code>shipping_methods</code> — list shipping options</li>
+                    <li><code>show_order</code> — order detail display</li>
+                    <li><code>order_payment_history</code> — payment list</li>
+                    <li><code>order_refunds</code> — refund list</li>
+                    <li><code>print_order</code> — printable order</li>
+                    <li><code>consignment_breakdown</code> — shipment items</li>
+                    <li><code>show_standing_order</code> — recurring orders</li>
+                  </ul>
+                </div>
+                <div className="border rounded-md p-3">
+                  <h4 className="font-medium text-sm mb-2">URLs, Assets & Templating</h4>
+                  <ul className="text-xs space-y-1">
                     <li><code>url</code> — URL generation</li>
                     <li><code>ntheme_asset</code> — theme asset paths</li>
                     <li><code>asset_url</code> — CP-uploaded asset paths</li>
                     <li><code>cdn_asset</code> — CDN asset paths</li>
+                    <li><code>load_template</code> — include sub-templates</li>
+                    <li><code>load_ajax_template</code> — async includes</li>
                     <li><code>cache</code> — output caching</li>
-                    <li><code>paging / pagination</code> — page navigation</li>
-                    <li><code>product</code> — single product data</li>
-                    <li><code>data</code> — legacy conditional/calc (deprecated)</li>
-                    <li><code>menu</code> — CP-managed menus</li>
-                    <li><code>list</code> — new unified listing function</li>
+                    <li><code>ajax_loader</code> — prevent accelerator cache</li>
                   </ul>
                 </div>
-                <div className="border rounded-md p-3">
-                  <h4 className="font-medium text-sm mb-2">Data Tags by Page Type</h4>
-                  <ul className="text-xs space-y-1">
-                    <li><strong>Product Pages</strong> — SKU, price, images, variants, stock</li>
-                    <li><strong>Category Pages</strong> — category name, description, breadcrumbs</li>
-                    <li><strong>Content Pages</strong> — title, body, SEO fields, images</li>
-                    <li><strong>Cart Pages</strong> — line items, totals, shipping</li>
-                    <li><strong>Checkout Pages</strong> — billing/shipping, payment methods</li>
-                    <li><strong>Customer Pages</strong> — account, orders, wishlist, addresses</li>
-                    <li><strong>Email Templates</strong> — order details, customer info</li>
-                    <li><strong>Value Tags</strong> — config, user, form data (dynamic)</li>
-                  </ul>
+              </div>
+              <div className="border rounded-md p-3 mt-3">
+                <h4 className="font-medium text-sm mb-2">Data Tags by Page Type</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                  <div><strong>Product</strong> — SKU, price, stock, images, variants, kitting, misc1-50</div>
+                  <div><strong>Category</strong> — name, description, level, breadcrumbs, parent</div>
+                  <div><strong>Cart/Checkout</strong> — totals, billing, shipping, payment methods</div>
+                  <div><strong>Customer</strong> — account, addresses, groups, custom1-50</div>
+                  <div><strong>Value</strong> — config:*, user:*, form:*, cart:*</div>
+                  <div><strong>Email</strong> — order details, customer info, tracking</div>
+                  <div><strong>eBay</strong> — separate tag set for eBay templates</div>
+                  <div><strong>Order</strong> — line items, payments, refunds, consignments</div>
                 </div>
               </div>
             </Section>
