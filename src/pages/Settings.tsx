@@ -1935,8 +1935,74 @@ export default function SettingsPage() {
             })()}
           </TabsContent>
 
-          {/* Config Export/Import */}
-          <TabsContent value="config">
+          {/* Advanced Config */}
+          <TabsContent value="config" className="space-y-4">
+            {/* Key-Value Config Manager */}
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm">Advanced Configuration</CardTitle>
+                <p className="text-xs text-muted-foreground">Maropost-style key-value settings — control store behavior at a granular level</p>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="relative">
+                  <Input
+                    className="h-8 text-xs pl-8"
+                    placeholder="Search config keys..."
+                    value={configSearch}
+                    onChange={(e) => setConfigSearch(e.target.value)}
+                  />
+                  <Settings className="absolute left-2.5 top-2 h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <div className="border rounded-md divide-y max-h-[450px] overflow-y-auto">
+                  {advancedConfigKeys
+                    .filter(c => !configSearch || c.key.toLowerCase().includes(configSearch.toLowerCase()) || c.label.toLowerCase().includes(configSearch.toLowerCase()))
+                    .map(conf => {
+                      const val = advancedConfig[conf.key] ?? conf.default;
+                      return (
+                        <div key={conf.key} className="flex items-center justify-between gap-3 px-3 py-2 hover:bg-muted/30">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium">{conf.label}</p>
+                            <p className="text-[10px] text-muted-foreground font-mono">{conf.key}</p>
+                          </div>
+                          {conf.type === "boolean" ? (
+                            <Switch
+                              checked={val === "1" || val === "true" || val === true}
+                              onCheckedChange={(v) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: v ? "1" : "0" }))}
+                            />
+                          ) : conf.type === "select" ? (
+                            <select
+                              className="h-7 text-xs border rounded px-2 bg-background min-w-[120px]"
+                              value={String(val)}
+                              onChange={(e) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: e.target.value }))}
+                            >
+                              {conf.options?.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          ) : (
+                            <Input
+                              className="h-7 text-xs w-36"
+                              value={String(val)}
+                              onChange={(e) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: e.target.value }))}
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+                <div className="flex justify-between items-center">
+                  <p className="text-[10px] text-muted-foreground">
+                    {advancedConfigKeys.filter(c => !configSearch || c.key.toLowerCase().includes(configSearch.toLowerCase()) || c.label.toLowerCase().includes(configSearch.toLowerCase())).length} of {advancedConfigKeys.length} settings
+                  </p>
+                  <Button size="sm" className="text-xs gap-1.5" onClick={() => {
+                    localStorage.setItem("advanced_config", JSON.stringify(advancedConfig));
+                    toast.success("Configuration saved");
+                  }}>
+                    <Save className="h-3 w-3" /> Save Config
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Export / Import */}
             <Card>
               <CardHeader className="p-4 pb-2">
                 <CardTitle className="text-sm">Configuration Export / Import</CardTitle>
@@ -1946,11 +2012,12 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Export Configuration</Label>
-                    <p className="text-[10px] text-muted-foreground">Downloads store settings, branding, scripts, and local preferences as a JSON file.</p>
+                    <p className="text-[10px] text-muted-foreground">Downloads all settings as a JSON file.</p>
                     <Button size="sm" className="gap-1.5 w-full" onClick={() => {
                       const config = {
                         exportedAt: new Date().toISOString(),
                         storeName: currentStore?.name,
+                        advancedConfig,
                         settings: {
                           customHeadScripts: localStorage.getItem("custom_head_scripts") || "",
                           customBodyScripts: localStorage.getItem("custom_body_scripts") || "",
@@ -1971,7 +2038,7 @@ export default function SettingsPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs font-medium">Import Configuration</Label>
-                    <p className="text-[10px] text-muted-foreground">Upload a previously exported JSON config file to restore settings.</p>
+                    <p className="text-[10px] text-muted-foreground">Upload a previously exported JSON config file.</p>
                     <Button size="sm" variant="outline" className="gap-1.5 w-full" onClick={() => {
                       const input = document.createElement("input");
                       input.type = "file";
@@ -1983,14 +2050,19 @@ export default function SettingsPage() {
                         reader.onload = (ev) => {
                           try {
                             const config = JSON.parse(ev.target?.result as string);
-                            if (!config.settings) throw new Error("Invalid config");
-                            const s = config.settings;
-                            if (s.customHeadScripts) localStorage.setItem("custom_head_scripts", s.customHeadScripts);
-                            if (s.customBodyScripts) localStorage.setItem("custom_body_scripts", s.customBodyScripts);
-                            if (s.quoteTemplates) localStorage.setItem("quote_templates", JSON.stringify(s.quoteTemplates));
-                            if (s.scheduledPriceChanges) localStorage.setItem("scheduled_price_changes", JSON.stringify(s.scheduledPriceChanges));
-                            if (s.cycleCountSchedules) localStorage.setItem("cycle_count_schedules", JSON.stringify(s.cycleCountSchedules));
-                            if (s.inventorySnapshots) localStorage.setItem("inventory_snapshots", JSON.stringify(s.inventorySnapshots));
+                            if (config.advancedConfig) {
+                              setAdvancedConfig(config.advancedConfig);
+                              localStorage.setItem("advanced_config", JSON.stringify(config.advancedConfig));
+                            }
+                            if (config.settings) {
+                              const s = config.settings;
+                              if (s.customHeadScripts) localStorage.setItem("custom_head_scripts", s.customHeadScripts);
+                              if (s.customBodyScripts) localStorage.setItem("custom_body_scripts", s.customBodyScripts);
+                              if (s.quoteTemplates) localStorage.setItem("quote_templates", JSON.stringify(s.quoteTemplates));
+                              if (s.scheduledPriceChanges) localStorage.setItem("scheduled_price_changes", JSON.stringify(s.scheduledPriceChanges));
+                              if (s.cycleCountSchedules) localStorage.setItem("cycle_count_schedules", JSON.stringify(s.cycleCountSchedules));
+                              if (s.inventorySnapshots) localStorage.setItem("inventory_snapshots", JSON.stringify(s.inventorySnapshots));
+                            }
                             toast.success(`Configuration imported from ${config.exportedAt ? new Date(config.exportedAt).toLocaleDateString() : 'backup'}`);
                           } catch {
                             toast.error("Invalid configuration file");
