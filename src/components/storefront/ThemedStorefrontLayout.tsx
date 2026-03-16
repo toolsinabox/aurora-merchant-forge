@@ -172,7 +172,7 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
 }
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData, ssrData }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
@@ -181,6 +181,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   categories?: any[];
   basePath?: string;
   cartData?: { items: any[]; totalPrice: number; totalItems: number };
+  ssrData?: import("@/hooks/use-ssr-page").SSRPageResult | null;
 }) {
   const { user } = useAuth();
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
