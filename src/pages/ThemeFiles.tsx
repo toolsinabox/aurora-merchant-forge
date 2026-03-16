@@ -21,12 +21,16 @@ import {
   FolderOpen, FolderClosed, File, FileCode2, FileText, Upload, Plus, Save,
   Trash2, Eye, Code2, Download, Palette, ChevronRight, ChevronDown,
   Search, RefreshCw, Package, AlertCircle, Check, Copy, MoreVertical,
-  Settings2, Star, Archive, FilePlus,
+  Settings2, Star, Archive, FilePlus, Pencil, FolderPlus, UploadCloud,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  ContextMenu, ContextMenuContent, ContextMenuItem,
+  ContextMenuSeparator, ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
