@@ -31,11 +31,10 @@ export default function PrintPackingSlip() {
             });
         }
       });
-    supabase.from("stores").select("name, business_address").eq("id", order.store_id).maybeSingle()
+    supabase.from("stores").select("name").eq("id", order.store_id).maybeSingle()
       .then(({ data }) => {
         if (data) {
           setStoreName(data.name);
-          setStoreAddress((data as any).business_address || "");
         }
       });
   }, [order]);
