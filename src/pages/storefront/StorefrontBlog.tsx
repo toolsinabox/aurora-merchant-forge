@@ -116,6 +116,7 @@ export default function StorefrontBlog() {
 
     return (
       <StorefrontLayout storeName={store.name} extraContext={blogCtx}>
+        <SEOHead title={`Blog — ${store.name}`} description={`Latest news and articles from ${store.name}`} />
         <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </StorefrontLayout>
     );
