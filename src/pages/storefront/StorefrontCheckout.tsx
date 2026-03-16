@@ -517,8 +517,8 @@ export default function StorefrontCheckout() {
 
     // Check guest checkout allowed
     if (!user) {
-      const { data: storeSettings } = await supabase.from("stores").select("guest_checkout_enabled").limit(1).maybeSingle();
-      if (storeSettings && !(storeSettings as any).guest_checkout_enabled) {
+      const guestAllowed = (checkoutStore as any)?.guest_checkout_enabled;
+      if (guestAllowed === false) {
         toast.error("Please log in to complete your order");
         return;
       }
