@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Input } from "@/components/ui/input";
@@ -196,8 +196,9 @@ export default function StorefrontProducts() {
   const [categories, setCategories] = useState<any[]>([]);
   const [allSpecifics, setAllSpecifics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(() => searchParams.get("q") || "");
+  const [category, setCategory] = useState(() => searchParams.get("category") || "all");
   const [sort, setSort] = useState("newest");
   const [brandFilter, setBrandFilter] = useState<string[]>([]);
   const [specFilters, setSpecFilters] = useState<SpecFilter>({});
@@ -254,7 +255,7 @@ export default function StorefrontProducts() {
       .filter((p) => {
         const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) ||
           (p.search_keywords && p.search_keywords.toLowerCase().includes(search.toLowerCase()));
-        const matchCat = category === "all" || p.category_id === category;
+        const matchCat = category === "all" || p.category_id === category || categories.find((c: any) => c.slug === category)?.id === p.category_id;
         const matchBrand = brandFilter.length === 0 || brandFilter.includes(p.brand);
         const matchPrice = Number(p.price) >= priceRange[0] && Number(p.price) <= priceRange[1];
         let matchSpecs = true;
@@ -269,7 +270,7 @@ export default function StorefrontProducts() {
         if (sort === "name") return a.title.localeCompare(b.title);
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
-  }, [products, search, category, brandFilter, specFilters, sort, priceRange, allSpecifics]);
+  }, [products, search, category, categories, brandFilter, specFilters, sort, priceRange, allSpecifics]);
 
   // Reset visible count when filters change
   const [visibleCount, setVisibleCount] = useState(pageSize);
