@@ -487,6 +487,7 @@ export default function StorefrontCheckout() {
         .from("gift_vouchers")
         .select("id, code, balance, is_active, expires_at")
         .eq("code", code)
+        .eq("store_id", checkoutStore?.id)
         .eq("is_active", true)
         .maybeSingle();
       if (error) throw error;
