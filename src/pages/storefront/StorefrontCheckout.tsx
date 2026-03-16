@@ -759,41 +759,49 @@ export default function StorefrontCheckout() {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Checkout Progress Indicator */}
-          <div className="flex items-center justify-center gap-0 mb-8">
-            {[{ step: 1, label: "Details" }, { step: 2, label: "Shipping" }, { step: 3, label: "Payment" }].map((s, i) => (
-              <div key={s.step} className="flex items-center">
-                {i > 0 && <div className={`w-12 h-0.5 ${checkoutStep >= s.step ? "bg-primary" : "bg-border"}`} />}
-                <button type="button" onClick={() => setCheckoutStep(s.step)} className="flex flex-col items-center gap-1">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium border-2 transition-colors ${checkoutStep >= s.step ? "bg-primary text-primary-foreground border-primary" : "bg-background text-muted-foreground border-border"}`}>
-                    {checkoutStep > s.step ? <Check className="h-4 w-4" /> : s.step}
-                  </div>
-                  <span className={`text-[10px] ${checkoutStep >= s.step ? "text-primary font-medium" : "text-muted-foreground"}`}>{s.label}</span>
-                </button>
-              </div>
-            ))}
-          </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Form */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Contact */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Contact Information</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <Label>Full Name *</Label>
-                    <Input value={form.name} onChange={(e) => update("name", e.target.value)} required className="h-10" />
+            {/* Form — One-Page Accordion Checkout (Maropost style) */}
+            <div className="lg:col-span-2 space-y-0">
+              {/* Section 1: Contact */}
+              <div className="border rounded-t-lg overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 1 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 1 ? 0 : 1)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 ${form.name && form.email ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground"}`}>
+                      {form.name && form.email ? <Check className="h-3 w-3" /> : "1"}
+                    </div>
+                    <span className="font-semibold text-sm">Contact Information</span>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label>Email *</Label>
-                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required className="h-10" />
+                  {form.name && form.email && checkoutStep !== 1 && (
+                    <span className="text-xs text-muted-foreground truncate max-w-[200px]">{form.name} · {form.email}</span>
+                  )}
+                </button>
+                {checkoutStep === 1 && (
+                  <div className="px-5 pb-5 pt-3 space-y-4 border-t">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>Full Name *</Label>
+                        <Input value={form.name} onChange={(e) => update("name", e.target.value)} required className="h-10" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Email *</Label>
+                        <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} required className="h-10" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Phone</Label>
+                      <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="h-10" />
+                    </div>
+                    <div className="flex justify-end">
+                      <Button type="button" size="sm" onClick={() => setCheckoutStep(2)} disabled={!form.name || !form.email}>
+                        Continue to Shipping
+                      </Button>
+                    </div>
                   </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Phone</Label>
-                  <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="h-10" />
-                </div>
+                )}
               </div>
 
               {/* Shipping */}
