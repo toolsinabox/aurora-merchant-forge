@@ -895,10 +895,13 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
           <header dangerouslySetInnerHTML={{ __html: renderedHeader }} />
         )}
 
-        {/* Page Content — children render OUTSIDE theme scope for React pages,
-            but INSIDE for B@SE-rendered pages (they bring their own themed wrapper) */}
+        {/* Page Content — SSR body takes priority, React children as fallback */}
         <main id="main-content" className="flex-1 pb-16 md:pb-0">
-          {children}
+          {ssrBodyHtml ? (
+            <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
+          ) : (
+            children
+          )}
         </main>
 
         {/* Rendered Footer */}
