@@ -603,15 +603,29 @@ export default function ThemeFiles() {
     return (
       <div key={node.path} style={{ paddingLeft: depth > 0 ? 8 : 0 }}>
         {depth > 0 && (
-          <button
-            className="flex items-center gap-1.5 w-full px-2 py-1 text-xs font-medium hover:bg-muted/50 rounded-sm group"
-            onClick={() => toggleFolder(node.path)}
-          >
-            {isExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
-            {isExpanded ? <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" /> : <FolderClosed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
-            <span className="truncate">{node.name}</span>
-            <Badge variant="secondary" className="text-[9px] ml-auto h-4 px-1">{countAllFiles(node)}</Badge>
-          </button>
+          <ContextMenu>
+            <ContextMenuTrigger asChild>
+              <button
+                className="flex items-center gap-1.5 w-full px-2 py-1 text-xs font-medium hover:bg-muted/50 rounded-sm group"
+                onClick={() => toggleFolder(node.path)}
+              >
+                {isExpanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
+                {isExpanded ? <FolderOpen className="h-3.5 w-3.5 text-primary shrink-0" /> : <FolderClosed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+                <span className="truncate">{node.name}</span>
+                <Badge variant="secondary" className="text-[9px] ml-auto h-4 px-1">{countAllFiles(node)}</Badge>
+              </button>
+            </ContextMenuTrigger>
+            <ContextMenuContent className="text-xs">
+              <ContextMenuItem onClick={() => { setNewFileFolder(node.name as FolderKey); setNewFileDialog(true); }} className="gap-2 text-xs">
+                <FilePlus className="h-3 w-3" /> New File Here
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem onClick={() => toggleFolder(node.path)} className="gap-2 text-xs">
+                {isExpanded ? <FolderClosed className="h-3 w-3" /> : <FolderOpen className="h-3 w-3" />}
+                {isExpanded ? "Collapse" : "Expand"}
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
         )}
         {(depth === 0 || isExpanded) && (
           <div className={depth > 0 ? "ml-3 border-l border-border/40 pl-1" : ""}>
@@ -619,22 +633,40 @@ export default function ThemeFiles() {
             {sortedFiles.map((file: any) => {
               const FIcon = FILE_TYPE_ICONS[file.file_type] || File;
               return (
-                <button
-                  key={file.id}
-                  className={`flex items-center gap-1.5 w-full px-2 py-1 text-xs hover:bg-muted/50 rounded-sm truncate group ${
-                    selectedFile?.id === file.id ? "bg-accent text-accent-foreground" : ""
-                  }`}
-                  onClick={() => openFile(file)}
-                >
-                  <FIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
-                  <span className="truncate">{file.file_name}</span>
-                  <button
-                    className="opacity-0 group-hover:opacity-100 ml-auto h-4 w-4 flex items-center justify-center text-destructive hover:bg-destructive/10 rounded"
-                    onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
-                  >
-                    <Trash2 className="h-2.5 w-2.5" />
-                  </button>
-                </button>
+                <ContextMenu key={file.id}>
+                  <ContextMenuTrigger asChild>
+                    <button
+                      className={`flex items-center gap-1.5 w-full px-2 py-1 text-xs hover:bg-muted/50 rounded-sm truncate group ${
+                        selectedFile?.id === file.id ? "bg-accent text-accent-foreground" : ""
+                      }`}
+                      onClick={() => openFile(file)}
+                    >
+                      <FIcon className="h-3 w-3 shrink-0 text-muted-foreground" />
+                      <span className="truncate">{file.file_name}</span>
+                      <button
+                        className="opacity-0 group-hover:opacity-100 ml-auto h-4 w-4 flex items-center justify-center text-destructive hover:bg-destructive/10 rounded"
+                        onClick={(e) => { e.stopPropagation(); deleteFile(file.id); }}
+                      >
+                        <Trash2 className="h-2.5 w-2.5" />
+                      </button>
+                    </button>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="text-xs">
+                    <ContextMenuItem onClick={() => openFile(file)} className="gap-2 text-xs">
+                      <Code2 className="h-3 w-3" /> Edit
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => startRename(file)} className="gap-2 text-xs">
+                      <Pencil className="h-3 w-3" /> Rename
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => duplicateFile(file)} className="gap-2 text-xs">
+                      <Copy className="h-3 w-3" /> Duplicate
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem onClick={() => deleteFile(file.id)} className="gap-2 text-xs text-destructive">
+                      <Trash2 className="h-3 w-3" /> Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               );
             })}
             {sortedDirs.length === 0 && sortedFiles.length === 0 && depth > 0 && (
