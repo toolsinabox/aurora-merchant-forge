@@ -413,6 +413,14 @@ export default function StorefrontAccount() {
 
   if (!user) return null;
 
+  if (!loading && themeHtml) {
+    return (
+      <StorefrontLayout storeName={accountStore?.name}>
+        <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
+      </StorefrontLayout>
+    );
+  }
+
   const returnOrderIds = new Set(returns.map((r: any) => r.order_id));
   const eligibleOrders = orders.filter(
     (o) => ["delivered", "shipped"].includes(o.status) && !returnOrderIds.has(o.id)
