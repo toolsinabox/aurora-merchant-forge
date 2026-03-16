@@ -486,6 +486,11 @@ export default function ShippingZones() {
             </Card>
           </TabsContent>
 
+          {/* ── Advanced Rules Tab ── */}
+          <TabsContent value="rules" className="space-y-3 mt-3">
+            <ShippingRulesTab />
+          </TabsContent>
+
           {/* ── Exclusions Tab ── */}
           <TabsContent value="exclusions" className="space-y-3 mt-3">
             <ShippingExclusionsTab storeId={storeId} />
