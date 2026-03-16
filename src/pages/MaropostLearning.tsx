@@ -89,6 +89,9 @@ export default function MaropostLearning() {
               <TabsTrigger value="navigation">Navigation</TabsTrigger>
               <TabsTrigger value="formatting">Formatting & Logic</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
+              <TabsTrigger value="accounts">Account Pages</TabsTrigger>
+              <TabsTrigger value="cms">CMS & Content</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
               <TabsTrigger value="gotchas">Gotchas & Tips</TabsTrigger>
             </TabsList>
           </ScrollArea>
