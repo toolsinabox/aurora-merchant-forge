@@ -13,6 +13,7 @@ import {
   Users, Plus, ExternalLink, ArrowRight, Settings2, Smartphone, Truck, 
   ClipboardList, Tag, FileText, RotateCcw, Layers,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
