@@ -215,6 +215,57 @@ export default function PurchaseOrders() {
     (p.suppliers?.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  // Supplier performance stats
+  const supplierStats = useMemo(() => {
+    const map: Record<string, { name: string; total: number; received: number; onTime: number; late: number; totalValue: number }> = {};
+    pos.forEach((p: any) => {
+      const sName = p.suppliers?.name || "Unknown";
+      const sId = p.supplier_id || "none";
+      if (!map[sId]) map[sId] = { name: sName, total: 0, received: 0, onTime: 0, late: 0, totalValue: 0 };
+      map[sId].total++;
+      map[sId].totalValue += Number(p.total) || 0;
+      if (p.status === "received" || p.status === "closed") {
+        map[sId].received++;
+        if (p.expected_date && p.received_date) {
+          if (new Date(p.received_date) <= new Date(p.expected_date)) map[sId].onTime++;
+          else map[sId].late++;
+        }
+      }
+    });
+    return Object.values(map).sort((a, b) => b.total - a.total);
+  }, [pos]);
+
+  // Reorder suggestions based on low stock + past PO patterns
+  const { data: reorderSuggestions = [] } = useQuery({
+    queryKey: ["reorder_suggestions", currentStore?.id],
+    queryFn: async () => {
+      if (!currentStore) return [];
+      const { data } = await supabase
+        .from("inventory_stock")
+        .select("product_id, quantity, low_stock_threshold, products(title, sku)")
+        .eq("store_id", currentStore.id)
+        .limit(50);
+      return (data || [])
+        .filter((s: any) => s.quantity <= s.low_stock_threshold)
+        .map((s: any) => ({
+          product_id: s.product_id,
+          title: (s.products as any)?.title || "Unknown",
+          sku: (s.products as any)?.sku || "",
+          current_stock: s.quantity,
+          threshold: s.low_stock_threshold,
+          suggested_qty: Math.max(s.low_stock_threshold * 2 - s.quantity, 10),
+        }));
+    },
+    enabled: !!currentStore,
+  });
+
+  // PO totals
+  const totalValue = pos.reduce((s: number, p: any) => s + (Number(p.total) || 0), 0);
+  const pendingCount = pos.filter((p: any) => ["draft", "pending_approval", "sent"].includes(p.status)).length;
+  const receivedCount = pos.filter((p: any) => p.status === "received" || p.status === "closed").length;
+
+  const [activeTab, setActiveTab] = useState("orders");
+
   return (
     <AdminLayout>
       <div className="space-y-3">
@@ -257,6 +308,34 @@ export default function PurchaseOrders() {
           </Dialog>
         </div>
 
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <Card><CardContent className="p-3">
+            <p className="text-xs text-muted-foreground">Total POs</p>
+            <p className="text-xl font-bold">{pos.length}</p>
+          </CardContent></Card>
+          <Card><CardContent className="p-3">
+            <p className="text-xs text-muted-foreground">Pending</p>
+            <p className="text-xl font-bold text-amber-500">{pendingCount}</p>
+          </CardContent></Card>
+          <Card><CardContent className="p-3">
+            <p className="text-xs text-muted-foreground">Received</p>
+            <p className="text-xl font-bold text-primary">{receivedCount}</p>
+          </CardContent></Card>
+          <Card><CardContent className="p-3">
+            <p className="text-xs text-muted-foreground">Total Value</p>
+            <p className="text-xl font-bold">${totalValue.toFixed(0)}</p>
+          </CardContent></Card>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="h-8">
+            <TabsTrigger value="orders" className="text-xs h-7"><ClipboardList className="h-3 w-3 mr-1" />Orders</TabsTrigger>
+            <TabsTrigger value="suppliers" className="text-xs h-7"><TrendingUp className="h-3 w-3 mr-1" />Supplier Performance</TabsTrigger>
+            <TabsTrigger value="reorder" className="text-xs h-7"><AlertTriangle className="h-3 w-3 mr-1" />Reorder Suggestions ({reorderSuggestions.length})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="orders" className="mt-3 space-y-3">
         <div className="relative max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input placeholder="Search POs..." value={search} onChange={e => setSearch(e.target.value)} className="h-8 pl-8 text-xs" />
