@@ -124,6 +124,7 @@ export default function StorefrontBlog() {
 
   return (
     <StorefrontLayout storeName={store?.name}>
+      <SEOHead title={`Blog — ${store?.name || "Store"}`} description={`Latest news and articles from ${store?.name || "our store"}`} />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold mb-8">Blog</h1>
 

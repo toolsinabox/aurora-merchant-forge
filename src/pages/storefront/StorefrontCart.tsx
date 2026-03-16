@@ -120,6 +120,7 @@ export default function StorefrontCart() {
   if (themeHtml && items.length > 0) {
     return (
       <StorefrontLayout storeName={store?.name}>
+        <SEOHead title={`Shopping Cart — ${store?.name || "Store"}`} description="Review your cart and proceed to checkout" />
         <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
       </StorefrontLayout>
     );

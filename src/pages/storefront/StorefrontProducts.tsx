@@ -342,6 +342,7 @@ export default function StorefrontProducts() {
   if (!loading && themeHtml) {
     return (
       <StorefrontLayout storeName={store?.name}>
+        <SEOHead title={`Products — ${store?.name || "Store"}`} description={`Browse products at ${store?.name || "our store"}`} />
         <div dangerouslySetInnerHTML={{ __html: themeHtml }} />
       </StorefrontLayout>
     );
