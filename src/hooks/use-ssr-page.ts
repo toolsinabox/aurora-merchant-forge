@@ -30,7 +30,7 @@ interface UseSSRPageOptions {
  * Mirrors Maropost's SSR architecture — B@SE processing happens on the server,
  * and the client receives pre-rendered HTML.
  */
-export function useSSRPage({ storeId, pageType = "content", slug, basePath, extraContext, enabled = true }: UseSSRPageOptions) {
+export function useSSRPage({ storeId, pageType = "content", slug, basePath, extraContext, enabled = true, templateOverrides }: UseSSRPageOptions) {
   const [data, setData] = useState<SSRPageResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +50,7 @@ export function useSSRPage({ storeId, pageType = "content", slug, basePath, extr
           store_id: storeId,
           page_type: pageType,
           slug,
+          template_overrides: templateOverrides || {},
           extra_context: {
             basePath: basePath || "",
             ...extraContext,
