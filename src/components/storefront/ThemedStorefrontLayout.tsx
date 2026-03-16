@@ -554,17 +554,24 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     return () => { addedLinks.forEach(l => l.remove()); };
   }, []);
 
-  // Inject external CSS links from the theme's <head> content (CDN only)
+  // Inject CSS links from the theme's <head> content (CDN + theme-assets storage URLs)
   useEffect(() => {
     if (!headContent && !renderedHeader) return;
     const addedElements: Element[] = [];
     
     const allCssHtml = (headContent || "") + (renderedHeader || "");
-    const linkRegex = /<link[^>]*href=["']((?:https?:)?\/\/[^"']+)["'][^>]*>/gi;
+    // Match all <link> tags with href — both CDN and storage bucket URLs
+    const linkRegex = /<link[^>]*href=["']([^"']+)["'][^>]*>/gi;
     let match;
     while ((match = linkRegex.exec(allCssHtml)) !== null) {
+      const fullTag = match[0];
       const href = match[1];
-      if (href.includes("/assets/themes/")) continue;
+      // Only process stylesheet links
+      if (!fullTag.includes("stylesheet") && !href.endsWith(".css")) continue;
+      // Skip legacy local paths like /assets/themes/...
+      if (href.includes("/assets/themes/") && !href.includes("storage/v1")) continue;
+      // Skip empty or placeholder hrefs
+      if (!href || href === "#") continue;
       if (document.querySelector(`link[href="${href}"]`)) continue;
       const link = document.createElement("link");
       link.rel = "stylesheet";
