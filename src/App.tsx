@@ -440,6 +440,7 @@ const App = () => (
                 </>
               )}
             </Routes>
+            </Suspense>
             </ErrorBoundary>
           </CompareProvider>
           </WishlistProvider>
