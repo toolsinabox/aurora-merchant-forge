@@ -707,6 +707,67 @@ export default function CustomerDetail() {
 
             {/* Store Credit */}
             <StoreCreditCard customerId={customer.id} storeId={(customer as any).store_id} />
+
+            {/* B2B Wholesale Approval */}
+            <Card>
+              <CardHeader className="p-4 pb-2">
+                <CardTitle className="text-sm flex items-center gap-1.5">
+                  <Shield className="h-4 w-4" /> Wholesale / B2B
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-4 pt-2 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs">
+                    <span className="text-muted-foreground">Approval Status: </span>
+                    <Badge variant={(customer as any).is_approved ? "default" : "secondary"} className="text-[10px] ml-1">
+                      {(customer as any).is_approved ? "Approved" : (customer as any).requires_approval ? "Pending Approval" : "Not Required"}
+                    </Badge>
+                  </div>
+                  {(customer as any).requires_approval && !(customer as any).is_approved && (
+                    <Button size="sm" className="h-7 text-xs gap-1" onClick={async () => {
+                      const { error } = await supabase.from("customers").update({ is_approved: true }).eq("id", customer.id);
+                      if (error) { toast.error("Failed to approve"); return; }
+                      queryClient.invalidateQueries({ queryKey: ["customer", customer.id] });
+                      toast.success("Customer approved for wholesale");
+                    }}>
+                      Approve
+                    </Button>
+                  )}
+                </div>
+                {(customer as any).customer_group_id && (
+                  <div className="text-xs">
+                    <span className="text-muted-foreground">Customer Group: </span>
+                    <Badge variant="outline" className="text-[10px] ml-1">
+                      {(customerGroups as any[]).find((g: any) => g.id === (customer as any).customer_group_id)?.name || "—"}
+                    </Badge>
+                    {(() => {
+                      const grp = (customerGroups as any[]).find((g: any) => g.id === (customer as any).customer_group_id);
+                      return grp?.discount_percent ? (
+                        <span className="text-[10px] text-primary ml-2 font-medium">{grp.discount_percent}% discount</span>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
+                {(customer as any).payment_terms && (
+                  <div className="text-xs">
+                    <span className="text-muted-foreground">Payment Terms: </span>
+                    <span className="font-medium">{(customer as any).payment_terms}</span>
+                  </div>
+                )}
+                {(customer as any).credit_limit != null && (
+                  <div className="text-xs">
+                    <span className="text-muted-foreground">Credit Limit: </span>
+                    <span className="font-medium">${Number((customer as any).credit_limit).toLocaleString()}</span>
+                  </div>
+                )}
+                {(customer as any).abn_vat_number && (
+                  <div className="text-xs">
+                    <span className="text-muted-foreground">ABN / VAT: </span>
+                    <span className="font-mono">{(customer as any).abn_vat_number}</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           <div className="lg:col-span-2 space-y-3">
