@@ -89,6 +89,9 @@ export default function MaropostLearning() {
               <TabsTrigger value="navigation">Navigation</TabsTrigger>
               <TabsTrigger value="formatting">Formatting & Logic</TabsTrigger>
               <TabsTrigger value="orders">Orders</TabsTrigger>
+              <TabsTrigger value="accounts">Account Pages</TabsTrigger>
+              <TabsTrigger value="cms">CMS & Content</TabsTrigger>
+              <TabsTrigger value="reviews">Reviews</TabsTrigger>
               <TabsTrigger value="gotchas">Gotchas & Tips</TabsTrigger>
             </TabsList>
           </ScrollArea>
@@ -3010,6 +3013,377 @@ Shipping: [%cart id:'shipping_method'/%]`}</CodeBlock>
                 ["Cancelled", "Order cancelled"],
                 ["Uncommitted", "Draft/uncommitted"],
               ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ ACCOUNT PAGES ═══════════════ */}
+          <TabsContent value="accounts" className="space-y-4">
+            <Section title="Customer Account Templates" icon={Tag}>
+              <p className="text-xs mb-2">Account pages live in <code>/templates/customer/</code> and are only accessible to logged-in customers at <code>/_myacct/</code>.</p>
+              <TagTable rows={[
+                ["login.template.html", "Login + registration form"],
+                ["register/template.html", "Standalone registration form"],
+                ["account/template.html", "Account dashboard/overview"],
+                ["account/orders.template.html", "Order history listing"],
+                ["account/order.template.html", "Single order detail"],
+                ["account/address.template.html", "Address book management"],
+                ["account/wishlist.template.html", "Saved wishlist"],
+                ["account/savedcart.template.html", "Saved/quoted carts"],
+                ["account/returns.template.html", "Return requests"],
+                ["account/downloads.template.html", "Digital downloads"],
+                ["account/standing_orders.template.html", "Standing/recurring orders"],
+                ["account/profile.template.html", "Edit profile details"],
+              ]} />
+            </Section>
+
+            <Section title="Customer Data Tags (Account Pages)" icon={Tag}>
+              <TagTable rows={[
+                ["[@user:username@]", "Customer username"],
+                ["[@user:email@]", "Customer email"],
+                ["[@user:bill_first_name@] / [@user:bill_last_name@]", "Billing name"],
+                ["[@user:bill_company@]", "Billing company"],
+                ["[@user:bill_phone@]", "Phone number"],
+                ["[@user:bill_street1@] / [@user:bill_street2@]", "Billing address"],
+                ["[@user:bill_city@] / [@user:bill_state@] / [@user:bill_postcode@]", "City/state/postcode"],
+                ["[@user:bill_country@]", "Country"],
+                ["[@user:customer_group@]", "Customer group name"],
+                ["[@user:abn@]", "ABN/VAT number"],
+                ["[@user:active@]", "Account active status"],
+                ["[@user:date_added@]", "Registration date"],
+              ]} />
+            </Section>
+
+            <Section title="address_book — Manage Addresses" icon={Tag}>
+              <CodeBlock>{`[%address_book%]
+    [%param *header%]<h3>Your Addresses</h3><ul>[%/param%]
+    [%param *body%]
+        <li>
+            <strong>[@ship_title@]</strong><br/>
+            [@ship_first_name@] [@ship_last_name@]<br/>
+            [@ship_street1@] [@ship_street2@]<br/>
+            [@ship_city@] [@ship_state@] [@ship_postcode@]<br/>
+            [@ship_country@]
+            [%if [@id@] ne 'b'%]
+                <a href="/_myacct/address/[@id@]">Edit</a>
+                <a href="/_myacct/address/delete/[@id@]">Delete</a>
+            [%/if%]
+        </li>
+    [%/param%]
+    [%param *footer%]</ul>[%/param%]
+[%/address_book%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@id@]", "'b' for billing, integer for shipping addresses"],
+                ["[@ship_title@]", "Address label (e.g., 'Home', 'Work')"],
+                ["[@ship_first_name@] / [@ship_last_name@]", "Recipient name"],
+                ["[@ship_street1@] / [@ship_street2@]", "Street address"],
+                ["[@ship_city@] / [@ship_state@] / [@ship_postcode@]", "City/state/postcode"],
+                ["[@ship_country@]", "Country"],
+                ["[@ship_company@]", "Company name"],
+                ["[@ship_phone@]", "Phone number"],
+              ]} />
+            </Section>
+
+            <Section title="Registration Form Fields" icon={Tag}>
+              <CodeBlock>{`<form method="post" action="[%url page:'account' type:'register'/%]">
+    <input type="hidden" name="fn" value="confirm" />
+    <input name="reg_username" />    <!-- or hide if IGNORE_USERNAME -->
+    <input name="reg_email" type="email" required />
+    <input name="reg_password" type="password" required />
+    <input name="reg_confirm_password" type="password" required />
+    <input name="reg_bill_first_name" />
+    <input name="reg_bill_last_name" />
+    <input name="reg_bill_company" />
+    <input name="reg_bill_phone" />
+    <input name="reg_bill_street1" />
+    <input name="reg_bill_city" />
+    <input name="reg_bill_state" />
+    <input name="reg_bill_postcode" />
+    <select name="reg_bill_country">
+        [%countries%][%param *body%]
+            <option value="[@value@]" [@selected@]>[@name@]</option>
+        [%/param%][%/countries%]
+    </select>
+    <label>
+        <input type="checkbox" name="opt_in_newsletter" />
+        Subscribe to newsletter
+    </label>
+    <button type="submit">Register</button>
+</form>`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Config <code>CUSTOMER_REGISTRATION_IGNORE_USERNAME</code> = 1 auto-uses email as username.</p>
+            </Section>
+
+            <Section title="Account URL Patterns" icon={Tag}>
+              <TagTable rows={[
+                ["/_myacct/", "Account dashboard"],
+                ["/_myacct/orders/", "Order history"],
+                ["/_myacct/order/ORDER_ID", "Order detail"],
+                ["/_myacct/address/", "Address book"],
+                ["/_myacct/wishlist/", "Wishlist"],
+                ["/_myacct/savedcart/", "Saved carts"],
+                ["/_myacct/returns/", "Returns"],
+                ["/_myacct/downloads/", "Digital downloads"],
+                ["/_myacct/profile/", "Edit profile"],
+                ["/_myacct/print/invoice/ORDER_ID", "Print invoice"],
+                ["/_myacct/logout/", "Logout"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ CMS & CONTENT ═══════════════ */}
+          <TabsContent value="cms" className="space-y-4">
+            <Section title="content_zone — Reusable Content Blocks" icon={Tag}>
+              <CodeBlock>{`<!-- Inline usage -->
+[%content_zone id:'free_shipping_banner'/%]
+
+<!-- With fallback -->
+[%content_zone id:'promo_banner'%]
+    [%param if_empty%]<p>No current promotions</p>[%/param%]
+[%/content_zone%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Content zones are editable in CP → Content → Content Zones. Stored in DB, rendered as HTML includes. Can contain B@SE tags (use <code>[%parse%]</code> to evaluate them).</p>
+            </Section>
+
+            <Section title="show_content — Load Content Page Data" icon={Tag}>
+              <CodeBlock>{`[%show_content content_id:'42'%]
+    [%param *body%]
+        <h2>[@content_name@]</h2>
+        <div>[@content_description1@]</div>
+    [%/param%]
+[%/show_content%]`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Load any content page's data into another template. Useful for embedding info pages, FAQs, etc.</p>
+            </Section>
+
+            <Section title="site_value — Pass Data Between Templates" icon={Tag}>
+              <CodeBlock>{`<!-- Store content in body template -->
+[%site_value id:'footer_javascript'%]
+    <script>
+        var productConfig = {
+            'sku': '[@sku@]',
+            'loadtemplates': ['_buying_options', '_images']
+        };
+    </script>
+[%/site_value%]
+
+<!-- Load in footer template -->
+[%site_value id:'footer_javascript' type:'load'/%]`}</CodeBlock>
+              <TagTable rows={[
+                ["id:''", "Unique identifier for the stored content"],
+                ["type:'load'", "Load previously stored content"],
+                ["(no type)", "Store/set the content"],
+              ]} />
+              <p className="text-xs text-muted-foreground mt-2">Use to move JS from body templates to footer. Does NOT work across email/print templates.</p>
+            </Section>
+
+            <Section title="content_path — Show Content Relationships" icon={Tag}>
+              <CodeBlock>{`<!-- Show categories a product belongs to -->
+[%content_path id:'[@inventory_id@]' type:'category' limit:'1'%]
+    [%param *body%]
+        <a href="[%url type:'cms'%][%param id%][@content_id@][%/param%][%/url%]">
+            [@content_name@]
+        </a>
+    [%/param%]
+[%/content_path%]
+
+<!-- Show full path -->
+[%content_path content_id:'[@content_id@]' show_path:'y'%]
+    [%param *body%][@content_name@] > [%/param%]
+[%/content_path%]`}</CodeBlock>
+              <TagTable rows={[
+                ["id:'' / content_id:''", "Product inventory ID or content ID"],
+                ["type:'category'", "Content type to show (category, brand, blog, etc.)"],
+                ["show_path:'y'", "Include full path data"],
+                ["limit:''", "Max results"],
+                ["[@content_name@]", "Content page name"],
+                ["[@content_id@]", "Content ID"],
+                ["[@content_fullpath@]", "Full URL path"],
+              ]} />
+            </Section>
+
+            <Section title="list — Unified Content Listing" icon={Tag}>
+              <CodeBlock>{`<!-- List blog posts -->
+[%list type:'content' filter:'content_type=blog' template:'blog' 
+    limit:'6' sort:'date_added desc'%]
+    [%param *header%]<h2>Latest Blog Posts</h2><div class="row">[%/param%]
+    [%param *body%]
+        <div class="col-md-4">
+            <a href="[@url@]">
+                <img src="[@image@]" alt="[@content_name@]" />
+                <h3>[@content_name@]</h3>
+            </a>
+            <p>[%format type:'text' characters:'150' append:'...'%]
+                [@content_description1@]
+            [%/format%]</p>
+        </div>
+    [%/param%]
+    [%param *footer%]</div>[%/param%]
+[%/list%]
+
+<!-- List brands -->
+[%list type:'content' filter:'content_type=brand' template:'brand' 
+    limit:'12' sort:'content_name'%]...[%/list%]
+
+<!-- List store locations -->
+[%list type:'store_location' limit:'50'%]
+    [%param *body%]
+        <div>
+            <h4>[@name@]</h4>
+            <p>[@address@], [@city@] [@state@] [@postcode@]</p>
+            <p>Phone: [@phone@]</p>
+        </div>
+    [%/param%]
+[%/list%]`}</CodeBlock>
+              <TagTable rows={[
+                ["type:'content'", "Content pages (blog, brand, category, page)"],
+                ["type:'product'", "Products (replaces thumb_list)"],
+                ["type:'content_review'", "Content page reviews"],
+                ["type:'product_review'", "Product reviews"],
+                ["type:'store_location'", "Store locations"],
+                ["filter:'content_type=blog'", "Filter by content type"],
+                ["sort:'date_added desc'", "Sort field and direction"],
+                ["template:''", "Template file name (without .template.html)"],
+              ]} />
+              <p className="text-xs text-muted-foreground mt-2">⚠️ <code>[%list%]</code> is newer but still under development. Fall back to <code>[%thumb_list%]</code> for production product listings.</p>
+            </Section>
+
+            <Section title="Content Type Codes" icon={Tag}>
+              <TagTable rows={[
+                ["category", "Product categories"],
+                ["brand", "Brand pages"],
+                ["page / information", "Information/static pages"],
+                ["blog", "Blog posts"],
+                ["form", "Form pages"],
+                ["buying", "Buying guides"],
+              ]} />
+            </Section>
+          </TabsContent>
+
+          {/* ═══════════════ REVIEWS ═══════════════ */}
+          <TabsContent value="reviews" className="space-y-4">
+            <Section title="Product Review Data Tags" icon={Tag}>
+              <TagTable rows={[
+                ["[@reviews@]", "Number of approved reviews"],
+                ["[@rating@]", "Average rating (rounded integer)"],
+                ["[@rating_decimal@]", "Average rating (e.g., 4.50)"],
+                ["[@rating_round_half@]", "Rating rounded to nearest 0.5 (e.g., '4-5' for 4.5)"],
+              ]} />
+              <p className="text-xs text-muted-foreground mt-2">Available on product pages and in <code>thumb_list</code> with <code>show_rating:'1'</code>.</p>
+            </Section>
+
+            <Section title="Displaying Review Stars on Thumbnails" icon={Tag}>
+              <CodeBlock>{`<!-- Add show_rating:'1' to thumb_list -->
+[%thumb_list type:'products' category:'100' show_rating:'1'%]
+    [%param *body%]
+        <div class="product-card">
+            <h3>[@name@]</h3>
+            [%if [@reviews@] > 0%]
+                <div class="stars">
+                    [%forloop start:'1' end:'[@rating@]'%]
+                        [%param *body%]★[%/param%]
+                    [%/forloop%]
+                    <span>([@reviews@] reviews)</span>
+                </div>
+            [%/if%]
+        </div>
+    [%/param%]
+[%/thumb_list%]`}</CodeBlock>
+            </Section>
+
+            <Section title="Review Submission Form" icon={Tag}>
+              <CodeBlock>{`<!-- Product review form -->
+<form name="edit_review" method="post" 
+    action="[%url page:'account' type:'write_review'%][%/url%]">
+    <input type="hidden" name="fn" value="confirm" />
+    <input type="hidden" name="item" value="[@sku@]" />
+    <input type="hidden" name="checked_terms_and_conditions" value="1" />
+    
+    <label>Your Name:
+        <input name="author" value="[@user:bill_first_name@]" required />
+    </label>
+    <label>Rating:
+        <select name="rating" required>
+            <option value="5">★★★★★</option>
+            <option value="4">★★★★</option>
+            <option value="3">★★★</option>
+            <option value="2">★★</option>
+            <option value="1">★</option>
+        </select>
+    </label>
+    <label>Title:
+        <input name="title" />
+    </label>
+    <label>Review:
+        <textarea name="body" required></textarea>
+    </label>
+    <button type="submit">Submit Review</button>
+</form>
+
+<!-- Content page review form -->
+<form method="post" 
+    action="[%url page:'account' type:'write_contentreview'%][%/url%]">
+    <input type="hidden" name="fn" value="confirm" />
+    <input type="hidden" name="item" value="[@content_id@]" />
+    ...same fields...
+</form>`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Reviews require CP approval by default. Add honeypot fields to prevent spam bots.</p>
+            </Section>
+
+            <Section title="list type:'product_review' — Display Reviews" icon={Tag}>
+              <CodeBlock>{`[%list type:'product_review' limit:'10' filter:'sku=[@sku@]'%]
+    [%param *header%]
+        <h3>Customer Reviews ([@total@])</h3>
+    [%/param%]
+    [%param *body%]
+        <div class="review">
+            <div class="stars">
+                [%forloop start:'1' end:'[@rating@]'%]
+                    [%param *body%]★[%/param%]
+                [%/forloop%]
+            </div>
+            <h4>[@title@]</h4>
+            <p class="meta">By [@author@] on 
+                [%format type:'date' format:'d M Y'%][@date_added@][%/format%]
+            </p>
+            <p>[@body@]</p>
+            [%if [@reply@] ne ''%]
+                <div class="reply">
+                    <strong>Store Reply:</strong> [@reply@]
+                </div>
+            [%/if%]
+        </div>
+    [%/param%]
+    [%param *ifempty%]<p>No reviews yet. Be the first!</p>[%/param%]
+[%/list%]
+
+<!-- Content page reviews -->
+[%list type:'content_review' limit:'5' filter:'content_id=[@content_id@]'%]
+    ...same structure...
+[%/list%]`}</CodeBlock>
+              <TagTable rows={[
+                ["[@rating@]", "Star rating (1-5)"],
+                ["[@title@]", "Review title"],
+                ["[@body@]", "Review body text"],
+                ["[@author@]", "Reviewer name"],
+                ["[@date_added@]", "Review date"],
+                ["[@reply@]", "Store owner reply"],
+                ["[@total@]", "Total review count (header only)"],
+              ]} />
+            </Section>
+
+            <Section title="Honeypot Spam Prevention" icon={Tag}>
+              <CodeBlock>{`<!-- Add hidden honeypot field to review forms -->
+<div style="display:none;" aria-hidden="true">
+    <input name="website_url" tabindex="-1" autocomplete="off" />
+</div>
+
+<!-- Then use JS to submit via AJAX, checking honeypot -->
+<script>
+document.querySelector('form[name="edit_review"]')
+    .addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (this.querySelector('[name="website_url"]').value !== '') return;
+        // Submit via fetch/AJAX...
+    });
+</script>`}</CodeBlock>
+              <p className="text-xs text-muted-foreground mt-2">Bots fill hidden fields; real users don't. Combine with ReCAPTCHA from CP settings for best protection.</p>
             </Section>
           </TabsContent>
 
