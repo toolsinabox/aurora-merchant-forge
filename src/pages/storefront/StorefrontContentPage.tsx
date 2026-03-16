@@ -208,6 +208,11 @@ export default function StorefrontContentPage() {
 
     return (
       <StorefrontLayout storeName={store.name} extraContext={contentCtx}>
+        <SEOHead
+          title={page.seo_title || `${page.title} — ${store.name}`}
+          description={page.seo_description || page.content?.slice(0, 160)?.replace(/<[^>]+>/g, "")}
+          image={page.featured_image}
+        />
         <div dangerouslySetInnerHTML={{ __html: rendered }} />
       </StorefrontLayout>
     );
