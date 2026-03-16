@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ThemedStorefrontLayout as StorefrontLayout } from "@/components/storefront/ThemedStorefrontLayout";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Check, Loader2, Tag, X, MapPin, Truck, Store, Gift, Calendar, Sparkles, Timer, AlertTriangle } from "lucide-react";
-import { useStoreSlug } from "@/lib/subdomain";
+import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { addBusinessDays, format } from "date-fns";
+import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 interface AppliedCoupon {
   id: string;
