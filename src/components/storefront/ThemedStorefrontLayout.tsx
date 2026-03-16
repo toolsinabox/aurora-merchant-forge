@@ -9,6 +9,7 @@ import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ThemedStorefrontLayoutProps {
   children: ReactNode;
@@ -203,6 +204,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   basePath?: string;
   cartData?: { items: any[]; totalPrice: number; totalItems: number };
 }) {
+  const { user } = useAuth();
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
   const { data: contentZones } = useContentZones(store?.id);
 
@@ -246,9 +248,10 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     pageType: "content",
     cart: cartData ? { items: cartData.items, totalPrice: cartData.totalPrice, totalItems: cartData.totalItems } : undefined,
     cart_items: cartData?.items,
+    customer: user ? { name: user.email?.split("@")[0] || "", email: user.email || "", id: user.id } : undefined,
     contentZones: contentZones || {},
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData, contentZones]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData, contentZones, user]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
