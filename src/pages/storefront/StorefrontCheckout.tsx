@@ -436,6 +436,7 @@ export default function StorefrontCheckout() {
         .from("coupons")
         .select("*")
         .eq("code", code)
+        .eq("store_id", checkoutStore?.id)
         .eq("is_active", true)
         .maybeSingle();
 
