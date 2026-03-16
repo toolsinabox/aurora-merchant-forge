@@ -55,6 +55,7 @@ const productsNav = [
   { title: "Digital Downloads", url: `${prefix}/digital-downloads`, icon: FileDown },
   { title: "Price Lists", url: `${prefix}/price-lists`, icon: List },
   { title: "Price Rules", url: `${prefix}/price-rules`, icon: Zap },
+  { title: "Scheduled Prices", url: `${prefix}/scheduled-prices`, icon: Calendar },
 ];
 
 // ── Customers (Maropost: "Customers") ──
