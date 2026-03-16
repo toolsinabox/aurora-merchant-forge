@@ -147,6 +147,31 @@ export default function StorefrontAccount() {
   });
 
   useEffect(() => {
+    if (!storeSlug) return;
+    resolveStoreBySlug(storeSlug, supabase).then((s) => { if (s) setAccountStore(s); });
+  }, [storeSlug]);
+
+  const { data: activeTheme } = useActiveTheme(accountStore?.id);
+
+  const themeHtml = useMemo(() => {
+    if (!activeTheme || !accountStore) return null;
+    const templateFile = findMainThemeFile(activeTheme, "account") || findMainThemeFile(activeTheme, "my-account");
+    if (!templateFile?.content) return null;
+    const themeFilesMap: Record<string, string> = {};
+    activeTheme.files.forEach(f => { themeFilesMap[f.file_path] = f.content || ""; });
+    const themeAssetBaseUrl = `${SUPABASE_URL}/storage/v1/object/public/theme-assets/${accountStore.id}`;
+    const ctx: TemplateContext = {
+      store: accountStore, basePath, pageType: "account",
+      customer,
+      themeFiles: themeFilesMap, themeAssetBaseUrl,
+      includes: buildIncludesMap(activeTheme),
+      content: { title: "My Account" },
+    };
+    let html = renderTemplate(templateFile.content, ctx);
+    html = html.replace(/(src|href)="(?!https?:\/\/|\/\/|\/|#|data:)([^"]+)"/gi, (_, attr, path) => `${attr}="${themeAssetBaseUrl}/${path}"`);
+    return html;
+  }, [activeTheme, accountStore, basePath, customer]);
+
     if (!user) {
       navigate(`${basePath}/login`);
       return;
