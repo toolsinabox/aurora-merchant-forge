@@ -293,6 +293,7 @@ const App = () => (
                    <Route path="/_cpanel/inventory-forecasting" element={<RequireAuth><InventoryForecasting /></RequireAuth>} />
                    <Route path="/_cpanel/saved-carts" element={<RequireAuth><SavedCarts /></RequireAuth>} />
                    <Route path="/_cpanel/email-automations" element={<RequireAuth><EmailAutomations /></RequireAuth>} />
+                   <Route path="/_cpanel/order-workflows" element={<RequireAuth><OrderWorkflows /></RequireAuth>} />
                    <Route path="/_cpanel/price-rules" element={<RequireAuth><PriceRules /></RequireAuth>} />
                    <Route path="/_cpanel/go-live" element={<RequireAuth><GoLiveChecklist /></RequireAuth>} />
                    <Route path="/_cpanel/inventory-reports" element={<RequireAuth><InventoryReports /></RequireAuth>} />
