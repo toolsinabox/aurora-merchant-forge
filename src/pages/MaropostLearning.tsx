@@ -1622,6 +1622,8 @@ Rate Limit: 500 requests/minute (429 response when exceeded)`}</CodeBlock>
                 ["[@access_control@]", "Requires login"],
               ]} />
             </Section>
+
+            <Section title="Product Types" icon={Tag}>
               <ul className="list-disc pl-5 space-y-1 text-xs">
                 <li><strong>Standard Product</strong> — single SKU, no variants</li>
                 <li><strong>Parent Product</strong> — has child SKUs (variants)</li>
