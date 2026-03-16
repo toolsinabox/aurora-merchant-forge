@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { AdvertBanner } from "@/components/storefront/AdvertBanner";
 import { useActiveTheme, findMainThemeFile, findThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useContentZones } from "@/hooks/use-content-zones";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
