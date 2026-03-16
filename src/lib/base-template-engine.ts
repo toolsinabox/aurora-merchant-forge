@@ -1280,12 +1280,21 @@ function processAssetUrl(template: string, ctx: TemplateContext, item?: any): st
   // Block variant FIRST
   result = result.replace(
     /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url|\/ASSET_url|\/\s*asset_url)%\]/gi,
-    (_, attrs: string) => {
+    (_, attrs: string, innerContent: string) => {
       const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
         if (item && item[field] !== undefined) return String(item[field]);
         return String(resolveField(field, ctx) || "");
       });
-      return resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
+      const resolved = resolveAssetUrlAttrs(resolvedAttrs, ctx, item);
+      if (resolved) return resolved;
+      // Extract fallback from [%param default%]...[%end param%] or [%/param%]
+      const fallbackMatch = innerContent.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
+      if (fallbackMatch) {
+        // Process cdn_asset within fallback
+        let fallback = fallbackMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+        return fallback || "/placeholder.svg";
+      }
+      return resolved || "/placeholder.svg";
     }
   );
   
