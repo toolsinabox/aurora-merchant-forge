@@ -2012,7 +2012,7 @@ export default function SettingsPage() {
                           </div>
                           {conf.type === "boolean" ? (
                             <Switch
-                              checked={val === "1" || val === "true" || val === true}
+                              checked={val === "1" || val === "true"}
                               onCheckedChange={(v) => setAdvancedConfig(prev => ({ ...prev, [conf.key]: v ? "1" : "0" }))}
                             />
                           ) : conf.type === "select" ? (
