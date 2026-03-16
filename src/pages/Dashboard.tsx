@@ -568,6 +568,50 @@ export default function Dashboard() {
                 </CardContent>
               </Card>}
             </div>
+
+            {/* Live Order Feed */}
+            {w("liveOrderFeed") && (
+              <Card>
+                <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between">
+                  <CardTitle className="text-sm font-medium flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
+                    Live Order Feed
+                  </CardTitle>
+                  <Badge variant="outline" className="text-[10px]">{orders.length} total</Badge>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  {loadingOrders ? <Skeleton className="h-32 w-full" /> : orders.length === 0 ? (
+                    <p className="text-xs text-muted-foreground py-4 text-center">No orders yet — they'll appear here in real-time.</p>
+                  ) : (
+                    <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
+                      {orders.slice(0, 15).map((o: any) => {
+                        const mins = Math.round((Date.now() - new Date(o.created_at).getTime()) / 60000);
+                        const timeLabel = mins < 1 ? "just now" : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.round(mins / 60)}h ago` : `${Math.round(mins / 1440)}d ago`;
+                        return (
+                          <div
+                            key={o.id}
+                            className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
+                            onClick={() => navigate(`/orders/${o.id}`)}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className={`h-1.5 w-1.5 rounded-full ${
+                                o.status === "new" ? "bg-primary" : o.status === "processing" ? "bg-warning" : o.status === "shipped" ? "bg-info" : "bg-muted-foreground"
+                              }`} />
+                              <span className="text-xs font-medium">{o.order_number}</span>
+                              <span className="text-[10px] text-muted-foreground">{o.customers?.name || "Guest"}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs font-semibold">${Number(o.total).toFixed(2)}</span>
+                              <span className="text-[10px] text-muted-foreground w-14 text-right">{timeLabel}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </>
         )}
       </div>
