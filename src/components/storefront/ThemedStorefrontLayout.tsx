@@ -7,6 +7,7 @@ import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine
 import { StorefrontLayout } from "./StorefrontLayout";
 import { CookieConsentBanner } from "./CookieConsentBanner";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { useCart } from "@/contexts/CartContext";
 
 interface ThemedStorefrontLayoutProps {
   children: ReactNode;
@@ -154,8 +155,10 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
     return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
   }
 
+  const { items: cartItems, totalPrice: cartTotal, totalItems: cartCount } = useCart();
+
   return (
-    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath}>
+    <ThemedShell theme={theme} store={store} storeName={storeName} extraContext={extraContext} categories={categories} basePath={basePath} cartData={{ items: cartItems, totalPrice: cartTotal, totalItems: cartCount }}>
       {children}
     </ThemedShell>
   );
@@ -189,7 +192,7 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
 }
 
 /** The actual themed shell that renders header/footer from B@SE templates */
-function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath }: {
+function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData }: {
   theme: NonNullable<ReturnType<typeof useActiveTheme>["data"]>;
   store: any;
   storeName?: string;
@@ -197,6 +200,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   extraContext?: Partial<TemplateContext>;
   categories?: any[];
   basePath?: string;
+  cartData?: { items: any[]; totalPrice: number; totalItems: number };
 }) {
   const includes = useMemo(() => buildIncludesMap(theme), [theme]);
 
@@ -238,8 +242,10 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     baseUrl: store?.custom_domain ? `https://${store.custom_domain}` : "",
     basePath: basePath || "",
     pageType: "content",
+    cart: cartData ? { items: cartData.items, totalPrice: cartData.totalPrice, totalItems: cartData.totalItems } : undefined,
+    cart_items: cartData?.items,
     ...extraContext,
-  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath]);
+  }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData]);
 
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");

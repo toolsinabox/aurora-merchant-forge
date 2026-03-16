@@ -153,9 +153,9 @@ function resolveConfig(key: string, ctx: TemplateContext): string {
     "register_url": () => `${ctx.basePath || ""}/register`,
     "search_url": () => `${ctx.basePath || ""}/products`,
     // Cart data
-    "cart_count": () => "0",
-    "cart_total": () => "$0.00",
-    "cart_subtotal": () => "$0.00",
+    "cart_count": () => ctx.cart?.totalItems?.toString() || ctx.cart_items?.length?.toString() || "0",
+    "cart_total": () => ctx.cart?.totalPrice ? `$${Number(ctx.cart.totalPrice).toFixed(2)}` : "$0.00",
+    "cart_subtotal": () => ctx.cart?.totalPrice ? `$${Number(ctx.cart.totalPrice).toFixed(2)}` : "$0.00",
     // User state
     "is_logged_in": () => ctx.customer ? "1" : "0",
     "customer_name": () => ctx.customer?.name || "",
