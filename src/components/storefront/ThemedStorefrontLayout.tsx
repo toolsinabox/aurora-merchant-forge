@@ -513,24 +513,59 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     return () => { addedLinks.forEach(l => l.remove()); };
   }, []);
 
-  // Inject CSS links from the theme's <head> content (CDN + theme-assets storage URLs)
+  // Inject CSS links from the theme's <head> content AND from theme.cssFiles
   useEffect(() => {
-    if (!headContent && !renderedHeader) return;
     const addedElements: Element[] = [];
     
+    // 1. Inject <link> tags for known theme CSS files from storage
+    if (cssReady && theme.cssFiles && themeAssetBaseUrl) {
+      const priorityOrder = ["slick.css", "slick-theme.css", "app.css", "style.css", "custom.css"];
+      const sorted = [...theme.cssFiles].sort((a, b) => {
+        const aIdx = priorityOrder.findIndex(p => a.file_name === p);
+        const bIdx = priorityOrder.findIndex(p => b.file_name === p);
+        return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
+      });
+      for (const f of sorted) {
+        const href = `${themeAssetBaseUrl}/${f.file_path}`;
+        if (document.querySelector(`link[href="${href}"]`)) continue;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = href;
+        link.setAttribute("data-theme-css", f.file_name);
+        // When external CSS loads, remove the inline fallback
+        link.onload = () => {
+          document.querySelector(`style[data-theme-inline-css="${f.file_name}"]`)?.remove();
+        };
+        document.head.appendChild(link);
+        addedElements.push(link);
+      }
+    }
+
+    // 2. Inject CDN <link> tags found in the rendered head/header HTML
     const allCssHtml = (headContent || "") + (renderedHeader || "");
-    // Match all <link> tags with href — both CDN and storage bucket URLs
     const linkRegex = /<link[^>]*href=["']([^"']+)["'][^>]*>/gi;
     let match;
     while ((match = linkRegex.exec(allCssHtml)) !== null) {
       const fullTag = match[0];
-      const href = match[1];
-      // Only process stylesheet links
+      let href = match[1];
       if (!fullTag.includes("stylesheet") && !href.endsWith(".css")) continue;
-      // Skip legacy local paths like /assets/themes/...
-      if (href.includes("/assets/themes/") && !href.includes("storage/v1")) continue;
-      // Skip empty or placeholder hrefs
       if (!href || href === "#") continue;
+      
+      // Rewrite hardcoded /assets/themes/ paths to storage bucket
+      if (href.includes("/assets/themes/") && !href.includes("storage/v1")) {
+        if (!themeAssetBaseUrl) continue;
+        // Extract the path after the theme name, e.g. /assets/themes/skeletal/fonts/titillium.css → fonts/titillium.css
+        const themePathMatch = href.match(/\/assets\/themes\/[^/]+\/(.+)/);
+        if (themePathMatch) {
+          href = `${themeAssetBaseUrl}/${themePathMatch[1]}`;
+        } else {
+          continue;
+        }
+      }
+      
+      // Skip non-HTTP relative paths that aren't storage URLs (already handled above)
+      if (!href.startsWith("http") && !href.includes("storage/v1")) continue;
+      
       if (document.querySelector(`link[href="${href}"]`)) continue;
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -541,7 +576,7 @@ ${SCOPE_SELECTOR} .mega-menu .dropdown-toggle svg { margin-left: 4px; vertical-a
     }
     
     return () => { addedElements.forEach(el => el.remove()); };
-  }, [headContent, renderedHeader]);
+  }, [headContent, renderedHeader, cssReady, theme.cssFiles, themeAssetBaseUrl]);
 
   // Inject theme JS files from database (not from CDN — those are stored in theme_files)
   useEffect(() => {
