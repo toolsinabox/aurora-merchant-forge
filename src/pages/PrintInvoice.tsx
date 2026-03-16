@@ -169,7 +169,7 @@ export default function PrintInvoice() {
             </div>
             <div className="flex justify-between font-bold text-lg border-t-2 pt-3 mt-3">
               <span>Total</span>
-              <span>${Number(order.total).toFixed(2)} {order.currency || "AUD"}</span>
+              <span>${Number(order.total).toFixed(2)} {(order as any).currency || "AUD"}</span>
             </div>
           </div>
         </div>
