@@ -1015,12 +1015,12 @@ export default function StorefrontCheckout() {
                     })}
                   </div>
                 )}
-              </div>
+                </div>
 
               {/* Shipping Method */}
               {deliveryMethod === "shipping" && shippingZones.length > 0 && (
-                <div className="border rounded-lg p-5 space-y-4">
-                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h2>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium flex items-center gap-2"><Truck className="h-4 w-4" /> Shipping Method</h3>
                   <div className="space-y-2">
                     {shippingZones.map((zone) => {
                       const isFree = zone.free_above && subtotalAfterDiscount >= Number(zone.free_above);
@@ -1032,14 +1032,7 @@ export default function StorefrontCheckout() {
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <input
-                              type="radio"
-                              name="shipping_zone"
-                              value={zone.id}
-                              checked={selectedZone === zone.id}
-                              onChange={() => handleZoneChange(zone.id)}
-                              className="accent-primary"
-                            />
+                            <input type="radio" name="shipping_zone" value={zone.id} checked={selectedZone === zone.id} onChange={() => handleZoneChange(zone.id)} className="accent-primary" />
                             <div>
                               <p className="text-sm font-medium">{zone.name}</p>
                               <p className="text-xs text-muted-foreground">{zone.regions}</p>
@@ -1063,7 +1056,6 @@ export default function StorefrontCheckout() {
                     })}
                   </div>
 
-                  {/* Shipping Services for selected zone */}
                   {selectedZone && shippingServices.filter((s: any) => s.zone_id === selectedZone).length > 0 && (
                     <div className="mt-3 space-y-2">
                       <Label className="text-xs font-medium">Shipping Method</Label>
@@ -1075,19 +1067,10 @@ export default function StorefrontCheckout() {
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <input
-                              type="radio"
-                              name="shipping_service"
-                              value={svc.id}
-                              checked={selectedServiceId === svc.id}
-                              onChange={() => handleServiceChange(svc.id)}
-                              className="accent-primary"
-                            />
+                            <input type="radio" name="shipping_service" value={svc.id} checked={selectedServiceId === svc.id} onChange={() => handleServiceChange(svc.id)} className="accent-primary" />
                             <div>
                               <p className="text-sm font-medium">{svc.name}</p>
-                              <p className="text-2xs text-muted-foreground">
-                                {svc.carrier ? `${svc.carrier} · ` : ""}{svc.estimated_days_min}–{svc.estimated_days_max} business days
-                              </p>
+                              <p className="text-2xs text-muted-foreground">{svc.carrier ? `${svc.carrier} · ` : ""}{svc.estimated_days_min}–{svc.estimated_days_max} business days</p>
                             </div>
                           </div>
                         </label>
@@ -1097,9 +1080,8 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Estimated Delivery */}
               {estimatedDelivery && deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-4 bg-primary/5 border-primary/20">
+                <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-primary" />
                     <p className="text-sm font-medium">Estimated Delivery</p>
@@ -1108,53 +1090,39 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Same-Day Delivery Option */}
               {sameDayAvailable && deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-4 space-y-3">
-                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${sameDaySelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
-                    <div className="flex items-center gap-3">
-                      <Checkbox checked={sameDaySelected} onCheckedChange={(v) => setSameDaySelected(!!v)} />
-                      <div>
-                        <p className="text-sm font-medium flex items-center gap-1.5">
-                          <Truck className="h-3.5 w-3.5 text-primary" /> Same-Day Delivery
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Order before {SAME_DAY_CUTOFF_HOUR > 12 ? SAME_DAY_CUTOFF_HOUR - 12 : SAME_DAY_CUTOFF_HOUR}:00 {SAME_DAY_CUTOFF_HOUR >= 12 ? "PM" : "AM"} for delivery today
-                        </p>
-                      </div>
+                <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${sameDaySelected ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={sameDaySelected} onCheckedChange={(v) => setSameDaySelected(!!v)} />
+                    <div>
+                      <p className="text-sm font-medium flex items-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Same-Day Delivery</p>
+                      <p className="text-xs text-muted-foreground">Order before {SAME_DAY_CUTOFF_HOUR > 12 ? SAME_DAY_CUTOFF_HOUR - 12 : SAME_DAY_CUTOFF_HOUR}:00 {SAME_DAY_CUTOFF_HOUR >= 12 ? "PM" : "AM"} for delivery today</p>
                     </div>
-                    <span className="text-sm font-semibold text-primary">+${SAME_DAY_FEE.toFixed(2)}</span>
-                  </label>
-                </div>
+                  </div>
+                  <span className="text-sm font-semibold text-primary">+${SAME_DAY_FEE.toFixed(2)}</span>
+                </label>
               )}
 
-              {/* Shipping Insurance Option */}
               {deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-4 space-y-3">
-                  <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${shippingInsurance ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
-                    <div className="flex items-center gap-3">
-                      <Checkbox checked={shippingInsurance} onCheckedChange={(v) => setShippingInsurance(!!v)} />
-                      <div>
-                        <p className="text-sm font-medium">Shipping Insurance</p>
-                        <p className="text-xs text-muted-foreground">Protect your order against loss, theft, or damage during shipping</p>
-                      </div>
+                <label className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${shippingInsurance ? "border-primary bg-primary/5" : "hover:bg-muted/50"}`}>
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={shippingInsurance} onCheckedChange={(v) => setShippingInsurance(!!v)} />
+                    <div>
+                      <p className="text-sm font-medium">Shipping Insurance</p>
+                      <p className="text-xs text-muted-foreground">Protect your order against loss, theft, or damage</p>
                     </div>
-                    <span className="text-sm font-semibold text-primary">+${insurancePremium.toFixed(2)}</span>
-                  </label>
-                </div>
+                  </div>
+                  <span className="text-sm font-semibold text-primary">+${insurancePremium.toFixed(2)}</span>
+                </label>
               )}
 
               {upsellProducts.length > 0 && (
-                <div className="border rounded-lg p-5 space-y-3">
-                  <h2 className="font-semibold flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" /> You might also like
-                  </h2>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> You might also like</h3>
                   <div className="grid grid-cols-2 gap-3">
                     {upsellProducts.slice(0, 4).map((p: any) => (
                       <div key={p.id} className="flex items-center gap-2 p-2 border rounded-lg hover:bg-muted/50 transition-colors">
-                        {p.images?.[0] && (
-                          <img src={p.images[0]} alt={p.title} className="w-10 h-10 object-cover rounded" />
-                        )}
+                        {p.images?.[0] && <img src={p.images[0]} alt={p.title} className="w-10 h-10 object-cover rounded" />}
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium line-clamp-1">{p.title}</p>
                           <p className="text-xs text-primary font-semibold">${Number(p.price).toFixed(2)}</p>
@@ -1165,10 +1133,9 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Delivery Instructions */}
               {deliveryMethod === "shipping" && (
-                <div className="border rounded-lg p-5 space-y-4">
-                  <h2 className="font-semibold flex items-center gap-2"><Truck className="h-4 w-4" /> Delivery Instructions</h2>
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium flex items-center gap-2"><Truck className="h-4 w-4" /> Delivery Instructions</h3>
                   <Textarea value={form.delivery_instructions} onChange={(e) => update("delivery_instructions", e.target.value)} placeholder="Leave at front door, ring doorbell, etc." className="min-h-[60px]" maxLength={300} />
                   <p className="text-xs text-muted-foreground">{form.delivery_instructions.length}/300 characters</p>
                   <Separator />
@@ -1189,9 +1156,10 @@ export default function StorefrontCheckout() {
                 </div>
               )}
 
-              {/* Custom Fields */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Additional Information</h2>
+              {/* Additional Info */}
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium">Additional Information</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-sm">Company Name <span className="text-xs text-muted-foreground">(optional)</span></Label>
@@ -1208,17 +1176,46 @@ export default function StorefrontCheckout() {
                 </div>
               </div>
 
-              {/* Gift Message */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Message</h2>
-                <Textarea value={orderGiftMessage} onChange={(e) => setOrderGiftMessage(e.target.value)} placeholder="Add a personal gift message to include with your order..." className="min-h-[60px]" maxLength={500} />
+              <Separator />
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium flex items-center gap-2"><Gift className="h-4 w-4" /> Gift Message</h3>
+                <Textarea value={orderGiftMessage} onChange={(e) => setOrderGiftMessage(e.target.value)} placeholder="Add a personal gift message..." className="min-h-[60px]" maxLength={500} />
                 <p className="text-xs text-muted-foreground">{orderGiftMessage.length}/500 characters</p>
               </div>
 
-              {/* Notes */}
-              <div className="border rounded-lg p-5 space-y-4">
-                <h2 className="font-semibold">Order Notes</h2>
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium">Order Notes</h3>
                 <Textarea value={form.notes} onChange={(e) => update("notes", e.target.value)} placeholder="Special instructions or comments..." className="min-h-[80px]" />
+              </div>
+
+                    <div className="flex justify-end pt-2">
+                      <Button type="button" size="sm" onClick={() => setCheckoutStep(4)}>
+                        Continue to Payment
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Section 4: Payment */}
+              <div className="border-x border-b rounded-b-lg overflow-hidden">
+                <button
+                  type="button"
+                  className={`w-full flex items-center justify-between px-5 py-3 text-left transition-colors ${checkoutStep === 4 ? "bg-primary/5" : "bg-muted/30 hover:bg-muted/50"}`}
+                  onClick={() => setCheckoutStep(checkoutStep === 4 ? 0 : 4)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-border text-muted-foreground`}>
+                      4
+                    </div>
+                    <span className="font-semibold text-sm">Payment & Review</span>
+                  </div>
+                </button>
+                {checkoutStep === 4 && (
+                  <div className="px-5 pb-5 pt-3 border-t text-sm text-muted-foreground">
+                    <p>Payment details are in the order summary panel →</p>
+                  </div>
+                )}
               </div>
             </div>
 
