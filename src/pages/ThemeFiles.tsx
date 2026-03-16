@@ -1048,6 +1048,34 @@ export default function ThemeFiles() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Rename File Dialog */}
+        <Dialog open={renameDialog} onOpenChange={setRenameDialog}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader><DialogTitle className="text-base">Rename File</DialogTitle></DialogHeader>
+            <div className="space-y-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs">New File Name</Label>
+                <Input
+                  className="h-8 text-xs font-mono"
+                  value={renameName}
+                  onChange={(e) => setRenameName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") confirmRename(); }}
+                  autoFocus
+                />
+              </div>
+              {renameTarget && (
+                <p className="text-[10px] text-muted-foreground">
+                  Current path: <code className="bg-muted px-1 rounded">{renameTarget.file_path}</code>
+                </p>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" size="sm" className="text-xs" onClick={() => setRenameDialog(false)}>Cancel</Button>
+              <Button size="sm" className="text-xs" onClick={confirmRename} disabled={!renameName.trim()}>Rename</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AdminLayout>
   );
