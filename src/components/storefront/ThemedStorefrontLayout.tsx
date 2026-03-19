@@ -226,44 +226,12 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const headerFile = findMainThemeFile(theme, "headers");
   const footerFile = findMainThemeFile(theme, "footers");
 
-  // ── SSR-first rendering: use server-rendered HTML when available, fall back to client-side ──
-  const useSSR = !!ssrData;
-
-  // Client-side render (fallback when SSR unavailable)
-  const { headContent: clientHeadContent, bodyContent: clientHeader } = useMemo(() => {
-    if (useSSR || !headerFile?.content) return { headContent: "", bodyContent: "" };
-    const rendered = renderTemplate(headerFile.content, baseCtx);
-    const headMatch = rendered.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
-    const headContent = headMatch?.[1] || "";
-    const bodyMatch = rendered.match(/<body[^>]*>([\s\S]*$)/i);
-    let bodyContent = bodyMatch?.[1] || rendered;
-    bodyContent = bodyContent
-      .replace(/<!DOCTYPE[^>]*>/gi, "")
-      .replace(/<\/?html[^>]*>/gi, "")
-      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
-      .replace(/<\/?body[^>]*>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-    bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
-    return { headContent, bodyContent };
-  }, [useSSR, headerFile, baseCtx, themeAssetBaseUrl]);
-
-  const clientFooter = useMemo(() => {
-    if (useSSR || !footerFile?.content) return "";
-    let rendered = renderTemplate(footerFile.content, baseCtx);
-    rendered = rendered
-      .replace(/<\/body>/gi, "")
-      .replace(/<\/html>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-    rendered = rewriteAssetUrls(rendered, themeAssetBaseUrl);
-    return rendered;
-  }, [useSSR, footerFile, baseCtx, themeAssetBaseUrl]);
-
-  // Resolve final HTML — SSR takes priority
-  const headContent = useSSR ? ssrData!.head_content : clientHeadContent;
-  const renderedHeader = useSSR ? ssrData!.header_html : clientHeader;
-  const renderedFooter = useSSR ? ssrData!.footer_html : clientFooter;
-  const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
-  const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
+  // ── SSR-only rendering: no client-side template fallbacks ──
+  const headContent = ssrData?.head_content || "";
+  const renderedHeader = ssrData?.header_html || "";
+  const renderedFooter = ssrData?.footer_html || "";
+  const ssrBodyHtml = ssrData?.body_html || "";
+  const effectiveAssetBase = ssrData?.theme_asset_base_url || themeAssetBaseUrl;
 
   // Ensure CSS/JS files exist in storage so <link> tags resolve
   useEffect(() => {
