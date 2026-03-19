@@ -392,10 +392,6 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
         link.rel = "stylesheet";
         link.href = href;
         link.setAttribute("data-theme-css", f.file_name);
-        // When external CSS loads, remove the inline fallback
-        link.onload = () => {
-          document.querySelector(`style[data-theme-inline-css="${f.file_name}"]`)?.remove();
-        };
         document.head.appendChild(link);
         addedElements.push(link);
       }
