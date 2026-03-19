@@ -222,8 +222,6 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     ...extraContext,
   }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData, contentZones, user]);
 
-  const headerFile = findMainThemeFile(theme, "headers");
-  const footerFile = findMainThemeFile(theme, "footers");
 
   // ── SSR-only rendering: no client-side template fallbacks ──
   const headContent = ssrData?.head_content || "";
