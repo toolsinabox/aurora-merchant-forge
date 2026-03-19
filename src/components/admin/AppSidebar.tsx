@@ -155,6 +155,7 @@ const settingsNav = [
 // ── Maropost / Neto Migration ──
 const migrationNav = [
   { title: "Maropost Learning", url: `${prefix}/maropost-learning`, icon: Book },
+  { title: "Theme Learning", url: `${prefix}/maropost-theme-learning`, icon: Book },
   { title: "Maropost Migration", url: `${prefix}/maropost-migration`, icon: ArrowLeftRight },
   { title: "Transfer Audit", url: `${prefix}/maropost-transfer-audit`, icon: ClipboardCheck },
   { title: "API Log", url: `${prefix}/maropost-api-log`, icon: Activity },

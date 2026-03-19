@@ -142,6 +142,7 @@ const MaropostMigration = lazy(() => import("./pages/MaropostMigration.tsx"));
 const MaropostTransferAudit = lazy(() => import("./pages/MaropostTransferAudit.tsx"));
 const MaropostApiLog = lazy(() => import("./pages/MaropostApiLog.tsx"));
 const MaropostLearning = lazy(() => import("./pages/MaropostLearning.tsx"));
+const MaropostThemeLearning = lazy(() => import("./pages/MaropostThemeLearning.tsx"));
 // Platform admin pages
 const PlatformLogin = lazy(() => import("./pages/platform/PlatformLogin.tsx"));
 const PlatformDashboard = lazy(() => import("./pages/platform/PlatformDashboard.tsx"));
@@ -316,6 +317,7 @@ const App = () => (
                    <Route path="/_cpanel/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-learning" element={<RequireAuth><MaropostLearning /></RequireAuth>} />
+                   <Route path="/_cpanel/maropost-theme-learning" element={<RequireAuth><MaropostThemeLearning /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -435,6 +437,7 @@ const App = () => (
                    <Route path="/maropost-transfer-audit" element={<RequireAuth><MaropostTransferAudit /></RequireAuth>} />
                    <Route path="/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/maropost-learning" element={<RequireAuth><MaropostLearning /></RequireAuth>} />
+                   <Route path="/maropost-theme-learning" element={<RequireAuth><MaropostThemeLearning /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
