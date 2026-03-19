@@ -419,12 +419,27 @@ serve(async (req) => {
       const categories = Array.isArray(items) ? items : [items];
 
       const idMap: Record<string, string> = {};
-      for (const c of categories) {
+      // Sort categories: parents first (ParentCategoryID=0 or empty), then children
+      const sortedCategories = [...categories].sort((a, b) => {
+        const aIsRoot = !a.ParentCategoryID || a.ParentCategoryID === "0";
+        const bIsRoot = !b.ParentCategoryID || b.ParentCategoryID === "0";
+        if (aIsRoot && !bIsRoot) return -1;
+        if (!aIsRoot && bIsRoot) return 1;
+        return 0;
+      });
+
+      for (const c of sortedCategories) {
         try {
           const slug = (c.CategoryReference || c.CategoryName || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `cat-${Date.now()}`;
 
           const { data: existing } = await supabase
             .from("categories").select("id").eq("store_id", store_id).eq("slug", slug).maybeSingle();
+
+          // Resolve parent_id immediately if parent was already inserted
+          let parentId: string | null = null;
+          if (c.ParentCategoryID && c.ParentCategoryID !== "0") {
+            parentId = idMap[c.ParentCategoryID] || null;
+          }
 
           const catData: Record<string, any> = {
             store_id,
@@ -435,6 +450,8 @@ serve(async (req) => {
             seo_title: c.SEOPageTitle || null,
             seo_description: c.SEOMetaDescription || null,
             image_url: c.CategoryImage || c.Thumbnail || null,
+            secondary_image_url: c.SecondaryImage || null,
+            parent_id: parentId,
           };
 
           let catId: string;
@@ -457,8 +474,8 @@ serve(async (req) => {
         }
       }
 
-      // Second pass: link parent/child
-      for (const c of categories) {
+      // Second pass: fix any children whose parent was inserted after them
+      for (const c of sortedCategories) {
         if (c.ParentCategoryID && c.ParentCategoryID !== "0" && idMap[c.CategoryID] && idMap[c.ParentCategoryID]) {
           await safe(supabase.from("categories").update({ parent_id: idMap[c.ParentCategoryID] }).eq("id", idMap[c.CategoryID]));
         }
