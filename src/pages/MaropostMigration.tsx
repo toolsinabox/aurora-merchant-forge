@@ -186,7 +186,16 @@ export default function MaropostMigration() {
   const pauseRef = useRef(false);
   const [connectionError, setConnectionError] = useState("");
   const [entities, setEntities] = useState<EntityCount[]>(() => {
-    try { const s = sessionStorage.getItem("maropost_entities"); return s ? JSON.parse(s) : []; } catch { return []; }
+    try {
+      const s = sessionStorage.getItem("maropost_entities");
+      if (!s) return [];
+      const parsed: EntityCount[] = JSON.parse(s);
+      // Re-hydrate icon from MIGRATION_ENTITIES since JSX can't survive JSON round-trip
+      return parsed.map(e => {
+        const def = MIGRATION_ENTITIES.find(m => m.entity === e.entity);
+        return { ...e, icon: def?.icon ?? <Package className="h-5 w-5" /> };
+      });
+    } catch { return []; }
   });
   const [overallProgress, setOverallProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
