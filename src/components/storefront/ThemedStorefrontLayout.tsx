@@ -137,7 +137,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
  */
 function rewriteAssetUrls(html: string, assetBase: string): string {
   if (!assetBase) return html;
-  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|css)(\?[^"']*)?/i;
+  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf|css)(\?[^"']*)?/i;
   // Paths that should NOT be rewritten
   const skipPaths = /^(\/placeholder\.|\/favicon)/i;
   
@@ -155,17 +155,17 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
       // Skip other /assets/ paths (product images, marketing, cms — already absolute)
       if (/^\/assets\//i.test(path)) return match;
       
-      const cleanPath = path.replace(/^\/+/, "");
+      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "");
       return `${attr}="${assetBase}/${cleanPath}"`;
     })
-    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
+    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
       // Rewrite /assets/themes/... in CSS url()
       const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
       if (themePathMatch) {
         return `url("${assetBase}/${themePathMatch[1].trim()}")`;
       }
       if (/^\/assets\//i.test(path)) return match;
-      const cleanPath = path.replace(/^\/+/, "").trim();
+      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "").trim();
       return `url("${assetBase}/${cleanPath}")`;
     });
 }
@@ -321,18 +321,90 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     });
     for (const f of sorted) {
       if (!f.content) continue;
+      // Rewrite relative url() paths in CSS to point at theme-assets storage bucket
+      let cssContent = f.content;
+      if (themeAssetBaseUrl) {
+        cssContent = cssContent.replace(
+          /url\(\s*['"]?(?:\.\.\/|\.\/)?([^)'"]+\.(?:woff2?|ttf|eot|otf|svg|png|jpg|jpeg|gif|webp|ico)[^)'"]*?)['"]?\s*\)/gi,
+          (_match, path) => {
+            if (/^(https?:|\/\/|data:)/.test(path)) return _match;
+            const cleanPath = path.replace(/^\/+/, "").trim();
+            return `url("${themeAssetBaseUrl}/${cleanPath}")`;
+          }
+        );
+      }
       const style = document.createElement("style");
       style.setAttribute("data-theme-inline-css", f.file_name);
-      style.textContent = f.content;
+      style.textContent = cssContent;
       document.head.appendChild(style);
       styleEls.push(style);
     }
     return () => { styleEls.forEach(el => el.remove()); };
-  }, [theme.cssFiles]);
+  }, [theme.cssFiles, themeAssetBaseUrl]);
 
-  // No platform-injected fallback CSS — only the uploaded theme's own CSS is used
+  // Inject essential CDN dependencies that Maropost themes rely on
+  // (jQuery, Bootstrap 4 JS, Font Awesome 4.7, Slick Carousel)
+  useEffect(() => {
+    const addedEls: Element[] = [];
+    
+    // Font Awesome 4.7 CSS
+    if (!document.querySelector('link[href*="font-awesome"]')) {
+      const fa = document.createElement("link");
+      fa.rel = "stylesheet";
+      fa.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
+      fa.setAttribute("data-cdn-dep", "font-awesome");
+      document.head.appendChild(fa);
+      addedEls.push(fa);
+    }
 
-  // No CDN injection — theme's own CSS/JS files handle Bootstrap, Font Awesome, etc.
+    // jQuery 3.6 (must load before Bootstrap & Slick)
+    const jqId = "cdn-jquery";
+    if (!document.getElementById(jqId)) {
+      const jq = document.createElement("script");
+      jq.id = jqId;
+      jq.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js";
+      jq.setAttribute("data-cdn-dep", "jquery");
+      document.head.appendChild(jq);
+      addedEls.push(jq);
+
+      jq.onload = () => {
+        // Bootstrap 4.6 JS
+        if (!document.getElementById("cdn-bootstrap-js")) {
+          const bs = document.createElement("script");
+          bs.id = "cdn-bootstrap-js";
+          bs.src = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js";
+          bs.setAttribute("data-cdn-dep", "bootstrap");
+          document.body.appendChild(bs);
+          addedEls.push(bs);
+        }
+        // Slick Carousel
+        if (!document.getElementById("cdn-slick-js")) {
+          const slickCss = document.createElement("link");
+          slickCss.rel = "stylesheet";
+          slickCss.href = "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css";
+          slickCss.setAttribute("data-cdn-dep", "slick-css");
+          document.head.appendChild(slickCss);
+          addedEls.push(slickCss);
+
+          const slickTheme = document.createElement("link");
+          slickTheme.rel = "stylesheet";
+          slickTheme.href = "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css";
+          slickTheme.setAttribute("data-cdn-dep", "slick-theme");
+          document.head.appendChild(slickTheme);
+          addedEls.push(slickTheme);
+
+          const slick = document.createElement("script");
+          slick.id = "cdn-slick-js";
+          slick.src = "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js";
+          slick.setAttribute("data-cdn-dep", "slick");
+          document.body.appendChild(slick);
+          addedEls.push(slick);
+        }
+      };
+    }
+
+    return () => { addedEls.forEach(el => el.remove()); };
+  }, []);
 
   // Inject CSS links from the theme's <head> content AND from theme.cssFiles
   useEffect(() => {
@@ -586,10 +658,22 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return () => container.removeEventListener("click", handler, true);
   }, []);
 
+  // Derive Maropost body ID/class from page type for CSS targeting
+  const bodyId = useMemo(() => {
+    const pt = baseCtx.pageType || "content";
+    const map: Record<string, string> = {
+      home: "n_home", product: "n_product", category: "n_category",
+      cart: "n_cart", checkout: "n_checkout", login: "n_login",
+      register: "n_register", account: "n_account", content: "n_content",
+      blog: "n_blog", contact: "n_content", search: "n_search",
+    };
+    return map[pt] || "n_content";
+  }, [baseCtx.pageType]);
+
   return (
     <>
-      {/* Theme-rendered sections only — no platform CSS injected */}
-      <div id="neto-theme" className="min-h-screen flex flex-col">
+      {/* Theme-rendered sections with Maropost body classes for CSS targeting */}
+      <div id="neto-theme" className={`min-h-screen flex flex-col n_skeletal ${bodyId}`} data-page-id={bodyId}>
         {renderedHeader && (
           <header dangerouslySetInnerHTML={{ __html: renderedHeader }} />
         )}
