@@ -320,7 +320,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     }
 
     return () => { addedElements.forEach(el => el.remove()); };
-  }, [headContent, renderedHeader]);
+  }, [headContent, renderedHeader, ssrData]);
 
   // Inject theme JS files from database (not from CDN — those are stored in theme_files)
   useEffect(() => {
