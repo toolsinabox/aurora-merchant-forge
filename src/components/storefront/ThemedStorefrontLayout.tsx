@@ -17,11 +17,6 @@ interface ThemedStorefrontLayoutProps {
 }
 
 
-
-/**
- * Wrapper that checks for an active theme. If theme exists with header/footer templates,
- * renders full B@SE theme. Otherwise falls back to the default React StorefrontLayout.
- */
 /**
  * Derive page type from the current URL path for SSR routing.
  */
