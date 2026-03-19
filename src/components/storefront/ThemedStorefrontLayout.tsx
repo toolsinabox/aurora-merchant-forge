@@ -116,45 +116,8 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
 
 
-/**
- * Rewrite relative image/asset paths in rendered HTML to point at the theme-assets storage bucket.
- * Handles src="img/foo.png", src="css/foo.png", url(img/foo.png), etc.
- * Skips URLs that are already absolute (http/https/data://).
- */
-function rewriteAssetUrls(html: string, assetBase: string): string {
-  if (!assetBase) return html;
-  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf|css)(\?[^"']*)?/i;
-  // Paths that should NOT be rewritten
-  const skipPaths = /^(\/placeholder\.|\/favicon)/i;
-  
-  return html
-    .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
-      if (!assetExt.test(path)) return match;
-      if (skipPaths.test(path)) return match;
-      
-      // Rewrite /assets/themes/THEME_NAME/... to storage bucket
-      const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
-      if (themePathMatch) {
-        return `${attr}="${assetBase}/${themePathMatch[1]}"`;
-      }
-      
-      // Skip other /assets/ paths (product images, marketing, cms — already absolute)
-      if (/^\/assets\//i.test(path)) return match;
-      
-      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "");
-      return `${attr}="${assetBase}/${cleanPath}"`;
-    })
-    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
-      // Rewrite /assets/themes/... in CSS url()
-      const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
-      if (themePathMatch) {
-        return `url("${assetBase}/${themePathMatch[1].trim()}")`;
-      }
-      if (/^\/assets\//i.test(path)) return match;
-      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "").trim();
-      return `url("${assetBase}/${cleanPath}")`;
-    });
-}
+
+
 
 /** The actual themed shell that renders header/footer from B@SE templates */
 function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData, ssrData }: {
