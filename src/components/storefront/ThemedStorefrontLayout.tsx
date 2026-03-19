@@ -658,10 +658,22 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return () => container.removeEventListener("click", handler, true);
   }, []);
 
+  // Derive Maropost body ID/class from page type for CSS targeting
+  const bodyId = useMemo(() => {
+    const pt = baseCtx.pageType || "content";
+    const map: Record<string, string> = {
+      home: "n_home", product: "n_product", category: "n_category",
+      cart: "n_cart", checkout: "n_checkout", login: "n_login",
+      register: "n_register", account: "n_account", content: "n_content",
+      blog: "n_blog", contact: "n_content", search: "n_search",
+    };
+    return map[pt] || "n_content";
+  }, [baseCtx.pageType]);
+
   return (
     <>
-      {/* Theme-rendered sections only — no platform CSS injected */}
-      <div id="neto-theme" className="min-h-screen flex flex-col">
+      {/* Theme-rendered sections with Maropost body classes for CSS targeting */}
+      <div id="neto-theme" className={`min-h-screen flex flex-col n_skeletal ${bodyId}`} data-page-id={bodyId}>
         {renderedHeader && (
           <header dangerouslySetInnerHTML={{ __html: renderedHeader }} />
         )}
