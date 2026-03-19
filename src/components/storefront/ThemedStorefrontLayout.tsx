@@ -84,6 +84,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   );
 
   // SSR: fetch pre-rendered HTML from edge function (Maropost-style server rendering)
+  // Non-blocking: renders client-side immediately while SSR loads in background
   const { data: ssrData, loading: ssrLoading } = useSSRPage({
     storeId: storeId || undefined,
     pageType,
@@ -93,8 +94,8 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
     enabled: !!storeId && storeResolved,
   });
 
-  // Show a minimal loading skeleton while store + theme resolve — never flash the default layout
-  if (!storeResolved || (!theme && isLoading) || (storeId && ssrLoading)) {
+  // Only block on store + theme resolution — NOT on SSR (it loads in background)
+  if (!storeResolved || (!theme && isLoading)) {
     return (
       <div className="min-h-screen bg-background">
         <div className="h-16 bg-muted/30 animate-pulse" />
