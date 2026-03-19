@@ -188,9 +188,7 @@ const App = () => (
           <WishlistProvider>
           <CompareProvider>
             <MigrationProgressWidget />
-            <ErrorBoundary>
-            <Suspense fallback={<PageLoader />}>
-            <Routes>
+            <RouteAwareErrorBoundary />
               {isSubdomainMode ? (
                 <>
                   {/* Subdomain mode: root serves the storefront */}
