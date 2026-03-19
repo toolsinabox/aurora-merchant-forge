@@ -104,26 +104,21 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // ── 1. Load store ──
-    const { data: store } = await supabase
-      .from("stores")
-      .select("*")
-      .eq("id", store_id)
-      .single();
+    // ── 1. Load store + active theme in parallel ──
+    const [storeResult, themePackageResult] = await Promise.all([
+      supabase.from("stores").select("*").eq("id", store_id).single(),
+      supabase.from("theme_packages").select("id, name, is_active").eq("store_id", store_id).eq("is_active", true).single(),
+    ]);
+
+    const store = storeResult.data;
     if (!store) return jsonResponse({ error: "Store not found" }, 404);
 
-    // ── 2. Load active theme + files ──
-    const { data: themePackage } = await supabase
-      .from("theme_packages")
-      .select("id, name, is_active")
-      .eq("store_id", store_id)
-      .eq("is_active", true)
-      .single();
-
+    const themePackage = themePackageResult.data;
     if (!themePackage) {
       return jsonResponse({ html: "", has_theme: false });
     }
 
+    // ── 2. Load theme files ──
     const { data: themeFiles } = await supabase
       .from("theme_files")
       .select("id, file_name, file_path, folder, content, file_type")
