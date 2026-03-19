@@ -2,11 +2,10 @@ import { ReactNode, useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
-import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useActiveTheme, buildIncludesMap } from "@/hooks/use-active-theme";
 import { useContentZones } from "@/hooks/use-content-zones";
-import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+import { type TemplateContext } from "@/lib/base-template-engine";
 import { useSSRPage } from "@/hooks/use-ssr-page";
-import { StorefrontLayout } from "./StorefrontLayout";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 
