@@ -228,13 +228,25 @@ export default function StorefrontHome() {
               </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-              {categories.map((cat: any) => (
+              {categories.filter((c: any) => !c.parent_id).map((cat: any) => (
                 <Link
                   key={cat.id}
-                  to={`${basePath}/products`}
-                  className="group p-5 rounded-xl border bg-card text-center hover:border-primary/30 hover:shadow-md transition-all"
+                  to={`${basePath}/products?category=${cat.slug}`}
+                  className="group rounded-xl border bg-card overflow-hidden text-center hover:border-primary/30 hover:shadow-md transition-all"
                 >
-                  <p className="text-sm font-semibold group-hover:text-primary transition-colors">{cat.name}</p>
+                  {cat.image_url ? (
+                    <div className="aspect-[4/3] overflow-hidden bg-muted">
+                      <img
+                        src={cat.image_url}
+                        alt={cat.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </div>
+                  ) : (
+                    <div className="aspect-[4/3] bg-muted flex items-center justify-center text-muted-foreground text-xs">No image</div>
+                  )}
+                  <p className="text-sm font-semibold py-3 px-2 group-hover:text-primary transition-colors">{cat.name}</p>
                 </Link>
               ))}
             </div>
