@@ -21,10 +21,26 @@ const PLATFORM_DOMAINS = [
 export function getSubdomainSlug(): string | null {
   const hostname = window.location.hostname;
 
-  // Skip subdomain detection on known platform domains
+  // Skip subdomain detection on known platform/preview domains
   if (PLATFORM_DOMAINS.some((d) => hostname.includes(d))) {
     return null;
   }
+
+  // For production domains like getcelora.com, detect subdomain
+  const parts = hostname.split(".");
+  
+  // Exact root domain (e.g. getcelora.com or www.getcelora.com) — not a store
+  if (parts.length <= 2 || (parts.length === 3 && parts[0] === "www")) {
+    return null;
+  }
+
+  // Subdomain detected (e.g. toolsinabox.getcelora.com)
+  if (parts.length >= 3 && parts[0] !== "www") {
+    return parts[0];
+  }
+
+  return null;
+}
 
   // Split hostname into parts: cool-gadgets.myplatform.com → ["cool-gadgets", "myplatform", "com"]
   const parts = hostname.split(".");
