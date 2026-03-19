@@ -52,6 +52,7 @@ const ExportWizard = lazy(() => import("./pages/ExportWizard.tsx"));
 const Templates = lazy(() => import("./pages/Templates.tsx"));
 const ThemeFiles = lazy(() => import("./pages/ThemeFiles.tsx"));
 const FeatureAudit = lazy(() => import("./pages/FeatureAudit.tsx"));
+const StorefrontAudit = lazy(() => import("./pages/StorefrontAudit.tsx"));
 const TemplateReference = lazy(() => import("./pages/TemplateReference.tsx"));
 const OrderWorkflows = lazy(() => import("./pages/OrderWorkflows.tsx"));
 const Suppliers = lazy(() => import("./pages/Suppliers.tsx"));
@@ -318,6 +319,7 @@ const App = () => (
                    <Route path="/_cpanel/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-learning" element={<RequireAuth><MaropostLearning /></RequireAuth>} />
                    <Route path="/_cpanel/maropost-theme-learning" element={<RequireAuth><MaropostThemeLearning /></RequireAuth>} />
+                   <Route path="/_cpanel/storefront-audit" element={<RequireAuth><StorefrontAudit /></RequireAuth>} />
                    <Route path="/_cpanel/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   <Route path="*" element={<NotFound />} />
@@ -438,6 +440,7 @@ const App = () => (
                    <Route path="/maropost-api-log" element={<RequireAuth><MaropostApiLog /></RequireAuth>} />
                    <Route path="/maropost-learning" element={<RequireAuth><MaropostLearning /></RequireAuth>} />
                    <Route path="/maropost-theme-learning" element={<RequireAuth><MaropostThemeLearning /></RequireAuth>} />
+                   <Route path="/storefront-audit" element={<RequireAuth><StorefrontAudit /></RequireAuth>} />
                    <Route path="/settings" element={<RequireAuth><SettingsPage /></RequireAuth>} />
 
                   {/* Public Storefront (path-based for dev/preview) */}
