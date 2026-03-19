@@ -1542,16 +1542,33 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
   return result;
 }
 
+function buildCategoryItem(cat: any, idx: number, bp: string): Record<string, any> {
+  return {
+    ...cat,
+    ad_id: cat.id, content_id: cat.id, id: cat.id,
+    name: cat.name || "", headline: cat.name || "",
+    URL: `${bp}/products?category=${cat.slug}`,
+    url: `${bp}/products?category=${cat.slug}`,
+    image_url: cat.image_url || "/placeholder.svg",
+    thumb_url: cat.image_url || "/placeholder.svg",
+    description: cat.description || "",
+    slug: cat.slug || "",
+    count: idx, index: idx,
+    rndm: Math.random().toString(36).substring(2, 8),
+  };
+}
+
 function buildProductItem(p: any, idx: number, bp: string): Record<string, any> {
   const imageUrl = resolveStorageUrl(p.images?.[0]) || "/placeholder.svg";
   const save = p.compare_at_price && p.price ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
   return {
     ad_id: p.id, inventory_id: p.id, product_id: p.id,
     SKU: p.sku || "", sku: p.sku || "",
-    name: p.title || "", model: p.title || "",
+    name: p.title || "", model: p.title || "", headline: p.title || "",
     URL: `${bp}/product/${p.slug || p.id}`, url: `${bp}/product/${p.slug || p.id}`,
     image_url: imageUrl, thumb: imageUrl, thumb_url: imageUrl,
     store_price: p.price || 0, price: p.price || 0,
+    price_inc: Number(p.price || 0).toFixed(2),
     rrp: p.compare_at_price || p.price || 0,
     save, save_percent: save, savings_percent: save,
     store_quantity: p.stock_on_hand ?? 10,
@@ -1561,6 +1578,7 @@ function buildProductItem(p: any, idx: number, bp: string): Record<string, any> 
     description: p.description || "",
     count: idx, index: idx,
     rndm: Math.random().toString(36).substring(2, 8),
+    images: p.images || [],
   };
 }
 
