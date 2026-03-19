@@ -75,6 +75,7 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "SortOrder", "OnSiteMap", "OnMenu", "AllowFiltering",
     "ExternalSource", "ExternalReference1", "ExternalReference2", "ExternalReference3",
     "CategoryReference", "ShortDescription", "Description",
+    "CategoryImage", "Thumbnail",
     "ContentFileIdentifier", "SEOPageTitle", "SEOPageHeading",
     "SEOMetaDescription", "SEOMetaKeywords"
   ],
