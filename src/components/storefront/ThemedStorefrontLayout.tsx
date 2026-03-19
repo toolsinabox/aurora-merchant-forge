@@ -275,11 +275,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
   const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
 
-  // Track when CSS files are ready in storage
+  // Track when CSS files are ready in storage — non-blocking, starts immediately
   const [cssReady, setCssReady] = useState(false);
 
-  // Ensure CSS/JS files exist in storage bucket (upload from DB content if missing)
-  // CSS must be ready BEFORE we inject <link> tags to avoid 404 flash
+  // Upload CSS/JS to storage in background — does NOT block rendering
+  // Inline CSS is already injected so no FOUC occurs
   useEffect(() => {
     if (!store?.id || !theme.id) return;
     const allTextAssets = [...(theme.cssFiles || []), ...(theme.jsFiles || [])];
@@ -288,23 +288,22 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     if (!supabaseUrl) { setCssReady(true); return; }
 
     let cancelled = false;
+    // Upload all files in parallel instead of sequentially
     (async () => {
-      for (const f of allTextAssets) {
-        if (cancelled) return;
+      await Promise.all(allTextAssets.map(async (f) => {
+        if (cancelled || !f.content) return;
         const storagePath = `${store.id}/${theme.id}/${f.file_path}`;
         const publicUrl = `${supabaseUrl}/storage/v1/object/public/theme-assets/${storagePath}`;
         try {
           const res = await fetch(publicUrl, { method: "HEAD" });
-          if (res.ok) continue;
+          if (res.ok) return;
         } catch { /* not found, upload it */ }
-        if (f.content) {
-          const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
-          const blob = new Blob([f.content], { type: mimeType });
-          await supabase.storage
-            .from("theme-assets")
-            .upload(storagePath, blob, { contentType: mimeType, upsert: true });
-        }
-      }
+        const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
+        const blob = new Blob([f.content], { type: mimeType });
+        await supabase.storage
+          .from("theme-assets")
+          .upload(storagePath, blob, { contentType: mimeType, upsert: true });
+      }));
       if (!cancelled) setCssReady(true);
     })();
     return () => { cancelled = true; };
