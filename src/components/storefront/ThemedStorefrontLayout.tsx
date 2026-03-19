@@ -273,166 +273,53 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
   const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
 
-  // Track when CSS files are ready in storage — non-blocking, starts immediately
-  const [cssReady, setCssReady] = useState(false);
-
-  // Upload CSS/JS to storage in background — does NOT block rendering
-  // Inline CSS is already injected so no FOUC occurs
+  // Inject <link> and <style> tags from the rendered head content directly into <head>.
+  // The B@SE engine already resolved [%ntheme_asset%] to storage URLs,
+  // so we just need to move those tags into the document head.
   useEffect(() => {
-    if (!store?.id || !theme.id) return;
-    const allTextAssets = [...(theme.cssFiles || []), ...(theme.jsFiles || [])];
-    if (allTextAssets.length === 0) { setCssReady(true); return; }
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    if (!supabaseUrl) { setCssReady(true); return; }
+    const allHeadHtml = (headContent || "") + (renderedHeader || "");
+    if (!allHeadHtml) return;
 
-    let cancelled = false;
-    // Upload all files in parallel instead of sequentially
-    (async () => {
-      await Promise.all(allTextAssets.map(async (f) => {
-        if (cancelled || !f.content) return;
-        const storagePath = `${store.id}/${theme.id}/${f.file_path}`;
-        const publicUrl = `${supabaseUrl}/storage/v1/object/public/theme-assets/${storagePath}`;
-        try {
-          const res = await fetch(publicUrl, { method: "HEAD" });
-          if (res.ok) return;
-        } catch { /* not found, upload it */ }
-        const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
-        const blob = new Blob([f.content], { type: mimeType });
-        await supabase.storage
-          .from("theme-assets")
-          .upload(storagePath, blob, { contentType: mimeType, upsert: true });
-      }));
-      if (!cancelled) setCssReady(true);
-    })();
-    return () => { cancelled = true; };
-  }, [store?.id, theme.id, theme.cssFiles, theme.jsFiles]);
-
-  // No inline CSS injection — CSS is loaded via normal <link> tags below
-
-  // Inject essential CDN dependencies that Maropost themes rely on
-  // (jQuery, Bootstrap 4 JS, Font Awesome 4.7, Slick Carousel)
-  useEffect(() => {
-    const addedEls: Element[] = [];
-    
-    // Font Awesome 4.7 CSS
-    if (!document.querySelector('link[href*="font-awesome"]')) {
-      const fa = document.createElement("link");
-      fa.rel = "stylesheet";
-      fa.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css";
-      fa.setAttribute("data-cdn-dep", "font-awesome");
-      document.head.appendChild(fa);
-      addedEls.push(fa);
-    }
-
-    // jQuery 3.6 (must load before Bootstrap & Slick)
-    const jqId = "cdn-jquery";
-    if (!document.getElementById(jqId)) {
-      const jq = document.createElement("script");
-      jq.id = jqId;
-      jq.src = "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js";
-      jq.setAttribute("data-cdn-dep", "jquery");
-      document.head.appendChild(jq);
-      addedEls.push(jq);
-
-      jq.onload = () => {
-        // Bootstrap 4.6 JS
-        if (!document.getElementById("cdn-bootstrap-js")) {
-          const bs = document.createElement("script");
-          bs.id = "cdn-bootstrap-js";
-          bs.src = "https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/js/bootstrap.bundle.min.js";
-          bs.setAttribute("data-cdn-dep", "bootstrap");
-          document.body.appendChild(bs);
-          addedEls.push(bs);
-        }
-        // Slick Carousel
-        if (!document.getElementById("cdn-slick-js")) {
-          const slickCss = document.createElement("link");
-          slickCss.rel = "stylesheet";
-          slickCss.href = "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css";
-          slickCss.setAttribute("data-cdn-dep", "slick-css");
-          document.head.appendChild(slickCss);
-          addedEls.push(slickCss);
-
-          const slickTheme = document.createElement("link");
-          slickTheme.rel = "stylesheet";
-          slickTheme.href = "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css";
-          slickTheme.setAttribute("data-cdn-dep", "slick-theme");
-          document.head.appendChild(slickTheme);
-          addedEls.push(slickTheme);
-
-          const slick = document.createElement("script");
-          slick.id = "cdn-slick-js";
-          slick.src = "https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js";
-          slick.setAttribute("data-cdn-dep", "slick");
-          document.body.appendChild(slick);
-          addedEls.push(slick);
-        }
-      };
-    }
-
-    return () => { addedEls.forEach(el => el.remove()); };
-  }, []);
-
-  // Inject CSS links from the theme's <head> content AND from theme.cssFiles
-  useEffect(() => {
     const addedElements: Element[] = [];
-    
-    // 1. Inject <link> tags for known theme CSS files from storage
-    if (cssReady && theme.cssFiles && themeAssetBaseUrl) {
-      const priorityOrder = ["slick.css", "slick-theme.css", "app.css", "style.css", "custom.css"];
-      const sorted = [...theme.cssFiles].sort((a, b) => {
-        const aIdx = priorityOrder.findIndex(p => a.file_name === p);
-        const bIdx = priorityOrder.findIndex(p => b.file_name === p);
-        return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
-      });
-      for (const f of sorted) {
-        const href = `${themeAssetBaseUrl}/${f.file_path}`;
-        if (document.querySelector(`link[href="${href}"]`)) continue;
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = href;
-        link.setAttribute("data-theme-css", f.file_name);
-        document.head.appendChild(link);
-        addedElements.push(link);
-      }
-    }
 
-    // 2. Inject CDN <link> tags found in the rendered head/header HTML
-    const allCssHtml = (headContent || "") + (renderedHeader || "");
-    const linkRegex = /<link[^>]*href=["']([^"']+)["'][^>]*>/gi;
+    // Extract and inject <link rel="stylesheet"> tags
+    const linkRegex = /<link[^>]*>/gi;
     let match;
-    while ((match = linkRegex.exec(allCssHtml)) !== null) {
-      const fullTag = match[0];
-      let href = match[1];
-      if (!fullTag.includes("stylesheet") && !href.endsWith(".css")) continue;
-      if (!href || href === "#") continue;
-      
-      // Rewrite hardcoded /assets/themes/ paths to storage bucket
-      if (href.includes("/assets/themes/") && !href.includes("storage/v1")) {
-        if (!themeAssetBaseUrl) continue;
-        // Extract the path after the theme name, e.g. /assets/themes/skeletal/fonts/titillium.css → fonts/titillium.css
-        const themePathMatch = href.match(/\/assets\/themes\/[^/]+\/(.+)/);
-        if (themePathMatch) {
-          href = `${themeAssetBaseUrl}/${themePathMatch[1]}`;
-        } else {
-          continue;
-        }
-      }
-      
-      // Skip non-HTTP relative paths that aren't storage URLs (already handled above)
-      if (!href.startsWith("http") && !href.includes("storage/v1")) continue;
-      
-      if (document.querySelector(`link[href="${href}"]`)) continue;
+    while ((match = linkRegex.exec(allHeadHtml)) !== null) {
+      const tag = match[0];
+      // Only stylesheet links
+      if (!tag.includes("stylesheet") && !tag.match(/href=["'][^"']+\.css/i)) continue;
+      const hrefMatch = tag.match(/href=["']([^"']+)["']/);
+      if (!hrefMatch || !hrefMatch[1] || hrefMatch[1] === "#") continue;
+      const href = hrefMatch[1];
+      // Skip if already in head
+      if (document.querySelector(`link[href="${CSS.escape(href)}"]`)) continue;
       const link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = href;
+      // Copy media attribute if present
+      const mediaMatch = tag.match(/media=["']([^"']+)["']/);
+      if (mediaMatch) link.media = mediaMatch[1];
       link.setAttribute("data-theme-css", "true");
       document.head.appendChild(link);
       addedElements.push(link);
     }
-    
+
+    // Extract and inject inline <style> blocks from head content
+    const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+    let styleMatch;
+    while ((styleMatch = styleRegex.exec(allHeadHtml)) !== null) {
+      const content = styleMatch[1];
+      if (!content.trim()) continue;
+      const style = document.createElement("style");
+      style.setAttribute("data-theme-css", "true");
+      style.textContent = content;
+      document.head.appendChild(style);
+      addedElements.push(style);
+    }
+
     return () => { addedElements.forEach(el => el.remove()); };
-  }, [headContent, renderedHeader, cssReady, theme.cssFiles, themeAssetBaseUrl]);
+  }, [headContent, renderedHeader]);
 
   // Inject theme JS files from database (not from CDN — those are stored in theme_files)
   useEffect(() => {
