@@ -1018,31 +1018,193 @@ function processSetVars(t: string, ctx: Record<string, any>): string {
   });
 }
 
+// ── Resolve [%asset_url%] blocks (critical for Maropost themes) ──
+function processAssetUrlBlocks(t: string, ctx: Record<string, any>): string {
+  let result = t;
+
+  // Block variant: [%asset_url type:'...' id:'...'%][%param default%]fallback[%end param%][%/asset_url%]
+  result = result.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url)%\]/gi,
+    (_, attrs: string, innerContent: string) => {
+      const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        return String(resolveField(field, ctx) || "");
+      });
+      const resolved = resolveAssetUrl(resolvedAttrs, ctx);
+      if (resolved) return resolved;
+      // Extract fallback from [%param default%]...[%end param%] or [%/param%]
+      const fallbackMatch = innerContent.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
+      if (fallbackMatch) {
+        let fb = fallbackMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim();
+        return fb || "/placeholder.svg";
+      }
+      return resolved || "/placeholder.svg";
+    }
+  );
+
+  // Self-closing variant: [%asset_url type:'...' id:'...'/%]
+  result = result.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/\s*%\]/gi,
+    (_, attrs: string) => {
+      const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        return String(resolveField(field, ctx) || "");
+      });
+      return resolveAssetUrl(resolvedAttrs, ctx);
+    }
+  );
+
+  return result;
+}
+
+function resolveAssetUrl(attrs: string, ctx: Record<string, any>, item?: any): string {
+  const typeMatch = attrs.match(/type:'(\w+)'/i);
+  const idMatch = attrs.match(/id:'([^']+)'/i);
+  const defaultMatch = attrs.match(/default:'([^']+)'/i);
+  const type = (typeMatch?.[1] || "").toLowerCase();
+  let id = idMatch?.[1] || "";
+  
+  // Resolve any remaining [@...@] in id
+  id = id.replace(/\[@(\w+)@\]/gi, (_, field: string) => {
+    if (item && item[field] !== undefined) return String(item[field]);
+    return String(resolveField(field, ctx) || "");
+  });
+
+  const defaultUrl = defaultMatch?.[1] || "";
+  const assetBase = ctx.themeAssetBaseUrl || "";
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const storeId = ctx.store?.id || "";
+
+  switch (type) {
+    case "adw": case "ad": case "advert": {
+      if (item?.image_url && item.image_url.startsWith("http")) return item.image_url;
+      const ad = (ctx.adverts || []).find((a: any) => a.id === id || String(a.ad_id) === id);
+      if (ad?.image_url) return ad.image_url.startsWith("http") ? ad.image_url : `${supabaseUrl}/storage/v1/object/public/store-assets/${storeId}/marketing/${id}.webp`;
+      if (id && storeId) return `${supabaseUrl}/storage/v1/object/public/store-assets/${storeId}/marketing/${id}.webp`;
+      return defaultUrl || "/placeholder.svg";
+    }
+    case "content": case "category": {
+      if (item?.image_url && item.image_url.startsWith("http")) return item.image_url;
+      const cat = (ctx.categories || []).find((c: any) => c.id === id || String(c.content_id) === id);
+      if (cat?.image_url) return cat.image_url.startsWith("http") ? cat.image_url : `${supabaseUrl}/storage/v1/object/public/product-images/${cat.image_url}`;
+      // Maropost convention: /assets/webshop/cms/{last2digits}/{id}.webp
+      if (id && storeId) {
+        const numId = parseInt(id) || 0;
+        const last2 = String(numId % 100).padStart(2, "0");
+        return `${supabaseUrl}/storage/v1/object/public/store-assets/${storeId}/cms/${last2}/${numId}.webp`;
+      }
+      return defaultUrl || "/placeholder.svg";
+    }
+    case "product": {
+      if (item?.images?.[0]) {
+        const img = item.images[0];
+        return img.startsWith("http") ? img : `${supabaseUrl}/storage/v1/object/public/product-images/${img}`;
+      }
+      if (item?.image_url) return item.image_url;
+      const prod = (ctx.products || []).find((p: any) => p.id === id || p.sku === id);
+      if (prod?.images?.[0]) {
+        const img = prod.images[0];
+        return img.startsWith("http") ? img : `${supabaseUrl}/storage/v1/object/public/product-images/${img}`;
+      }
+      return defaultUrl || "/placeholder.svg";
+    }
+    case "logo":
+      if (ctx.store?.logo_url) return ctx.store.logo_url;
+      if (assetBase) return `${assetBase}/img/logo.png`;
+      return defaultUrl || "";
+    default:
+      if (id && assetBase) return `${assetBase}/${id}`;
+      return defaultUrl || "";
+  }
+}
+
+// ── Process [%filter ID:'key'%][%/filter%] ──
+function processFilterTags(t: string, ctx: Record<string, any>): string {
+  // Block variant
+  let result = t.replace(/\[%filter\s+([^\]]*?)%\]([\s\S]*?)\[%\/filter%\]/gi, (_, attrs: string) => {
+    const id = attrs.match(/ID:'([^']+)'/i)?.[1] || attrs.match(/id:'([^']+)'/i)?.[1] || "";
+    return ctx.queryParams?.[id] || "";
+  });
+  // Self-closing variant
+  result = result.replace(/\[%filter\s+([^\]]*?)\/%\]/gi, (_, attrs: string) => {
+    const id = attrs.match(/ID:'([^']+)'/i)?.[1] || attrs.match(/id:'([^']+)'/i)?.[1] || "";
+    return ctx.queryParams?.[id] || "";
+  });
+  return result;
+}
+
+// ── Process item asset_url tags within rendered item HTML ──
+function processItemAssetUrls(html: string, ctx: Record<string, any>, item: any): string {
+  let result = html;
+  // Block variant within items
+  result = result.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)%\]([\s\S]*?)\[%(?:\/asset_url|END\s+asset_url|end\s+asset_url)%\]/gi,
+    (_, attrs: string, innerContent: string) => {
+      const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        if (item && item[field] !== undefined) return String(item[field]);
+        return String(resolveField(field, ctx) || "");
+      });
+      const resolved = resolveAssetUrl(resolvedAttrs, ctx, item);
+      if (resolved && resolved !== "/placeholder.svg") return resolved;
+      const fallbackMatch = innerContent.match(/\[%param\s+default%\]([\s\S]*?)\[%(?:end\s+param|\/param)%\]/i);
+      if (fallbackMatch) {
+        return fallbackMatch[1].replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1").trim() || "/placeholder.svg";
+      }
+      return resolved || "/placeholder.svg";
+    }
+  );
+  // Self-closing variant within items
+  result = result.replace(
+    /\[%asset_url\s+((?:[^\[\]]|\[@[^\]]*@\])*)\/\s*%\]/gi,
+    (_, attrs: string) => {
+      const resolvedAttrs = attrs.replace(/\[@(\w+)@\]/gi, (__, field: string) => {
+        if (item && item[field] !== undefined) return String(item[field]);
+        return String(resolveField(field, ctx) || "");
+      });
+      return resolveAssetUrl(resolvedAttrs, ctx, item);
+    }
+  );
+  return result;
+}
+
 // ── System tags (thumb_list, content_menu, advert, breadcrumb, etc.) ──
 function processSystemTags(t: string, ctx: Record<string, any>): string {
   let result = t;
 
   // ── content_zone ──
-  result = result.replace(/\[%content_zone\s+([^\]]*?)\/?%\](?:\s*\[%\/content_zone%\])?/gi, (_, attrs: string) => {
+  result = result.replace(/\[%content_zone\s+([^\]]*?)\/?%\](?:[\s\S]*?\[%(?:\/content_zone|end\s+content_zone)%\])?/gi, (_, attrs: string) => {
     const id = attrs.match(/id:'([^']+)'/i)?.[1] || "";
     return ctx.contentZones?.[id] || "";
   });
 
+  // ── filter tags ──
+  result = processFilterTags(result, ctx);
+
+  // ── asset_url blocks (must run before thumb_list/advert so inner templates have resolved URLs) ──
+  result = processAssetUrlBlocks(result, ctx);
+
   // ── thumb_list (with thumbs template support) ──
   result = result.replace(/\[%thumb_list\s+([^\]]*?)%\]([\s\S]*?)\[%\/thumb_list%\]/gi, (_fullMatch, attrs: string, content: string) => {
-    const items = ctx.products || ctx.thumblist || [];
+    const thumbType = attrs.match(/type:'([^']*)'/i)?.[1] || "products";
+    
+    // Get the right items based on type
+    let items: any[] = [];
+    const bp = ctx.basePath || "";
+    
+    if (thumbType === "products" || thumbType === "product") {
+      items = ctx.products || ctx.thumblist || [];
+    } else if (thumbType === "category" || thumbType === "categories") {
+      items = ctx.categories || [];
+    }
+    
     if (items.length === 0) {
       return content.match(/\[%param\s+\*?ifempty%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     }
 
-    // Resolve thumb template from thumbs/ folder if template param is specified
+    // Resolve thumb template from thumbs/ folder
     const templateName = attrs.match(/template:'([^']*)'/i)?.[1];
-    const thumbType = attrs.match(/type:'([^']*)'/i)?.[1] || "products";
     let bodyTpl = content.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
 
-    // If template param is set and not empty, look for thumbs/{type}/{template}.template.html
     if (templateName !== undefined && ctx.thumbTemplates) {
-      const thumbFolder = thumbType === "products" ? "product" : thumbType === "content" ? "content" : "product";
+      const thumbFolder = (thumbType === "products" || thumbType === "product") ? "product" : thumbType === "content" ? "content" : "product";
       const thumbPaths = [
         `thumbs/${thumbFolder}/${templateName || "template"}.template.html`,
         `thumbs/${thumbFolder}/${templateName || "template"}.html`,
@@ -1056,16 +1218,33 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
       }
     }
 
+    // Fallback: try to find thumbs/product/box.template.html for product lists
+    if (!bodyTpl && ctx.thumbTemplates && (thumbType === "products" || thumbType === "product")) {
+      const fallbackPaths = [
+        "thumbs/product/box.template.html",
+        "thumbs/product/template.template.html",
+        "thumbs/product/template.html",
+      ];
+      for (const tp of fallbackPaths) {
+        if (ctx.thumbTemplates[tp]) {
+          bodyTpl = ctx.thumbTemplates[tp];
+          break;
+        }
+      }
+    }
+
     const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "24");
-    const bp = ctx.basePath || "";
 
     let html = header;
     items.slice(0, limit).forEach((p: any, idx: number) => {
-      const item = buildProductItem(p, idx, bp);
+      const item = (thumbType === "category" || thumbType === "categories")
+        ? buildCategoryItem(p, idx, bp)
+        : buildProductItem(p, idx, bp);
       const itemCtx = { ...ctx, product: p, ...item };
       let row = bodyTpl;
+      row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
       html += row;
@@ -1076,10 +1255,57 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
 
   // ── advert (with thumbs template support) ──
   result = result.replace(/\[%advert\s+([^\]]*?)%\]([\s\S]*?)\[%\/advert%\]/gi, (_, attrs: string, content: string) => {
+    const advertType = attrs.match(/type:'([^']*)'/i)?.[1] || "";
+    
+    // type:'product' means show products, not adverts
+    if (advertType === "product") {
+      const items = ctx.products || [];
+      if (items.length === 0) return content.match(/\[%param\s+\*?ifempty%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+      
+      const templateName = attrs.match(/template:'([^']*)'/i)?.[1];
+      let bodyTpl = content.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+      
+      if (templateName !== undefined && ctx.thumbTemplates) {
+        const thumbPaths = [
+          `thumbs/product/${templateName || "template"}.template.html`,
+          `thumbs/product/${templateName || "box"}.template.html`,
+          `thumbs/product/box.template.html`,
+          `thumbs/product/template.html`,
+        ];
+        for (const tp of thumbPaths) {
+          if (ctx.thumbTemplates[tp]) { bodyTpl = ctx.thumbTemplates[tp]; break; }
+        }
+      }
+      if (!bodyTpl && ctx.thumbTemplates) {
+        const fallbackPaths = ["thumbs/product/box.template.html", "thumbs/product/template.html"];
+        for (const tp of fallbackPaths) {
+          if (ctx.thumbTemplates[tp]) { bodyTpl = ctx.thumbTemplates[tp]; break; }
+        }
+      }
+      
+      const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+      const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+      const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "12");
+      const bp = ctx.basePath || "";
+      
+      let html = header;
+      items.slice(0, limit).forEach((p: any, idx: number) => {
+        const item = buildProductItem(p, idx, bp);
+        const itemCtx = { ...ctx, product: p, ...item };
+        let row = bodyTpl;
+        row = processItemAssetUrls(row, ctx, item);
+        row = processConditionals(row, itemCtx);
+        row = processValueTags(row, itemCtx);
+        html += row;
+      });
+      html += footer;
+      return html;
+    }
+    
+    // Regular advert rendering
     const ads = ctx.adverts || [];
     if (ads.length === 0) return content.match(/\[%param\s+\*?ifempty%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
 
-    // Resolve advert thumb template
     const templateName = attrs.match(/template:'([^']*)'/i)?.[1];
     let bodyTpl = content.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
 
@@ -1090,10 +1316,7 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
         `thumbs/advert/template.html`,
       ];
       for (const tp of thumbPaths) {
-        if (ctx.thumbTemplates[tp]) {
-          bodyTpl = ctx.thumbTemplates[tp];
-          break;
-        }
+        if (ctx.thumbTemplates[tp]) { bodyTpl = ctx.thumbTemplates[tp]; break; }
       }
     }
 
@@ -1106,6 +1329,7 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
       const item = buildAdvertItem(ad, idx);
       const itemCtx = { ...ctx, ...item };
       let row = bodyTpl;
+      row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
       html += row;
@@ -1123,14 +1347,13 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "8");
     const bp = ctx.basePath || "";
-
-    // Shuffle and limit
     const shuffled = [...items].sort(() => Math.random() - 0.5).slice(0, limit);
     let html = header;
     shuffled.forEach((p: any, idx: number) => {
       const item = buildProductItem(p, idx, bp);
       const itemCtx = { ...ctx, product: p, ...item };
       let row = bodyTpl;
+      row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
       html += row;
@@ -1157,14 +1380,100 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
       let childHtml = "";
       if (children.length > 0 && level2) {
         for (const child of children) {
-          const cCtx = { ...ctx, name: child.name, url: `${bp}/category/${child.slug}`, content_id: child.id, image: child.image_url || "", next_level: "" };
-          childHtml += processValueTags(processConditionals(level2, cCtx), cCtx);
+          const cCtx = {
+            ...ctx,
+            name: child.name,
+            url: `${bp}/products?category=${child.slug}`,
+            content_id: child.id,
+            id: child.id,
+            slug: child.slug,
+            image: child.image_url || "",
+            image_url: child.image_url || "/placeholder.svg",
+            next_level: "",
+            description: child.description || "",
+          };
+          let rendered = level2;
+          rendered = processItemAssetUrls(rendered, ctx, { ...child, content_id: child.id });
+          rendered = processConditionals(rendered, cCtx);
+          rendered = processValueTags(rendered, cCtx);
+          childHtml += rendered;
         }
       }
-      const catCtx = { ...ctx, name: cat.name, url: `${bp}/category/${cat.slug}`, content_id: cat.id, image: cat.image_url || "", next_level: childHtml, count: children.length };
-      html += processValueTags(processConditionals(level1, catCtx), catCtx);
+      const catCtx = {
+        ...ctx,
+        name: cat.name,
+        url: `${bp}/products?category=${cat.slug}`,
+        content_id: cat.id,
+        id: cat.id,
+        slug: cat.slug,
+        image: cat.image_url || "",
+        image_url: cat.image_url || "/placeholder.svg",
+        next_level: childHtml,
+        count: children.length,
+        description: cat.description || "",
+      };
+      let rendered = level1;
+      rendered = processItemAssetUrls(rendered, ctx, { ...cat, content_id: cat.id });
+      rendered = processConditionals(rendered, catCtx);
+      rendered = processValueTags(rendered, catCtx);
+      html += rendered;
     }
     html += footer;
+    return html;
+  });
+
+  // ── menu blocks ──
+  result = result.replace(/\[%menu\s+([^\]]*?)%\]([\s\S]*?)\[%\/menu%\]/gi, (_, _attrs: string, content: string) => {
+    const cats = ctx.categories || [];
+    if (cats.length === 0) return "";
+    
+    const levelTemplates: Record<number, string> = {};
+    const paramHeaderMatch = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i);
+    const paramFooterMatch = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i);
+    const levelRegex = /\[%param\s+\*?level_(\d+)%\]([\s\S]*?)\[%\/param%\]/gi;
+    let m;
+    while ((m = levelRegex.exec(content)) !== null) {
+      levelTemplates[parseInt(m[1])] = m[2];
+    }
+
+    const catMap = new Map<string | null, any[]>();
+    for (const cat of cats) {
+      const pid = cat.parent_id || null;
+      if (!catMap.has(pid)) catMap.set(pid, []);
+      catMap.get(pid)!.push(cat);
+    }
+
+    const bp = ctx.basePath || "";
+    function renderMenuLevel(parentId: string | null, level: number): string {
+      const children = catMap.get(parentId) || [];
+      if (children.length === 0) return "";
+      const tmpl = levelTemplates[level] || levelTemplates[1];
+      if (!tmpl) return "";
+      return children.map(cat => {
+        const nextLevelHtml = renderMenuLevel(cat.id, level + 1);
+        let html = tmpl;
+        html = html.replace(/\[@name@\]/gi, cat.name || "");
+        html = html.replace(/\[@url@\]/gi, `${bp}/products?category=${cat.slug}`);
+        html = html.replace(/\[@id@\]/gi, cat.id || "");
+        html = html.replace(/\[@slug@\]/gi, cat.slug || "");
+        html = html.replace(/\[@description@\]/gi, cat.description || "");
+        html = html.replace(/\[@image_url@\]/gi, cat.image_url || "/placeholder.svg");
+        html = html.replace(/\[@image@\]/gi, cat.image_url || "/placeholder.svg");
+        if (nextLevelHtml) {
+          html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "$1");
+          html = html.replace(/\[@next_level@\]/gi, nextLevelHtml);
+        } else {
+          html = html.replace(/\[%if\s+\[@next_level@\]%\]([\s\S]*?)\[%\/if%\]/gi, "");
+          html = html.replace(/\[@next_level@\]/gi, "");
+        }
+        return html;
+      }).join("");
+    }
+
+    let html = "";
+    if (paramHeaderMatch) html += paramHeaderMatch[1];
+    html += renderMenuLevel(null, 1);
+    if (paramFooterMatch) html += paramFooterMatch[1];
     return html;
   });
 
@@ -1195,11 +1504,40 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     return "";
   });
 
-  // ── menu (stub) ──
-  result = result.replace(/\[%menu\s+([^\]]*?)%\]([\s\S]*?)\[%\/menu%\]/gi, () => "");
-
   // ── search box ──
   result = result.replace(/\[%search%\]([\s\S]*?)\[%\/search%\]/gi, (_, content: string) => content);
+
+  // ── cdn_asset — strip wrapper, keep content ──
+  result = result.replace(/\[%cdn_asset[^\]]*%\]([\s\S]*?)\[%\/cdn_asset%\]/gi, "$1");
+
+  // ── NETO_JS ──
+  result = result.replace(/\[%NETO_JS[^\]]*\/?%\]/gi, "");
+
+  // ── tracking_code ──
+  result = result.replace(/\[%tracking_code[^\]]*\/?%\]/gi, "");
+
+  // ── form blocks ──
+  result = result.replace(/\[%form\s+([^\]]*?)%\]([\s\S]*?)\[%\/form%\]/gi, (_, attrs: string, body: string) => {
+    const type = attrs.match(/type:'([^']+)'/i)?.[1] || "";
+    const bp = ctx.basePath || "";
+    const urlMap: Record<string, string> = {
+      newsletter: "#", subscribe: "#", contact: `${bp}/contact`,
+      login: `${bp}/login`, register: `${bp}/signup`,
+      quote: `${bp}/request-quote`, wholesale: `${bp}/wholesale`,
+    };
+    return body.replace(/\[@form_action@\]/gi, urlMap[type] || "#");
+  });
+
+  // ── newsletter blocks ──
+  result = result.replace(/\[%newsletter\s*([^\]]*?)%\]([\s\S]*?)\[%\/newsletter%\]/gi, (_, _a: string, body: string) => {
+    return body.replace(/\[@form_action@\]/gi, "#").replace(/\[@newsletter_url@\]/gi, "#");
+  });
+
+  // ── login blocks ──
+  result = result.replace(/\[%login\s*([^\]]*?)%\]([\s\S]*?)\[%\/login%\]/gi, (_, _a: string, body: string) => {
+    const bp = ctx.basePath || "";
+    return body.replace(/\[@form_action@\]/gi, `${bp}/login`);
+  });
 
   return result;
 }
