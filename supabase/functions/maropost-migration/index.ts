@@ -35,7 +35,7 @@ const ACTION_MAP: Record<string, string> = {
 // Minimal selectors for scanning/counting (fast, small response)
 const SCAN_SELECTORS: Record<string, string[]> = {
   get_products: ["ID", "SKU", "Name", "ParentSKU"],
-  get_categories: ["CategoryID", "CategoryName"],
+  get_categories: ["CategoryID", "CategoryName", "CategoryImage", "Thumbnail"],
   get_customers: ["Username", "EmailAddress"],
   get_orders: ["OrderID", "GrandTotal"],
   get_content: ["ContentID", "ContentName"],
@@ -75,6 +75,7 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "SortOrder", "OnSiteMap", "OnMenu", "AllowFiltering",
     "ExternalSource", "ExternalReference1", "ExternalReference2", "ExternalReference3",
     "CategoryReference", "ShortDescription", "Description",
+    "CategoryImage", "Thumbnail",
     "ContentFileIdentifier", "SEOPageTitle", "SEOPageHeading",
     "SEOMetaDescription", "SEOMetaKeywords"
   ],
