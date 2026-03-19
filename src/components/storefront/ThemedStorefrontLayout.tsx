@@ -307,40 +307,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     return () => { cancelled = true; };
   }, [store?.id, theme.id, theme.cssFiles, theme.jsFiles]);
 
-  // Inject theme CSS as inline <style> blocks immediately for instant rendering
-  // This prevents FOUC while storage <link> tags may still be loading
-  useEffect(() => {
-    if (!theme.cssFiles || theme.cssFiles.length === 0) return;
-    const styleEls: HTMLStyleElement[] = [];
-    // Priority order for CSS loading
-    const priorityOrder = ["slick.css", "slick-theme.css", "app.css", "style.css", "custom.css"];
-    const sorted = [...theme.cssFiles].sort((a, b) => {
-      const aIdx = priorityOrder.findIndex(p => a.file_name === p);
-      const bIdx = priorityOrder.findIndex(p => b.file_name === p);
-      return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
-    });
-    for (const f of sorted) {
-      if (!f.content) continue;
-      // Rewrite relative url() paths in CSS to point at theme-assets storage bucket
-      let cssContent = f.content;
-      if (themeAssetBaseUrl) {
-        cssContent = cssContent.replace(
-          /url\(\s*['"]?(?:\.\.\/|\.\/)?([^)'"]+\.(?:woff2?|ttf|eot|otf|svg|png|jpg|jpeg|gif|webp|ico)[^)'"]*?)['"]?\s*\)/gi,
-          (_match, path) => {
-            if (/^(https?:|\/\/|data:)/.test(path)) return _match;
-            const cleanPath = path.replace(/^\/+/, "").trim();
-            return `url("${themeAssetBaseUrl}/${cleanPath}")`;
-          }
-        );
-      }
-      const style = document.createElement("style");
-      style.setAttribute("data-theme-inline-css", f.file_name);
-      style.textContent = cssContent;
-      document.head.appendChild(style);
-      styleEls.push(style);
-    }
-    return () => { styleEls.forEach(el => el.remove()); };
-  }, [theme.cssFiles, themeAssetBaseUrl]);
+  // No inline CSS injection — CSS is loaded via normal <link> tags below
 
   // Inject essential CDN dependencies that Maropost themes rely on
   // (jQuery, Bootstrap 4 JS, Font Awesome 4.7, Slick Carousel)
