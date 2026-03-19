@@ -7,8 +7,6 @@ import { useContentZones } from "@/hooks/use-content-zones";
 import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
 import { useSSRPage } from "@/hooks/use-ssr-page";
 import { StorefrontLayout } from "./StorefrontLayout";
-import { CookieConsentBanner } from "./CookieConsentBanner";
-import { MobileBottomNav } from "./MobileBottomNav";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 
