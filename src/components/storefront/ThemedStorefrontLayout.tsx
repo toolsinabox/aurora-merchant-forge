@@ -128,7 +128,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
   );
 }
 
-const SCOPE_SELECTOR = "#neto-theme";
+
 
 /**
  * Rewrite relative image/asset paths in rendered HTML to point at the theme-assets storage bucket.
