@@ -142,6 +142,7 @@ const MaropostMigration = lazy(() => import("./pages/MaropostMigration.tsx"));
 const MaropostTransferAudit = lazy(() => import("./pages/MaropostTransferAudit.tsx"));
 const MaropostApiLog = lazy(() => import("./pages/MaropostApiLog.tsx"));
 const MaropostLearning = lazy(() => import("./pages/MaropostLearning.tsx"));
+const MaropostThemeLearning = lazy(() => import("./pages/MaropostThemeLearning.tsx"));
 // Platform admin pages
 const PlatformLogin = lazy(() => import("./pages/platform/PlatformLogin.tsx"));
 const PlatformDashboard = lazy(() => import("./pages/platform/PlatformDashboard.tsx"));
