@@ -434,63 +434,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     };
   }, [theme.jsFiles]);
 
-  // Initialize Bootstrap-style carousel with vanilla JS (fallback if jQuery/Bootstrap not loaded)
-  useEffect(() => {
-    // Wait for DOM to render with theme content
-    const timer = setTimeout(() => {
-      const container = document.getElementById("neto-theme");
-      if (!container) return;
-      
-      const carousels = container.querySelectorAll(".carousel.slide");
-      carousels.forEach((carousel) => {
-        const items = carousel.querySelectorAll(".carousel-item");
-        if (items.length <= 1) return;
-        
-        // Check if Bootstrap carousel is already initialized
-        if ((carousel as any)._carouselInit) return;
-        (carousel as any)._carouselInit = true;
-        
-        let currentIdx = 0;
-        
-        const showSlide = (index: number) => {
-          items.forEach((item, i) => item.classList.toggle("active", i === index));
-          carousel.querySelectorAll(".carousel-indicators li").forEach((ind, i) => {
-            ind.classList.toggle("active", i === index);
-          });
-        };
-        
-        const autoTimer = setInterval(() => {
-          currentIdx = (currentIdx + 1) % items.length;
-          showSlide(currentIdx);
-        }, 5000);
-        
-        carousel.querySelector(".carousel-control-prev")?.addEventListener("click", (e) => {
-          e.preventDefault();
-          currentIdx = (currentIdx - 1 + items.length) % items.length;
-          showSlide(currentIdx);
-        });
-        carousel.querySelector(".carousel-control-next")?.addEventListener("click", (e) => {
-          e.preventDefault();
-          currentIdx = (currentIdx + 1) % items.length;
-          showSlide(currentIdx);
-        });
-        
-        carousel.querySelectorAll(".carousel-indicators li").forEach((ind, i) => {
-          ind.addEventListener("click", () => { currentIdx = i; showSlide(currentIdx); });
-        });
-        
-        // Store timer for cleanup
-        (carousel as any)._autoTimer = autoTimer;
-      });
-    }, 300);
-    
-    return () => {
-      clearTimeout(timer);
-      document.getElementById("neto-theme")?.querySelectorAll(".carousel.slide").forEach((c) => {
-        clearInterval((c as any)?._autoTimer);
-      });
-    };
-  }, [renderedHeader, renderedFooter]);
+  // No platform carousel init — theme's own JS handles Bootstrap carousel
 
   // Execute <script> tags inside #neto-theme that were injected via dangerouslySetInnerHTML
   // (e.g. from content zones like Elfsight widgets). React doesn't execute scripts set via innerHTML.
