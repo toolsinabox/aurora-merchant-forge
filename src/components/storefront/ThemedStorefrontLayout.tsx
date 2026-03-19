@@ -273,6 +273,33 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
   const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
 
+  // Ensure CSS/JS files exist in storage so <link> tags resolve
+  useEffect(() => {
+    if (!store?.id || !theme.id) return;
+    const allTextAssets = [...(theme.cssFiles || []), ...(theme.jsFiles || [])];
+    if (allTextAssets.length === 0) return;
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl) return;
+    let cancelled = false;
+    (async () => {
+      await Promise.all(allTextAssets.map(async (f) => {
+        if (cancelled || !f.content) return;
+        const storagePath = `${store.id}/${theme.id}/${f.file_path}`;
+        const publicUrl = `${supabaseUrl}/storage/v1/object/public/theme-assets/${storagePath}`;
+        try {
+          const res = await fetch(publicUrl, { method: "HEAD" });
+          if (res.ok) return;
+        } catch { /* not found */ }
+        const mimeType = f.file_name.endsWith(".css") ? "text/css" : "application/javascript";
+        const blob = new Blob([f.content], { type: mimeType });
+        await supabase.storage
+          .from("theme-assets")
+          .upload(storagePath, blob, { contentType: mimeType, upsert: true });
+      }));
+    })();
+    return () => { cancelled = true; };
+  }, [store?.id, theme.id, theme.cssFiles, theme.jsFiles]);
+
   // Inject <link> and <style> tags from the rendered head content directly into <head>.
   // The B@SE engine already resolved [%ntheme_asset%] to storage URLs,
   // so we just need to move those tags into the document head.
