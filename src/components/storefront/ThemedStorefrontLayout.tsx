@@ -137,7 +137,7 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
  */
 function rewriteAssetUrls(html: string, assetBase: string): string {
   if (!assetBase) return html;
-  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|css)(\?[^"']*)?/i;
+  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf|css)(\?[^"']*)?/i;
   // Paths that should NOT be rewritten
   const skipPaths = /^(\/placeholder\.|\/favicon)/i;
   
@@ -155,17 +155,17 @@ function rewriteAssetUrls(html: string, assetBase: string): string {
       // Skip other /assets/ paths (product images, marketing, cms — already absolute)
       if (/^\/assets\//i.test(path)) return match;
       
-      const cleanPath = path.replace(/^\/+/, "");
+      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "");
       return `${attr}="${assetBase}/${cleanPath}"`;
     })
-    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
+    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
       // Rewrite /assets/themes/... in CSS url()
       const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
       if (themePathMatch) {
         return `url("${assetBase}/${themePathMatch[1].trim()}")`;
       }
       if (/^\/assets\//i.test(path)) return match;
-      const cleanPath = path.replace(/^\/+/, "").trim();
+      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "").trim();
       return `url("${assetBase}/${cleanPath}")`;
     });
 }
