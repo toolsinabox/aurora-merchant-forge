@@ -42,18 +42,6 @@ export function getSubdomainSlug(): string | null {
   return null;
 }
 
-  // Split hostname into parts: cool-gadgets.myplatform.com → ["cool-gadgets", "myplatform", "com"]
-  const parts = hostname.split(".");
-
-  // Need at least 3 parts for a subdomain (sub.domain.tld)
-  // Skip "www" as it's not a store subdomain
-  if (parts.length >= 3 && parts[0] !== "www") {
-    return parts[0];
-  }
-
-  return null;
-}
-
 /**
  * Hook that returns the store slug from either:
  * 1. Subdomain (cool-gadgets.myplatform.com → "cool-gadgets")
