@@ -590,20 +590,13 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
 
   return (
     <>
-      {/* Platform layout fallback CSS — structural fixes for carousel/grid components */}
-      {fallbackCss && (
-        <style dangerouslySetInnerHTML={{ __html: fallbackCss }} />
-      )}
-
-      {/* Theme-rendered sections: header + footer wrapped in scope */}
+      {/* Theme-rendered sections only — no platform CSS injected */}
       <div id="neto-theme" className="min-h-screen flex flex-col">
-        {/* Rendered Header */}
         {renderedHeader && (
           <header dangerouslySetInnerHTML={{ __html: renderedHeader }} />
         )}
 
-        {/* Page Content — SSR body takes priority, React children as fallback */}
-        <main id="main-content" className="flex-1 pb-16 md:pb-0">
+        <main id="main-content" className="flex-1">
           {ssrBodyHtml ? (
             <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
           ) : (
@@ -611,14 +604,10 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
           )}
         </main>
 
-        {/* Rendered Footer */}
         {renderedFooter && (
           <footer dangerouslySetInnerHTML={{ __html: renderedFooter }} />
         )}
       </div>
-
-      <CookieConsentBanner />
-      <MobileBottomNav />
     </>
   );
 }
