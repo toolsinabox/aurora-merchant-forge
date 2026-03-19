@@ -2,11 +2,10 @@ import { ReactNode, useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useStoreSlug, resolveStoreBySlug } from "@/lib/subdomain";
 import { supabase } from "@/integrations/supabase/client";
-import { useActiveTheme, findMainThemeFile, buildIncludesMap } from "@/hooks/use-active-theme";
+import { useActiveTheme, buildIncludesMap } from "@/hooks/use-active-theme";
 import { useContentZones } from "@/hooks/use-content-zones";
-import { renderTemplate, type TemplateContext } from "@/lib/base-template-engine";
+import { type TemplateContext } from "@/lib/base-template-engine";
 import { useSSRPage } from "@/hooks/use-ssr-page";
-import { StorefrontLayout } from "./StorefrontLayout";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -18,11 +17,6 @@ interface ThemedStorefrontLayoutProps {
 }
 
 
-
-/**
- * Wrapper that checks for an active theme. If theme exists with header/footer templates,
- * renders full B@SE theme. Otherwise falls back to the default React StorefrontLayout.
- */
 /**
  * Derive page type from the current URL path for SSR routing.
  */
@@ -94,20 +88,12 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
   // Only block on store + theme resolution — NOT on SSR (it loads in background)
   if (!storeResolved || (!theme && isLoading)) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="h-16 bg-muted/30 animate-pulse" />
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="h-8 w-48 bg-muted/30 rounded animate-pulse mb-6" />
-          <div className="h-[300px] bg-muted/20 rounded-xl animate-pulse" />
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen" />;
   }
 
-  // No active theme package → use default React layout
+  // No active theme — render nothing (never fall back to React layout)
   if (!theme) {
-    return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
+    return <div className="min-h-screen" />;
   }
 
   const { items: cartItems, totalPrice: cartTotal, totalItems: cartCount } = useCart();
@@ -130,45 +116,8 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
 
 
-/**
- * Rewrite relative image/asset paths in rendered HTML to point at the theme-assets storage bucket.
- * Handles src="img/foo.png", src="css/foo.png", url(img/foo.png), etc.
- * Skips URLs that are already absolute (http/https/data://).
- */
-function rewriteAssetUrls(html: string, assetBase: string): string {
-  if (!assetBase) return html;
-  const assetExt = /\.(png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf|css)(\?[^"']*)?/i;
-  // Paths that should NOT be rewritten
-  const skipPaths = /^(\/placeholder\.|\/favicon)/i;
-  
-  return html
-    .replace(/(src|href)=["']((?!https?:\/\/|\/\/|data:|#|mailto:|javascript:|\{)[^"']+)["']/gi, (match, attr, path) => {
-      if (!assetExt.test(path)) return match;
-      if (skipPaths.test(path)) return match;
-      
-      // Rewrite /assets/themes/THEME_NAME/... to storage bucket
-      const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
-      if (themePathMatch) {
-        return `${attr}="${assetBase}/${themePathMatch[1]}"`;
-      }
-      
-      // Skip other /assets/ paths (product images, marketing, cms — already absolute)
-      if (/^\/assets\//i.test(path)) return match;
-      
-      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "");
-      return `${attr}="${assetBase}/${cleanPath}"`;
-    })
-    .replace(/url\(\s*['"]?((?!https?:\/\/|\/\/|data:)[^)'"]+\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|otf)[^)'"]*?)['"]?\s*\)/gi, (match, path) => {
-      // Rewrite /assets/themes/... in CSS url()
-      const themePathMatch = path.match(/^\/assets\/themes\/[^/]+\/(.+)/);
-      if (themePathMatch) {
-        return `url("${assetBase}/${themePathMatch[1].trim()}")`;
-      }
-      if (/^\/assets\//i.test(path)) return match;
-      const cleanPath = path.replace(/^\/+/, "").replace(/^\.\.\//, "").replace(/^\.\//, "").trim();
-      return `url("${assetBase}/${cleanPath}")`;
-    });
-}
+
+
 
 /** The actual themed shell that renders header/footer from B@SE templates */
 function ThemedShell({ theme, store, storeName, children, extraContext, categories, basePath, cartData, ssrData }: {
@@ -231,47 +180,13 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
     ...extraContext,
   }), [store, storeName, includes, themeFiles, themeAssetBaseUrl, extraContext, categories, basePath, cartData, contentZones, user]);
 
-  const headerFile = findMainThemeFile(theme, "headers");
-  const footerFile = findMainThemeFile(theme, "footers");
 
-  // ── SSR-first rendering: use server-rendered HTML when available, fall back to client-side ──
-  const useSSR = !!ssrData;
-
-  // Client-side render (fallback when SSR unavailable)
-  const { headContent: clientHeadContent, bodyContent: clientHeader } = useMemo(() => {
-    if (useSSR || !headerFile?.content) return { headContent: "", bodyContent: "" };
-    const rendered = renderTemplate(headerFile.content, baseCtx);
-    const headMatch = rendered.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
-    const headContent = headMatch?.[1] || "";
-    const bodyMatch = rendered.match(/<body[^>]*>([\s\S]*$)/i);
-    let bodyContent = bodyMatch?.[1] || rendered;
-    bodyContent = bodyContent
-      .replace(/<!DOCTYPE[^>]*>/gi, "")
-      .replace(/<\/?html[^>]*>/gi, "")
-      .replace(/<head[^>]*>[\s\S]*?<\/head>/gi, "")
-      .replace(/<\/?body[^>]*>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-    bodyContent = rewriteAssetUrls(bodyContent, themeAssetBaseUrl);
-    return { headContent, bodyContent };
-  }, [useSSR, headerFile, baseCtx, themeAssetBaseUrl]);
-
-  const clientFooter = useMemo(() => {
-    if (useSSR || !footerFile?.content) return "";
-    let rendered = renderTemplate(footerFile.content, baseCtx);
-    rendered = rendered
-      .replace(/<\/body>/gi, "")
-      .replace(/<\/html>/gi, "")
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
-    rendered = rewriteAssetUrls(rendered, themeAssetBaseUrl);
-    return rendered;
-  }, [useSSR, footerFile, baseCtx, themeAssetBaseUrl]);
-
-  // Resolve final HTML — SSR takes priority
-  const headContent = useSSR ? ssrData!.head_content : clientHeadContent;
-  const renderedHeader = useSSR ? ssrData!.header_html : clientHeader;
-  const renderedFooter = useSSR ? ssrData!.footer_html : clientFooter;
-  const ssrBodyHtml = useSSR ? ssrData!.body_html : "";
-  const effectiveAssetBase = useSSR ? ssrData!.theme_asset_base_url : themeAssetBaseUrl;
+  // ── SSR-only rendering: no client-side template fallbacks ──
+  const headContent = ssrData?.head_content || "";
+  const renderedHeader = ssrData?.header_html || "";
+  const renderedFooter = ssrData?.footer_html || "";
+  const ssrBodyHtml = ssrData?.body_html || "";
+  const effectiveAssetBase = ssrData?.theme_asset_base_url || themeAssetBaseUrl;
 
   // Ensure CSS/JS files exist in storage so <link> tags resolve
   useEffect(() => {
@@ -304,7 +219,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   // The B@SE engine already resolved [%ntheme_asset%] to storage URLs,
   // so we just need to move those tags into the document head.
   useEffect(() => {
-    const ssrCssLinks = useSSR && ssrData?.css_link_tags ? ssrData.css_link_tags : "";
+    const ssrCssLinks = ssrData?.css_link_tags ? ssrData.css_link_tags : "";
     const allHeadHtml = (headContent || "") + (renderedHeader || "") + ssrCssLinks;
     if (!allHeadHtml) return;
 
@@ -557,11 +472,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
         )}
 
         <main id="main-content" className="flex-1">
-          {ssrBodyHtml ? (
-            <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
-          ) : (
-            children
-          )}
+          <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
         </main>
 
         {renderedFooter && (
