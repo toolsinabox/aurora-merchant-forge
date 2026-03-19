@@ -94,20 +94,12 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
 
   // Only block on store + theme resolution — NOT on SSR (it loads in background)
   if (!storeResolved || (!theme && isLoading)) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="h-16 bg-muted/30 animate-pulse" />
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="h-8 w-48 bg-muted/30 rounded animate-pulse mb-6" />
-          <div className="h-[300px] bg-muted/20 rounded-xl animate-pulse" />
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen" />;
   }
 
-  // No active theme package → use default React layout
+  // No active theme — render nothing (never fall back to React layout)
   if (!theme) {
-    return <StorefrontLayout storeName={storeName}>{children}</StorefrontLayout>;
+    return <div className="min-h-screen" />;
   }
 
   const { items: cartItems, totalPrice: cartTotal, totalItems: cartCount } = useCart();
