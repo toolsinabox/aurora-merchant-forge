@@ -466,9 +466,6 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                 </>
               )}
-            </Routes>
-            </Suspense>
-            </ErrorBoundary>
           </CompareProvider>
           </WishlistProvider>
           </CartProvider>
