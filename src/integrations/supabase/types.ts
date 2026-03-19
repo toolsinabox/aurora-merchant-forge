@@ -486,6 +486,7 @@ export type Database = {
           image_url: string | null
           name: string
           parent_id: string | null
+          secondary_image_url: string | null
           seo_description: string | null
           seo_title: string | null
           slug: string
@@ -501,6 +502,7 @@ export type Database = {
           image_url?: string | null
           name: string
           parent_id?: string | null
+          secondary_image_url?: string | null
           seo_description?: string | null
           seo_title?: string | null
           slug: string
@@ -516,6 +518,7 @@ export type Database = {
           image_url?: string | null
           name?: string
           parent_id?: string | null
+          secondary_image_url?: string | null
           seo_description?: string | null
           seo_title?: string | null
           slug?: string
