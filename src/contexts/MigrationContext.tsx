@@ -119,14 +119,16 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
         if (keys.length > 0) {
           const items = responseData[keys[0]];
           if (Array.isArray(items) && items.length > 0) {
-            allItems = [...allItems, ...items];
+            const normalizedItems = entity === "categories"
+              ? items.map((item: any) => ({ ...item, __store_domain: domain }))
+              : items;
+            allItems = [...allItems, ...normalizedItems];
             addLog(`  Fetched page ${page + 1}: ${items.length} ${entity}`);
             if (items.length < fetchLimit) hasMore = false;
           } else { hasMore = false; }
         } else { hasMore = false; }
       } else { hasMore = false; }
 
-      // In test mode, only fetch 1 page
       if (testMode) {
         addLog(`  🧪 Test mode: limited to ${allItems.length} ${entity}`);
         break;
@@ -146,7 +148,13 @@ export function MigrationProvider({ children }: { children: ReactNode }) {
     migrationJobId: string | null,
     dryRun: boolean,
   ) => {
-    const batchSize = entity.entity === "products" ? 5 : entity.entity === "orders" ? 20 : 50;
+    const batchSize = entity.entity === "categories"
+      ? Math.max(sourceItems.length, 1)
+      : entity.entity === "products"
+        ? 5
+        : entity.entity === "orders"
+          ? 20
+          : 50;
     let totalImported = 0;
     let totalFailed = 0;
     const allErrors: string[] = [];

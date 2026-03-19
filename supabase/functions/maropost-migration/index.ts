@@ -35,7 +35,7 @@ const ACTION_MAP: Record<string, string> = {
 // Minimal selectors for scanning/counting (fast, small response)
 const SCAN_SELECTORS: Record<string, string[]> = {
   get_products: ["ID", "SKU", "Name", "ParentSKU"],
-  get_categories: ["CategoryID", "CategoryName", "CategoryImage", "Thumbnail"],
+  get_categories: ["ID", "CategoryID", "CategoryName", "ParentCategoryID"],
   get_customers: ["Username", "EmailAddress"],
   get_orders: ["OrderID", "GrandTotal"],
   get_content: ["ContentID", "ContentName"],
@@ -71,13 +71,13 @@ const OUTPUT_SELECTORS: Record<string, string[]> = {
     "ContentFileIdentifier", "eBayProductIDs"
   ],
   get_categories: [
-    "CategoryID", "CategoryName", "ParentCategoryID", "Active",
-    "SortOrder", "OnSiteMap", "OnMenu", "AllowFiltering",
+    "ID", "CategoryID", "CategoryName", "ParentCategoryID", "Active",
+    "SortOrder", "OnSiteMap", "OnMenu", "AllowFiltering", "AllowReviews",
     "ExternalSource", "ExternalReference1", "ExternalReference2", "ExternalReference3",
-    "CategoryReference", "ShortDescription", "Description",
-    "CategoryImage", "Thumbnail",
-    "ContentFileIdentifier", "SEOPageTitle", "SEOPageHeading",
-    "SEOMetaDescription", "SEOMetaKeywords"
+    "CategoryReference", "ShortDescription1", "ShortDescription2", "ShortDescription3",
+    "Description1", "Description2", "Description3",
+    "SEOPageTitle", "SEOPageHeading", "SEOMetaDescription", "SEOMetaKeywords",
+    "DatePosted", "DateUpdated"
   ],
   get_orders: [
     "OrderID", "ShippingOption", "DeliveryInstruction", "Username",

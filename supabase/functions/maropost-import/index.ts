@@ -416,40 +416,63 @@ serve(async (req) => {
     // ══════════════════════════════════════════════════════════
     else if (action === "import_categories") {
       const items = source_data?.Category || source_data || [];
-      const categories = Array.isArray(items) ? items : [items];
+      const categories = (Array.isArray(items) ? items : [items]).filter(Boolean);
+      const sourceDomain = categories.find((c: any) => typeof c?.__store_domain === "string")?.__store_domain || null;
+      const normalizedDomain = sourceDomain ? (sourceDomain.startsWith("http") ? sourceDomain : `https://${sourceDomain}`) : null;
+
+      const buildDerivedCategoryImageUrl = (category: any): string | null => {
+        const directUrl = [category.CategoryImage, category.Thumbnail, category.ImageURL, category.Image]
+          .find((value: any) => typeof value === "string" && value.trim().length > 0);
+
+        if (directUrl) {
+          if (directUrl.startsWith("http")) return directUrl;
+          if (directUrl.startsWith("//")) return `https:${directUrl}`;
+          return normalizedDomain ? `${normalizedDomain}${directUrl.startsWith("/") ? "" : "/"}${directUrl}` : directUrl;
+        }
+
+        if (!normalizedDomain) return null;
+
+        const rawId = category.ID || category.ContentFileIdentifier || category.CategoryID;
+        const numericId = Number.parseInt(String(rawId || ""), 10);
+        if (!Number.isFinite(numericId) || numericId <= 0) return null;
+
+        const lastTwo = String(numericId % 100).padStart(2, "0");
+        return `${normalizedDomain}/assets/webshop/cms/${lastTwo}/${numericId}.webp`;
+      };
 
       const idMap: Record<string, string> = {};
-      // Sort categories: parents first (ParentCategoryID=0 or empty), then children
       const sortedCategories = [...categories].sort((a, b) => {
         const aIsRoot = !a.ParentCategoryID || a.ParentCategoryID === "0";
         const bIsRoot = !b.ParentCategoryID || b.ParentCategoryID === "0";
         if (aIsRoot && !bIsRoot) return -1;
         if (!aIsRoot && bIsRoot) return 1;
-        return 0;
+        return (toInt(a.SortOrder) || 0) - (toInt(b.SortOrder) || 0);
       });
 
       for (const c of sortedCategories) {
         try {
-          const slug = (c.CategoryReference || c.CategoryName || `cat-${Date.now()}`).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || `cat-${Date.now()}`;
+          const slug = (c.CategoryReference || c.CategoryName || `cat-${Date.now()}`)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "") || `cat-${Date.now()}`;
 
           const { data: existing } = await supabase
             .from("categories").select("id").eq("store_id", store_id).eq("slug", slug).maybeSingle();
 
-          // Resolve parent_id immediately if parent was already inserted
           let parentId: string | null = null;
           if (c.ParentCategoryID && c.ParentCategoryID !== "0") {
-            parentId = idMap[c.ParentCategoryID] || null;
+            parentId = idMap[String(c.ParentCategoryID)] || null;
           }
 
           const catData: Record<string, any> = {
             store_id,
             name: c.CategoryName || "Untitled",
             slug,
-            description: c.Description || c.ShortDescription || null,
+            description: c.Description1 || c.Description || c.ShortDescription1 || c.ShortDescription || null,
             sort_order: toInt(c.SortOrder) || 0,
             seo_title: c.SEOPageTitle || null,
-            seo_description: c.SEOMetaDescription || null,
-            image_url: c.CategoryImage || c.Thumbnail || null,
+            seo_description: c.SEOMetaDescription || c.ShortDescription1 || null,
+            image_url: buildDerivedCategoryImageUrl(c),
             secondary_image_url: c.SecondaryImage || null,
             parent_id: parentId,
           };
@@ -465,8 +488,8 @@ serve(async (req) => {
             catId = inserted.id;
           }
 
-          idMap[c.CategoryID] = catId;
-          await logEntity("category", c.CategoryID, catId);
+          idMap[String(c.CategoryID)] = catId;
+          await logEntity("category", String(c.CategoryID), catId);
           imported++;
         } catch (err: any) {
           failed++;
@@ -474,10 +497,14 @@ serve(async (req) => {
         }
       }
 
-      // Second pass: fix any children whose parent was inserted after them
       for (const c of sortedCategories) {
-        if (c.ParentCategoryID && c.ParentCategoryID !== "0" && idMap[c.CategoryID] && idMap[c.ParentCategoryID]) {
-          await safe(supabase.from("categories").update({ parent_id: idMap[c.ParentCategoryID] }).eq("id", idMap[c.CategoryID]));
+        const childId = idMap[String(c.CategoryID)];
+        const resolvedParentId = c.ParentCategoryID && c.ParentCategoryID !== "0"
+          ? idMap[String(c.ParentCategoryID)]
+          : null;
+
+        if (childId) {
+          await safe(supabase.from("categories").update({ parent_id: resolvedParentId || null }).eq("id", childId));
         }
       }
     }
