@@ -264,7 +264,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
   // The B@SE engine already resolved [%ntheme_asset%] to storage URLs,
   // so we just need to move those tags into the document head.
   useEffect(() => {
-    const ssrCssLinks = useSSR && ssrData?.css_link_tags ? ssrData.css_link_tags : "";
+    const ssrCssLinks = ssrData?.css_link_tags ? ssrData.css_link_tags : "";
     const allHeadHtml = (headContent || "") + (renderedHeader || "") + ssrCssLinks;
     if (!allHeadHtml) return;
 
