@@ -188,7 +188,7 @@ const App = () => (
           <WishlistProvider>
           <CompareProvider>
             <MigrationProgressWidget />
-            <RouteAwareErrorBoundary />
+            <AppRoutes />
               {isSubdomainMode ? (
                 <>
                   {/* Subdomain mode: root serves the storefront */}
