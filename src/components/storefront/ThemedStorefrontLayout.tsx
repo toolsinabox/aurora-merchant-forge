@@ -334,24 +334,7 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
 
   // No platform-injected fallback CSS — only the uploaded theme's own CSS is used
 
-  // Inject Font Awesome + Bootstrap CSS (required by most Maropost themes)
-  useEffect(() => {
-    const cdnLinks = [
-      { href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css", attr: "data-theme-fa" },
-      { href: "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css", attr: "data-theme-bs" },
-    ];
-    const addedLinks: HTMLLinkElement[] = [];
-    for (const { href, attr } of cdnLinks) {
-      if (document.querySelector(`link[${attr}]`)) continue;
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      link.setAttribute(attr, "true");
-      document.head.appendChild(link);
-      addedLinks.push(link);
-    }
-    return () => { addedLinks.forEach(l => l.remove()); };
-  }, []);
+  // No CDN injection — theme's own CSS/JS files handle Bootstrap, Font Awesome, etc.
 
   // Inject CSS links from the theme's <head> content AND from theme.cssFiles
   useEffect(() => {
