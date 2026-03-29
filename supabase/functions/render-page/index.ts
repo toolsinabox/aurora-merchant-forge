@@ -735,8 +735,12 @@ function resolveField(field: string, ctx: Record<string, any>): any {
 
 // ── Normalize syntax ──
 function normalizeTemplateSyntax(t: string): string {
-  t = t.replace(/\[%END\s+(\w+)%\]/gi, "[%/$1%]");
-  t = t.replace(/\[%end\s+(\w+)%\]/gi, "[%/$1%]");
+  // [%END keyword%] → [%/keyword%]
+  t = t.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/gi, "[%/$1%]");
+  // [%/ keyword%] or [% / keyword %] → [%/keyword%]
+  t = t.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  // [%/keyword%%] → [%/keyword%]
+  t = t.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
   return t;
 }
 
