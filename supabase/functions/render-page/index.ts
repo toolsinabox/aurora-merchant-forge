@@ -1290,10 +1290,12 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
       const bp = ctx.basePath || "";
       
       let html = header;
+      bodyTpl = normalizeTemplateSyntax(bodyTpl);
       items.slice(0, limit).forEach((p: any, idx: number) => {
         const item = buildProductItem(p, idx, bp);
         const itemCtx = { ...ctx, product: p, ...item };
         let row = bodyTpl;
+        row = processFormatBlocks(row, itemCtx);
         row = processItemAssetUrls(row, ctx, item);
         row = processConditionals(row, itemCtx);
         row = processValueTags(row, itemCtx);
@@ -1326,10 +1328,12 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "10");
 
     let html = header;
+    bodyTpl = normalizeTemplateSyntax(bodyTpl);
     ads.slice(0, limit).forEach((ad: any, idx: number) => {
       const item = buildAdvertItem(ad, idx);
       const itemCtx = { ...ctx, ...item };
       let row = bodyTpl;
+      row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
