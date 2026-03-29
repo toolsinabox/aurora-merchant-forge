@@ -1237,12 +1237,14 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "24");
 
     let html = header;
+    bodyTpl = normalizeTemplateSyntax(bodyTpl);
     items.slice(0, limit).forEach((p: any, idx: number) => {
       const item = (thumbType === "category" || thumbType === "categories")
         ? buildCategoryItem(p, idx, bp)
         : buildProductItem(p, idx, bp);
       const itemCtx = { ...ctx, product: p, ...item };
       let row = bodyTpl;
+      row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
