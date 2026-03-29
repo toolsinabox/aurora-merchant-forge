@@ -1354,10 +1354,12 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const bp = ctx.basePath || "";
     const shuffled = [...items].sort(() => Math.random() - 0.5).slice(0, limit);
     let html = header;
+    const normalizedBodyTpl = normalizeTemplateSyntax(bodyTpl);
     shuffled.forEach((p: any, idx: number) => {
       const item = buildProductItem(p, idx, bp);
       const itemCtx = { ...ctx, product: p, ...item };
-      let row = bodyTpl;
+      let row = normalizedBodyTpl;
+      row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
