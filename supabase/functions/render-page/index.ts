@@ -735,8 +735,12 @@ function resolveField(field: string, ctx: Record<string, any>): any {
 
 // ── Normalize syntax ──
 function normalizeTemplateSyntax(t: string): string {
-  t = t.replace(/\[%END\s+(\w+)%\]/gi, "[%/$1%]");
-  t = t.replace(/\[%end\s+(\w+)%\]/gi, "[%/$1%]");
+  // [%END keyword%] → [%/keyword%]
+  t = t.replace(/\[%\s*END\s+([A-Za-z_]+)\s*%\]/gi, "[%/$1%]");
+  // [%/ keyword%] or [% / keyword %] → [%/keyword%]
+  t = t.replace(/\[%\s*\/\s*([A-Za-z_]+)\s*%\]/g, "[%/$1%]");
+  // [%/keyword%%] → [%/keyword%]
+  t = t.replace(/\[%\/([A-Za-z_]+)%%\]/g, "[%/$1%]");
   return t;
 }
 
@@ -1233,12 +1237,14 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "24");
 
     let html = header;
+    bodyTpl = normalizeTemplateSyntax(bodyTpl);
     items.slice(0, limit).forEach((p: any, idx: number) => {
       const item = (thumbType === "category" || thumbType === "categories")
         ? buildCategoryItem(p, idx, bp)
         : buildProductItem(p, idx, bp);
       const itemCtx = { ...ctx, product: p, ...item };
       let row = bodyTpl;
+      row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
@@ -1284,10 +1290,12 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
       const bp = ctx.basePath || "";
       
       let html = header;
+      bodyTpl = normalizeTemplateSyntax(bodyTpl);
       items.slice(0, limit).forEach((p: any, idx: number) => {
         const item = buildProductItem(p, idx, bp);
         const itemCtx = { ...ctx, product: p, ...item };
         let row = bodyTpl;
+        row = processFormatBlocks(row, itemCtx);
         row = processItemAssetUrls(row, ctx, item);
         row = processConditionals(row, itemCtx);
         row = processValueTags(row, itemCtx);
@@ -1320,10 +1328,12 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "10");
 
     let html = header;
+    bodyTpl = normalizeTemplateSyntax(bodyTpl);
     ads.slice(0, limit).forEach((ad: any, idx: number) => {
       const item = buildAdvertItem(ad, idx);
       const itemCtx = { ...ctx, ...item };
       let row = bodyTpl;
+      row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
@@ -1344,10 +1354,12 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const bp = ctx.basePath || "";
     const shuffled = [...items].sort(() => Math.random() - 0.5).slice(0, limit);
     let html = header;
+    const normalizedBodyTpl = normalizeTemplateSyntax(bodyTpl);
     shuffled.forEach((p: any, idx: number) => {
       const item = buildProductItem(p, idx, bp);
       const itemCtx = { ...ctx, product: p, ...item };
-      let row = bodyTpl;
+      let row = normalizedBodyTpl;
+      row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
@@ -1363,8 +1375,8 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     if (cats.length === 0) return "";
 
     const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
-    const level1 = content.match(/\[%param\s+\*?level_1%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
-    const level2 = content.match(/\[%param\s+\*?level_2%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const level1 = normalizeTemplateSyntax(content.match(/\[%param\s+\*?level_1%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "");
+    const level2 = normalizeTemplateSyntax(content.match(/\[%param\s+\*?level_2%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "");
     const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const bp = ctx.basePath || "";
 
@@ -1618,7 +1630,8 @@ function renderTemplate(template: string, ctx: Record<string, any>): string {
 function cleanupUnresolved(t: string): string {
   let r = t;
   r = r.replace(/\[%[^\]]+\/%\]/g, "");
-  r = r.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|config:[^\]]*)[^\]]*%\]/gi, "");
+  r = r.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|show_content|config:[^\]]*)[^\]]*%\]/gi, "");
+  r = r.replace(/\[%show_content[^\]]*%\][\s\S]*?\[%\/show_content%\]/gi, "");
   r = r.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   r = r.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
   r = r.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
