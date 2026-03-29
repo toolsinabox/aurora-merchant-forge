@@ -1630,7 +1630,8 @@ function renderTemplate(template: string, ctx: Record<string, any>): string {
 function cleanupUnresolved(t: string): string {
   let r = t;
   r = r.replace(/\[%[^\]]+\/%\]/g, "");
-  r = r.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|config:[^\]]*)[^\]]*%\]/gi, "");
+  r = r.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|show_content|config:[^\]]*)[^\]]*%\]/gi, "");
+  r = r.replace(/\[%show_content[^\]]*%\][\s\S]*?\[%\/show_content%\]/gi, "");
   r = r.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   r = r.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
   r = r.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
