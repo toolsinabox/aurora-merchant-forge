@@ -1375,8 +1375,8 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     if (cats.length === 0) return "";
 
     const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
-    const level1 = content.match(/\[%param\s+\*?level_1%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
-    const level2 = content.match(/\[%param\s+\*?level_2%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const level1 = normalizeTemplateSyntax(content.match(/\[%param\s+\*?level_1%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "");
+    const level2 = normalizeTemplateSyntax(content.match(/\[%param\s+\*?level_2%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "");
     const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const bp = ctx.basePath || "";
 
