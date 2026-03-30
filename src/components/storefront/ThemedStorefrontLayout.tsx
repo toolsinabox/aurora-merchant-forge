@@ -86,8 +86,8 @@ export function ThemedStorefrontLayout({ children, storeName, extraContext }: Th
     enabled: !!storeId && storeResolved,
   });
 
-  // Only block on store + theme resolution — NOT on SSR (it loads in background)
-  if (!storeResolved || (!theme && isLoading)) {
+  // Block on store + theme + SSR resolution so the page appears complete in one shot
+  if (!storeResolved || (!theme && isLoading) || ssrLoading) {
     return <div className="min-h-screen" />;
   }
 
