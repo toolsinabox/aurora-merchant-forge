@@ -772,7 +772,8 @@ function stripComments(t: string): string {
 // ── Process load_template ──
 function processLoadTemplate(template: string, ctx: Record<string, any>, depth = 0): string {
   if (depth > 10) return template;
-  return template.replace(/\[%load_template\s+(?:file:\s*)?(['"])([^'"]+)\1\s*\/?%\]/gi, (_, _q: string, filePath: string) => {
+  // Handle both [%load_template%] and [%load_ajax_template%]
+  return template.replace(/\[%load_(?:ajax_)?template\s+(?:file:\s*)?(['"])([^'"]+)\1[^%]*\/?%\]/gi, (_, _q: string, filePath: string) => {
     const files = ctx.themeFiles || {};
     const includes = ctx.includes || {};
     const clean = filePath.trim().replace(/^\/+/, "");
@@ -794,6 +795,35 @@ function processLoadTemplate(template: string, ctx: Record<string, any>, depth =
       }
     }
     return `<!-- load_template "${clean}" not found -->`;
+  });
+}
+
+// Handle [%load_ajax_template .../%] self-closing with attributes
+function processLoadAjaxTemplate(template: string, ctx: Record<string, any>): string {
+  return template.replace(/\[%load_ajax_template\s+([^\]]*?)\/?%\]/gi, (_, attrs: string) => {
+    const templateName = attrs.match(/template:'([^']+)'/i)?.[1];
+    const type = attrs.match(/type:'([^']+)'/i)?.[1] || "item";
+    if (!templateName) return `<!-- load_ajax_template: no template name -->`;
+    
+    const files = ctx.themeFiles || {};
+    // Try various paths
+    const paths = [
+      `products/includes/${templateName}.template.html`,
+      `templates/products/includes/${templateName}.template.html`,
+      `${templateName}.template.html`,
+      `includes/${templateName}.template.html`,
+    ];
+    for (const p of paths) {
+      if (files[p]) return files[p];
+    }
+    // Fuzzy match
+    const lower = templateName.toLowerCase();
+    for (const key of Object.keys(files)) {
+      if (key.toLowerCase().includes(lower) && key.toLowerCase().includes("template")) {
+        return files[key];
+      }
+    }
+    return `<!-- load_ajax_template "${templateName}" not found -->`;
   });
 }
 
