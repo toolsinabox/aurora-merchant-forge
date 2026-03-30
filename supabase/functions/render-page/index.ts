@@ -1569,6 +1569,7 @@ function buildProductItem(p: any, idx: number, bp: string): Record<string, any> 
   const imageUrl = resolveStorageUrl(p.images?.[0]) || "/placeholder.svg";
   const save = p.compare_at_price && p.price ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
   return {
+    ...p,
     ad_id: p.id, inventory_id: p.id, product_id: p.id,
     SKU: p.sku || "", sku: p.sku || "",
     name: p.title || "", model: p.title || "", headline: p.title || "",
@@ -1591,6 +1592,7 @@ function buildProductItem(p: any, idx: number, bp: string): Record<string, any> 
 
 function buildAdvertItem(ad: any, idx: number): Record<string, any> {
   return {
+    ...ad,
     ad_id: ad.id, headline: ad.title || ad.name || "",
     name: ad.name || ad.title || "",
     url: ad.link_url || "#",
@@ -1629,13 +1631,18 @@ function renderTemplate(template: string, ctx: Record<string, any>): string {
 
 function cleanupUnresolved(t: string): string {
   let r = t;
+  // Remove self-closing tags
   r = r.replace(/\[%[^\]]+\/%\]/g, "");
+  // Remove known system/decorative tags only
   r = r.replace(/\[%\/?(?:set|while|cache|NETO_JS|cdn_asset|tracking_code|site_value|SITE_VALUE|content_zone|parse|escape|ajax_loader|ITEM_KITTING|IN_WISHLIST|url_encode|DATA|search|login|form|foreach|each|switch|case|default|rndm|now|today|year|show_content|config:[^\]]*)[^\]]*%\]/gi, "");
   r = r.replace(/\[%show_content[^\]]*%\][\s\S]*?\[%\/show_content%\]/gi, "");
   r = r.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   r = r.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
-  r = r.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
-  r = r.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
+  // Remove [%param%] blocks
   r = r.replace(/\[%param\s+[^\]]*%\]([\s\S]*?)\[%\/param%\]/gi, "");
+  // DO NOT strip remaining [@...@] value tags — they should resolve or show empty
+  // DO NOT strip remaining [%if%] tags — they should have been processed
+  // Replace unresolved value tags with empty string (resolved but missing data = blank)
+  r = r.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
   return r;
 }
