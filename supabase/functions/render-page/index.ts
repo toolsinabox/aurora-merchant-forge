@@ -1362,7 +1362,14 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     }
     
     // Regular advert rendering
-    const ads = ctx.adverts || [];
+    let ads = ctx.adverts || [];
+    
+    // Filter by ad_group if specified
+    const adGroup = attrs.match(/ad_group:'([^']*)'/i)?.[1];
+    if (adGroup !== undefined && adGroup !== "") {
+      ads = ads.filter((a: any) => (a.placement === adGroup || a.ad_group === adGroup));
+    }
+    
     if (ads.length === 0) return content.match(/\[%param\s+\*?ifempty%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
 
     const templateName = attrs.match(/template:'([^']*)'/i)?.[1];
@@ -1382,20 +1389,26 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "10");
+    const filteredAds = ads.slice(0, limit);
+    const totalCount = filteredAds.length;
 
-    let html = header;
+    // Set total_showing in header/footer for carousel arrow visibility
+    const adListCtx = { ...ctx, total_showing: String(totalCount) };
+    let html = processConditionals(processValueTags(header, adListCtx), adListCtx);
     bodyTpl = normalizeTemplateSyntax(bodyTpl);
-    ads.slice(0, limit).forEach((ad: any, idx: number) => {
-      const item = buildAdvertItem(ad, idx);
-      const itemCtx = { ...ctx, ...item };
+    filteredAds.forEach((ad: any, idx: number) => {
+      const item = buildAdvertItem(ad, idx, totalCount);
+      const itemCtx = { ...adListCtx, ...item, total_showing: String(totalCount) };
       let row = bodyTpl;
       row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
+      row = processSiteValueBlocks(row, itemCtx);
+      row = processDataBlocks(row, itemCtx);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
       html += row;
     });
-    html += footer;
+    html += processConditionals(processValueTags(footer, adListCtx), adListCtx);
     return html;
   });
 
