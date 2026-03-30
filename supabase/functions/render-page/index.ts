@@ -1619,6 +1619,9 @@ function buildCategoryItem(cat: any, idx: number, bp: string): Record<string, an
 function buildProductItem(p: any, idx: number, bp: string): Record<string, any> {
   const imageUrl = resolveStorageUrl(p.images?.[0]) || "/placeholder.svg";
   const save = p.compare_at_price && p.price ? Math.round((1 - Number(p.price) / Number(p.compare_at_price)) * 100) : 0;
+  const isInPromo = (p.promo_price || (p.compare_at_price && p.price && Number(p.compare_at_price) > Number(p.price))) ? 1 : 0;
+  const promoPrice = p.promo_price || (isInPromo ? p.price : "");
+  const retail = p.compare_at_price || p.price || 0;
   return {
     ...p,
     ad_id: p.id, inventory_id: p.id, product_id: p.id,
@@ -1628,20 +1631,27 @@ function buildProductItem(p: any, idx: number, bp: string): Record<string, any> 
     image_url: imageUrl, thumb: imageUrl, thumb_url: imageUrl,
     store_price: p.price || 0, price: p.price || 0,
     price_inc: Number(p.price || 0).toFixed(2),
-    rrp: p.compare_at_price || p.price || 0,
+    rrp: retail, retail: retail, retail_price: retail,
+    rrp_inc: retail,
     save, save_percent: save, savings_percent: save,
+    inpromo: isInPromo,
+    promo_price: promoPrice,
     store_quantity: p.stock_on_hand ?? 10,
     has_child: p.has_variants ? 1 : 0,
+    has_variation: p.has_variants ? 1 : 0,
+    has_components: p.is_kit ? 1 : 0,
     reviews: p.review_count || 0,
+    rating: p.average_rating || 0,
     brand: p.brand || "", short_description: p.short_description || "",
     description: p.description || "",
+    current_sku: p.sku || "",
     count: idx, index: idx,
     rndm: Math.random().toString(36).substring(2, 8),
     images: p.images || [],
   };
 }
 
-function buildAdvertItem(ad: any, idx: number): Record<string, any> {
+function buildAdvertItem(ad: any, idx: number, totalCount?: number): Record<string, any> {
   return {
     ...ad,
     ad_id: ad.id, headline: ad.title || ad.name || "",
@@ -1650,13 +1660,131 @@ function buildAdvertItem(ad: any, idx: number): Record<string, any> {
     image: resolveStorageUrl(ad.image_url) || "",
     image_url: resolveStorageUrl(ad.image_url) || "",
     image_url_mobile: resolveStorageUrl(ad.image_url_mobile) || resolveStorageUrl(ad.image_url) || "",
+    img_width: ad.img_width || "2880", img_height: ad.img_height || "810",
     title: ad.title || "", subtitle: ad.subtitle || "",
     button_text: ad.button_text || "",
     linktext: ad.button_text || "Learn More",
     description: ad.subtitle || "",
-    count: idx, index: idx, total_showing: String(idx + 1),
+    count: idx, index: idx,
+    total_showing: String(totalCount || idx + 1),
     rndm: Math.random().toString(36).substring(2, 8),
   };
+}
+
+// ── DATA blocks: [%DATA id:'field' if:'op' value:'val'%]...[%/DATA%] ──
+function processDataBlocks(t: string, ctx: Record<string, any>): string {
+  return t.replace(/\[%DATA\s+([^\]]*?)%\]([\s\S]*?)\[%(?:\/DATA|END\s+DATA)%\]/gi, (_, attrs: string, body: string) => {
+    const id = attrs.match(/id:'([^']+)'/i)?.[1] || "";
+    const op = attrs.match(/if:'([^']+)'/i)?.[1] || "!=";
+    const val = attrs.match(/value:'([^']*)'/i)?.[1] || "";
+    
+    const fieldVal = String(resolveField(id, ctx) ?? ctx[id] ?? "");
+    let condMet = false;
+    switch (op) {
+      case "==": case "eq": condMet = fieldVal === val; break;
+      case "!=": case "ne": condMet = fieldVal !== val; break;
+      case ">": condMet = Number(fieldVal) > Number(val); break;
+      case "<": condMet = Number(fieldVal) < Number(val); break;
+      case ">=": condMet = Number(fieldVal) >= Number(val); break;
+      case "<=": condMet = Number(fieldVal) <= Number(val); break;
+      default: condMet = fieldVal !== val;
+    }
+    return condMet ? body : "";
+  });
+}
+
+// ── calc: [%calc expression /%] ──
+function processCalcTags(t: string, ctx: Record<string, any>): string {
+  return t.replace(/\[%calc\s+([\s\S]*?)\/?%\]/gi, (_, expr: string) => {
+    // Resolve any [@...@] tags in the expression
+    let resolved = expr.replace(/\[@([\w:.]+)@\]/gi, (__, field: string) => {
+      const v = resolveField(field, ctx);
+      return v != null ? String(v) : "0";
+    });
+    // Simple math evaluation (safe: only numbers and operators)
+    resolved = resolved.trim();
+    try {
+      // Only allow safe math chars
+      if (/^[\d\s+\-*/().]+$/.test(resolved)) {
+        return String(Math.round(eval(resolved) * 100) / 100);
+      }
+    } catch {}
+    return resolved;
+  });
+}
+
+// ── SITE_VALUE block form: accumulates content across loop iterations ──
+function processSiteValueBlocks(t: string, ctx: Record<string, any>): string {
+  return t.replace(/\[%SITE_VALUE\s+([^\]]*?)%\]([\s\S]*?)\[%\/SITE_VALUE%\]/gi, (_, attrs: string, body: string) => {
+    const id = attrs.match(/id:'([^']+)'/i)?.[1] || "";
+    if (!id) return "";
+    // Accumulate the body content into the site_value variable
+    if (!(ctx as any).__variables) (ctx as any).__variables = {};
+    const key = `site_value_${id}`;
+    const existing = (ctx as any).__variables[key] || "";
+    // Process value tags in body
+    const processed = processValueTags(body, ctx);
+    (ctx as any).__variables[key] = existing + processed;
+    return "";
+  });
+}
+
+// ── multilevelpricing: [%multilevelpricing id:'SKU'%]...[%/multilevelpricing%] ──
+function processMultilevelPricing(t: string, ctx: Record<string, any>): string {
+  return t.replace(/\[%multilevelpricing\s+([^\]]*?)%\]([\s\S]*?)\[%\/multilevelpricing%\]/gi, (_, _attrs: string, content: string) => {
+    const tiers = ctx.pricing_tiers || [];
+    if (tiers.length === 0) return "";
+    
+    const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const bodyTpl = content.match(/\[%param\s+\*?body%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    
+    let html = header;
+    for (const tier of tiers) {
+      const tierCtx = { ...ctx, minqty: tier.min_qty || 0, maxqty: tier.max_qty || 0, price: tier.price || 0 };
+      let row = normalizeTemplateSyntax(bodyTpl);
+      row = processFormatBlocks(row, tierCtx);
+      row = processConditionals(row, tierCtx);
+      row = processValueTags(row, tierCtx);
+      html += row;
+    }
+    html += footer;
+    return html;
+  });
+}
+
+// ── extra_options: [%extra_options id:'SKU'%]...[%/extra_options%] ──
+function processExtraOptions(t: string, ctx: Record<string, any>): string {
+  return t.replace(/\[%extra_options\s+([^\]]*?)%\]([\s\S]*?)\[%\/extra_options%\]/gi, (_, _attrs: string, content: string) => {
+    const specifics = ctx.specifics || [];
+    if (specifics.length === 0) return "";
+    
+    const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const selectTpl = content.match(/\[%param\s+\*?select_option%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const choicesTpl = content.match(/\[%param\s+\*?choices%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
+    
+    let html = header;
+    specifics.forEach((spec: any, idx: number) => {
+      const options = spec.options || [];
+      let choicesHtml = "";
+      for (const opt of options) {
+        const optCtx = { ...ctx, option_id: opt.id || "", text: opt.label || opt.value || "", price: opt.price_modifier || 0 };
+        let choiceRow = normalizeTemplateSyntax(choicesTpl);
+        choiceRow = processDataBlocks(choiceRow, optCtx);
+        choiceRow = processFormatBlocks(choiceRow, optCtx);
+        choiceRow = processValueTags(choiceRow, optCtx);
+        choicesHtml += choiceRow;
+      }
+      const specCtx = { ...ctx, name: spec.name || "", count: idx, choices: choicesHtml, total_options: specifics.length };
+      let row = normalizeTemplateSyntax(selectTpl);
+      row = processConditionals(row, specCtx);
+      row = processValueTags(row, specCtx);
+      html += row;
+    });
+    html += footer.replace(/\[@total_options@\]/gi, String(specifics.length));
+    return html;
+  });
 }
 
 // ── Main render pipeline ──
@@ -1666,14 +1794,19 @@ function renderTemplate(template: string, ctx: Record<string, any>): string {
   r = normalizeTemplateSyntax(r);
   r = processCacheBlocks(r);
   r = processLoadTemplate(r, ctx);
+  r = processLoadAjaxTemplate(r, ctx);
   r = processLegacyIncludes(r, ctx);
   r = processThemeAssets(r, ctx);
   r = processUrlTags(r, ctx);
   r = processFormatBlocks(r, ctx);
   r = processNoHtml(r);
   r = processSetVars(r, ctx);
+  r = processCalcTags(r, ctx);
   r = processInlineTags(r, ctx);
   r = processSystemTags(r, ctx);
+  r = processMultilevelPricing(r, ctx);
+  r = processExtraOptions(r, ctx);
+  r = processDataBlocks(r, ctx);
   r = processConditionals(r, ctx);
   r = processValueTags(r, ctx);
   r = cleanupUnresolved(r);
@@ -1691,9 +1824,9 @@ function cleanupUnresolved(t: string): string {
   r = r.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
   // Remove [%param%] blocks
   r = r.replace(/\[%param\s+[^\]]*%\]([\s\S]*?)\[%\/param%\]/gi, "");
-  // DO NOT strip remaining [@...@] value tags — they should resolve or show empty
-  // DO NOT strip remaining [%if%] tags — they should have been processed
-  // Replace unresolved value tags with empty string (resolved but missing data = blank)
+  // Remove remaining [%if%] tags that couldn't be processed (deeply nested edge cases)
+  r = r.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
+  // Replace unresolved value tags with empty string
   r = r.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
   return r;
 }
