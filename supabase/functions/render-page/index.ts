@@ -1286,22 +1286,26 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
     const header = content.match(/\[%param\s+\*?header%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
     const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "24");
+    const totalCount = Math.min(items.length, limit);
+    const thumbListCtx = { ...ctx, total_showing: String(totalCount) };
 
-    let html = header;
+    let html = processConditionals(processValueTags(header, thumbListCtx), thumbListCtx);
     bodyTpl = normalizeTemplateSyntax(bodyTpl);
     items.slice(0, limit).forEach((p: any, idx: number) => {
       const item = (thumbType === "category" || thumbType === "categories")
         ? buildCategoryItem(p, idx, bp)
         : buildProductItem(p, idx, bp);
-      const itemCtx = { ...ctx, product: p, ...item };
+      const itemCtx = { ...thumbListCtx, product: p, ...item, total_showing: String(totalCount) };
       let row = bodyTpl;
       row = processFormatBlocks(row, itemCtx);
       row = processItemAssetUrls(row, ctx, item);
+      row = processSiteValueBlocks(row, itemCtx);
+      row = processDataBlocks(row, itemCtx);
       row = processConditionals(row, itemCtx);
       row = processValueTags(row, itemCtx);
       html += row;
     });
-    html += footer;
+    html += processConditionals(processValueTags(footer, thumbListCtx), thumbListCtx);
     return html;
   });
 
