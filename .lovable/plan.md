@@ -1,51 +1,88 @@
 
 
-## Problem Diagnosis
+# Performance Audit: Storefront Page Load
 
-The B@SE template engine has a `cleanupUnresolved` function (in both the edge function `render-page/index.ts` and the client-side `base-template-engine.ts`) that **silently strips all unresolved tags** — both `[@value@]` data tags and `[%if%]` conditional blocks. This means:
+## Problem
+The storefront has a **5-step sequential waterfall** before anything renders, plus heavy redundant work on every page load.
 
-1. When a tag like `[@name@]` or `[@price@]` can't be resolved from the context, it's replaced with an empty string — the user sees nothing
-2. When an `[%if [@some_field@]%]` conditional can't resolve, the entire block is stripped
-3. This hides real bugs: missing data mappings, missing context fields, unprocessed loops
+## Root Cause Analysis
 
-The result: sections of the page that depend on data tags simply vanish. No data, no markup, nothing.
+### Bottleneck 1: Sequential Request Waterfall (Client-Side)
+The current loading chain is entirely sequential — each step waits for the previous:
 
-## Root Causes
+```text
+1. resolveStoreBySlug()        → DB query (stores table)
+   ↓ waits
+2. categories query             → DB query (categories table)
+   ↓ waits (storeResolved=true)
+3. useActiveTheme()             → 2 DB queries (theme_packages + theme_files with ALL content)
+   ↓ waits (theme loaded)
+4. useSSRPage()                 → Edge function call (render-page)
+   ↓ waits (ssrLoading=false)
+5. Render HTML + inject CSS/JS
+```
 
-1. **`cleanupUnresolved` / `cleanupUnresolvedTags`** — Both engines have a final pass that regex-deletes all remaining `[@...@]` and `[%if%]` tags
-2. **`processValueTags`** — Returns empty string `""` for any field that resolves to `null`/`undefined` instead of keeping the tag for debugging or trying harder to resolve it
-3. **Missing item context in loops** — Inside `thumb_list`, `advert`, `content_menu`, and `random_products` loops, the item context may not include all the fields the theme expects (e.g., `[@description@]`, `[@subtitle@]`, `[@short_description@]`, etc.)
-4. **`ThemedShell` ignores `{children}`** — The layout only renders `ssrBodyHtml` from the edge function; any client-side rendered content passed as children is discarded
+That's **5 sequential network round-trips** before a single pixel appears. Each takes 200-500ms = 1-2.5 seconds minimum just in network latency.
 
-## Plan
+### Bottleneck 2: Redundant Theme File Loading
+`useActiveTheme` fetches ALL theme file **contents** (HTML, CSS, JS) from the database — could be hundreds of KB. But the edge function `render-page` ALSO loads all theme files independently. The client loads theme files only to:
+- Build CSS `<link>` tags (but the edge function already returns `css_link_tags`)
+- Inject JS files (could use the `js_files` array from SSR response)
+- Build `themeAssetBaseUrl` (also returned by SSR)
 
-### Step 1: Fix `cleanupUnresolved` in render-page edge function
-- **Remove the blanket `[@...@]` stripping regex** (line 1637)
-- **Remove the blanket `[%if%]` stripping regex** (line 1638)
-- Keep only targeted cleanup for truly decorative/system tags (`[%cache%]`, `[%NETO_JS%]`, `[%tracking_code%]`, etc.)
-- Unresolved data tags should pass through to the HTML so they're either visible for debugging or at minimum don't destroy surrounding markup
+**The entire `useActiveTheme` hook is redundant when SSR is enabled.**
 
-### Step 2: Fix `cleanupUnresolvedTags` in client-side base-template-engine.ts
-- Same changes: remove the blanket `[@...@]` strip (line 2456) and `[%if%]` strip (line 2458)
-- Keep targeted system tag cleanup only
+### Bottleneck 3: CSS/JS Upload Check on Every Page Load
+Lines 192-216: On every page load, the client does a `HEAD` request for EACH CSS/JS file to check if it exists in storage, then uploads missing ones. This fires on every navigation and adds N network requests where N = number of theme assets.
 
-### Step 3: Fix `processValueTags` in both engines
-- When a field resolves to `null`/`undefined`, return empty string (current behavior is acceptable for resolved-but-empty fields)
-- The key fix is that cleanup shouldn't strip tags that processValueTags already handled — the real problem is cleanup stripping tags that were INSIDE blocks that never got processed (like nested conditionals or loops that weren't entered)
+### Bottleneck 4: Edge Function Does Too Much Sequentially
+Inside `render-page`, the `loadPageData` function runs products/content queries **sequentially** after the parallel batch. The `renderTemplate` pipeline processes header, body, and footer sequentially (3 calls to `renderTemplate`).
 
-### Step 4: Ensure item loops pass complete context
-- In `thumb_list`, `advert`, `content_menu`, `random_products` — make sure the item context includes ALL fields from the database record, not just a curated subset
-- Update `buildProductItem`, `buildCategoryItem`, `buildAdvertItem` to spread the full raw record so any `[@field@]` in the theme resolves
+### Bottleneck 5: Categories Loaded Twice
+Categories are loaded by `ThemedStorefrontLayout` (line 55-63) AND by the edge function (line 184). The client-side copy is passed to `ThemedShell` but never used since SSR handles everything.
 
-### Step 5: Ensure `ThemedShell` renders SSR body OR children
-- When `ssrBodyHtml` is available, render it (current behavior)
-- When `ssrBodyHtml` is empty but `children` exists, render children as the body content
-- This ensures the client-side rendered home page content actually displays
+### Bottleneck 6: Content Zones Loaded Twice
+`useContentZones` hook in `ThemedShell` (line 136) loads content zones, but the edge function already loads and processes them.
 
-### Step 6: Redeploy render-page edge function
+---
+
+## Fix Plan
+
+### Step 1: Eliminate the client-side waterfall — single SSR call
+Remove `useActiveTheme`, `useContentZones`, and the categories fetch from `ThemedStorefrontLayout`. The edge function already loads all this data. The client only needs:
+1. `resolveStoreBySlug()` → get store ID
+2. `useSSRPage()` → get fully rendered HTML + CSS links + JS files
+
+This cuts the waterfall from 5 steps to 2.
+
+### Step 2: Return CSS/JS metadata from SSR (already done)
+The edge function already returns `css_link_tags`, `css_inline`, `js_files`, and `theme_asset_base_url`. Use these directly instead of fetching theme files separately.
+
+### Step 3: Remove the CSS/JS upload-check effect
+The asset upload to storage should happen once during theme import/save, NOT on every page load. Remove the `useEffect` that does HEAD requests and uploads on lines 192-216. If assets aren't in storage, they should be synced as a one-time migration task.
+
+### Step 4: Parallelize edge function internals
+Render header, body, and footer templates in parallel using `Promise.all`-style (though they're CPU-bound string ops, they can be interleaved). More importantly, ensure `loadPageData` runs fully in parallel with the first batch.
+
+### Step 5: Add response caching on the client
+Cache SSR responses in `useSSRPage` using `staleTime` so navigating back to a previously visited page is instant. Use `react-query` instead of raw `useState/useEffect`.
+
+### Step 6: Simplify ThemedStorefrontLayout
+Strip it down to:
+- Resolve store by slug
+- Call SSR edge function
+- Inject returned CSS links into `<head>`
+- Inject returned JS files into `<body>`
+- Render the returned HTML
 
 ### Files to modify
-- `supabase/functions/render-page/index.ts` — Fix cleanup, fix item builders
-- `src/lib/base-template-engine.ts` — Fix cleanup
-- `src/components/storefront/ThemedStorefrontLayout.tsx` — Render children when no SSR body
+- `src/components/storefront/ThemedStorefrontLayout.tsx` — Major refactor: remove `useActiveTheme`, `useContentZones`, categories fetch, asset upload effect
+- `src/hooks/use-ssr-page.ts` — Convert to react-query for caching + staleTime
+- `supabase/functions/render-page/index.ts` — Minor: ensure full parallelization of data loading
+- `src/hooks/use-active-theme.ts` — No changes needed (still used by admin theme editor)
+
+### Expected Result
+- **Before**: 5 sequential requests, ~3-6 seconds
+- **After**: 2 sequential requests (store lookup + SSR call), ~0.8-1.5 seconds
+- Plus client-side caching means repeat visits are near-instant
 
