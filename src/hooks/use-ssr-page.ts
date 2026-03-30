@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface SSRPageResult {
@@ -21,31 +21,21 @@ interface UseSSRPageOptions {
   basePath?: string;
   extraContext?: Record<string, any>;
   enabled?: boolean;
-  /** Maropost template override params: ?templatehead=name&templatebody=name&templatefoot=name */
   templateOverrides?: { templatehead?: string; templatebody?: string; templatefoot?: string };
 }
 
 /**
  * Fetches a fully server-side rendered page from the render-page edge function.
- * Mirrors Maropost's SSR architecture — B@SE processing happens on the server,
- * and the client receives pre-rendered HTML.
+ * Uses react-query for caching — repeat visits are instant.
  */
 export function useSSRPage({ storeId, pageType = "content", slug, basePath, extraContext, enabled = true, templateOverrides }: UseSSRPageOptions) {
-  const [data, setData] = useState<SSRPageResult | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchSSR = useCallback(async () => {
-    if (!storeId || !enabled) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { data: result, error: fnError } = await supabase.functions.invoke("render-page", {
+  const result = useQuery({
+    queryKey: ["ssr-page", storeId, pageType, slug, basePath],
+    enabled: !!storeId && enabled,
+    staleTime: 2 * 60 * 1000, // cached for 2 min
+    gcTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<SSRPageResult | null> => {
+      const { data, error } = await supabase.functions.invoke("render-page", {
         body: {
           store_id: storeId,
           page_type: pageType,
@@ -58,27 +48,21 @@ export function useSSRPage({ storeId, pageType = "content", slug, basePath, extr
         },
       });
 
-      if (fnError) {
-        console.warn("SSR fetch failed, will fall back to client-side:", fnError);
-        setError(fnError.message);
-        setData(null);
-      } else if (result && result.has_theme) {
-        setData(result as SSRPageResult);
-      } else {
-        setData(null);
+      if (error) {
+        console.warn("SSR fetch failed:", error);
+        return null;
       }
-    } catch (err: any) {
-      console.warn("SSR fetch error:", err);
-      setError(err.message);
-      setData(null);
-    } finally {
-      setLoading(false);
-    }
-  }, [storeId, pageType, slug, basePath, enabled]);
+      if (data && data.has_theme) {
+        return data as SSRPageResult;
+      }
+      return null;
+    },
+  });
 
-  useEffect(() => {
-    fetchSSR();
-  }, [fetchSSR]);
-
-  return { data, loading, error, refetch: fetchSSR };
+  return {
+    data: result.data ?? null,
+    loading: result.isLoading,
+    error: result.error?.message ?? null,
+    refetch: result.refetch,
+  };
 }
