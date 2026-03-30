@@ -104,7 +104,7 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // ── 1. Load store + active theme in parallel ──
+    // ── 1. Load store + active theme + theme files + page data in ONE parallel batch ──
     const [storeResult, themePackageResult] = await Promise.all([
       supabase.from("stores").select("*").eq("id", store_id).single(),
       supabase.from("theme_packages").select("id, name, is_active").eq("store_id", store_id).eq("is_active", true).single(),
@@ -118,12 +118,17 @@ Deno.serve(async (req) => {
       return jsonResponse({ html: "", has_theme: false });
     }
 
-    // ── 2. Load theme files ──
-    const { data: themeFiles } = await supabase
-      .from("theme_files")
-      .select("id, file_name, file_path, folder, content, file_type")
-      .eq("theme_id", themePackage.id);
+    // ── 2. Load theme files + ALL page data in parallel ──
+    const basePath = extra_context?.basePath || "";
+    const [themeFilesResult, categoriesResult, advertsResult, zonesResult, pageData] = await Promise.all([
+      supabase.from("theme_files").select("id, file_name, file_path, folder, content, file_type").eq("theme_id", themePackage.id),
+      supabase.from("categories").select("id, name, slug, parent_id, sort_order, image_url").eq("store_id", store_id).order("sort_order"),
+      supabase.from("adverts").select("*").eq("store_id", store_id).eq("is_active", true).order("sort_order"),
+      supabase.from("content_zones").select("zone_key, content").eq("store_id", store_id).eq("is_active", true),
+      loadPageData(supabase, store_id, page_type, slug),
+    ]);
 
+    const themeFiles = themeFilesResult.data;
     if (!themeFiles || themeFiles.length === 0) {
       return jsonResponse({ html: "", has_theme: false });
     }
