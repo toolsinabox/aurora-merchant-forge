@@ -472,7 +472,11 @@ function ThemedShell({ theme, store, storeName, children, extraContext, categori
         )}
 
         <main id="main-content" className="flex-1">
-          <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
+          {ssrBodyHtml ? (
+            <div dangerouslySetInnerHTML={{ __html: ssrBodyHtml }} />
+          ) : (
+            children
+          )}
         </main>
 
         {renderedFooter && (

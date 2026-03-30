@@ -2452,14 +2452,13 @@ function cleanupUnresolvedTags(template: string): string {
   result = result.replace(/\[%IN_WISHLIST[^\]]*%\][\s\S]*?\[%(?:\/\s*IN_WISHLIST|END\s+IN_WISHLIST)\s*%\]/gi, "");
   // Remove remaining block tags
   result = result.replace(/\[%ITEM_KITTING[^\]]*%\][\s\S]*?\[%\/ITEM_KITTING%\]/gi, "");
-  // Remove leftover [@...@] value tags
-  result = result.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
-  // Remove leftover [%if%]...[%/if%] that couldn't be resolved
-  result = result.replace(/\[%(?:if|elseif|else|\/if)[^\]]*%\]/gi, "");
   // Remove leftover [%param%] blocks
   result = result.replace(/\[%param\s+[^\]]*%\]([\s\S]*?)\[%\/param%\]/gi, "");
   // Remove leftover [%var:...%] tags
   result = result.replace(/\[%var:[^\]]*%\]/gi, "");
+  // Replace unresolved value tags with empty (data was missing, show blank not raw tag)
+  result = result.replace(/\[@[\w:.]+(?:\|\w+)?@\]/g, "");
+  // DO NOT strip [%if%] tags — they should have been processed by conditionals
   return result;
 }
 
