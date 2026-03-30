@@ -476,13 +476,20 @@ async function loadPageData(supabase: any, storeId: string, pageType: string, sl
       .order("created_at", { ascending: false })
       .limit(24);
 
-    // TODO: category filtering when page_type is "category" and slug is provided
     const { data } = await query;
     if (data) products = data;
   }
 
-  // Load content page
-  if (contentTypes.includes(pageType) && slug) {
+  // Load content page - also load for "home" to get [@page_content@]
+  if (pageType === "home") {
+    const { data } = await supabase
+      .from("content_pages")
+      .select("*")
+      .eq("store_id", storeId)
+      .eq("slug", "home")
+      .single();
+    if (data) contentPage = data;
+  } else if (contentTypes.includes(pageType) && slug) {
     const { data } = await supabase
       .from("content_pages")
       .select("*")
@@ -699,18 +706,32 @@ function resolveField(field: string, ctx: Record<string, any>): any {
     has_variants: () => (p?.variant_count || 0) > 0,
     variant_count: () => p?.variant_count || 0,
     has_child: () => (p?.has_variants || (p?.variant_count || 0) > 0) ? 1 : 0,
+    has_variation: () => (p?.has_variants || (p?.variant_count || 0) > 0) ? 1 : 0,
+    has_components: () => p?.is_kit ? 1 : 0,
     has_promo: () => { if (!p?.promo_price) return false; const now = new Date(); return (!p.promo_start || new Date(p.promo_start) <= now) && (!p.promo_end || new Date(p.promo_end) >= now); },
-    inpromo: () => { if (!p?.promo_price) return 0; const now = new Date(); return (!p.promo_start || new Date(p.promo_start) <= now) && (!p.promo_end || new Date(p.promo_end) >= now) ? 1 : 0; },
+    inpromo: () => {
+      // Check both promo_price AND compare_at_price > price for sale detection
+      if (p?.promo_price) { const now = new Date(); return (!p.promo_start || new Date(p.promo_start) <= now) && (!p.promo_end || new Date(p.promo_end) >= now) ? 1 : 0; }
+      if (p?.compare_at_price && p?.price && Number(p.compare_at_price) > Number(p.price)) return 1;
+      return 0;
+    },
+    promo_price: () => p?.promo_price || (p?.compare_at_price && p?.price && Number(p.compare_at_price) > Number(p.price) ? p.price : ""),
+    retail: () => p?.compare_at_price || p?.price || 0,
+    retail_price: () => p?.compare_at_price || p?.price || 0,
     reviews: () => p?.review_count || 0,
+    rating: () => p?.average_rating || 0,
     "data:rating": () => p?.average_rating || 0,
     "data:ratings-count": () => p?.review_count || 0,
     min_qty: () => p?.minimum_quantity || p?.min_qty || 0,
+    max_qty: () => p?.maximum_quantity || p?.max_qty || 0,
+    multiplier_qty: () => p?.multiplier_quantity || p?.multiplier_qty || 0,
     editable_bundle: () => p?.is_kit ? 1 : 0,
     preorder: () => p?.preorder ? 1 : 0,
+    current_sku: () => p?.sku || "",
     store_name: () => ctx.store?.name,
     store_currency: () => ctx.store?.currency,
     page_title: () => ctx.content?.title || ctx.store?.name || "",
-    page_content: () => ctx.content?.description || ctx.content?.content || "",
+    page_content: () => ctx.content?.content || ctx.content?.description || "",
     content_name: () => ctx.content?.name || ctx.content?.title || "",
     category_name: () => ctx.content?.name || ctx.content?.title || "",
     category_description: () => ctx.content?.description || "",
