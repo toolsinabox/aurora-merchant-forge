@@ -1339,20 +1339,25 @@ function processSystemTags(t: string, ctx: Record<string, any>): string {
       const footer = content.match(/\[%param\s+\*?footer%\]([\s\S]*?)\[%\/param%\]/i)?.[1] || "";
       const limit = parseInt(attrs.match(/limit:'(\d+)'/i)?.[1] || "12");
       const bp = ctx.basePath || "";
+      const totalCount = Math.min(items.length, limit);
       
-      let html = header;
+      // Set total_showing in header/footer context
+      const listCtx = { ...ctx, total_showing: String(totalCount) };
+      let html = processConditionals(processValueTags(header, listCtx), listCtx);
       bodyTpl = normalizeTemplateSyntax(bodyTpl);
       items.slice(0, limit).forEach((p: any, idx: number) => {
         const item = buildProductItem(p, idx, bp);
-        const itemCtx = { ...ctx, product: p, ...item };
+        const itemCtx = { ...listCtx, product: p, ...item, total_showing: String(totalCount) };
         let row = bodyTpl;
         row = processFormatBlocks(row, itemCtx);
         row = processItemAssetUrls(row, ctx, item);
+        row = processSiteValueBlocks(row, itemCtx);
+        row = processDataBlocks(row, itemCtx);
         row = processConditionals(row, itemCtx);
         row = processValueTags(row, itemCtx);
         html += row;
       });
-      html += footer;
+      html += processConditionals(processValueTags(footer, listCtx), listCtx);
       return html;
     }
     
