@@ -32,7 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
 });
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children, skipStoreBootstrap = false }: { children: ReactNode; skipStoreBootstrap?: boolean }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [storesLoading, setStoresLoading] = useState(false);
@@ -53,9 +53,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Load all stores the user has access to
   useEffect(() => {
     if (!session?.user) {
+      setCurrentStore(null);
+      setAvailableStores([]);
+      setStoresLoading(false);
+      return;
+    }
+
+    if (skipStoreBootstrap) {
       setCurrentStore(null);
       setAvailableStores([]);
       setStoresLoading(false);
@@ -67,40 +73,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const loadStores = async () => {
       setStoresLoading(true);
 
-      const savedStoreId = localStorage.getItem("currentStoreId");
-      const { data: storeIds } = await supabase.rpc("get_user_store_ids", { _user_id: session.user.id });
+      try {
+        const savedStoreId = localStorage.getItem("currentStoreId");
+        const { data: storeIds } = await supabase.rpc("get_user_store_ids", { _user_id: session.user.id });
 
-      const storesQuery = storeIds && storeIds.length > 0
-        ? supabase
-            .from("stores")
-            .select("id, name, slug, currency, timezone")
-            .in("id", storeIds)
-            .order("name")
-        : supabase
-            .from("stores")
-            .select("id, name, slug, currency, timezone")
-            .limit(10)
-            .order("name");
+        const storesQuery = storeIds && storeIds.length > 0
+          ? supabase
+              .from("stores")
+              .select("id, name, slug, currency, timezone")
+              .in("id", storeIds)
+              .order("name")
+          : supabase
+              .from("stores")
+              .select("id, name, slug, currency, timezone")
+              .limit(10)
+              .order("name");
 
-      const { data: stores } = await storesQuery;
+        const { data: stores } = await storesQuery;
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (stores && stores.length > 0) {
-        setAvailableStores(stores);
-        setCurrentStore((prev) => {
-          const persistedStore = savedStoreId ? stores.find((store) => store.id === savedStoreId) : null;
-          if (prev && stores.some((store) => store.id === prev.id)) {
-            return prev;
-          }
-          return persistedStore || stores[0];
-        });
-      } else {
-        setAvailableStores([]);
-        setCurrentStore(null);
+        if (stores && stores.length > 0) {
+          setAvailableStores(stores);
+          setCurrentStore((prev) => {
+            const persistedStore = savedStoreId ? stores.find((store) => store.id === savedStoreId) : null;
+            if (prev && stores.some((store) => store.id === prev.id)) {
+              return prev;
+            }
+            return persistedStore || stores[0];
+          });
+        } else {
+          setAvailableStores([]);
+          setCurrentStore(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setStoresLoading(false);
+        }
       }
-
-      setStoresLoading(false);
     };
 
     void loadStores();
@@ -108,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [session?.user?.id]);
+  }, [session?.user?.id, skipStoreBootstrap]);
 
   const switchStore = (storeId: string) => {
     const store = availableStores.find(s => s.id === storeId);
@@ -126,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-      <AuthContext.Provider value={{ session, user: session?.user ?? null, loading: loading || storesLoading, currentStore, setCurrentStore, availableStores, switchStore, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, loading: loading || (!skipStoreBootstrap && storesLoading), currentStore, setCurrentStore, availableStores, switchStore, signOut }}>
       {children}
     </AuthContext.Provider>
   );

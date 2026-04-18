@@ -169,28 +169,37 @@ const PlatformSettings = lazy(() => import("./pages/platform/PlatformSettings.ts
 const PlatformCustomers = lazy(() => import("./pages/platform/PlatformCustomers.tsx"));
 const PlatformAnalytics = lazy(() => import("./pages/platform/PlatformAnalytics.tsx"));
 
-// Suspense fallback
-// Suspense fallback — mimics the admin shell so the page doesn't flash white
-// while the route chunk is loading on a direct URL hit.
-const PageLoader = () => (
-  <div className="min-h-screen flex bg-background">
-    <div className="hidden md:block w-56 border-r bg-sidebar" />
-    <div className="flex-1 flex flex-col">
-      <div className="h-12 border-b bg-card" />
-      <div className="p-4 space-y-3">
-        <Skeleton className="h-6 w-48" />
-        <Skeleton className="h-4 w-64" />
-        <div className="pt-4 space-y-2">
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
-          <Skeleton className="h-9 w-full" />
+// Route-aware suspense fallback so storefront routes never flash admin chrome.
+const PageLoader = () => {
+  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+  const isStorefrontRoute = isSubdomainMode
+    ? !pathname.startsWith("/_cpanel")
+    : pathname.startsWith("/store/");
+
+  if (isStorefrontRoute) {
+    return <div className="min-h-screen bg-background" />;
+  }
+
+  return (
+    <div className="min-h-screen flex bg-background">
+      <div className="hidden md:block w-56 border-r bg-sidebar" />
+      <div className="flex-1 flex flex-col">
+        <div className="h-12 border-b bg-card" />
+        <div className="p-4 space-y-3">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-64" />
+          <div className="pt-4 space-y-2">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Thin top progress bar shown during lazy chunk loading + route transitions.
 function RouteProgressBar({ active }: { active: boolean }) {
@@ -592,20 +601,31 @@ const queryClient = new QueryClient({
 // Check if we're on a store subdomain
 const isSubdomainMode = !!getSubdomainSlug();
 
+function AppShell() {
+  const location = useLocation();
+  const isStorefrontRoute = isSubdomainMode
+    ? !location.pathname.startsWith("/_cpanel")
+    : location.pathname.startsWith("/store/");
+
+  return (
+    <AuthProvider skipStoreBootstrap={isStorefrontRoute}>
+      <MigrationProvider>
+        {!isStorefrontRoute && <MigrationProgressWidget />}
+        <StorefrontProviders>
+          <AppRoutes />
+        </StorefrontProviders>
+      </MigrationProvider>
+    </AuthProvider>
+  );
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AuthProvider>
-          <MigrationProvider>
-            <MigrationProgressWidget />
-            <StorefrontProviders>
-              <AppRoutes />
-            </StorefrontProviders>
-          </MigrationProvider>
-        </AuthProvider>
+        <AppShell />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
