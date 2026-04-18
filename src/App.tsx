@@ -170,12 +170,24 @@ const PlatformCustomers = lazy(() => import("./pages/platform/PlatformCustomers.
 const PlatformAnalytics = lazy(() => import("./pages/platform/PlatformAnalytics.tsx"));
 
 // Suspense fallback
+// Suspense fallback — mimics the admin shell so the page doesn't flash white
+// while the route chunk is loading on a direct URL hit.
 const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center">
-    <div className="space-y-4 w-full max-w-md px-4">
-      <Skeleton className="h-8 w-48 mx-auto" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-3/4" />
+  <div className="min-h-screen flex bg-background">
+    <div className="hidden md:block w-56 border-r bg-sidebar" />
+    <div className="flex-1 flex flex-col">
+      <div className="h-12 border-b bg-card" />
+      <div className="p-4 space-y-3">
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-4 w-64" />
+        <div className="pt-4 space-y-2">
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-full" />
+        </div>
+      </div>
     </div>
   </div>
 );
@@ -200,6 +212,17 @@ const preloadInitialRouteModule = () => {
   const preloaders: Array<[RegExp, () => Promise<unknown>]> = [
     [/^\/(?:_cpanel\/)?dashboard\/?$/, loadDashboardPage],
     [/^\/(?:_cpanel\/)?subscriptions(?:\/.*)?$/, loadSubscriptionsPage],
+    [/^\/(?:_cpanel\/)?orders\/?$/, loadOrdersPage],
+    [/^\/(?:_cpanel\/)?orders\/[^/]+\/?$/, loadOrderDetailPage],
+    [/^\/(?:_cpanel\/)?products\/?$/, loadProductsPage],
+    [/^\/(?:_cpanel\/)?products\/(?:new|[^/]+)\/?$/, loadProductFormPage],
+    [/^\/(?:_cpanel\/)?categories\/?$/, loadCategoriesPage],
+    [/^\/(?:_cpanel\/)?inventory\/?$/, loadInventoryPage],
+    [/^\/(?:_cpanel\/)?customers\/?$/, loadCustomersPage],
+    [/^\/(?:_cpanel\/)?customers\/[^/]+\/?$/, loadCustomerDetailPage],
+    [/^\/(?:_cpanel\/)?marketing\/?$/, loadMarketingPage],
+    [/^\/(?:_cpanel\/)?analytics\/?$/, loadAnalyticsPage],
+    [/^\/(?:_cpanel\/)?settings\/?$/, loadSettingsPage],
     [isSubdomain ? /^\/$/ : /^\/store\/[^/]+\/?$/, loadStorefrontHomePage],
     [isSubdomain ? /^\/products(?:\/.*)?$/ : /^\/store\/[^/]+\/products(?:\/.*)?$/, loadStorefrontProductsPage],
     [isSubdomain ? /^\/product\/[^/]+(?:\/.*)?$/ : /^\/store\/[^/]+\/product\/[^/]+(?:\/.*)?$/, loadStorefrontProductDetailPage],
