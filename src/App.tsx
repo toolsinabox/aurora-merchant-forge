@@ -1,6 +1,6 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useTransition, useEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +15,7 @@ import { RequirePlatformAdmin } from "@/components/auth/RequirePlatformAdmin";
 import { getSubdomainSlug } from "@/lib/subdomain";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { registerRoutePrefetch } from "@/lib/route-prefetch";
 
 // Eagerly loaded — critical path pages
 import NotFound from "./pages/NotFound.tsx";
@@ -28,22 +29,33 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
 const loadDashboardPage = () => import("./pages/Dashboard.tsx");
 const Dashboard = lazy(loadDashboardPage);
-const Products = lazy(() => import("./pages/Products.tsx"));
-const ProductForm = lazy(() => import("./pages/ProductForm.tsx"));
-const Categories = lazy(() => import("./pages/Categories.tsx"));
+const loadProductsPage = () => import("./pages/Products.tsx");
+const Products = lazy(loadProductsPage);
+const loadProductFormPage = () => import("./pages/ProductForm.tsx");
+const ProductForm = lazy(loadProductFormPage);
+const loadCategoriesPage = () => import("./pages/Categories.tsx");
+const Categories = lazy(loadCategoriesPage);
 const SmartCollections = lazy(() => import("./pages/SmartCollections.tsx"));
-const Inventory = lazy(() => import("./pages/Inventory.tsx"));
-const Orders = lazy(() => import("./pages/Orders.tsx"));
-const OrderDetail = lazy(() => import("./pages/OrderDetail.tsx"));
+const loadInventoryPage = () => import("./pages/Inventory.tsx");
+const Inventory = lazy(loadInventoryPage);
+const loadOrdersPage = () => import("./pages/Orders.tsx");
+const Orders = lazy(loadOrdersPage);
+const loadOrderDetailPage = () => import("./pages/OrderDetail.tsx");
+const OrderDetail = lazy(loadOrderDetailPage);
 const PrintInvoice = lazy(() => import("./pages/PrintInvoice.tsx"));
 const PrintPickList = lazy(() => import("./pages/PrintPickList.tsx"));
 const PrintPurchaseOrder = lazy(() => import("./pages/PrintPurchaseOrder.tsx"));
 const PrintPackingSlip = lazy(() => import("./pages/PrintPackingSlip.tsx"));
-const Customers = lazy(() => import("./pages/Customers.tsx"));
-const CustomerDetail = lazy(() => import("./pages/CustomerDetail.tsx"));
-const Marketing = lazy(() => import("./pages/Marketing.tsx"));
-const Analytics = lazy(() => import("./pages/Analytics.tsx"));
-const SettingsPage = lazy(() => import("./pages/Settings.tsx"));
+const loadCustomersPage = () => import("./pages/Customers.tsx");
+const Customers = lazy(loadCustomersPage);
+const loadCustomerDetailPage = () => import("./pages/CustomerDetail.tsx");
+const CustomerDetail = lazy(loadCustomerDetailPage);
+const loadMarketingPage = () => import("./pages/Marketing.tsx");
+const Marketing = lazy(loadMarketingPage);
+const loadAnalyticsPage = () => import("./pages/Analytics.tsx");
+const Analytics = lazy(loadAnalyticsPage);
+const loadSettingsPage = () => import("./pages/Settings.tsx");
+const SettingsPage = lazy(loadSettingsPage);
 const Coupons = lazy(() => import("./pages/Coupons.tsx"));
 const Returns = lazy(() => import("./pages/Returns.tsx"));
 const Reviews = lazy(() => import("./pages/Reviews.tsx"));
@@ -168,6 +180,18 @@ const PageLoader = () => (
   </div>
 );
 
+// Thin top progress bar shown during lazy chunk loading + route transitions.
+function RouteProgressBar({ active }: { active: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`fixed top-0 left-0 right-0 z-[100] h-0.5 bg-primary origin-left transition-transform duration-300 ${
+        active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+      }`}
+    />
+  );
+}
+
 const preloadInitialRouteModule = () => {
   if (typeof window === "undefined") return;
 
@@ -188,6 +212,27 @@ const preloadInitialRouteModule = () => {
 };
 
 preloadInitialRouteModule();
+
+// Register hover/focus prefetch for the highest-traffic admin pages so the
+// chunk is already cached by the time the user clicks a sidebar link.
+const prefetchableRoutes: Array<[RegExp, () => Promise<unknown>]> = [
+  [/^\/(?:_cpanel\/)?dashboard\/?$/, loadDashboardPage],
+  [/^\/(?:_cpanel\/)?products(?:\/.*)?$/, loadProductsPage],
+  [/^\/(?:_cpanel\/)?products\/(?:new|[^/]+)\/?$/, loadProductFormPage],
+  [/^\/(?:_cpanel\/)?categories\/?$/, loadCategoriesPage],
+  [/^\/(?:_cpanel\/)?inventory\/?$/, loadInventoryPage],
+  [/^\/(?:_cpanel\/)?orders\/?$/, loadOrdersPage],
+  [/^\/(?:_cpanel\/)?orders\/[^/]+\/?$/, loadOrderDetailPage],
+  [/^\/(?:_cpanel\/)?customers\/?$/, loadCustomersPage],
+  [/^\/(?:_cpanel\/)?customers\/[^/]+\/?$/, loadCustomerDetailPage],
+  [/^\/(?:_cpanel\/)?marketing\/?$/, loadMarketingPage],
+  [/^\/(?:_cpanel\/)?analytics\/?$/, loadAnalyticsPage],
+  [/^\/(?:_cpanel\/)?settings\/?$/, loadSettingsPage],
+  [/^\/(?:_cpanel\/)?subscriptions\/?$/, loadSubscriptionsPage],
+];
+for (const [pattern, loader] of prefetchableRoutes) {
+  registerRoutePrefetch(pattern, loader);
+}
 
 function StorefrontProviders({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -211,10 +256,29 @@ function StorefrontProviders({ children }: { children: React.ReactNode }) {
 // Route-aware error boundary that auto-resets on navigation
 function AppRoutes() {
   const location = useLocation();
+  const navigationType = useNavigationType();
+  const [isPending, startTransition] = useTransition();
+  const lastPathRef = useRef(location.pathname);
+  const deferredLocationRef = useRef(location);
+
+  // Defer route changes inside a transition so the previous page stays
+  // visible while the next chunk loads — eliminates the white-screen flash.
+  if (location.pathname !== lastPathRef.current) {
+    lastPathRef.current = location.pathname;
+    startTransition(() => {
+      deferredLocationRef.current = location;
+    });
+  } else {
+    deferredLocationRef.current = location;
+  }
+
+  const renderLocation = isPending ? deferredLocationRef.current : location;
+
   return (
     <ErrorBoundary resetKey={location.pathname}>
+      <RouteProgressBar active={isPending} />
       <Suspense fallback={<PageLoader />}>
-        <Routes>
+        <Routes location={renderLocation} key={navigationType === "POP" ? renderLocation.pathname : undefined}>
           {isSubdomainMode ? (
             <>
               {/* Subdomain mode: root serves the storefront */}
