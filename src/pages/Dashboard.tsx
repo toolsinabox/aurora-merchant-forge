@@ -498,19 +498,19 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-2">
-                  {loadingCustomers ? <Skeleton className="h-16 w-full" /> : (
+                  {loadingCustomers || loadingCounts ? <Skeleton className="h-16 w-full" /> : (
                     <div className="flex items-center gap-6">
                       <div>
-                        <p className="text-lg font-bold">{customers.length}</p>
+                        <p className="text-lg font-bold">{counts.totalCustomers}</p>
                         <p className="text-xs text-muted-foreground">Total</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "new").length}</p>
-                        <p className="text-xs text-muted-foreground">New</p>
+                        <p className="text-lg font-bold">{customers.filter((c) => c.segment === "new").length}</p>
+                        <p className="text-xs text-muted-foreground">New (30d)</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "returning").length}</p>
-                        <p className="text-xs text-muted-foreground">Returning</p>
+                        <p className="text-lg font-bold">{customers.filter((c) => c.segment === "returning").length}</p>
+                        <p className="text-xs text-muted-foreground">Returning (30d)</p>
                       </div>
                     </div>
                   )}
@@ -550,14 +550,14 @@ export default function Dashboard() {
                     <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
                     Live Order Feed
                   </CardTitle>
-                  <Badge variant="outline" className="text-[10px]">{orders.length} total</Badge>
+                  <Badge variant="outline" className="text-[10px]">{counts.totalOrders} total</Badge>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                   {loadingOrders ? <Skeleton className="h-32 w-full" /> : orders.length === 0 ? (
                     <p className="text-xs text-muted-foreground py-4 text-center">No orders yet — they'll appear here in real-time.</p>
                   ) : (
                     <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
-                      {orders.slice(0, 15).map((o: any) => {
+                      {orders.slice(0, 15).map((o) => {
                         const mins = Math.round((Date.now() - new Date(o.created_at).getTime()) / 60000);
                         const timeLabel = mins < 1 ? "just now" : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.round(mins / 60)}h ago` : `${Math.round(mins / 1440)}d ago`;
                         return (
@@ -571,10 +571,10 @@ export default function Dashboard() {
                                 o.status === "new" ? "bg-primary" : o.status === "processing" ? "bg-warning" : o.status === "shipped" ? "bg-info" : "bg-muted-foreground"
                               }`} />
                               <span className="text-xs font-medium">{o.order_number}</span>
-                              <span className="text-[10px] text-muted-foreground">{o.customers?.name || "Guest"}</span>
+                              <span className="text-[10px] text-muted-foreground">{o.customer_name || "Guest"}</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="text-xs font-semibold">${Number(o.total).toFixed(2)}</span>
+                              <span className="text-xs font-semibold">${o.total.toFixed(2)}</span>
                               <span className="text-[10px] text-muted-foreground w-14 text-right">{timeLabel}</span>
                             </div>
                           </div>
