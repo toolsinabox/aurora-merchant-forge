@@ -47,7 +47,7 @@ export default function PlatformMerchants() {
 
   const updateStore = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, any> }) => {
-      const { error } = await supabase.from("stores").update(updates).eq("id", id);
+      const { error } = await (supabase.from("stores") as any).update(updates).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

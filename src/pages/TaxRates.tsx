@@ -20,7 +20,7 @@ function useUpdateTaxRate() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
-      const { data, error } = await supabase.from("tax_rates").update(updates).eq("id", id).select().single();
+      const { data, error } = await (supabase.from("tax_rates") as any).update(updates).eq("id", id).select().single();
       if (error) throw error;
       return data;
     },
