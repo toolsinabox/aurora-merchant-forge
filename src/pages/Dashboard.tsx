@@ -173,7 +173,7 @@ export default function Dashboard() {
   // Order status breakdown for pie chart
   const statusBreakdown = useMemo(() => {
     const map: Record<string, number> = {};
-    orders.forEach((o: any) => {
+    orders.forEach((o) => {
       map[o.status] = (map[o.status] || 0) + 1;
     });
     return Object.entries(map).map(([name, value]) => ({ name, value }));
