@@ -258,11 +258,11 @@ export default function Dashboard() {
 
             {/* Fulfillment Pipeline */}
             {w("fulfillment") && (() => {
-              const pending = orders.filter((o: any) => o.status === "pending").length;
-              const processing = orders.filter((o: any) => o.status === "processing").length;
-              const shipped = orders.filter((o: any) => o.status === "shipped").length;
-              const delivered = orders.filter((o: any) => o.status === "delivered" || o.status === "completed").length;
-              const cancelled = orders.filter((o: any) => o.status === "cancelled").length;
+              const pending = orders.filter((o) => o.status === "pending").length;
+              const processing = orders.filter((o) => o.status === "processing").length;
+              const shipped = orders.filter((o) => o.status === "shipped").length;
+              const delivered = orders.filter((o) => o.status === "delivered" || o.status === "completed").length;
+              const cancelled = orders.filter((o) => o.status === "cancelled").length;
               const steps = [
                 { label: "Pending", count: pending, color: "bg-warning/20 text-warning border-warning/30" },
                 { label: "Processing", count: processing, color: "bg-primary/20 text-primary border-primary/30" },
@@ -365,13 +365,13 @@ export default function Dashboard() {
                       ) : recentOrders.length === 0 ? (
                         <TableRow><TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">No orders yet. They'll appear here once customers start ordering.</TableCell></TableRow>
                       ) : (
-                        recentOrders.map((order: any) => (
+                        recentOrders.map((order) => (
                           <TableRow key={order.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${order.id}`)}>
                             <TableCell className="py-2 font-medium">{order.order_number}</TableCell>
-                            <TableCell className="py-2">{order.customers?.name || "—"}</TableCell>
+                            <TableCell className="py-2">{order.customer_name || "—"}</TableCell>
                             <TableCell className="py-2"><StatusBadge status={order.status} /></TableCell>
                             <TableCell className="py-2"><StatusBadge status={order.payment_status} /></TableCell>
-                            <TableCell className="py-2 text-right font-medium">${Number(order.total).toFixed(2)}</TableCell>
+                            <TableCell className="py-2 text-right font-medium">${order.total.toFixed(2)}</TableCell>
                             <TableCell className="py-2 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</TableCell>
                           </TableRow>
                         ))
@@ -397,7 +397,7 @@ export default function Dashboard() {
                     <p className="text-xs text-muted-foreground py-6 text-center">No active products yet.</p>
                   ) : (
                     <div className="space-y-2">
-                      {topProducts.map((p: any, idx) => (
+                      {topProducts.map((p, idx) => (
                         <div
                           key={p.id}
                           className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
