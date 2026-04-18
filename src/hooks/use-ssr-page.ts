@@ -8,8 +8,7 @@ export interface SSRPageResult {
   body_html: string;
   footer_html: string;
   css_link_tags: string;
-  css_inline: { name: string; content: string }[];
-  js_files: { name: string; content: string }[];
+  js_files: { name: string; src: string }[];
   theme_asset_base_url: string;
   store_name: string;
 }

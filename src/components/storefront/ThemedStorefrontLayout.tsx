@@ -172,37 +172,32 @@ function ThemedShellInner({
     return () => { addedElements.forEach(el => el.remove()); };
   }, [headContent, renderedHeader, ssrData]);
 
-  // Inject theme JS files from SSR response
+  // Inject theme JS via <script src="..."> — browser caches them across SPA navigations
   useEffect(() => {
     const jsFiles = ssrData?.js_files;
     if (!jsFiles || jsFiles.length === 0) return;
-    const addedScripts: HTMLScriptElement[] = [];
 
     const skipFiles = ["gulpfile.js"];
     const priorityOrder = ["jquery", "vendor", "bootstrap", "slick", "fancybox", "instafeed", "lazyload", "custom", "ba_custom"];
 
     const sorted = [...jsFiles]
-      .filter(f => !skipFiles.includes(f.name) && f.content)
+      .filter(f => !skipFiles.includes(f.name) && f.src)
       .sort((a, b) => {
         const aIdx = priorityOrder.findIndex(p => a.name.toLowerCase().includes(p));
         const bIdx = priorityOrder.findIndex(p => b.name.toLowerCase().includes(p));
         return (aIdx === -1 ? 99 : aIdx) - (bIdx === -1 ? 99 : bIdx);
       });
 
-    const timer = setTimeout(() => {
-      sorted.forEach(f => {
-        const script = document.createElement("script");
-        script.textContent = f.content;
-        script.setAttribute("data-theme-js", f.name);
-        document.body.appendChild(script);
-        addedScripts.push(script);
-      });
-    }, 100);
-
-    return () => {
-      clearTimeout(timer);
-      addedScripts.forEach(el => el.remove());
-    };
+    sorted.forEach(f => {
+      const selector = `script[data-theme-js="${f.name.replace(/"/g, '\\"')}"]`;
+      if (document.querySelector(selector)) return; // already loaded
+      const script = document.createElement("script");
+      script.src = f.src;
+      script.defer = true;
+      script.setAttribute("data-theme-js", f.name);
+      document.body.appendChild(script);
+    });
+    // No cleanup — let cached scripts persist across SPA navigation
   }, [ssrData?.js_files]);
 
   // Execute <script> tags inside #neto-theme injected via dangerouslySetInnerHTML
