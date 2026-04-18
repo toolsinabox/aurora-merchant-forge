@@ -213,6 +213,27 @@ const preloadInitialRouteModule = () => {
 
 preloadInitialRouteModule();
 
+// Register hover/focus prefetch for the highest-traffic admin pages so the
+// chunk is already cached by the time the user clicks a sidebar link.
+const prefetchableRoutes: Array<[RegExp, () => Promise<unknown>]> = [
+  [/^\/(?:_cpanel\/)?dashboard\/?$/, loadDashboardPage],
+  [/^\/(?:_cpanel\/)?products(?:\/.*)?$/, loadProductsPage],
+  [/^\/(?:_cpanel\/)?products\/(?:new|[^/]+)\/?$/, loadProductFormPage],
+  [/^\/(?:_cpanel\/)?categories\/?$/, loadCategoriesPage],
+  [/^\/(?:_cpanel\/)?inventory\/?$/, loadInventoryPage],
+  [/^\/(?:_cpanel\/)?orders\/?$/, loadOrdersPage],
+  [/^\/(?:_cpanel\/)?orders\/[^/]+\/?$/, loadOrderDetailPage],
+  [/^\/(?:_cpanel\/)?customers\/?$/, loadCustomersPage],
+  [/^\/(?:_cpanel\/)?customers\/[^/]+\/?$/, loadCustomerDetailPage],
+  [/^\/(?:_cpanel\/)?marketing\/?$/, loadMarketingPage],
+  [/^\/(?:_cpanel\/)?analytics\/?$/, loadAnalyticsPage],
+  [/^\/(?:_cpanel\/)?settings\/?$/, loadSettingsPage],
+  [/^\/(?:_cpanel\/)?subscriptions\/?$/, loadSubscriptionsPage],
+];
+for (const [pattern, loader] of prefetchableRoutes) {
+  registerRoutePrefetch(pattern, loader);
+}
+
 function StorefrontProviders({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const isStorefrontRoute = isSubdomainMode
