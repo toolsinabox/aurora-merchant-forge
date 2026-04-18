@@ -105,9 +105,16 @@ function EmptyDashboard({ navigate }: { navigate: (path: string) => void }) {
 }
 
 export default function Dashboard() {
-  const { data: products = [], isLoading: loadingProducts } = useProducts();
-  const { data: orders = [], isLoading: loadingOrders } = useOrders();
-  const { data: customers = [], isLoading: loadingCustomers } = useCustomers();
+  const {
+    orders,
+    customers,
+    counts,
+    topProducts,
+    loadingOrders,
+    loadingCustomers,
+    loadingCounts,
+    loadingProducts,
+  } = useDashboardSummary();
   const navigate = useNavigate();
   const { currentStore } = useAuth();
 
@@ -135,52 +142,18 @@ export default function Dashboard() {
   };
   const w = (key: string) => visibleWidgets[key] !== false;
 
-  const totalRevenue = orders.reduce((s: number, o: any) => s + Number(o.total), 0);
-  const activeProducts = products.filter((p) => p.status === "active").length;
+  // KPI values come from scoped 30-day window orders + count queries.
+  const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
+  const activeProducts = counts.activeProducts;
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
-  const lowStockProducts = products.filter((p) => {
-    const stock = (p.product_variants || []).reduce((s: number, v: any) => s + (v.stock || 0), 0);
-    return stock > 0 && stock <= 10;
-  }).length;
+  const lowStockProducts = counts.lowStockProducts;
 
   const revenueChange = useMemo(() => calcChange(orders, 30), [orders]);
   const dailyData = useMemo(() => buildDailyData(orders, 30), [orders]);
   const recentOrders = orders.slice(0, 8);
 
-  const isEmptyStore = !loadingProducts && !loadingOrders && products.length === 0 && orders.length === 0;
-
-  // Top selling products by order item count
-  const [orderItems, setOrderItems] = useState<any[]>([]);
-  useEffect(() => {
-    if (!currentStore) return;
-    supabase
-      .from("order_items")
-      .select("product_id, quantity, products(title, price, images)")
-      .eq("store_id", currentStore.id)
-      .then(({ data }) => { if (data) setOrderItems(data); });
-  }, [currentStore]);
-
-  const topProducts = useMemo(() => {
-    const map = new Map<string, { title: string; price: number; images: string[]; sold: number }>();
-    orderItems.forEach((item: any) => {
-      if (!item.product_id || !item.products) return;
-      const existing = map.get(item.product_id);
-      if (existing) {
-        existing.sold += item.quantity;
-      } else {
-        map.set(item.product_id, {
-          title: item.products.title,
-          price: item.products.price,
-          images: item.products.images || [],
-          sold: item.quantity,
-        });
-      }
-    });
-    return Array.from(map.entries())
-      .sort((a, b) => b[1].sold - a[1].sold)
-      .slice(0, 5)
-      .map(([id, data]) => ({ id, ...data }));
-  }, [orderItems]);
+  const isEmptyStore =
+    !loadingOrders && !loadingCounts && counts.activeProducts === 0 && counts.totalOrders === 0;
 
   // Customer growth data
   const customerGrowthData = useMemo(() => {
