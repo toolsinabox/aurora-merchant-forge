@@ -1,6 +1,6 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useTransition, useEffect, useRef } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation, useNavigationType } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -168,6 +168,18 @@ const PageLoader = () => (
   </div>
 );
 
+// Thin top progress bar shown during lazy chunk loading + route transitions.
+function RouteProgressBar({ active }: { active: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`fixed top-0 left-0 right-0 z-[100] h-0.5 bg-primary origin-left transition-transform duration-300 ${
+        active ? "scale-x-100 opacity-100" : "scale-x-0 opacity-0"
+      }`}
+    />
+  );
+}
+
 const preloadInitialRouteModule = () => {
   if (typeof window === "undefined") return;
 
@@ -211,10 +223,29 @@ function StorefrontProviders({ children }: { children: React.ReactNode }) {
 // Route-aware error boundary that auto-resets on navigation
 function AppRoutes() {
   const location = useLocation();
+  const navigationType = useNavigationType();
+  const [isPending, startTransition] = useTransition();
+  const lastPathRef = useRef(location.pathname);
+  const deferredLocationRef = useRef(location);
+
+  // Defer route changes inside a transition so the previous page stays
+  // visible while the next chunk loads — eliminates the white-screen flash.
+  if (location.pathname !== lastPathRef.current) {
+    lastPathRef.current = location.pathname;
+    startTransition(() => {
+      deferredLocationRef.current = location;
+    });
+  } else {
+    deferredLocationRef.current = location;
+  }
+
+  const renderLocation = isPending ? deferredLocationRef.current : location;
+
   return (
     <ErrorBoundary resetKey={location.pathname}>
+      <RouteProgressBar active={isPending} />
       <Suspense fallback={<PageLoader />}>
-        <Routes>
+        <Routes location={renderLocation} key={navigationType === "POP" ? renderLocation.pathname : undefined}>
           {isSubdomainMode ? (
             <>
               {/* Subdomain mode: root serves the storefront */}
