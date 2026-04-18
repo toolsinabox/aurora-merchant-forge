@@ -164,7 +164,7 @@ export default function Dashboard() {
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split("T")[0];
       const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const count = customers.filter((c: any) => c.created_at?.startsWith(dateStr)).length;
+      const count = customers.filter((c) => c.created_at?.startsWith(dateStr)).length;
       result.push({ date: label, customers: count });
     }
     return result;
