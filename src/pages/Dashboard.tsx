@@ -1,11 +1,10 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
-import { useProducts, useOrders, useCustomers } from "@/hooks/use-data";
-import { supabase } from "@/integrations/supabase/client";
+import { useDashboardSummary } from "@/hooks/use-dashboard-summary";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
@@ -48,7 +47,7 @@ function KPICard({ title, value, change, icon: Icon, prefix = "", suffix = "", l
   );
 }
 
-function buildDailyData(orders: any[], days: number) {
+function buildDailyData(orders: { created_at: string; total: number }[], days: number) {
   const now = new Date();
   const result: { date: string; revenue: number; orders: number }[] = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -56,22 +55,22 @@ function buildDailyData(orders: any[], days: number) {
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
     const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const dayOrders = orders.filter((o: any) => o.created_at?.startsWith(dateStr));
+    const dayOrders = orders.filter((o) => o.created_at?.startsWith(dateStr));
     result.push({
       date: label,
-      revenue: dayOrders.reduce((s: number, o: any) => s + Number(o.total), 0),
+      revenue: dayOrders.reduce((s, o) => s + o.total, 0),
       orders: dayOrders.length,
     });
   }
   return result;
 }
 
-function calcChange(orders: any[], days: number) {
+function calcChange(orders: { created_at: string; total: number }[], days: number) {
   const now = new Date();
   const mid = new Date(now); mid.setDate(mid.getDate() - days);
   const start = new Date(mid); start.setDate(start.getDate() - days);
-  const current = orders.filter((o: any) => new Date(o.created_at) >= mid).reduce((s: number, o: any) => s + Number(o.total), 0);
-  const previous = orders.filter((o: any) => { const d = new Date(o.created_at); return d >= start && d < mid; }).reduce((s: number, o: any) => s + Number(o.total), 0);
+  const current = orders.filter((o) => new Date(o.created_at) >= mid).reduce((s, o) => s + o.total, 0);
+  const previous = orders.filter((o) => { const d = new Date(o.created_at); return d >= start && d < mid; }).reduce((s, o) => s + o.total, 0);
   if (previous === 0) return current > 0 ? 100 : 0;
   return ((current - previous) / previous) * 100;
 }
@@ -106,9 +105,16 @@ function EmptyDashboard({ navigate }: { navigate: (path: string) => void }) {
 }
 
 export default function Dashboard() {
-  const { data: products = [], isLoading: loadingProducts } = useProducts();
-  const { data: orders = [], isLoading: loadingOrders } = useOrders();
-  const { data: customers = [], isLoading: loadingCustomers } = useCustomers();
+  const {
+    orders,
+    customers,
+    counts,
+    topProducts,
+    loadingOrders,
+    loadingCustomers,
+    loadingCounts,
+    loadingProducts,
+  } = useDashboardSummary();
   const navigate = useNavigate();
   const { currentStore } = useAuth();
 
@@ -136,52 +142,18 @@ export default function Dashboard() {
   };
   const w = (key: string) => visibleWidgets[key] !== false;
 
-  const totalRevenue = orders.reduce((s: number, o: any) => s + Number(o.total), 0);
-  const activeProducts = products.filter((p) => p.status === "active").length;
+  // KPI values come from scoped 30-day window orders + count queries.
+  const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
+  const activeProducts = counts.activeProducts;
   const avgOrderValue = orders.length > 0 ? totalRevenue / orders.length : 0;
-  const lowStockProducts = products.filter((p) => {
-    const stock = (p.product_variants || []).reduce((s: number, v: any) => s + (v.stock || 0), 0);
-    return stock > 0 && stock <= 10;
-  }).length;
+  const lowStockProducts = counts.lowStockProducts;
 
   const revenueChange = useMemo(() => calcChange(orders, 30), [orders]);
   const dailyData = useMemo(() => buildDailyData(orders, 30), [orders]);
   const recentOrders = orders.slice(0, 8);
 
-  const isEmptyStore = !loadingProducts && !loadingOrders && products.length === 0 && orders.length === 0;
-
-  // Top selling products by order item count
-  const [orderItems, setOrderItems] = useState<any[]>([]);
-  useEffect(() => {
-    if (!currentStore) return;
-    supabase
-      .from("order_items")
-      .select("product_id, quantity, products(title, price, images)")
-      .eq("store_id", currentStore.id)
-      .then(({ data }) => { if (data) setOrderItems(data); });
-  }, [currentStore]);
-
-  const topProducts = useMemo(() => {
-    const map = new Map<string, { title: string; price: number; images: string[]; sold: number }>();
-    orderItems.forEach((item: any) => {
-      if (!item.product_id || !item.products) return;
-      const existing = map.get(item.product_id);
-      if (existing) {
-        existing.sold += item.quantity;
-      } else {
-        map.set(item.product_id, {
-          title: item.products.title,
-          price: item.products.price,
-          images: item.products.images || [],
-          sold: item.quantity,
-        });
-      }
-    });
-    return Array.from(map.entries())
-      .sort((a, b) => b[1].sold - a[1].sold)
-      .slice(0, 5)
-      .map(([id, data]) => ({ id, ...data }));
-  }, [orderItems]);
+  const isEmptyStore =
+    !loadingOrders && !loadingCounts && counts.activeProducts === 0 && counts.totalOrders === 0;
 
   // Customer growth data
   const customerGrowthData = useMemo(() => {
@@ -192,7 +164,7 @@ export default function Dashboard() {
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split("T")[0];
       const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const count = customers.filter((c: any) => c.created_at?.startsWith(dateStr)).length;
+      const count = customers.filter((c) => c.created_at?.startsWith(dateStr)).length;
       result.push({ date: label, customers: count });
     }
     return result;
@@ -201,7 +173,7 @@ export default function Dashboard() {
   // Order status breakdown for pie chart
   const statusBreakdown = useMemo(() => {
     const map: Record<string, number> = {};
-    orders.forEach((o: any) => {
+    orders.forEach((o) => {
       map[o.status] = (map[o.status] || 0) + 1;
     });
     return Object.entries(map).map(([name, value]) => ({ name, value }));
@@ -286,11 +258,11 @@ export default function Dashboard() {
 
             {/* Fulfillment Pipeline */}
             {w("fulfillment") && (() => {
-              const pending = orders.filter((o: any) => o.status === "pending").length;
-              const processing = orders.filter((o: any) => o.status === "processing").length;
-              const shipped = orders.filter((o: any) => o.status === "shipped").length;
-              const delivered = orders.filter((o: any) => o.status === "delivered" || o.status === "completed").length;
-              const cancelled = orders.filter((o: any) => o.status === "cancelled").length;
+              const pending = orders.filter((o) => o.status === "pending").length;
+              const processing = orders.filter((o) => o.status === "processing").length;
+              const shipped = orders.filter((o) => o.status === "shipped").length;
+              const delivered = orders.filter((o) => o.status === "delivered" || o.status === "completed").length;
+              const cancelled = orders.filter((o) => o.status === "cancelled").length;
               const steps = [
                 { label: "Pending", count: pending, color: "bg-warning/20 text-warning border-warning/30" },
                 { label: "Processing", count: processing, color: "bg-primary/20 text-primary border-primary/30" },
@@ -393,13 +365,13 @@ export default function Dashboard() {
                       ) : recentOrders.length === 0 ? (
                         <TableRow><TableCell colSpan={6} className="text-center text-xs text-muted-foreground py-6">No orders yet. They'll appear here once customers start ordering.</TableCell></TableRow>
                       ) : (
-                        recentOrders.map((order: any) => (
+                        recentOrders.map((order) => (
                           <TableRow key={order.id} className="text-xs cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/orders/${order.id}`)}>
                             <TableCell className="py-2 font-medium">{order.order_number}</TableCell>
-                            <TableCell className="py-2">{order.customers?.name || "—"}</TableCell>
+                            <TableCell className="py-2">{order.customer_name || "—"}</TableCell>
                             <TableCell className="py-2"><StatusBadge status={order.status} /></TableCell>
                             <TableCell className="py-2"><StatusBadge status={order.payment_status} /></TableCell>
-                            <TableCell className="py-2 text-right font-medium">${Number(order.total).toFixed(2)}</TableCell>
+                            <TableCell className="py-2 text-right font-medium">${order.total.toFixed(2)}</TableCell>
                             <TableCell className="py-2 text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</TableCell>
                           </TableRow>
                         ))
@@ -425,7 +397,7 @@ export default function Dashboard() {
                     <p className="text-xs text-muted-foreground py-6 text-center">No active products yet.</p>
                   ) : (
                     <div className="space-y-2">
-                      {topProducts.map((p: any, idx) => (
+                      {topProducts.map((p, idx) => (
                         <div
                           key={p.id}
                           className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 cursor-pointer transition-colors"
@@ -526,19 +498,19 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-4 pt-2">
-                  {loadingCustomers ? <Skeleton className="h-16 w-full" /> : (
+                  {loadingCustomers || loadingCounts ? <Skeleton className="h-16 w-full" /> : (
                     <div className="flex items-center gap-6">
                       <div>
-                        <p className="text-lg font-bold">{customers.length}</p>
+                        <p className="text-lg font-bold">{counts.totalCustomers}</p>
                         <p className="text-xs text-muted-foreground">Total</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "new").length}</p>
-                        <p className="text-xs text-muted-foreground">New</p>
+                        <p className="text-lg font-bold">{customers.filter((c) => c.segment === "new").length}</p>
+                        <p className="text-xs text-muted-foreground">New (30d)</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold">{customers.filter((c: any) => c.segment === "returning").length}</p>
-                        <p className="text-xs text-muted-foreground">Returning</p>
+                        <p className="text-lg font-bold">{customers.filter((c) => c.segment === "returning").length}</p>
+                        <p className="text-xs text-muted-foreground">Returning (30d)</p>
                       </div>
                     </div>
                   )}
@@ -578,14 +550,14 @@ export default function Dashboard() {
                     <div className="h-2 w-2 rounded-full bg-success animate-pulse" />
                     Live Order Feed
                   </CardTitle>
-                  <Badge variant="outline" className="text-[10px]">{orders.length} total</Badge>
+                  <Badge variant="outline" className="text-[10px]">{counts.totalOrders} total</Badge>
                 </CardHeader>
                 <CardContent className="p-4 pt-0">
                   {loadingOrders ? <Skeleton className="h-32 w-full" /> : orders.length === 0 ? (
                     <p className="text-xs text-muted-foreground py-4 text-center">No orders yet — they'll appear here in real-time.</p>
                   ) : (
                     <div className="space-y-1.5 max-h-[200px] overflow-y-auto">
-                      {orders.slice(0, 15).map((o: any) => {
+                      {orders.slice(0, 15).map((o) => {
                         const mins = Math.round((Date.now() - new Date(o.created_at).getTime()) / 60000);
                         const timeLabel = mins < 1 ? "just now" : mins < 60 ? `${mins}m ago` : mins < 1440 ? `${Math.round(mins / 60)}h ago` : `${Math.round(mins / 1440)}d ago`;
                         return (
@@ -599,10 +571,10 @@ export default function Dashboard() {
                                 o.status === "new" ? "bg-primary" : o.status === "processing" ? "bg-warning" : o.status === "shipped" ? "bg-info" : "bg-muted-foreground"
                               }`} />
                               <span className="text-xs font-medium">{o.order_number}</span>
-                              <span className="text-[10px] text-muted-foreground">{o.customers?.name || "Guest"}</span>
+                              <span className="text-[10px] text-muted-foreground">{o.customer_name || "Guest"}</span>
                             </div>
                             <div className="flex items-center gap-3">
-                              <span className="text-xs font-semibold">${Number(o.total).toFixed(2)}</span>
+                              <span className="text-xs font-semibold">${o.total.toFixed(2)}</span>
                               <span className="text-[10px] text-muted-foreground w-14 text-right">{timeLabel}</span>
                             </div>
                           </div>
