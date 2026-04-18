@@ -26,7 +26,8 @@ const Signup = lazy(() => import("./pages/Signup.tsx"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword.tsx"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
 const Onboarding = lazy(() => import("./pages/Onboarding.tsx"));
-const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const loadDashboardPage = () => import("./pages/Dashboard.tsx");
+const Dashboard = lazy(loadDashboardPage);
 const Products = lazy(() => import("./pages/Products.tsx"));
 const ProductForm = lazy(() => import("./pages/ProductForm.tsx"));
 const Categories = lazy(() => import("./pages/Categories.tsx"));
@@ -65,9 +66,12 @@ const StockAdjustments = lazy(() => import("./pages/StockAdjustments.tsx"));
 const Stocktake = lazy(() => import("./pages/Stocktake.tsx"));
 const AbandonedCarts = lazy(() => import("./pages/AbandonedCarts.tsx"));
 const StorefrontWishlist = lazy(() => import("./pages/storefront/StorefrontWishlist.tsx"));
-const StorefrontHome = lazy(() => import("./pages/storefront/StorefrontHome.tsx"));
-const StorefrontProducts = lazy(() => import("./pages/storefront/StorefrontProducts.tsx"));
-const StorefrontProductDetail = lazy(() => import("./pages/storefront/StorefrontProductDetail.tsx"));
+const loadStorefrontHomePage = () => import("./pages/storefront/StorefrontHome.tsx");
+const StorefrontHome = lazy(loadStorefrontHomePage);
+const loadStorefrontProductsPage = () => import("./pages/storefront/StorefrontProducts.tsx");
+const StorefrontProducts = lazy(loadStorefrontProductsPage);
+const loadStorefrontProductDetailPage = () => import("./pages/storefront/StorefrontProductDetail.tsx");
+const StorefrontProductDetail = lazy(loadStorefrontProductDetailPage);
 const StorefrontCart = lazy(() => import("./pages/storefront/StorefrontCart.tsx"));
 const StorefrontCheckout = lazy(() => import("./pages/storefront/StorefrontCheckout.tsx"));
 const StorefrontLogin = lazy(() => import("./pages/storefront/StorefrontLogin.tsx"));
@@ -120,7 +124,8 @@ const AccountingIntegration = lazy(() => import("./pages/AccountingIntegration.t
 const Integrations = lazy(() => import("./pages/Integrations.tsx"));
 const Multimarket = lazy(() => import("./pages/Multimarket.tsx"));
 const Marketplaces = lazy(() => import("./pages/Marketplaces.tsx"));
-const Subscriptions = lazy(() => import("./pages/Subscriptions.tsx"));
+const loadSubscriptionsPage = () => import("./pages/Subscriptions.tsx");
+const Subscriptions = lazy(loadSubscriptionsPage);
 const DigitalDownloads = lazy(() => import("./pages/DigitalDownloads.tsx"));
 const InventoryForecasting = lazy(() => import("./pages/InventoryForecasting.tsx"));
 const SavedCarts = lazy(() => import("./pages/SavedCarts.tsx"));
@@ -162,6 +167,46 @@ const PageLoader = () => (
     </div>
   </div>
 );
+
+const preloadInitialRouteModule = () => {
+  if (typeof window === "undefined") return;
+
+  const pathname = window.location.pathname;
+  const isSubdomain = !!getSubdomainSlug();
+  const preloaders: Array<[RegExp, () => Promise<unknown>]> = [
+    [/^\/(?:_cpanel\/)?dashboard\/?$/, loadDashboardPage],
+    [/^\/(?:_cpanel\/)?subscriptions(?:\/.*)?$/, loadSubscriptionsPage],
+    [isSubdomain ? /^\/$/ : /^\/store\/[^/]+\/?$/, loadStorefrontHomePage],
+    [isSubdomain ? /^\/products(?:\/.*)?$/ : /^\/store\/[^/]+\/products(?:\/.*)?$/, loadStorefrontProductsPage],
+    [isSubdomain ? /^\/product\/[^/]+(?:\/.*)?$/ : /^\/store\/[^/]+\/product\/[^/]+(?:\/.*)?$/, loadStorefrontProductDetailPage],
+  ];
+
+  const matchedPreloader = preloaders.find(([pattern]) => pattern.test(pathname));
+  if (matchedPreloader) {
+    void matchedPreloader[1]();
+  }
+};
+
+preloadInitialRouteModule();
+
+function StorefrontProviders({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const isStorefrontRoute = isSubdomainMode
+    ? !location.pathname.startsWith("/_cpanel")
+    : location.pathname.startsWith("/store/");
+
+  if (!isStorefrontRoute) {
+    return <>{children}</>;
+  }
+
+  return (
+    <CartProvider>
+      <WishlistProvider>
+        <CompareProvider>{children}</CompareProvider>
+      </WishlistProvider>
+    </CartProvider>
+  );
+}
 
 // Route-aware error boundary that auto-resets on navigation
 function AppRoutes() {
@@ -468,14 +513,10 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <MigrationProvider>
-          <CartProvider>
-          <WishlistProvider>
-          <CompareProvider>
             <MigrationProgressWidget />
-            <AppRoutes />
-          </CompareProvider>
-          </WishlistProvider>
-          </CartProvider>
+            <StorefrontProviders>
+              <AppRoutes />
+            </StorefrontProviders>
           </MigrationProvider>
         </AuthProvider>
       </BrowserRouter>
