@@ -22,7 +22,7 @@ function useUpdateShippingZone() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updates }: { id: string; [key: string]: any }) => {
-      const { data, error } = await supabase.from("shipping_zones").update(updates).eq("id", id).select().single();
+      const { data, error } = await (supabase.from("shipping_zones") as any).update(updates).eq("id", id).select().single();
       if (error) throw error;
       return data;
     },
