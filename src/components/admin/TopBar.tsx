@@ -43,7 +43,7 @@ export function TopBar() {
   const storefrontUrl = getStorefrontUrl(currentStore?.slug ?? currentStore?.name?.toLowerCase().replace(/\s+/g, "-"));
 
   return (
-    <header className="h-12 flex items-center gap-1.5 sm:gap-2 border-b border-border bg-card/80 backdrop-blur-sm px-2 sm:px-3 shrink-0 sticky top-0 z-30">
+    <header className="h-12 flex items-center gap-1.5 sm:gap-2 border-b border-border bg-card px-2 sm:px-3 shrink-0 sticky top-0 z-30">
       <SidebarTrigger className="h-8 w-8" />
 
       <div className="relative flex-1 max-w-md hidden sm:block">
