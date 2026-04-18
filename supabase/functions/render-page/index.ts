@@ -78,6 +78,37 @@ const PAGE_TYPE_TEMPLATES: Record<string, string[]> = {
   contact: ["cms/default.template.html"],
 };
 
+// In-memory theme cache (per Deno isolate). Keys by store_id.
+// Theme files rarely change — caching for 5 min cuts the biggest DB read.
+type ThemeCacheEntry = {
+  themePackage: any;
+  themeFiles: any[];
+  fetchedAt: number;
+};
+const THEME_CACHE = new Map<string, ThemeCacheEntry>();
+const THEME_TTL_MS = 5 * 60 * 1000;
+
+async function getThemeData(supabase: any, storeId: string) {
+  const cached = THEME_CACHE.get(storeId);
+  if (cached && Date.now() - cached.fetchedAt < THEME_TTL_MS) {
+    return { themePackage: cached.themePackage, themeFiles: cached.themeFiles, cached: true };
+  }
+  const { data: themePackage } = await supabase
+    .from("theme_packages")
+    .select("id, name, is_active")
+    .eq("store_id", storeId)
+    .eq("is_active", true)
+    .single();
+  if (!themePackage) return { themePackage: null, themeFiles: [], cached: false };
+  const { data: themeFiles } = await supabase
+    .from("theme_files")
+    .select("id, file_name, file_path, folder, content, file_type")
+    .eq("theme_id", themePackage.id);
+  const entry: ThemeCacheEntry = { themePackage, themeFiles: themeFiles || [], fetchedAt: Date.now() };
+  THEME_CACHE.set(storeId, entry);
+  return { themePackage, themeFiles: entry.themeFiles, cached: false };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -104,32 +135,23 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // ── 1. Load store + active theme + theme files + page data in ONE parallel batch ──
-    const [storeResult, themePackageResult] = await Promise.all([
-      supabase.from("stores").select("*").eq("id", store_id).single(),
-      supabase.from("theme_packages").select("id, name, is_active").eq("store_id", store_id).eq("is_active", true).single(),
-    ]);
-
-    const store = storeResult.data;
-    if (!store) return jsonResponse({ error: "Store not found" }, 404);
-
-    const themePackage = themePackageResult.data;
-    if (!themePackage) {
-      return jsonResponse({ html: "", has_theme: false });
-    }
-
-    // ── 2. Load theme files + ALL page data in parallel ──
+    // ── 1. Load store + theme (cached) + page-specific data in parallel ──
     const basePath = extra_context?.basePath || "";
-    const [themeFilesResult, categoriesResult, advertsResult, zonesResult, pageData] = await Promise.all([
-      supabase.from("theme_files").select("id, file_name, file_path, folder, content, file_type").eq("theme_id", themePackage.id),
+    const [storeResult, themeData, categoriesResult, advertsResult, zonesResult, pageData] = await Promise.all([
+      supabase.from("stores").select("*").eq("id", store_id).single(),
+      getThemeData(supabase, store_id),
       supabase.from("categories").select("id, name, slug, parent_id, sort_order, image_url").eq("store_id", store_id).order("sort_order"),
       supabase.from("adverts").select("*").eq("store_id", store_id).eq("is_active", true).order("sort_order"),
       supabase.from("content_zones").select("zone_key, content").eq("store_id", store_id).eq("is_active", true),
       loadPageData(supabase, store_id, page_type, slug),
     ]);
 
-    const themeFiles = themeFilesResult.data;
-    if (!themeFiles || themeFiles.length === 0) {
+    const store = storeResult.data;
+    if (!store) return jsonResponse({ error: "Store not found" }, 404);
+
+    const themePackage = themeData.themePackage;
+    const themeFiles = themeData.themeFiles;
+    if (!themePackage || !themeFiles || themeFiles.length === 0) {
       return jsonResponse({ html: "", has_theme: false });
     }
 
@@ -267,10 +289,14 @@ Deno.serve(async (req) => {
     const rewrittenBody = rewriteAssetUrls(renderedBody, themeAssetBaseUrl);
     footerBody = rewriteAssetUrls(footerBody, themeAssetBaseUrl);
 
-    // ── 11. Build CSS link tags ──
+    // ── 11. Build CSS link tags + JS file URL list (NO inline contents — slashes payload by 90%+) ──
     const cssLinkTags = cssFiles.map(f =>
       `<link rel="stylesheet" href="${themeAssetBaseUrl}/${f.file_path}" data-theme-css="${f.file_name}" />`
     ).join("\n");
+
+    const jsFileRefs = jsFiles
+      .filter(f => f.file_name !== "gulpfile.js")
+      .map(f => ({ name: f.file_name, src: `${themeAssetBaseUrl}/${f.file_path}` }));
 
     return jsonResponse({
       has_theme: true,
@@ -279,8 +305,7 @@ Deno.serve(async (req) => {
       body_html: rewrittenBody,
       footer_html: footerBody,
       css_link_tags: cssLinkTags,
-      css_inline: cssFiles.map(f => ({ name: f.file_name, content: f.content })),
-      js_files: jsFiles.map(f => ({ name: f.file_name, content: f.content })),
+      js_files: jsFileRefs,           // now URLs only — browser caches them across pages
       theme_asset_base_url: themeAssetBaseUrl,
       store_name: store.name,
       page_type,
