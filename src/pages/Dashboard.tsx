@@ -47,7 +47,7 @@ function KPICard({ title, value, change, icon: Icon, prefix = "", suffix = "", l
   );
 }
 
-function buildDailyData(orders: any[], days: number) {
+function buildDailyData(orders: { created_at: string; total: number }[], days: number) {
   const now = new Date();
   const result: { date: string; revenue: number; orders: number }[] = [];
   for (let i = days - 1; i >= 0; i--) {
@@ -55,22 +55,22 @@ function buildDailyData(orders: any[], days: number) {
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().split("T")[0];
     const label = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    const dayOrders = orders.filter((o: any) => o.created_at?.startsWith(dateStr));
+    const dayOrders = orders.filter((o) => o.created_at?.startsWith(dateStr));
     result.push({
       date: label,
-      revenue: dayOrders.reduce((s: number, o: any) => s + Number(o.total), 0),
+      revenue: dayOrders.reduce((s, o) => s + o.total, 0),
       orders: dayOrders.length,
     });
   }
   return result;
 }
 
-function calcChange(orders: any[], days: number) {
+function calcChange(orders: { created_at: string; total: number }[], days: number) {
   const now = new Date();
   const mid = new Date(now); mid.setDate(mid.getDate() - days);
   const start = new Date(mid); start.setDate(start.getDate() - days);
-  const current = orders.filter((o: any) => new Date(o.created_at) >= mid).reduce((s: number, o: any) => s + Number(o.total), 0);
-  const previous = orders.filter((o: any) => { const d = new Date(o.created_at); return d >= start && d < mid; }).reduce((s: number, o: any) => s + Number(o.total), 0);
+  const current = orders.filter((o) => new Date(o.created_at) >= mid).reduce((s, o) => s + o.total, 0);
+  const previous = orders.filter((o) => { const d = new Date(o.created_at); return d >= start && d < mid; }).reduce((s, o) => s + o.total, 0);
   if (previous === 0) return current > 0 ? 100 : 0;
   return ((current - previous) / previous) * 100;
 }
