@@ -601,30 +601,34 @@ const queryClient = new QueryClient({
 // Check if we're on a store subdomain
 const isSubdomainMode = !!getSubdomainSlug();
 
-const App = () => {
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "";
+function AppShell() {
+  const location = useLocation();
   const isStorefrontRoute = isSubdomainMode
-    ? !pathname.startsWith("/_cpanel")
-    : pathname.startsWith("/store/");
+    ? !location.pathname.startsWith("/_cpanel")
+    : location.pathname.startsWith("/store/");
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider skipStoreBootstrap={isStorefrontRoute}>
-            <MigrationProvider>
-              {!isStorefrontRoute && <MigrationProgressWidget />}
-              <StorefrontProviders>
-                <AppRoutes />
-              </StorefrontProviders>
-            </MigrationProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <AuthProvider skipStoreBootstrap={isStorefrontRoute}>
+      <MigrationProvider>
+        {!isStorefrontRoute && <MigrationProgressWidget />}
+        <StorefrontProviders>
+          <AppRoutes />
+        </StorefrontProviders>
+      </MigrationProvider>
+    </AuthProvider>
   );
-};
+}
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <AppShell />
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
