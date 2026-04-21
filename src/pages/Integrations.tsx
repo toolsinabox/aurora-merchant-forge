@@ -441,12 +441,12 @@ export default function Integrations() {
                     <div className="grid grid-cols-3 gap-2">
                       <span>CNAME</span>
                       <span>{customDomain || "www"}</span>
-                      <span className="text-primary">stores.getcelora.com</span>
+                      <span className="text-primary">stores.yourplatform.com</span>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       <span>TXT</span>
-                      <span>_celora-verify</span>
-                      <span className="text-primary break-all">celora-verify={currentStore?.id?.slice(0, 12) || "store-id"}</span>
+                      <span>_platform-verify</span>
+                      <span className="text-primary break-all">platform-verify={currentStore?.id?.slice(0, 12) || "store-id"}</span>
                     </div>
                   </div>
                 </div>
