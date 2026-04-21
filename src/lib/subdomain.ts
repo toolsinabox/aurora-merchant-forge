@@ -26,15 +26,15 @@ export function getSubdomainSlug(): string | null {
     return null;
   }
 
-  // For production domains like getcelora.com, detect subdomain
+  // For production domains, detect subdomain
   const parts = hostname.split(".");
-  
-  // Exact root domain (e.g. getcelora.com or www.getcelora.com) — not a store
+
+  // Exact root domain (e.g. example.com or www.example.com) — not a store
   if (parts.length <= 2 || (parts.length === 3 && parts[0] === "www")) {
     return null;
   }
 
-  // Subdomain detected (e.g. toolsinabox.getcelora.com)
+  // Subdomain detected (e.g. toolsinabox.example.com)
   if (parts.length >= 3 && parts[0] !== "www") {
     return parts[0];
   }
